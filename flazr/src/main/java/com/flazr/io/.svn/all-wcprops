@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svnroot/flazr/!svn/ver/84/trunk/flazr/src/main/java/com/flazr/io
+END
+RandomAccessFileReader.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/flazr/!svn/ver/78/trunk/flazr/src/main/java/com/flazr/io/RandomAccessFileReader.java
+END
+FileChannelReader.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/flazr/!svn/ver/78/trunk/flazr/src/main/java/com/flazr/io/FileChannelReader.java
+END
+BufferReader.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/flazr/!svn/ver/78/trunk/flazr/src/main/java/com/flazr/io/BufferReader.java
+END

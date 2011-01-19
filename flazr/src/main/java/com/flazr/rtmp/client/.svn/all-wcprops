@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svnroot/flazr/!svn/ver/82/trunk/flazr/src/main/java/com/flazr/rtmp/client
+END
+RtmpClient.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svnroot/flazr/!svn/ver/82/trunk/flazr/src/main/java/com/flazr/rtmp/client/RtmpClient.java
+END
+ClientHandshakeHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svnroot/flazr/!svn/ver/75/trunk/flazr/src/main/java/com/flazr/rtmp/client/ClientHandshakeHandler.java
+END
+ClientOptions.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/flazr/!svn/ver/82/trunk/flazr/src/main/java/com/flazr/rtmp/client/ClientOptions.java
+END
+ClientHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/flazr/!svn/ver/75/trunk/flazr/src/main/java/com/flazr/rtmp/client/ClientHandler.java
+END
+ClientPipelineFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svnroot/flazr/!svn/ver/75/trunk/flazr/src/main/java/com/flazr/rtmp/client/ClientPipelineFactory.java
+END

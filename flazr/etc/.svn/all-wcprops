@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svnroot/flazr/!svn/ver/25/trunk/flazr/etc
+END
+perftest.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svnroot/flazr/!svn/ver/18/trunk/flazr/etc/perftest.groovy
+END
+videolectures.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svnroot/flazr/!svn/ver/15/trunk/flazr/etc/videolectures.groovy
+END
+wireshark.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svnroot/flazr/!svn/ver/3/trunk/flazr/etc/wireshark.groovy
+END
+decodeutils.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svnroot/flazr/!svn/ver/19/trunk/flazr/etc/decodeutils.groovy
+END
+log4j.properties
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svnroot/flazr/!svn/ver/25/trunk/flazr/etc/log4j.properties
+END
+yahoovideo.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svnroot/flazr/!svn/ver/3/trunk/flazr/etc/yahoovideo.groovy
+END
+perftestadv.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svnroot/flazr/!svn/ver/18/trunk/flazr/etc/perftestadv.groovy
+END
+yahoocustom.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svnroot/flazr/!svn/ver/3/trunk/flazr/etc/yahoocustom.groovy
+END

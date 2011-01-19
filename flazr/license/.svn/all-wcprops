@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svnroot/flazr/!svn/ver/25/trunk/flazr/license
+END
+LICENSE.jboss-netty.txt
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svnroot/flazr/!svn/ver/25/trunk/flazr/license/LICENSE.jboss-netty.txt
+END
+LICENSE.slf4j.txt
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svnroot/flazr/!svn/ver/25/trunk/flazr/license/LICENSE.slf4j.txt
+END
+LICENSE.commons-codec.txt
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svnroot/flazr/!svn/ver/25/trunk/flazr/license/LICENSE.commons-codec.txt
+END
+LICENSE.commons-httpclient.txt
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svnroot/flazr/!svn/ver/25/trunk/flazr/license/LICENSE.commons-httpclient.txt
+END
+LICENSE.log4j.txt
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svnroot/flazr/!svn/ver/25/trunk/flazr/license/LICENSE.log4j.txt
+END

@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svnroot/flazr/!svn/ver/84/trunk/flazr/src/main/java/com/flazr/io/f4v/box
+END
+MP4Descriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svnroot/flazr/!svn/ver/83/trunk/flazr/src/main/java/com/flazr/io/f4v/box/MP4Descriptor.java
+END
+FTYP.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/flazr/!svn/ver/25/trunk/flazr/src/main/java/com/flazr/io/f4v/box/FTYP.java
+END
+STSZ.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/flazr/!svn/ver/25/trunk/flazr/src/main/java/com/flazr/io/f4v/box/STSZ.java
+END
+STCO.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/flazr/!svn/ver/47/trunk/flazr/src/main/java/com/flazr/io/f4v/box/STCO.java
+END
+TKHD.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/flazr/!svn/ver/25/trunk/flazr/src/main/java/com/flazr/io/f4v/box/TKHD.java
+END
+MDHD.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/flazr/!svn/ver/25/trunk/flazr/src/main/java/com/flazr/io/f4v/box/MDHD.java
+END
+STSC.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/flazr/!svn/ver/25/trunk/flazr/src/main/java/com/flazr/io/f4v/box/STSC.java
+END
+STSS.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/flazr/!svn/ver/25/trunk/flazr/src/main/java/com/flazr/io/f4v/box/STSS.java
+END
+CTTS.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/flazr/!svn/ver/25/trunk/flazr/src/main/java/com/flazr/io/f4v/box/CTTS.java
+END
+STSD.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/flazr/!svn/ver/84/trunk/flazr/src/main/java/com/flazr/io/f4v/box/STSD.java
+END
+STTS.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/flazr/!svn/ver/25/trunk/flazr/src/main/java/com/flazr/io/f4v/box/STTS.java
+END
+MVHD.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/flazr/!svn/ver/25/trunk/flazr/src/main/java/com/flazr/io/f4v/box/MVHD.java
+END

@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svnroot/flazr/!svn/ver/25/trunk/flazr/src/site/resources/template
+END
+flazr-logo.png
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svnroot/flazr/!svn/ver/12/trunk/flazr/src/site/resources/template/flazr-logo.png
+END
+maven-base.css
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svnroot/flazr/!svn/ver/12/trunk/flazr/src/site/resources/template/maven-base.css
+END
+maven-site.vm
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svnroot/flazr/!svn/ver/25/trunk/flazr/src/site/resources/template/maven-site.vm
+END

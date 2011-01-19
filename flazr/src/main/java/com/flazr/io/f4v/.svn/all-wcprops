@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svnroot/flazr/!svn/ver/84/trunk/flazr/src/main/java/com/flazr/io/f4v
+END
+TrackInfo.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svnroot/flazr/!svn/ver/25/trunk/flazr/src/main/java/com/flazr/io/f4v/TrackInfo.java
+END
+Sample.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svnroot/flazr/!svn/ver/47/trunk/flazr/src/main/java/com/flazr/io/f4v/Sample.java
+END
+F4vReader.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svnroot/flazr/!svn/ver/83/trunk/flazr/src/main/java/com/flazr/io/f4v/F4vReader.java
+END
+SampleType.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svnroot/flazr/!svn/ver/25/trunk/flazr/src/main/java/com/flazr/io/f4v/SampleType.java
+END
+Box.java
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svnroot/flazr/!svn/ver/80/trunk/flazr/src/main/java/com/flazr/io/f4v/Box.java
+END
+Chunk.java
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svnroot/flazr/!svn/ver/47/trunk/flazr/src/main/java/com/flazr/io/f4v/Chunk.java
+END
+Payload.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svnroot/flazr/!svn/ver/25/trunk/flazr/src/main/java/com/flazr/io/f4v/Payload.java
+END
+UnknownPayload.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svnroot/flazr/!svn/ver/25/trunk/flazr/src/main/java/com/flazr/io/f4v/UnknownPayload.java
+END
+BoxType.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svnroot/flazr/!svn/ver/47/trunk/flazr/src/main/java/com/flazr/io/f4v/BoxType.java
+END
+MovieInfo.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svnroot/flazr/!svn/ver/83/trunk/flazr/src/main/java/com/flazr/io/f4v/MovieInfo.java
+END
