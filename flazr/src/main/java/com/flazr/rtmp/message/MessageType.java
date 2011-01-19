@@ -64,6 +64,8 @@ public enum MessageType implements ValueToEnum.IntValue {
             case WINDOW_ACK_SIZE:
             case SET_PEER_BW:            
                 return 2;
+            case SHARED_OBJECT_AMF0:
+            case SHARED_OBJECT_AMF3:
             case COMMAND_AMF0:
             case COMMAND_AMF3: // TODO verify
                 return 3;
@@ -90,6 +92,9 @@ public enum MessageType implements ValueToEnum.IntValue {
             case AUDIO: return new Audio(header, in);
             case VIDEO: return new Video(header, in);
             case AGGREGATE: return new Aggregate(header, in);
+            case SHARED_OBJECT_AMF0:
+            case SHARED_OBJECT_AMF3:
+            	return new SharedObjectAmf0(header, in);
             default: throw new RuntimeException("unable to create message for: " + header);
         }
     }
