@@ -69,6 +69,7 @@
     <target name="dist" depends="dist-input-version, compile">
         <copy todir="target/flazr/lib" flatten="true">            
             <fileset refid="runtime.fileset"/>
+            <fileset refid="test.fileset"/>
         </copy>
         <!-- temp exclude for server release -->
         <delete dir="target/flazr/lib" includes="groovy*"/>
