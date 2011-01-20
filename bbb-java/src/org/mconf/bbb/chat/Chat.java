@@ -24,13 +24,12 @@ import com.flazr.util.Utils;
 public class Chat {
 
 	private final static Logger logger = LoggerFactory.getLogger(Chat.class);
-	//public final static String serverUrl = "devbbb-mconf.no-ip.org";
-	//public final static String serverUrl = "143.54.12.199";
-	public final static String serverUrl = "localhost";
-	public final static String appName = "SOSample";
-	public final static String rso = "SampleChat";
-	//public final static String salt = "eed6e3424be7d52d0131167e8b6ad664";
-	public final static String conferenceId = "a7d9379c-89a5-4ca7-89af-694c5b8a27a9";
+
+	public final static String serverUrl = "143.54.12.199";
+	public final static String so = "chatSO";
+
+	public final static String conferenceId = "9814507a-5ce5-4162-975b-f77cc05d5a28";
+	public final static String appName = "bigbluebutton/" + conferenceId;
 	
 	private static void connectToChatModule() {
 		ClientOptions opt = new ClientOptions();
