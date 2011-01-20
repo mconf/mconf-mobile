@@ -5,19 +5,19 @@ import java.util.Date;
 import java.util.List;
 
 public class Meeting {
-	private String returncode, 
+	protected String returncode, 
 		meetingID,
 		attendeePW, 
 		moderatorPW,
 		messageKey,
 		message;
-	boolean running,
+	protected boolean running,
 		hasBeenForciblyEnded;
-	private Date startTime,
+	protected Date startTime,
 		endTime;
-	private int participantCount,
+	protected int participantCount,
 		moderatorCount;
-	private List<Attendee> attendees;
+	protected List<Attendee> attendees;
 
 	public Meeting() {
 		this.attendees = new ArrayList<Attendee>();

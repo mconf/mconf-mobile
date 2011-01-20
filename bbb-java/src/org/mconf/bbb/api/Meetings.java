@@ -32,7 +32,7 @@ public class Meetings {
 		
 	}
 	
-	/**
+	/*
 	 * bbb.getMeetings()
 	 * <meetings>
 	 * 	<meeting>
@@ -57,7 +57,6 @@ public class Meetings {
 	 * 		<message></message>
 	 * 	</meeting>
 	 * </meetings>
-	 * @param result
 	 */
 	public boolean parse(String str) {
 		meetings.clear();
@@ -119,6 +118,11 @@ public class Meetings {
 			return false;
 		}		
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "meetings=" + meetings;
 	}
 
 }

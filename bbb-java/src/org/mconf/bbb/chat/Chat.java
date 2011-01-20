@@ -38,45 +38,16 @@ public class Chat {
 		//opt.setAppName("bigbluebutton/" + conferenceId);
 		//opt.setAppName("bigbluebutton");
 		opt.setAppName(appName);
-		connect(opt);
+		//connect(opt);
 	}
 	
-	private static void connect(final ClientOptions options) {  
-        final ClientBootstrap bootstrap = getBootstrap(Executors.newCachedThreadPool(), options);
-        final ChannelFuture future = bootstrap.connect(new InetSocketAddress(options.getHost(), options.getPort()));
-        future.awaitUninterruptibly();
-        if(!future.isSuccess()) {
-            future.getCause().printStackTrace();
-            logger.error("error creating client connection: {}", future.getCause().getMessage());
-        }
-        future.getChannel().getCloseFuture().awaitUninterruptibly(); 
-        bootstrap.getFactory().releaseExternalResources();
-    }
-	
-	private static ClientBootstrap getBootstrap(final Executor executor, final ClientOptions options) {
-        final ChannelFactory factory = new NioClientSocketChannelFactory(executor, executor);
-        final ClientBootstrap bootstrap = new ClientBootstrap(factory);
-        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-			@Override
-			public ChannelPipeline getPipeline() throws Exception {
-		        final ChannelPipeline pipeline = Channels.pipeline();
-		        pipeline.addLast("handshaker", new ClientHandshakeHandler(options));
-		        pipeline.addLast("decoder", new RtmpDecoder());
-		        pipeline.addLast("encoder", new RtmpEncoder());
-		        pipeline.addLast("handler", new ChatMessageHandler(options));
-		        return pipeline;
-			}
-		});
-        bootstrap.setOption("tcpNoDelay" , true);
-        bootstrap.setOption("keepAlive", true);
-        return bootstrap;
-    }
+
 	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		BasicConfigurator.configure();
+		//BasicConfigurator.configure();
 		connectToChatModule();
 	}
 
