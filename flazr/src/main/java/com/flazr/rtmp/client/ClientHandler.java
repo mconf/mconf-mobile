@@ -19,12 +19,8 @@
 
 package com.flazr.rtmp.client;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
@@ -50,8 +46,6 @@ import com.flazr.rtmp.message.Command;
 import com.flazr.rtmp.message.Control;
 import com.flazr.rtmp.message.Metadata;
 import com.flazr.rtmp.message.SetPeerBw;
-import com.flazr.rtmp.message.SharedObject;
-import com.flazr.rtmp.message.SharedObjectAmf0;
 import com.flazr.rtmp.message.WindowAckSize;
 import com.flazr.util.ChannelUtils;
 import com.flazr.util.Utils;
@@ -62,7 +56,7 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
     private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
 
     private int transactionId = 1;
-    private Map<Integer, String> transactionToCommandMap;
+    protected Map<Integer, String> transactionToCommandMap;
     protected ClientOptions options;
     private byte[] swfvBytes;
 
@@ -74,34 +68,7 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
     private int bytesWrittenWindow = 2500000;
     
     private RtmpPublisher publisher;
-    private int streamId;
-    
-	/**
-	 * Shared objects map
-	 */
-	private volatile ConcurrentMap<String, ClientSharedObject> sharedObjects = new ConcurrentHashMap<String, ClientSharedObject>();
-
-	/**
-	 * Connect to client shared object.
-	 * 
-	 * @param name Client shared object name
-	 * @param persistent SO persistence flag
-	 * @return Client shared object instance
-	 */
-	public synchronized ClientSharedObject getSharedObject(String name, boolean persistent) {
-		logger.debug("getSharedObject name: {} persistent {}", new Object[] { name, persistent });
-		ClientSharedObject result = sharedObjects.get(name);
-		if (result != null) {
-			if (result.isPersistentObject() != persistent) {
-				throw new RuntimeException("Already connected to a shared object with this name, but with different persistence.");
-			}
-			return result;
-		}
-
-		result = new ClientSharedObject(name, persistent);
-		sharedObjects.put(name, result);
-		return result;
-	}	
+    private int streamId;    
 
     public void setSwfvBytes(byte[] swfvBytes) {
         this.swfvBytes = swfvBytes;        
@@ -220,9 +187,7 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
                     String resultFor = transactionToCommandMap.get(command.getTransactionId());
                     logger.info("result for method call: {}", resultFor);
                     if(resultFor.equals("connect")) {
-                        //writeCommandExpectingResult(channel, Command.createStream());
-                    	channel.write(SharedObjectAmf0.soConnect("SampleChat", false));
-                    	return;
+                        writeCommandExpectingResult(channel, Command.createStream());
                     } else if(resultFor.equals("createStream")) {
                         streamId = ((Double) command.getArg(0)).intValue();
                         logger.debug("streamId to use: {}", streamId);
@@ -307,12 +272,6 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
                 break;
             case SHARED_OBJECT_AMF0:
             case SHARED_OBJECT_AMF3:
-            	SharedObjectAmf0 so = (SharedObjectAmf0) message;
-            	logger.info(so.toString());
-            	//channel.write(SharedObject.soSetAttribute("SampleChat", false, "SampleChat", "<font color=\"undefined\"><b>Felipe</b></font> - OK"));
-            	//channel.write(SharedObject.soDisconnect("SampleChat", false));
-            	//channel.write(SharedObject.soDeleteAttribute("SampleChat", false, "SampleChat"));
-            	//channel.write(SharedObjectAmf0.soSendMessage("SampleChat", false, "test", new ArrayList<Object>()));
             	break;
             default:
             logger.info("ignoring rtmp message: {}", message);

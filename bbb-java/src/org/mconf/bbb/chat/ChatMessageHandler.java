@@ -1,5 +1,8 @@
 package org.mconf.bbb.chat;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
@@ -11,6 +14,7 @@ import com.flazr.amf.Amf0Object;
 import com.flazr.rtmp.RtmpMessage;
 import com.flazr.rtmp.client.ClientHandler;
 import com.flazr.rtmp.client.ClientOptions;
+import com.flazr.rtmp.client.ClientSharedObject;
 import com.flazr.rtmp.message.AbstractMessage;
 import com.flazr.rtmp.message.Command;
 import com.flazr.rtmp.message.CommandAmf0;
@@ -23,9 +27,36 @@ public class ChatMessageHandler extends ClientHandler {
     
     private SharedObject so = new SharedObjectAmf0("participantsSO", false);
 
+	/**
+	 * Shared objects map
+	 */
+	private volatile ConcurrentMap<String, ClientSharedObject> sharedObjects = new ConcurrentHashMap<String, ClientSharedObject>();
+
 	public ChatMessageHandler(ClientOptions options) {
 		super(options);
 	}
+
+	/**
+	 * Connect to client shared object.
+	 * 
+	 * @param name Client shared object name
+	 * @param persistent SO persistence flag
+	 * @return Client shared object instance
+	 */
+	public synchronized ClientSharedObject getSharedObject(String name, boolean persistent) {
+		logger.debug("getSharedObject name: {} persistent {}", new Object[] { name, persistent });
+		ClientSharedObject result = sharedObjects.get(name);
+		if (result != null) {
+			if (result.isPersistentObject() != persistent) {
+				throw new RuntimeException("Already connected to a shared object with this name, but with different persistence.");
+			}
+			return result;
+		}
+
+		result = new ClientSharedObject(name, persistent);
+		sharedObjects.put(name, result);
+		return result;
+	}	
 
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent me) {
