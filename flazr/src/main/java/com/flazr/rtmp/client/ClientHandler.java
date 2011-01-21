@@ -128,7 +128,7 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
         transactionToCommandMap = new HashMap<Integer, String>();        
     }
 
-    protected void writeCommandExpectingResult(Channel channel, Command command) {
+    public void writeCommandExpectingResult(Channel channel, Command command) {
         final int id = transactionId++;
         command.setTransactionId(id);
         transactionToCommandMap.put(id, command.getName());

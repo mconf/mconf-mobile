@@ -70,7 +70,6 @@ public class ClientSharedObject extends SharedObject implements IClientSharedObj
 	 */
 	private ConcurrentMap<String, Object> handlers = new ConcurrentHashMap<String, Object>();
 
-	private Channel conn;
 	/**
 	 * Create new client SO with
 	 * 
@@ -89,20 +88,21 @@ public class ClientSharedObject extends SharedObject implements IClientSharedObj
 	 * @param conn Attach SO to given connection
 	 */
 	public void connect(Channel conn) {
-		if (isConnected())
+		if (isConnected()) {
 			throw new RuntimeException("already connected");
+		}
 
-		this.conn = conn;
+		this.channel = conn;
 		SharedObjectMessage msg = new SharedObjectMessage(name, 0, isPersistentObject());
 		msg.addEvent(new SharedObjectEvent(Type.SERVER_CONNECT, null, null));
-		conn.write(msg);
+		channel.write(msg);
 	}
 
 	/** {@inheritDoc} */
 	public void disconnect() {
 		SharedObjectMessage msg = new SharedObjectMessage(name, 0, isPersistentObject());
 		msg.addEvent(new SharedObjectEvent(Type.SERVER_DISCONNECT, null, null));
-		conn.write(msg);
+		channel.write(msg);
 		notifyDisconnect();
 		initialSyncReceived = false;
 	}
@@ -155,6 +155,7 @@ public class ClientSharedObject extends SharedObject implements IClientSharedObj
 						break;
 
 					case CLIENT_SEND_MESSAGE:
+					case SERVER_SEND_MESSAGE:
 						notifySendMessage(event.getKey(), (List<?>) event.getValue());
 						break;
 

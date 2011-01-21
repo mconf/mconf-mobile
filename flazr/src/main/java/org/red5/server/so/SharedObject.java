@@ -131,6 +131,8 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 	 */
 	protected IEventListener source;
 
+	protected Channel channel;
+	
 	/**
 	 * Number of times the SO has been acquired
 	 */
@@ -277,16 +279,12 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 			// Send update to "owner" of this update request
 			SharedObjectMessage syncOwner = new SharedObjectMessage(null, name, currentVersion, persist);
 			syncOwner.addEvents(events);
-			if (source != null) {
-				// Only send updates when issued through RTMP request
-				Channel channel = ((Channel) source);
-				if (channel != null) {
-					//ownerMessage.acquire();
-					channel.write(syncOwner);
-					log.debug("Owner: {}", channel);
-				} else {
-					log.warn("No channel found for owner changes!?");
-				}
+			if (channel != null) {
+				//ownerMessage.acquire();
+				channel.write(syncOwner);
+				log.debug("Owner: {}", channel);
+			} else {
+				log.warn("No channel found for owner changes!?");
 			}
 		}
 		//clear owner events
@@ -342,10 +340,11 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 	 * Send notification about modification of SO
 	 */
 	protected void notifyModified() {
-		if (updateCounter.get() > 0) {
+		// does it make sense on client side?
+		//if (updateCounter.get() > 0) {
 			// we're inside a beginUpdate...endUpdate block
-			return;
-		}
+		//	return;
+		//}
 		if (modified) {
 			// The client sent at least one update -> increase version of SO
 			updateVersion();

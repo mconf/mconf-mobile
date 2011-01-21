@@ -1,4 +1,4 @@
-package org.mconf.bbb.chat;
+package org.mconf.bbb;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

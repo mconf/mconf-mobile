@@ -57,7 +57,7 @@ public class SharedObjectMessage extends AbstractMessage implements ISharedObjec
 	/**
 	 * SO events chain
 	 */
-	private ConcurrentLinkedQueue<ISharedObjectEvent> events = new ConcurrentLinkedQueue<ISharedObjectEvent>();
+	private ConcurrentLinkedQueue<ISharedObjectEvent> events;
 
 	/**
 	 * SO version, used for synchronization purposes
@@ -96,6 +96,8 @@ public class SharedObjectMessage extends AbstractMessage implements ISharedObjec
 		this.name = name;
 		this.version = version;
 		this.persistent = persistent;
+		
+		this.events = new ConcurrentLinkedQueue<ISharedObjectEvent>();
 	}
 	
 	public SharedObjectMessage(RtmpHeader header, ChannelBuffer in) {
@@ -360,7 +362,8 @@ public class SharedObjectMessage extends AbstractMessage implements ISharedObjec
 		persistent = in.readInt() == 2;
 		in.skipBytes(4);
 		
-		events = new ConcurrentLinkedQueue<ISharedObjectEvent>();
+		if (events == null)
+			events = new ConcurrentLinkedQueue<ISharedObjectEvent>();
 		
 		while (in.readableBytes() > 0) {
 			ISharedObjectEvent.Type type = SharedObjectTypeMapping.toType(in.readByte());
@@ -505,8 +508,7 @@ public class SharedObjectMessage extends AbstractMessage implements ISharedObjec
 
 	@Override
 	public Type getType() {
-		// TODO Auto-generated method stub
-		return null;
+		return Type.SHARED_OBJECT;
 	}
 
 	@Override
