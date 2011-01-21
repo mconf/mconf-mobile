@@ -1,6 +1,6 @@
 package org.red5.server.api.so;
 
-import org.red5.server.api.IConnection;
+import org.jboss.netty.channel.Channel;
 
 /*
  * RED5 Open Source Flash Server - http://code.google.com/p/red5/
@@ -35,7 +35,7 @@ public interface IClientSharedObject extends ISharedObjectBase {
 	 * 
 	 * @param conn connect to connect to
 	 */
-	public void connect(IConnection conn);
+	public void connect(Channel conn);
 	
 	/**
 	 * Check if the shared object is connected to the server.

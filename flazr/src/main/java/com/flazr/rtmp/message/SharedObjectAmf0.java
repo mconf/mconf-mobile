@@ -9,15 +9,15 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.red5.server.net.rtmp.message.SharedObjectTypeMapping;
+import org.red5.server.so.ISharedObjectEvent;
+import org.red5.server.so.ISharedObjectEvent.Type;
+import org.red5.server.so.SharedObjectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.flazr.amf.Amf0Value;
 import com.flazr.rtmp.RtmpHeader;
-import com.flazr.rtmp.so.ISharedObjectEvent;
-import com.flazr.rtmp.so.ISharedObjectEvent.Type;
-import com.flazr.rtmp.so.SharedObjectEvent;
-import com.flazr.rtmp.so.SharedObjectTypeMapping;
 
 public class SharedObjectAmf0 extends SharedObject {
 
@@ -38,7 +38,7 @@ public class SharedObjectAmf0 extends SharedObject {
 	}
 
 	@Override
-	MessageType getMessageType() {
+	public MessageType getMessageType() {
 		return MessageType.SHARED_OBJECT_AMF0;
 	}
 

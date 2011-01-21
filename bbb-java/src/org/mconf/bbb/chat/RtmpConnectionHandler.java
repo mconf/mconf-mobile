@@ -1,8 +1,6 @@
 package org.mconf.bbb.chat;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -19,8 +17,6 @@ import com.flazr.rtmp.client.ClientOptions;
 import com.flazr.rtmp.message.AbstractMessage;
 import com.flazr.rtmp.message.Command;
 import com.flazr.rtmp.message.CommandAmf0;
-import com.flazr.rtmp.message.SharedObject;
-import com.flazr.rtmp.message.SharedObjectAmf0;
 
 /*
  * getMyUserId
@@ -57,10 +53,6 @@ public class RtmpConnectionHandler extends ClientHandler {
     private static final Logger log = LoggerFactory.getLogger(RtmpConnectionHandler.class);
     private JoinedMeeting meeting;
     
-	/**
-	 * Shared objects map
-	 */
-	private volatile ConcurrentMap<String, SharedObject> sharedObjects = new ConcurrentHashMap<String, SharedObject>();
 	private String myUserId;
 
 	public RtmpConnectionHandler(ClientOptions options, JoinedMeeting meeting) {
@@ -68,28 +60,6 @@ public class RtmpConnectionHandler extends ClientHandler {
 		this.meeting = meeting;
 	}
 	
-	/**
-	 * Connect to client shared object.
-	 * 
-	 * @param name Client shared object name
-	 * @param persistent SO persistence flag
-	 * @return Client shared object instance
-	 */
-	public synchronized SharedObject getSharedObject(String name, boolean persistent) {
-		log.debug("getSharedObject name: {} persistent {}", new Object[] { name, persistent });
-		SharedObject result = sharedObjects.get(name);
-		if (result != null) {
-			if (result.isPersistent() != persistent) {
-				throw new RuntimeException("Already connected to a shared object with this name, but with different persistence.");
-			}
-			return result;
-		}
-
-		result = new SharedObjectAmf0(name, persistent);
-		sharedObjects.put(name, result);
-		return result;
-	}	
-
     public Command connect() {
         Amf0Object object = AbstractMessage.object(
                 AbstractMessage.pair("app", options.getAppName()),

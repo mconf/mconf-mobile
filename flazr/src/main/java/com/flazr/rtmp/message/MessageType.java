@@ -23,6 +23,7 @@ import com.flazr.rtmp.RtmpHeader;
 import com.flazr.rtmp.RtmpMessage;
 import com.flazr.util.ValueToEnum;
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.red5.server.so.SharedObjectMessage;
 
 public enum MessageType implements ValueToEnum.IntValue {
 
@@ -94,7 +95,7 @@ public enum MessageType implements ValueToEnum.IntValue {
             case AGGREGATE: return new Aggregate(header, in);
             case SHARED_OBJECT_AMF0:
             case SHARED_OBJECT_AMF3:
-            	return new SharedObjectAmf0(header, in);
+            	return new SharedObjectMessage(header, in);
             default: throw new RuntimeException("unable to create message for: " + header);
         }
     }

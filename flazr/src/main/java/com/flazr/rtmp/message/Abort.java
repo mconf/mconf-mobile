@@ -21,7 +21,7 @@ public class Abort extends AbstractMessage {
     }
 
     @Override
-    MessageType getMessageType() {
+    public MessageType getMessageType() {
         return MessageType.ABORT;
     }
 

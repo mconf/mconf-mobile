@@ -56,7 +56,7 @@ public class SetPeerBw extends AbstractMessage {
     }
 
     @Override
-    MessageType getMessageType() {
+    public MessageType getMessageType() {
         return MessageType.SET_PEER_BW;
     }
 

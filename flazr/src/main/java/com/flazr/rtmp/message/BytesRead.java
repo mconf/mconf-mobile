@@ -28,7 +28,7 @@ public class BytesRead extends AbstractMessage {
     private int value;
 
     @Override
-    MessageType getMessageType() {
+    public MessageType getMessageType() {
         return MessageType.BYTES_READ;
     }
 

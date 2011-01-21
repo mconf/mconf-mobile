@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry excluding="com/flazr/rtmp/message/SharedObject.java|com/flazr/rtmp/message/SharedObjectAmf0.java" kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/test/java"/>
-	<!--classpathentry kind="lib" path="build/maven-ant-tasks.jar"/-->
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="target/flazr/lib/commons-cli-1.2.jar"/>
 	<classpathentry kind="lib" path="target/flazr/lib/commons-codec-1.2.jar"/>

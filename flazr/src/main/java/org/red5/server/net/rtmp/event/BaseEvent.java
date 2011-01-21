@@ -27,7 +27,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.red5.server.api.event.IEventListener;
 import org.red5.server.net.rtmp.message.Constants;
-import org.red5.server.net.rtmp.message.Header;
+
+import com.flazr.rtmp.RtmpHeader;
 
 /**
  * Base abstract class for all RTMP events
@@ -67,7 +68,7 @@ public abstract class BaseEvent implements Constants, IRTMPEvent, Externalizable
 	/**
 	 * Event RTMP packet header
 	 */
-	protected Header header = null;
+	protected RtmpHeader header = null;
 
 	/**
 	 * Event references count
@@ -123,12 +124,12 @@ public abstract class BaseEvent implements Constants, IRTMPEvent, Externalizable
 	}
 
 	/** {@inheritDoc} */
-	public Header getHeader() {
+	public RtmpHeader getHeader() {
 		return header;
 	}
 
 	/** {@inheritDoc} */
-	public void setHeader(Header header) {
+	public void setHeader(RtmpHeader header) {
 		this.header = header;
 	}
 

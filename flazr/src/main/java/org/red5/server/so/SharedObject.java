@@ -21,7 +21,6 @@ package org.red5.server.so;
 
 import static org.red5.server.api.so.ISharedObject.TYPE;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,23 +31,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.red5.io.object.Deserializer;
-import org.red5.io.object.Input;
-import org.red5.io.object.Output;
-import org.red5.io.object.Serializer;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.channel.Channel;
 import org.red5.server.AttributeStore;
 import org.red5.server.api.IAttributeStore;
 import org.red5.server.api.event.IEventListener;
-import org.red5.server.api.persistence.IPersistable;
-import org.red5.server.api.persistence.IPersistenceStore;
 import org.red5.server.api.statistics.ISharedObjectStatistics;
 import org.red5.server.api.statistics.support.StatisticsCounter;
-import org.red5.server.net.rtmp.Channel;
-import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.net.rtmp.message.Constants;
 import org.red5.server.so.ISharedObjectEvent.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.flazr.rtmp.RtmpHeader;
 
 /**
  * Represents shared object on server-side. Shared Objects in Flash are like cookies that are stored
@@ -69,7 +64,7 @@ import org.slf4j.LoggerFactory;
  * All access to methods that change properties in the SO must be properly
  * synchronized for multi-threaded access.
  */
-public class SharedObject extends AttributeStore implements ISharedObjectStatistics, IPersistable, Constants {
+public class SharedObject extends AttributeStore implements ISharedObjectStatistics, Constants {
 	/**
 	 * Logger
 	 */
@@ -95,11 +90,6 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 	 * true if the client / server created the SO to be persistent
 	 */
 	protected boolean persistentSO;
-
-	/**
-	 * Object that is delegated with all storage work for persistent SOs
-	 */
-	protected IPersistenceStore storage;
 
 	/**
 	 * Version. Used on synchronization purposes.
@@ -178,23 +168,16 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 
 	/** Constructs a new SharedObject. */
 	public SharedObject() {
-		// This is used by the persistence framework
-		super();
-
 		ownerMessage = new SharedObjectMessage(null, null, -1, false);
 		creationTime = System.currentTimeMillis();
 	}
 
 	/**
-	 * Constructs new SO from Input object
-	 * @param input              Input source
-	 * @throws IOException       I/O exception
-	 *
-	 * @see org.red5.io.object.Input
+	 * Constructs new SO from a received message (header + buffer)
 	 */
-	public SharedObject(Input input) throws IOException {
-		this();
-		deserialize(input);
+	public SharedObject(RtmpHeader header, ChannelBuffer in) {
+		ownerMessage = new SharedObjectMessage(header, in);
+		creationTime = System.currentTimeMillis();
 	}
 
 	/**
@@ -215,20 +198,6 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 		ownerMessage = new SharedObjectMessage(null, name, 0, persistent);
 		creationTime = System.currentTimeMillis();
 		super.setAttributes(data);
-	}
-
-	/**
-	 * Creates new SO from given data map, name, path, storage object and persistence option
-	 * @param data               Data
-	 * @param name               SO name
-	 * @param path               SO path
-	 * @param persistent         SO persistence
-	 * @param storage            Persistence storage
-	 */
-	public SharedObject(Map<String, Object> data, String name, String path, boolean persistent,
-			IPersistenceStore storage) {
-		this(data, name, path, persistent);
-		setStore(storage);
 	}
 
 	/** {@inheritDoc} */
@@ -310,7 +279,7 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 			syncOwner.addEvents(events);
 			if (source != null) {
 				// Only send updates when issued through RTMP request
-				Channel channel = ((RTMPConnection) source).getChannel((byte) 3);
+				Channel channel = ((Channel) source);
 				if (channel != null) {
 					//ownerMessage.acquire();
 					channel.write(syncOwner);
@@ -340,9 +309,9 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 			//updates all registered clients of this shared object
 			for (IEventListener listener : listeners) {
 				if (listener != source) {
-					if (listener instanceof RTMPConnection) {
+					if (listener instanceof Channel) {
 						//get the channel for so updates
-						final Channel channel = ((RTMPConnection) listener).getChannel((byte) 3);
+						final Channel channel = ((Channel) listener);
 						//create a new sync message for every client to avoid
 						//concurrent access through multiple threads
 						final SharedObjectMessage syncMessage = new SharedObjectMessage(null, name, currentVersion, persist);
@@ -381,11 +350,6 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 			// The client sent at least one update -> increase version of SO
 			updateVersion();
 			lastModified = System.currentTimeMillis();
-		}
-		if (modified && storage != null) {
-			if (!storage.save(this)) {
-				log.error("Could not store shared object.");
-			}
 		}
 		sendUpdates();
 		//APPSERVER-291
@@ -603,11 +567,6 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 		//part 3 of fix for TRAC #360
 		if (!isPersistentObject() && listeners.isEmpty() && !isAcquired()) {
 			log.info("Deleting shared object {} because all clients disconnected and it is no longer acquired.", name);
-			if (storage != null) {
-				if (!storage.remove(this)) {
-					log.error("Could not remove shared object.");
-				}
-			}
 			close();
 		}
 	}
@@ -659,34 +618,6 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
 			notifyModified();
 			source = null;
 		}
-	}
-
-	/** {@inheritDoc} */
-	public void serialize(Output output) throws IOException {
-		Serializer ser = new Serializer();
-		ser.serialize(output, getName());
-		ser.serialize(output, getAttributes());
-	}
-
-	/** {@inheritDoc} */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void deserialize(Input input) throws IOException {
-		Deserializer deserializer = new Deserializer();
-		name = deserializer.deserialize(input, String.class);
-		persistentSO = persistent = true;
-		super.setAttributes(deserializer.<Map> deserialize(input, Map.class));
-		ownerMessage.setName(name);
-		ownerMessage.setIsPersistent(true);
-	}
-
-	/** {@inheritDoc} */
-	public void setStore(IPersistenceStore store) {
-		this.storage = store;
-	}
-
-	/** {@inheritDoc} */
-	public IPersistenceStore getStore() {
-		return storage;
 	}
 
 	/**

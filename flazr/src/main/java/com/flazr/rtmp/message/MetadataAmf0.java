@@ -37,7 +37,7 @@ public class MetadataAmf0 extends Metadata {
     }
 
     @Override
-    MessageType getMessageType() {
+    public MessageType getMessageType() {
         return MessageType.METADATA_AMF0;
     }
 

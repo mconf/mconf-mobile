@@ -19,7 +19,6 @@ package org.red5.server.api.so;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
-import org.red5.server.api.IBasicScope;
 import org.red5.server.api.statistics.ISharedObjectStatistics;
 
 /**
@@ -29,8 +28,7 @@ import org.red5.server.api.statistics.ISharedObjectStatistics;
  * @author Joachim Bauch (jojo@struktur.de)
  */
 
-public interface ISharedObject extends IBasicScope,
-		ISharedObjectBase, ISharedObjectSecurityService {
+public interface ISharedObject extends ISharedObjectBase {
 
 	public static final String TYPE = "SharedObject";
 

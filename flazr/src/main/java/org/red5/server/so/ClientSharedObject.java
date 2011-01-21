@@ -28,15 +28,13 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.jboss.netty.channel.Channel;
 import org.red5.server.api.IAttributeStore;
-import org.red5.server.api.IConnection;
 import org.red5.server.api.event.IEvent;
 import org.red5.server.api.event.IEventDispatcher;
 import org.red5.server.api.event.IEventListener;
 import org.red5.server.api.so.IClientSharedObject;
 import org.red5.server.api.so.ISharedObjectListener;
-import org.red5.server.net.rtmp.Channel;
-import org.red5.server.net.rtmp.RTMPConnection;
 import org.red5.server.so.ISharedObjectEvent.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,6 +70,7 @@ public class ClientSharedObject extends SharedObject implements IClientSharedObj
 	 */
 	private ConcurrentMap<String, Object> handlers = new ConcurrentHashMap<String, Object>();
 
+	private Channel conn;
 	/**
 	 * Create new client SO with
 	 * 
@@ -89,26 +88,21 @@ public class ClientSharedObject extends SharedObject implements IClientSharedObj
 	 * 
 	 * @param conn Attach SO to given connection
 	 */
-	public void connect(IConnection conn) {
-		if (!(conn instanceof RTMPConnection))
-			throw new RuntimeException("can only connect through RTMP connections");
-
+	public void connect(Channel conn) {
 		if (isConnected())
 			throw new RuntimeException("already connected");
 
-		source = conn;
+		this.conn = conn;
 		SharedObjectMessage msg = new SharedObjectMessage(name, 0, isPersistentObject());
 		msg.addEvent(new SharedObjectEvent(Type.SERVER_CONNECT, null, null));
-		Channel c = ((RTMPConnection) conn).getChannel((byte) 3);
-		c.write(msg);
+		conn.write(msg);
 	}
 
 	/** {@inheritDoc} */
 	public void disconnect() {
 		SharedObjectMessage msg = new SharedObjectMessage(name, 0, isPersistentObject());
 		msg.addEvent(new SharedObjectEvent(Type.SERVER_DISCONNECT, null, null));
-		Channel c = ((RTMPConnection) source).getChannel((byte) 3);
-		c.write(msg);
+		conn.write(msg);
 		notifyDisconnect();
 		initialSyncReceived = false;
 	}
