@@ -38,7 +38,8 @@ public class Chat {
 		//opt.setAppName("bigbluebutton/" + conferenceId);
 		//opt.setAppName("bigbluebutton");
 		opt.setAppName(appName);
-		//connect(opt);
+		
+		connect(opt);
 	}
 	
 
@@ -49,6 +50,7 @@ public class Chat {
 	public static void main(String[] args) {
 		//BasicConfigurator.configure();
 		connectToChatModule();
+		
 	}
 
 }
