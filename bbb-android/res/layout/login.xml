@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+
+
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+   android:orientation="horizontal"
+   android:layout_width="fill_parent"
+   android:layout_height="fill_parent"
+   android:background="#DBD1E4"
+   >
+   >
+   
+    <TextView android:id="@+id/welcome_text"
+        android:text = "Welcome to BBB_MConf"           
+        android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:textColor = "#000000"
+        />
+       
+    <TextView android:id="@+id/username_text"
+        android:text = "username:"  
+        android:layout_centerHorizontal="true"  
+        android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/welcome_text"
+                android:textColor = "#000000"
+        />
+   
+    <EditText android:id="@+id/txt_username"
+             android:layout_height="wrap_content"
+             android:layout_width="250px"
+             android:layout_centerHorizontal="true"
+             android:layout_below="@+id/username_text"
+             android:singleLine="true" />
+             
+             
+    
+   
+    
+   
+        <Button android:id="@+id/button"
+                android:text="Login!"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/txt_username"
+                />
+               
+
+</RelativeLayout>
