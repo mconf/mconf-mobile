@@ -1,9 +1,5 @@
 package org.mconf.bbb;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.jboss.netty.channel.Channel;
@@ -12,11 +8,6 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.mconf.bbb.api.JoinedMeeting;
 import org.mconf.bbb.chat.ChatModule;
-import org.red5.server.api.IAttributeStore;
-import org.red5.server.api.so.IClientSharedObject;
-import org.red5.server.api.so.ISharedObjectBase;
-import org.red5.server.api.so.ISharedObjectListener;
-import org.red5.server.so.ClientSharedObject;
 import org.red5.server.so.SharedObjectMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,19 +37,12 @@ import com.flazr.rtmp.message.CommandAmf0;
  * chat.getChatMessages
  */
 
-/*
- * PRIVATE MESSAGE
- * 2011-01-20 16:52:53,741 [New I/O client worker #1-1] DEBUG com.flazr.amf.Amf0Value.decode(Amf0Value.java:173) - << [STRING messageReceived]
- * 2011-01-20 16:52:53,741 [New I/O client worker #1-1] DEBUG com.flazr.amf.Amf0Value.decode(Amf0Value.java:173) - << [STRING 69]
- * 2011-01-20 16:52:53,742 [New I/O client worker #1-1] DEBUG com.flazr.amf.Amf0Value.decode(Amf0Value.java:173) - << [STRING oi|Felipe|0|16:52|en|69]
- * 2011-01-20 16:52:53,742 [New I/O client worker #1-1] DEBUG com.flazr.rtmp.RtmpDecoder.decode(RtmpDecoder.java:82) - << [1 SHARED_OBJECT_AMF0 c3 #0 t0 (0) s71] SharedObject name: 101 version: 1 non persistent { SOEvent(SERVER_SEND_MESSAGE, messageReceived, [69, oi|Felipe|0|16:52|en|69]) }
- */
 public class RtmpConnectionHandler extends ClientHandler {
 
     private static final Logger log = LoggerFactory.getLogger(RtmpConnectionHandler.class);
     private JoinedMeeting meeting;
     
-	private String myUserId;
+	private int myUserId;
 	
 	private ChatModule chat;
 
@@ -95,7 +79,7 @@ public class RtmpConnectionHandler extends ClientHandler {
     
     public boolean onGetMyUserId(String resultFor, Command command) {
     	if (resultFor.equals("getMyUserId")) {
-	    	myUserId = (String) command.getArg(0);
+	    	myUserId = Integer.parseInt((String) command.getArg(0));
 	    	log.info("My userID is {}", myUserId);
 	    	return true;
     	} else
@@ -130,14 +114,11 @@ public class RtmpConnectionHandler extends ClientHandler {
 	                	//getSharedObject("participantsSO", false).connect(channel);
 	                	return;
 	                } else if(onGetMyUserId(resultFor, command)) {
-
-                		chat = new ChatModule(this, channel);
-	                	
-	                	// the shared object responsible to handle private chat 
-	                	//getSharedObject(myUserId, false).connect(channel);
-
+                		chat = new ChatModule(this, channel);                	
 	                	break;
 	                } else if (chat.onGetChatMessages(resultFor, command)) {
+	                	break;
+	                } else if (chat.onQueryParticipants(resultFor, command)) {
 	                	break;
 	                }
 	            }
@@ -155,7 +136,7 @@ public class RtmpConnectionHandler extends ClientHandler {
 		writeCommandExpectingResult(e.getChannel(), connect());
 	}
 	
-	public String getMyUserId() {
+	public int getMyUserId() {
 		return myUserId;
 	}
 

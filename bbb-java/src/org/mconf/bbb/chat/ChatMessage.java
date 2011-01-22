@@ -14,7 +14,7 @@ public class ChatMessage {
 	private String color;
 	private String time;
 	private String language;
-	private String userid;
+	private int userid;
 	
 	public ChatMessage() {
 		color = "0";
@@ -33,7 +33,7 @@ public class ChatMessage {
 		color = param.get(2);
 		time = param.get(3);
 		language = param.get(4);
-		userid = param.get(5);
+		userid = Double.valueOf(Double.parseDouble(param.get(5))).intValue();
 	}
 	
 	public String encode() {
@@ -92,12 +92,19 @@ public class ChatMessage {
 		this.language = language;
 	}
 
-	public String getUserid() {
+	public int getUserid() {
 		return userid;
 	}
 
-	public void setUserid(String userid) {
+	public void setUserid(int userid) {
 		this.userid = userid;
+	}
+
+	@Override
+	public String toString() {
+		return "ChatMessage [color=" + color + ", language=" + language
+				+ ", message=" + message + ", time=" + time + ", userid="
+				+ userid + ", username=" + username + "]";
 	}
 	
 }
