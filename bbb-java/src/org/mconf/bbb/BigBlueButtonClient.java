@@ -102,7 +102,25 @@ public class BigBlueButtonClient {
 		return null;
 	}
 	
+	public boolean createMeeting(Meeting meeting) {
+		String create = api.createMeeting(meeting.getMeetingID(), 
+				"Welcome message", 
+				meeting.getModeratorPW(), 
+				meeting.getAttendeePW(), 
+				0, 
+				serverUrl);
+		log.debug("createMeeting: {}", create);
+		return create.equals(meeting.getMeetingID()); 
+	}
+	
 	public JoinedMeeting join(Meeting meeting, String name, boolean moderator) {
+		if (api.isMeetingRunning(meeting.getMeetingID()).equals("false")) {
+			if (!createMeeting(meeting)) {
+				log.error("The meeting {} is not running", meeting.getMeetingID());
+				return null;
+			}
+		}
+		
 		String joinUrl = api.getJoinMeetingURL(name, meeting.getMeetingID(), moderator? meeting.getModeratorPW() : meeting.getAttendeePW());
 		log.debug(joinUrl);
 		
