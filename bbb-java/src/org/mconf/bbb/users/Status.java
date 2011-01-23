@@ -1,4 +1,4 @@
-package org.mconf.bbb.chat;
+package org.mconf.bbb.users;
 
 import java.util.Map;
 

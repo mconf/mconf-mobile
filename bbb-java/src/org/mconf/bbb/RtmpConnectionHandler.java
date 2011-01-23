@@ -8,6 +8,7 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.mconf.bbb.api.JoinedMeeting;
 import org.mconf.bbb.chat.ChatModule;
+import org.mconf.bbb.users.UsersModule;
 import org.red5.server.so.SharedObjectMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import com.flazr.rtmp.message.Command;
 import com.flazr.rtmp.message.CommandAmf0;
 
 /*
+ * - what happens when a client join a session
  * getMyUserId
  * participantsSO
  * participants.getParticipants
@@ -35,6 +37,18 @@ import com.flazr.rtmp.message.CommandAmf0;
  * deskSO
  * deskshare.checkIfStreamIsPublishing
  * chat.getChatMessages
+ * 
+ * - web client module division
+ * breakout  
+ * chat  
+ * deskshare  
+ * example  
+ * listeners  
+ * phone  
+ * present  
+ * videoconf  
+ * viewers  
+ * whiteboard
  */
 
 public class RtmpConnectionHandler extends ClientHandler {
@@ -45,6 +59,7 @@ public class RtmpConnectionHandler extends ClientHandler {
 	private int myUserId;
 	
 	private ChatModule chat;
+	private UsersModule users;
 
 	public RtmpConnectionHandler(ClientOptions options, JoinedMeeting meeting) {
 		super(options);		
@@ -111,14 +126,14 @@ public class RtmpConnectionHandler extends ClientHandler {
 	                		log.error("method connect result in {}, quitting", code);
 	                		channel.close();
 	                	}
-	                	//getSharedObject("participantsSO", false).connect(channel);
 	                	return;
 	                } else if(onGetMyUserId(resultFor, command)) {
-                		chat = new ChatModule(this, channel);                	
+	                	users = new UsersModule(this, channel);
+	                	break;
+	                } else if (users.onQueryParticipants(resultFor, command)) {
+                		chat = new ChatModule(this, channel);
 	                	break;
 	                } else if (chat.onGetChatMessages(resultFor, command)) {
-	                	break;
-	                } else if (chat.onQueryParticipants(resultFor, command)) {
 	                	break;
 	                }
 	            }
@@ -146,5 +161,9 @@ public class RtmpConnectionHandler extends ClientHandler {
 
 	public ChatModule getChat() {
 		return chat;
+	}
+	
+	public UsersModule getUsers() {
+		return users;
 	}
 }

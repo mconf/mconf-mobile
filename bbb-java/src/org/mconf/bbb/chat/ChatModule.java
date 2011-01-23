@@ -1,15 +1,17 @@
 package org.mconf.bbb.chat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.jboss.netty.channel.Channel;
 import org.mconf.bbb.Module;
 import org.mconf.bbb.RtmpConnectionHandler;
+import org.mconf.bbb.users.Participant;
 import org.red5.server.api.IAttributeStore;
 import org.red5.server.api.so.IClientSharedObject;
 import org.red5.server.api.so.ISharedObjectBase;
@@ -23,28 +25,33 @@ import com.flazr.rtmp.message.CommandAmf0;
 public class ChatModule extends Module implements ISharedObjectListener {
 	private static final Logger log = LoggerFactory.getLogger(ChatModule.class);
 
-	private final IClientSharedObject publicChat, privateChat;
+	private final IClientSharedObject publicChatSO, privateChatSO;
 
-	private Map<Integer, Participant> participants = new HashMap<Integer, Participant>();
+	private List<ChatMessage> publicChatMessages = Collections.synchronizedList(new ArrayList<ChatMessage>());
+	private Map<Integer, List<ChatMessage>> privateChatMessages = new ConcurrentHashMap<Integer, List<ChatMessage>>();
 
 	public ChatModule(RtmpConnectionHandler handler, Channel channel) {
 		super(handler, channel);
 		
-		publicChat = handler.getSharedObject("chatSO", false);
-		publicChat.addSharedObjectListener(this);
-		publicChat.connect(channel);
+		publicChatSO = handler.getSharedObject("chatSO", false);
+		publicChatSO.addSharedObjectListener(this);
+		publicChatSO.connect(channel);
 		
-		privateChat = handler.getSharedObject(Integer.toString(handler.getMyUserId()), false);
-		privateChat.addSharedObjectListener(this);
-		privateChat.connect(channel);
+		privateChatSO = handler.getSharedObject(Integer.toString(handler.getMyUserId()), false);
+		privateChatSO.addSharedObjectListener(this);
+		privateChatSO.connect(channel);
 	}
 
 	@Override
 	public void onSharedObjectClear(ISharedObjectBase so) {
 		log.debug("onSharedObjectClear");
-		if (so.equals(publicChat)) {
+		if (so.equals(publicChatSO)) {
+			publicChatMessages.clear();
 			doGetChatMessages();
-			doQueryParticipants();
+			return;
+		}
+		if (so.equals(privateChatSO)) {
+			privateChatMessages.clear();
 		}
 	}
 
@@ -69,7 +76,7 @@ public class ChatModule extends Module implements ISharedObjectListener {
 			String method, List<?> params) {
 		log.debug("onSharedObjectSend");
 		
-		if (so.equals(publicChat)) {
+		if (so.equals(publicChatSO)) {
 			if (method.equals("newChatMessage") && params != null) {
 				// example: [oi|Felipe|0|14:35|en|97]
 				String strParams = ((LinkedList<String>) params).get(0);
@@ -77,13 +84,12 @@ public class ChatModule extends Module implements ISharedObjectListener {
 				return;
 			}
 		}
-		if (so.equals(privateChat)) {
+		if (so.equals(privateChatSO)) {
 			if (method.equals("messageReceived") && params != null) {
 				// example: [97, oi|Felipe|0|14:35|en|97]
-				@SuppressWarnings("unused")
-				String userid = ((LinkedList<String>) params).get(0);
+				int userid = Integer.parseInt((String) ((LinkedList<String>) params).get(0));
 				String strParams = ((LinkedList<String>) params).get(1);
-				handlePrivateChatMessage(new ChatMessage(strParams));
+				handlePrivateChatMessage(new ChatMessage(strParams), handler.getUsers().getParticipants().get(userid));
 				return;
 			}
 		}
@@ -127,6 +133,8 @@ public class ChatModule extends Module implements ISharedObjectListener {
 	 */
 	public boolean onGetChatMessages(String resultFor, Command command) {
 		if (resultFor.equals("chat.getChatMessages")) {
+			publicChatMessages.clear();
+			
 			List<Object> messages = (List<Object>) Arrays.asList((Object[]) command.getArg(0));
 			for (Object message : messages) {
 				handlePublicChatMessage(new ChatMessage((String) message));
@@ -136,45 +144,6 @@ public class ChatModule extends Module implements ISharedObjectListener {
 		return false;
 	}
 
-	/**
-	 * {@link} https://github.com/bigbluebutton/bigbluebutton/blob/master/bigbluebutton-client/src/org/bigbluebutton/modules/chat/services/PrivateChatSharedObjectService.as#L142
-	 */
-	public void doQueryParticipants() {
-    	Command cmd = new CommandAmf0("participants.getParticipants", null);
-    	handler.writeCommandExpectingResult(channel, cmd);
-	}
-	
-	/**
-	 * example:
-	 * [MAP {count=2.0, participants={112={status={raiseHand=false, hasStream=false, presenter=false}, name=Eclipse, userid=112.0, role=VIEWER}, 97={status={raiseHand=false, hasStream=false, presenter=true}, name=Felipe, userid=97.0, role=MODERATOR}}}]
-	 * [1 COMMAND_AMF0 c3 #0 t0 (0) s299] name: _result, transactionId: 4, object: null, args: [{count=2.0, participants={112={status={raiseHand=false, hasStream=false, presenter=false}, name=Eclipse, userid=112.0, role=VIEWER}, 97={status={raiseHand=false, hasStream=false, presenter=true}, name=Felipe, userid=97.0, role=MODERATOR}}}]
-	 */
-	@SuppressWarnings("unchecked")
-	public boolean onQueryParticipants(String resultFor, Command command) {
-		if (resultFor.equals("participants.getParticipants")) {
-			Map<String, Object> args = (Map<String, Object>) command.getArg(0);
-			
-			participants.clear();
-			
-			@SuppressWarnings("unused")
-			int count = ((Double) args.get("count")).intValue();
-			
-			Map<String, Object> participantsMap = (Map<String, Object>) args.get("participants");
-			
-			for (Map.Entry<String, Object> entry : participantsMap.entrySet()) {
-				Participant participant = new Participant((Map<String, Object>) entry.getValue());
-				log.info("new participant: {}", participant.toString());
-				participants.put(participant.getUserId(), participant);			
-			}
-			return true;
-		}
-		return false;
-	}
-	
-	public Collection<Participant> getParticipants() {
-		return participants.values();
-	}
-	
 	/**
 	 * {@link} https://github.com/bigbluebutton/bigbluebutton/blob/master/bigbluebutton-client/src/org/bigbluebutton/modules/chat/services/PublicChatSharedObjectService.as#L89
 	 * @param message
@@ -205,11 +174,17 @@ public class ChatModule extends Module implements ISharedObjectListener {
 	}
 	
 	public void handlePublicChatMessage(ChatMessage chatMessage) {
+		publicChatMessages.add(chatMessage);
 		log.info("handling public chat message: {}", chatMessage);
 	}
 
-	public void handlePrivateChatMessage(ChatMessage chatMessage) {
-		log.info("handling private chat message: {}", chatMessage);
+	public void handlePrivateChatMessage(ChatMessage chatMessage, Participant source) {
+		synchronized (privateChatMessages) {
+			if (!privateChatMessages.containsKey(source.getUserId()))
+				privateChatMessages.put(source.getUserId(), new ArrayList<ChatMessage>());
+			privateChatMessages.get(source.getUserId()).add(chatMessage);
+		}
+		log.info("handling private chat message from {}: {}", source, chatMessage);
 	}
 
 }

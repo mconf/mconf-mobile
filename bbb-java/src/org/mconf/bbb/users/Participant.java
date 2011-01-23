@@ -1,4 +1,4 @@
-package org.mconf.bbb.chat;
+package org.mconf.bbb.users;
 
 import java.util.Map;
 
@@ -9,6 +9,9 @@ public class Participant {
 	private int userid;
 	private String role;
 
+	public Participant() {
+		
+	}
 	
 	public Participant(Map<String, Object> param) {
 		decode(param);
