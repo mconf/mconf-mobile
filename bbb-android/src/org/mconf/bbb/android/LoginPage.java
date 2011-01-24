@@ -36,10 +36,10 @@ public class LoginPage extends Activity {
                     }
                 	else{
                 	  
-                    Toast login = Toast.makeText(getApplicationContext(),"Loggin in \nUsername: " + sUserName, Toast.LENGTH_LONG);  
+                    Toast login = Toast.makeText(getApplicationContext(),"Loggin in \nUsername: " + sUserName, Toast.LENGTH_SHORT);  
                     login.show();  
                     
-                                                
+                     //logar no BBB                           
                     //chamar a outra view
                     Intent myIntent = new Intent(getApplicationContext(), BBBandroid.class);
                     myIntent.putExtra("Username", sUserName);

@@ -2,5 +2,5 @@
 <resources>
     <string name="hello">Hello World, BBBandroid!</string>
     <string name="app_name">BBB</string>
-    
+    <string name="app2_name">BBB</string>
 </resources>
