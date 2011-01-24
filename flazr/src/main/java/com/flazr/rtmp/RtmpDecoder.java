@@ -21,6 +21,7 @@ package com.flazr.rtmp;
 
 import com.flazr.rtmp.RtmpDecoder.DecoderState;
 import com.flazr.rtmp.message.ChunkSize;
+import com.flazr.rtmp.message.Control;
 import com.flazr.rtmp.message.MessageType;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -79,7 +80,9 @@ public class RtmpDecoder extends ReplayingDecoder<DecoderState> {
                 }
                 final RtmpMessage message = MessageType.decode(header, payload);
                 if(logger.isDebugEnabled()) {
-                    logger.debug("<< {}", message);
+                	// don't print millions of PING_REQUEST
+                	if (message.getHeader().getMessageType() != MessageType.CONTROL || ((Control) message).getType() != Control.Type.PING_REQUEST)
+                		logger.debug("<< {}", message);
                 }
                 payload = null;
                 if(header.isChunkSize()) {

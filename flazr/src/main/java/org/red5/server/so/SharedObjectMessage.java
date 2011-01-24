@@ -1,82 +1,208 @@
-package com.flazr.rtmp.message;
+package org.red5.server.so;
+
+/*
+ * RED5 Open Source Flash Server - http://code.google.com/p/red5/
+ * 
+ * Copyright (c) 2006-2010 by respective authors (see below). All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or modify it under the 
+ * terms of the GNU Lesser General Public License as published by the Free Software 
+ * Foundation; either version 2.1 of the License, or (at your option) any later 
+ * version. 
+ * 
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License along 
+ * with this library; if not, write to the Free Software Foundation, Inc., 
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ */
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.red5.server.api.event.IEventListener;
+import org.red5.server.net.rtmp.event.IRTMPEvent;
+import org.red5.server.net.rtmp.message.SharedObjectTypeMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.flazr.amf.Amf0Value;
 import com.flazr.rtmp.RtmpHeader;
-import com.flazr.rtmp.so.ISharedObjectEvent;
-import com.flazr.rtmp.so.ISharedObjectEvent.Type;
-import com.flazr.rtmp.so.SharedObjectEvent;
-import com.flazr.rtmp.so.SharedObjectTypeMapping;
+import com.flazr.rtmp.message.AbstractMessage;
+import com.flazr.rtmp.message.MessageType;
 
-public class SharedObjectAmf0 extends SharedObject {
+/**
+ * Shared object event
+ */
+public class SharedObjectMessage extends AbstractMessage implements ISharedObjectMessage, IRTMPEvent {
 
-	private static final Logger logger = LoggerFactory.getLogger(SharedObjectAmf0.class);
-	
+	private static final Logger logger = LoggerFactory.getLogger(SharedObjectMessage.class);
+
+	private static final long serialVersionUID = -8128704039659990049L;
+
+	/**
+	 * SO event name
+	 */
+	private String name;
+
 	/**
 	 * SO events chain
 	 */
-	protected ConcurrentLinkedQueue<ISharedObjectEvent> events;
+	private ConcurrentLinkedQueue<ISharedObjectEvent> events;
 
-	public SharedObjectAmf0(RtmpHeader header, ChannelBuffer in) {
+	/**
+	 * SO version, used for synchronization purposes
+	 */
+	private int version;
+
+	/**
+	 * Whether SO persistent
+	 */
+	private boolean persistent;
+
+	public SharedObjectMessage() {
+	}
+
+	/**
+	 * Creates Shared Object event with given name, version and persistence flag
+	 * 
+	 * @param name Event name
+	 * @param version SO version
+	 * @param persistent SO persistence flag
+	 */
+	public SharedObjectMessage(String name, int version, boolean persistent) {
+		this(null, name, version, persistent);
+	}
+
+	/**
+	 * Creates Shared Object event with given listener, name, SO version and
+	 * persistence flag
+	 * 
+	 * @param source Event listener
+	 * @param name Event name
+	 * @param version SO version
+	 * @param persistent SO persistence flag
+	 */
+	public SharedObjectMessage(IEventListener source, String name, int version, boolean persistent) {
+		this.name = name;
+		this.version = version;
+		this.persistent = persistent;
+		
+		this.events = new ConcurrentLinkedQueue<ISharedObjectEvent>();
+	}
+	
+	public SharedObjectMessage(RtmpHeader header, ChannelBuffer in) {
 		super(header, in);
 	}
 
-	public SharedObjectAmf0(String name, boolean persistent) {
-		super(name, persistent);
-		this.events = new ConcurrentLinkedQueue<ISharedObjectEvent>();
+	/** {@inheritDoc} */
+	public int getVersion() {
+		return version;
 	}
 
-	@Override
-	MessageType getMessageType() {
-		return MessageType.SHARED_OBJECT_AMF0;
+	/**
+	 * Setter for version
+	 * 
+	 * @param version
+	 *            New version
+	 */
+	protected void setVersion(int version) {
+		this.version = version;
 	}
 
+	/** {@inheritDoc} */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Setter for name
+	 * 
+	 * @param name
+	 *            Event name
+	 */
+	protected void setName(String name) {
+		this.name = name;
+	}
+
+	/** {@inheritDoc} */
+	public boolean isPersistent() {
+		return persistent;
+	}
+
+	/**
+	 * Setter for persistence flag
+	 * 
+	 * @param persistent
+	 *            Persistence flag
+	 */
+	protected void setIsPersistent(boolean persistent) {
+		this.persistent = persistent;
+	}
+
+	/** {@inheritDoc} */
 	public void addEvent(ISharedObjectEvent event) {
 		events.add(event);
 	}
 
-	public void addEvent(Type type, String key, Object value) {
-		events.add(new SharedObjectEvent(type, key, value));
+	public void addEvents(List<ISharedObjectEvent> events) {
+		this.events.addAll(events);
 	}
 
+	public void addEvents(Queue<ISharedObjectEvent> events) {
+		this.events.addAll(events);
+	}
+
+	/** {@inheritDoc} */
 	public ConcurrentLinkedQueue<ISharedObjectEvent> getEvents() {
 		return events;
 	}
-	
+
+	/** {@inheritDoc} */
+	public void addEvent(ISharedObjectEvent.Type type, String key, Object value) {
+		events.add(new SharedObjectEvent(type, key, value));
+	}
+
+	/** {@inheritDoc} */
 	public void clear() {
 		events.clear();
 	}
 
+	/** {@inheritDoc} */
 	public boolean isEmpty() {
 		return events.isEmpty();
 	}
 
+	/** {@inheritDoc} */
+	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder();
-		sb.append(super.toString());
-		sb.append(" { ");
+		sb.append("SharedObjectMessage: ").append(name).append(" { ");
 		final Iterator<ISharedObjectEvent> it = events.iterator();
 		while (it.hasNext()) {
 			sb.append(it.next());
 			if (it.hasNext()) {
-				sb.append(", ");
+				sb.append(" , ");
 			}
 		}
-		sb.append(" }");
+		sb.append(" } ");
 		return sb.toString();
 	}
-	
+
+	@Override
+	public MessageType getMessageType() {
+		return MessageType.SHARED_OBJECT_AMF0;
+	}
+
 	/**
 	 * Encode a string without the string type byte
 	 * @param out
@@ -236,7 +362,8 @@ public class SharedObjectAmf0 extends SharedObject {
 		persistent = in.readInt() == 2;
 		in.skipBytes(4);
 		
-		events = new ConcurrentLinkedQueue<ISharedObjectEvent>();
+		if (events == null)
+			events = new ConcurrentLinkedQueue<ISharedObjectEvent>();
 		
 		while (in.readableBytes() > 0) {
 			ISharedObjectEvent.Type type = SharedObjectTypeMapping.toType(in.readByte());
@@ -289,35 +416,105 @@ public class SharedObjectAmf0 extends SharedObject {
 			addEvent(type, key, value);
 		}
 	}
-
-	public static SharedObjectAmf0 soConnect(String name, boolean persistent) {
-	    SharedObjectAmf0 so = new SharedObjectAmf0(name, persistent);
-		so.addEvent(Type.SERVER_CONNECT, null, null);
-		return so;
+/*	
+	@SuppressWarnings({ "unchecked" })
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		super.readExternal(in);
+		name = (String) in.readObject();
+		version = in.readInt();
+		persistent = in.readBoolean();
+		Object o = in.readObject();
+		if (o != null && o instanceof ConcurrentLinkedQueue) {
+			events = (ConcurrentLinkedQueue<ISharedObjectEvent>) o;
+		}
 	}
 
-	public static SharedObjectAmf0 soDisconnect(String name, boolean persistent) {
-	    SharedObjectAmf0 so = new SharedObjectAmf0(name, persistent);
-		so.addEvent(Type.SERVER_DISCONNECT, null, null);
-		return so;
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		super.writeExternal(out);
+		out.writeObject(name);
+		out.writeInt(version);
+		out.writeBoolean(persistent);
+		out.writeObject(events);
+	}
+*/
+
+	@Override
+	public byte getDataType() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
-	public static SharedObjectAmf0 soSetAttribute(String name, boolean persistent, String attribute, String value) {
-	    SharedObjectAmf0 so = new SharedObjectAmf0(name, persistent);
-		so.addEvent(Type.SERVER_SET_ATTRIBUTE, attribute, value);
-		return so;
+	@Override
+	public byte getSourceType() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
-	public static SharedObjectAmf0 soDeleteAttribute(String name, boolean persistent, String attribute) {
-	    SharedObjectAmf0 so = new SharedObjectAmf0(name, persistent);
-		so.addEvent(Type.SERVER_DELETE_ATTRIBUTE, attribute, null);
-		return so;
+	@Override
+	public int getTimestamp() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
-	
-	public static SharedObject soSendMessage(String name, boolean persistent, String message, List<?> args) {
-	    SharedObjectAmf0 so = new SharedObjectAmf0(name, persistent);
-		so.addEvent(Type.SERVER_SEND_MESSAGE, message, args);
-		return so;
+
+	@Override
+	public void release() {
+		// TODO Auto-generated method stub
+		
 	}
-	
+
+	@Override
+	public void retain() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setHeader(RtmpHeader header) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setSource(IEventListener source) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setSourceType(byte sourceType) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setTimestamp(int timestamp) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Object getObject() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IEventListener getSource() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Type getType() {
+		return Type.SHARED_OBJECT;
+	}
+
+	@Override
+	public boolean hasSource() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

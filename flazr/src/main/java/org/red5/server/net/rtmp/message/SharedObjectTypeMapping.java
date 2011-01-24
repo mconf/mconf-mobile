@@ -1,4 +1,4 @@
-package com.flazr.rtmp.so;
+package org.red5.server.net.rtmp.message;
 
 /*
  * RED5 Open Source Flash Server - http://code.google.com/p/red5/
@@ -19,10 +19,9 @@ package com.flazr.rtmp.so;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
 
+import org.red5.server.so.ISharedObjectEvent.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.flazr.rtmp.so.ISharedObjectEvent.Type;
 
 /**
  * SO event types mapping

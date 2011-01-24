@@ -44,7 +44,7 @@ public abstract class AbstractMessage implements RtmpMessage {
         return header;
     }
 
-    abstract MessageType getMessageType();
+    public abstract MessageType getMessageType();
 
     @Override
     public String toString() {

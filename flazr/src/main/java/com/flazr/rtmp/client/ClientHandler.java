@@ -21,6 +21,8 @@ package com.flazr.rtmp.client;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
@@ -31,6 +33,9 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.red5.server.api.so.IClientSharedObject;
+import org.red5.server.so.ClientSharedObject;
+import org.red5.server.so.SharedObjectMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +65,11 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
     protected ClientOptions options;
     private byte[] swfvBytes;
 
+	/**
+	 * Shared objects map
+	 */
+	private volatile ConcurrentMap<String, ClientSharedObject> sharedObjects = new ConcurrentHashMap<String, ClientSharedObject>();
+
     private RtmpWriter writer;
 
     private int bytesReadWindow = 2500000;
@@ -69,6 +79,44 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
     
     private RtmpPublisher publisher;
     private int streamId;    
+
+	/**
+	 * Connect to client shared object.
+	 * 
+	 * @param name Client shared object name
+	 * @param persistent SO persistence flag
+	 * @return Client shared object instance
+	 */
+	public synchronized IClientSharedObject getSharedObject(String name, boolean persistent) {
+		logger.debug("getSharedObject name: {} persistent {}", new Object[] { name, persistent });
+		ClientSharedObject result = sharedObjects.get(name);
+		if (result != null) {
+			if (result.isPersistentObject() != persistent) {
+				throw new RuntimeException("Already connected to a shared object with this name, but with different persistence.");
+			}
+			return result;
+		}
+
+		result = new ClientSharedObject(name, persistent);
+		sharedObjects.put(name, result);
+		return result;
+	}
+
+	/** {@inheritDoc} */
+	protected void onSharedObject(Channel channel, SharedObjectMessage object) {
+		logger.debug("onSharedObject");
+		ClientSharedObject so = sharedObjects.get(object.getName());
+		if (so == null) {
+			logger.error("Ignoring request for non-existend SO: {}", object);
+			return;
+		}
+		if (so.isPersistentObject() != object.isPersistent()) {
+			logger.error("Ignoring request for wrong-persistent SO: {}", object);
+			return;
+		}
+		logger.debug("Received SO request: {}", object);
+		so.dispatchEvent(object);
+	}
 
     public void setSwfvBytes(byte[] swfvBytes) {
         this.swfvBytes = swfvBytes;        
@@ -80,7 +128,7 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
         transactionToCommandMap = new HashMap<Integer, String>();        
     }
 
-    protected void writeCommandExpectingResult(Channel channel, Command command) {
+    public void writeCommandExpectingResult(Channel channel, Command command) {
         final int id = transactionId++;
         command.setTransactionId(id);
         transactionToCommandMap.put(id, command.getName());
@@ -272,6 +320,7 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
                 break;
             case SHARED_OBJECT_AMF0:
             case SHARED_OBJECT_AMF3:
+            	onSharedObject(channel, (SharedObjectMessage) message);
             	break;
             default:
             logger.info("ignoring rtmp message: {}", message);

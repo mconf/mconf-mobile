@@ -42,7 +42,7 @@ public class CommandAmf0 extends Command {
     }
 
     @Override
-    MessageType getMessageType() {
+    public MessageType getMessageType() {
         return MessageType.COMMAND_AMF0;
     }
 

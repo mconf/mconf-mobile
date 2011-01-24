@@ -85,7 +85,7 @@ public class Control extends AbstractMessage {
     }
 
     @Override
-    MessageType getMessageType() {
+    public MessageType getMessageType() {
         return MessageType.CONTROL;
     }
 

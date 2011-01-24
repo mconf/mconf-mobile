@@ -40,7 +40,7 @@ public class WindowAckSize extends AbstractMessage {
     }
 
     @Override
-    MessageType getMessageType() {
+    public MessageType getMessageType() {
         return MessageType.WINDOW_ACK_SIZE;
     }
 

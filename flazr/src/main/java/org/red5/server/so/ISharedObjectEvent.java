@@ -1,4 +1,4 @@
-package com.flazr.rtmp.so;
+package org.red5.server.so;
 
 /*
  * RED5 Open Source Flash Server - http://code.google.com/p/red5/

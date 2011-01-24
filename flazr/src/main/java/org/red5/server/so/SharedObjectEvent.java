@@ -1,4 +1,4 @@
-package com.flazr.rtmp.so;
+package org.red5.server.so;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import java.io.ObjectOutput;
  * with this library; if not, write to the Free Software Foundation, Inc., 
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
  */
-public class SharedObjectEvent implements ISharedObjectEvent {
+public class SharedObjectEvent implements ISharedObjectEvent, Externalizable {
 	
 	private static final long serialVersionUID = -4129018814289863535L;
 
@@ -75,6 +75,20 @@ public class SharedObjectEvent implements ISharedObjectEvent {
 	/** {@inheritDoc} */
 	@Override
 	public String toString() {
-		return "SOEvent(" + getType() + ", " + getKey() + ", " + getValue() + ')';
+		return "SOEvent(" + getType() + ", " + getKey() + ", " + getValue()
+				+ ')';
+	}
+
+	public void readExternal(ObjectInput in) throws IOException,
+			ClassNotFoundException {
+		type = (Type) in.readObject();
+		key = (String) in.readObject();
+		value = in.readObject();
+	}
+
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeObject(type);
+		out.writeObject(key);
+		out.writeObject(value);
 	}
 }
