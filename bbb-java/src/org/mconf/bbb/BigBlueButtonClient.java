@@ -3,6 +3,7 @@ package org.mconf.bbb;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.net.InetSocketAddress;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executor;
@@ -22,6 +23,8 @@ import org.mconf.bbb.api.BigBlueButtonApi;
 import org.mconf.bbb.api.JoinedMeeting;
 import org.mconf.bbb.api.Meeting;
 import org.mconf.bbb.api.Meetings;
+import org.mconf.bbb.chat.ChatMessage;
+import org.mconf.bbb.users.Participant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,13 +34,15 @@ import com.flazr.rtmp.client.ClientHandshakeHandler;
 import com.flazr.rtmp.client.ClientOptions;
 import com.flazr.util.Utils;
 
-public class BigBlueButtonClient {
+public class BigBlueButtonClient implements IBigBlueButtonClient {
 	
 	private static final Logger log = LoggerFactory.getLogger(BigBlueButtonClient.class);
 	
 	private String serverUrl, salt;
 	private BigBlueButtonApi api;
 	private Meetings meetings = new Meetings();
+	private RtmpConnectionHandler handler;
+	
 	
 	public List<Meeting> getMeetings() {
 		return meetings.getMeetings();
@@ -60,10 +65,14 @@ public class BigBlueButtonClient {
 	}
 
 	public boolean load() {
-		
+		return load("bigbluebutton.properties");
+	}
+	
+	@Override
+	public boolean load(String filepath) {
 		Properties p = new Properties();
 		try {
-			p.load(new BufferedReader(new FileReader("bigbluebutton.properties")));
+			p.load(new BufferedReader(new FileReader(filepath)));
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("Can't find/load the properties file");
@@ -71,11 +80,9 @@ public class BigBlueButtonClient {
 		}
 		
 		return load(p.getProperty("bigbluebutton.web.serverURL"), p.getProperty("beans.dynamicConferenceService.securitySalt"));
-		
 	}
-	
+
 	public boolean load(String serverUrl, String salt) {
-		
 		this.serverUrl = serverUrl;
 		this.salt = salt;
 		this.api = new BigBlueButtonApi(serverUrl + "/bigbluebutton/", salt);
@@ -113,6 +120,7 @@ public class BigBlueButtonClient {
 		return create.equals(meeting.getMeetingID()); 
 	}
 	
+	@Override
 	public JoinedMeeting join(Meeting meeting, String name, boolean moderator) {
 		if (api.isMeetingRunning(meeting.getMeetingID()).equals("false")) {
 			if (!createMeeting(meeting)) {
@@ -135,9 +143,13 @@ public class BigBlueButtonClient {
 			client.executeMethod(method);
 			joined.parse(method.getResponseBodyAsString());
 			method.releaseConnection();
+
+			connectToRtmp(joined);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("Can't join the meeting {}", meeting.getMeetingID());
+			
+			return null;
 		}
 
 		return joined;
@@ -152,7 +164,7 @@ public class BigBlueButtonClient {
 		connect(opt, meeting);
 	}
 	
-	private static void connect(final ClientOptions options, final JoinedMeeting meeting) {  
+	private void connect(final ClientOptions options, final JoinedMeeting meeting) {  
         final ClientBootstrap bootstrap = getBootstrap(Executors.newCachedThreadPool(), options, meeting);
         final ChannelFuture future = bootstrap.connect(new InetSocketAddress(options.getHost(), options.getPort()));
         future.awaitUninterruptibly();
@@ -160,11 +172,11 @@ public class BigBlueButtonClient {
             future.getCause().printStackTrace();
             log.error("error creating client connection: {}", future.getCause().getMessage());
         }
-        future.getChannel().getCloseFuture().awaitUninterruptibly(); 
-        bootstrap.getFactory().releaseExternalResources();
+//        future.getChannel().getCloseFuture().awaitUninterruptibly();
+//        bootstrap.getFactory().releaseExternalResources();
     }
 	
-	private static ClientBootstrap getBootstrap(final Executor executor, final ClientOptions options, final JoinedMeeting meeting) {
+	private ClientBootstrap getBootstrap(final Executor executor, final ClientOptions options, final JoinedMeeting meeting) {
         final ChannelFactory factory = new NioClientSocketChannelFactory(executor, executor);
         final ClientBootstrap bootstrap = new ClientBootstrap(factory);
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
@@ -174,7 +186,7 @@ public class BigBlueButtonClient {
 		        pipeline.addLast("handshaker", new ClientHandshakeHandler(options));
 		        pipeline.addLast("decoder", new RtmpDecoder());
 		        pipeline.addLast("encoder", new RtmpEncoder());
-		        pipeline.addLast("handler", new RtmpConnectionHandler(options, meeting));
+		        pipeline.addLast("handler", handler = new RtmpConnectionHandler(options, meeting));
 		        return pipeline;
 			}
 		});
@@ -182,6 +194,30 @@ public class BigBlueButtonClient {
         bootstrap.setOption("keepAlive", true);
         return bootstrap;
     }
+	
+	public RtmpConnectionHandler getHandler() {
+		return handler;
+	}
+	
+	@Override
+	public Collection<Participant> getParticipants() {
+		return handler.getUsers().getParticipants().values();
+	}
+
+	@Override
+	public List<ChatMessage> getPublicChatMessages() {
+		return handler.getChat().getPublicChatMessage();
+	}
+
+	@Override
+	public void sendPrivateChatMessage(String message, int userId) {
+		handler.getChat().sendPrivateChatMessage(message, userId);
+	}
+
+	@Override
+	public void sendPublicChatMessage(String message) {
+		handler.getChat().sendPublicChatMessage(message);		
+	}
 	
 	public static void main(String[] args) {
 		BigBlueButtonClient client = new BigBlueButtonClient();
@@ -194,5 +230,15 @@ public class BigBlueButtonClient {
 			}
 		}
 	}
-	
+
+	@Override
+	public void addListener(IBigBlueButtonClientListener listener) {
+		handler.addListener(listener);
+	}
+
+	@Override
+	public void removeListener(IBigBlueButtonClientListener listener) {
+		handler.removeListener(listener);
+	}
+
 }

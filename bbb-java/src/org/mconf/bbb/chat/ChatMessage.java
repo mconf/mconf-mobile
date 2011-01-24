@@ -92,11 +92,11 @@ public class ChatMessage {
 		this.language = language;
 	}
 
-	public int getUserid() {
+	public int getUserId() {
 		return userid;
 	}
 
-	public void setUserid(int userid) {
+	public void setUserId(int userid) {
 		this.userid = userid;
 	}
 

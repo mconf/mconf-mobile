@@ -21,6 +21,8 @@ package com.flazr.rtmp;
 
 import com.flazr.rtmp.message.ChunkSize;
 import com.flazr.rtmp.message.Control;
+import com.flazr.rtmp.message.MessageType;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -86,7 +88,9 @@ public class RtmpEncoder extends SimpleChannelDownstreamHandler {
         }
         channelPrevHeaders[channelId] = header;        
         if(logger.isDebugEnabled()) {
-            logger.debug(">> {}", message);
+        	// don't print millions of PING_RESPONSE
+        	if (message.getHeader().getMessageType() != MessageType.CONTROL || ((Control) message).getType() != Control.Type.PING_RESPONSE)
+        		logger.debug(">> {}", message);
         }                
         final ChannelBuffer out = ChannelBuffers.buffer(
                 RtmpHeader.MAX_ENCODED_SIZE + header.getSize() + header.getSize() / chunkSize);

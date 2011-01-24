@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jboss.netty.channel.Channel;
+import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.Module;
 import org.mconf.bbb.RtmpConnectionHandler;
 import org.mconf.bbb.users.Participant;
@@ -80,7 +81,7 @@ public class ChatModule extends Module implements ISharedObjectListener {
 			if (method.equals("newChatMessage") && params != null) {
 				// example: [oi|Felipe|0|14:35|en|97]
 				String strParams = ((LinkedList<String>) params).get(0);
-				handlePublicChatMessage(new ChatMessage(strParams));
+				onPublicChatMessage(new ChatMessage(strParams));
 				return;
 			}
 		}
@@ -89,7 +90,7 @@ public class ChatModule extends Module implements ISharedObjectListener {
 				// example: [97, oi|Felipe|0|14:35|en|97]
 				int userid = Integer.parseInt((String) ((LinkedList<String>) params).get(0));
 				String strParams = ((LinkedList<String>) params).get(1);
-				handlePrivateChatMessage(new ChatMessage(strParams), handler.getUsers().getParticipants().get(userid));
+				onPrivateChatMessage(new ChatMessage(strParams), handler.getUsers().getParticipants().get(userid));
 				return;
 			}
 		}
@@ -137,7 +138,7 @@ public class ChatModule extends Module implements ISharedObjectListener {
 			
 			List<Object> messages = (List<Object>) Arrays.asList((Object[]) command.getArg(0));
 			for (Object message : messages) {
-				handlePublicChatMessage(new ChatMessage((String) message));
+				onPublicChatMessage(new ChatMessage((String) message));
 			}
 			return true;
 		}
@@ -152,7 +153,7 @@ public class ChatModule extends Module implements ISharedObjectListener {
 		ChatMessage chatMessage = new ChatMessage();
 		chatMessage.setMessage(message);
 		chatMessage.setUsername(handler.getJoinedMeeting().getFullname());
-		chatMessage.setUserid(handler.getMyUserId());
+		chatMessage.setUserId(handler.getMyUserId());
 
     	Command command = new CommandAmf0("chat.sendMessage", null, chatMessage.encode());
     	handler.writeCommandExpectingResult(channel, command);
@@ -167,24 +168,43 @@ public class ChatModule extends Module implements ISharedObjectListener {
 		ChatMessage chatMessage = new ChatMessage();
 		chatMessage.setMessage(message);
 		chatMessage.setUsername(handler.getJoinedMeeting().getFullname());
-		chatMessage.setUserid(handler.getMyUserId());
+		chatMessage.setUserId(handler.getMyUserId());
 		
     	Command command = new CommandAmf0("chat.privateMessage", null, chatMessage.encode(), Double.valueOf(handler.getMyUserId()), Double.valueOf(userid));
     	handler.writeCommandExpectingResult(channel, command);
 	}
 	
-	public void handlePublicChatMessage(ChatMessage chatMessage) {
-		publicChatMessages.add(chatMessage);
+	public void onPublicChatMessage(ChatMessage chatMessage) {
+		Participant source = handler.getUsers().getParticipants().get(chatMessage.getUserId());
+		onPublicChatMessage(chatMessage, source);
+	}
+	
+	public void onPublicChatMessage(ChatMessage chatMessage, Participant source) {
+		for (IBigBlueButtonClientListener l : handler.getListeners()) {
+			l.onPublicChatMessage(chatMessage, source);
+		}
 		log.info("handling public chat message: {}", chatMessage);
+		publicChatMessages.add(chatMessage);
 	}
 
-	public void handlePrivateChatMessage(ChatMessage chatMessage, Participant source) {
+	public void onPrivateChatMessage(ChatMessage chatMessage, Participant source) {
+		for (IBigBlueButtonClientListener l : handler.getListeners()) {
+			l.onPrivateChatMessage(chatMessage, source);
+		}
 		synchronized (privateChatMessages) {
 			if (!privateChatMessages.containsKey(source.getUserId()))
 				privateChatMessages.put(source.getUserId(), new ArrayList<ChatMessage>());
 			privateChatMessages.get(source.getUserId()).add(chatMessage);
 		}
 		log.info("handling private chat message from {}: {}", source, chatMessage);
+	}
+	
+	public List<ChatMessage> getPublicChatMessage() {
+		return publicChatMessages;
+	}
+	
+	public Map<Integer, List<ChatMessage>> getPrivateChatMessage() {
+		return privateChatMessages;
 	}
 
 }

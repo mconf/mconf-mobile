@@ -1,6 +1,8 @@
 package org.mconf.bbb;
 
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -20,6 +22,7 @@ import com.flazr.rtmp.client.ClientOptions;
 import com.flazr.rtmp.message.AbstractMessage;
 import com.flazr.rtmp.message.Command;
 import com.flazr.rtmp.message.CommandAmf0;
+import com.flazr.rtmp.message.Control;
 
 /*
  * - what happens when a client join a session
@@ -54,6 +57,7 @@ import com.flazr.rtmp.message.CommandAmf0;
 public class RtmpConnectionHandler extends ClientHandler {
 
     private static final Logger log = LoggerFactory.getLogger(RtmpConnectionHandler.class);
+    
     private JoinedMeeting meeting;
     
 	private int myUserId;
@@ -61,6 +65,8 @@ public class RtmpConnectionHandler extends ClientHandler {
 	private ChatModule chat;
 	private UsersModule users;
 
+	Set<IBigBlueButtonClientListener> listeners = new LinkedHashSet<IBigBlueButtonClientListener>();
+	
 	public RtmpConnectionHandler(ClientOptions options, JoinedMeeting meeting) {
 		super(options);		
 		this.meeting = meeting;
@@ -106,6 +112,17 @@ public class RtmpConnectionHandler extends ClientHandler {
         final Channel channel = me.getChannel();
         final RtmpMessage message = (RtmpMessage) me.getMessage();
         switch(message.getHeader().getMessageType()) {
+        	case CONTROL:
+                Control control = (Control) message;
+                switch(control.getType()) {
+                    case PING_REQUEST:
+                        final int time = control.getTime();
+                        Control pong = Control.pingResponse(time);
+                        channel.write(pong);
+                        break;
+                }
+        		break;
+        	
 	        case COMMAND_AMF0:
 	        case COMMAND_AMF3:
 	            Command command = (Command) message;                
@@ -143,6 +160,9 @@ public class RtmpConnectionHandler extends ClientHandler {
 	        case SHARED_OBJECT_AMF3:
 	        	onSharedObject(channel, (SharedObjectMessage) message);
 	        	break;
+    		default:
+    			log.info("ignoring rtmp message: {}", message);
+	        	break;
         }
 	}
 	
@@ -165,5 +185,17 @@ public class RtmpConnectionHandler extends ClientHandler {
 	
 	public UsersModule getUsers() {
 		return users;
+	}
+	
+	public void addListener(IBigBlueButtonClientListener listener) {
+		listeners.add(listener);
+	}
+
+	public void removeListener(IBigBlueButtonClientListener listener) {
+		listeners.remove(listener);
+	}
+
+	public Set<IBigBlueButtonClientListener> getListeners() {
+		return listeners;
 	}
 }

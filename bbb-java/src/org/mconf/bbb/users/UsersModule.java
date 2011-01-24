@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jboss.netty.channel.Channel;
+import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.Module;
 import org.mconf.bbb.RtmpConnectionHandler;
 import org.red5.server.api.IAttributeStore;
@@ -53,10 +54,39 @@ public class UsersModule extends Module implements ISharedObjectListener {
 		log.debug("onSharedObjectDisconnect");
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onSharedObjectSend(ISharedObjectBase so, 
 			String method, List<?> params) {
 		log.debug("onSharedObjectSend");
+		
+		if (so.equals(participantsSO)) {
+			if (method.equals("kickUserCallback")) {
+				for (IBigBlueButtonClientListener l : handler.getListeners()) {
+					l.onKickUserCallback();
+				}
+				channel.close();
+				return;
+			}
+			if (method.equals("participantLeft")) {
+				Participant p = participants.get(((Double) params.get(0)).intValue());
+				for (IBigBlueButtonClientListener l : handler.getListeners()) {
+					l.onParticipantLeft(p);
+				}
+				log.debug("participantLeft: {}", p);
+				participants.remove(p.getUserId());
+				return;
+			}
+			if (method.equals("participantJoined")) {
+				Participant p = new Participant((Map<String, Object>) params.get(0));
+				for (IBigBlueButtonClientListener l : handler.getListeners()) {
+					l.onParticipantJoined(p);
+				}
+				log.debug("participant joined: {}", p);
+				participants.put(p.getUserId(), p);
+				return;
+			}
+		}
 	}
 
 	@Override
