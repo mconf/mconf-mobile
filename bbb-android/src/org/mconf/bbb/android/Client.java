@@ -9,22 +9,23 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.util.Log;
+import android.widget.AdapterView.OnItemClickListener;
 
-public class BBBandroid extends ListActivity {
+public class Client extends ListActivity {
 	public static final int CHAT_ID = Menu.FIRST;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.contacts_list);
+        
+        setContentView(R.layout.contacts_list);   
+        
+        
         Bundle extras = getIntent().getExtras();
         String Username = extras.getString("Username");
         
@@ -38,40 +39,41 @@ public class BBBandroid extends ListActivity {
         lv.setTextFilterEnabled(true);
         final Context context = this;
         lv.setOnItemClickListener(new OnItemClickListener() {
-          public void onItemClick(AdapterView<?> parent, View view,
-              int position, long id) {
-        	  
-        	  
-            // When clicked, show a dialog to confirm the private chat
-        	// set the message to display
-        	  AlertDialog.Builder alertbox = new AlertDialog.Builder(context);
-              alertbox.setMessage("Start private chat with " + ((TextView) view).getText() +"?");
+        	@Override
+        	public void onItemClick(AdapterView<?> parent, View view,
+        			int position, long id) {
 
-              // add a neutral button to the alert box and assign a click listener
-              alertbox.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                  public void onClick(DialogInterface dialog, int id) {
-                      //start private chat
-                  	System.out.println("private chat");
-                 }
-             });
-              alertbox.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                  public void onClick(DialogInterface dialog, int id) {
-                      dialog.cancel();
-                 }
-             });
 
-              // show it
-              
-              alertbox.show();
-           
-          }
+        		// When clicked, show a dialog to confirm the private chat
+        		// set the message to display
+        		AlertDialog.Builder alertbox = new AlertDialog.Builder(context);
+        		alertbox.setMessage("Start private chat with " + ((TextView) view).getText() +"?");
+
+        		// add a neutral button to the alert box and assign a click listener
+        		alertbox.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        			public void onClick(DialogInterface dialog, int id) {
+        				//start private chat
+        				System.out.println("private chat");
+        			}
+        		});
+        		alertbox.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        			public void onClick(DialogInterface dialog, int id) {
+        				dialog.cancel();
+        			}
+        		});
+
+        		// show it
+
+        		alertbox.show();
+
+        	}
+
         });
-      
 	}
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         boolean result = super.onCreateOptionsMenu(menu);
-        menu.add(0, CHAT_ID, 0, "Chat Público");
+        menu.add(0, CHAT_ID, 0, "Chat PÃºblico");
         return result;
     }
 	@Override
@@ -89,7 +91,7 @@ public class BBBandroid extends ListActivity {
 	{
 		Mocap handler = new Mocap();
 		String[] contacts;
-		contacts = handler.getContacts(); //função que busca os cantatos logados na sala do BBB [a ser definida]
+		contacts = handler.getContacts(); //funÃ§Ã£o que busca os cantatos logados na sala do BBB [a ser definida]
 		// Now create an array adapter and set it to display using our row
 		this.setListAdapter(new ArrayAdapter<String>(this,R.layout.contact, contacts)); 
 
