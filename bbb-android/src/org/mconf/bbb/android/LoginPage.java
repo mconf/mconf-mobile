@@ -1,7 +1,5 @@
 package org.mconf.bbb.android;
 
-
-
 import java.util.List;
 import java.util.Properties;
 
@@ -14,9 +12,11 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,6 +26,7 @@ import android.widget.Toast;
 public class LoginPage extends Activity {
 	
 	private static final Logger log = LoggerFactory.getLogger(LoginPage.class);
+	private ArrayAdapter<String> spinnerAdapter;
 	
     /** Called when the activity is first created. */
     @Override
@@ -34,32 +35,22 @@ public class LoginPage extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.login);
         
-        Resources resources = getApplicationContext().getResources();
-        AssetManager assetManager = resources.getAssets();
-
-		Properties p = new Properties();
-		try {
-			p.load(assetManager.open("bigbluebutton.properties"));
-		} catch (Exception e) {
-			e.printStackTrace();
-			Toast.makeText(getApplicationContext(), "Can't find the properties file", Toast.LENGTH_LONG);
-			log.error("Can't find/load the properties file");
-		}
-		
-        if (!Client.bbbClient.load(p.getProperty("bigbluebutton.web.serverURL"), p.getProperty("beans.dynamicConferenceService.securitySalt"))) {
-        	Toast.makeText(getApplicationContext(), "Can't load the properties file", Toast.LENGTH_LONG);
-        	return;
-        }
-        
-        List<Meeting> meetings = Client.bbbClient.getMeetings();
         final Spinner spinner = (Spinner) findViewById(R.id.login_spinner);
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        for (Meeting m : meetings) {
-        	adapter.add(m.getMeetingID());
-        }
-               
+        spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(spinnerAdapter);
+
+        spinner.setOnTouchListener(new OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					updateMeetingsList();
+				}
+				return false;
+			}
+		});
+        
         final Button join = (Button)findViewById(R.id.login_button_join);       
         join.setOnClickListener( new OnClickListener()
         {
@@ -93,5 +84,38 @@ public class LoginPage extends Activity {
                 }
         	}
         );
+    }
+    
+    private void updateMeetingsList() {
+        Resources resources = getApplicationContext().getResources();
+        AssetManager assetManager = resources.getAssets();
+
+		Properties p = new Properties();
+		try {
+			p.load(assetManager.open("bigbluebutton.properties"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			Toast.makeText(getApplicationContext(), "Can't find the properties file", Toast.LENGTH_LONG);
+			log.error("Can't find/load the properties file");
+		}
+			        
+        if (!Client.bbbClient.load(p.getProperty("bigbluebutton.web.serverURL"), p.getProperty("beans.dynamicConferenceService.securitySalt"))) {
+        	Toast.makeText(getApplicationContext(), "Can't load the properties file", Toast.LENGTH_LONG);
+        	return;
+        }
+        
+        final List<Meeting> meetings = Client.bbbClient.getMeetings();
+        
+        runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+		        spinnerAdapter.clear();
+		        for (Meeting m : meetings) {
+		        	spinnerAdapter.add(m.getMeetingID());
+		        }
+		        spinnerAdapter.notifyDataSetChanged();
+			}
+		});
     }
 }

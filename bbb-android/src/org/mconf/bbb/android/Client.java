@@ -23,7 +23,7 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class Client extends ListActivity implements IBigBlueButtonClientListener {
 	public static final int MENU_PUBLIC_CHAT = Menu.FIRST;
-	public static final int MENU_QUIT = MENU_PUBLIC_CHAT + 1;
+	public static final int MENU_QUIT = Menu.FIRST + 1;
 	
 	public static BigBlueButtonClient bbbClient = new BigBlueButtonClient();
 	private ArrayAdapter<String> listViewAdapter;
@@ -113,7 +113,6 @@ public class Client extends ListActivity implements IBigBlueButtonClientListener
 	}
 	@Override
 	public void onDisconnected() {
-		// TODO Auto-generated method stub
 		
 	}
 	@Override
