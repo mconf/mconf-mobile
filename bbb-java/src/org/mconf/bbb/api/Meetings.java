@@ -69,6 +69,7 @@ public class Meetings {
 
 			NodeList nodeMeetings = doc.getElementsByTagName("meetings");		
 			// if nodeMeetings.getLength() == 0 and the conference is on, probably the "salt" is wrong
+			log.debug("nodeMeetings.getLength() = {}", nodeMeetings.getLength());
 			for (int i = 0; i < nodeMeetings.getLength(); ++i) {
 				Element elementMeeting = (Element) nodeMeetings.item(i);
 				
@@ -76,24 +77,24 @@ public class Meetings {
 				
 				Meeting meeting = new Meeting();
 				
-				meeting.setReturncode(elementMeeting.getElementsByTagName("returncode").item(0).getTextContent());
+				meeting.setReturncode(elementMeeting.getElementsByTagName("returncode").item(0).getFirstChild().getNodeValue());
 				
 				if (!meeting.getReturncode().equals("SUCCESS"))
 					continue;
 				
-				meeting.setMeetingID(elementMeeting.getElementsByTagName("meetingID").item(0).getTextContent());
-				meeting.setAttendeePW(elementMeeting.getElementsByTagName("attendeePW").item(0).getTextContent());
-				meeting.setModeratorPW(elementMeeting.getElementsByTagName("moderatorPW").item(0).getTextContent());
-				meeting.setRunning(Boolean.parseBoolean(elementMeeting.getElementsByTagName("running").item(0).getTextContent()));
-				meeting.setHasBeenForciblyEnded(Boolean.parseBoolean(elementMeeting.getElementsByTagName("hasBeenForciblyEnded").item(0).getTextContent()));
+				meeting.setMeetingID(elementMeeting.getElementsByTagName("meetingID").item(0).getFirstChild().getNodeValue());
+				meeting.setAttendeePW(elementMeeting.getElementsByTagName("attendeePW").item(0).getFirstChild().getNodeValue());
+				meeting.setModeratorPW(elementMeeting.getElementsByTagName("moderatorPW").item(0).getFirstChild().getNodeValue());
+				meeting.setRunning(Boolean.parseBoolean(elementMeeting.getElementsByTagName("running").item(0).getFirstChild().getNodeValue()));
+				meeting.setHasBeenForciblyEnded(Boolean.parseBoolean(elementMeeting.getElementsByTagName("hasBeenForciblyEnded").item(0).getFirstChild().getNodeValue()));
 				
-				if (!elementMeeting.getElementsByTagName("startTime").item(0).getTextContent().equals("null"))
-					meeting.setStartTime(dateFormat.parse(elementMeeting.getElementsByTagName("startTime").item(0).getTextContent()));
-				if (!elementMeeting.getElementsByTagName("endTime").item(0).getTextContent().equals("null"))
-					meeting.setEndTime(dateFormat.parse(elementMeeting.getElementsByTagName("endTime").item(0).getTextContent()));
+//				if (!elementMeeting.getElementsByTagName("startTime").item(0).getFirstChild().getNodeValue().equals("null"))
+//					meeting.setStartTime(dateFormat.parse(elementMeeting.getElementsByTagName("startTime").item(0).getFirstChild().getNodeValue()));
+//				if (!elementMeeting.getElementsByTagName("endTime").item(0).getFirstChild().getNodeValue().equals("null"))
+//					meeting.setEndTime(dateFormat.parse(elementMeeting.getElementsByTagName("endTime").item(0).getFirstChild().getNodeValue()));
 				
-				meeting.setParticipantCount(Integer.parseInt(elementMeeting.getElementsByTagName("participantCount").item(0).getTextContent()));
-				meeting.setModeratorCount(Integer.parseInt(elementMeeting.getElementsByTagName("moderatorCount").item(0).getTextContent()));
+				meeting.setParticipantCount(Integer.parseInt(elementMeeting.getElementsByTagName("participantCount").item(0).getFirstChild().getNodeValue()));
+				meeting.setModeratorCount(Integer.parseInt(elementMeeting.getElementsByTagName("moderatorCount").item(0).getFirstChild().getNodeValue()));
 				
 				NodeList nodeAttendees = elementMeeting.getElementsByTagName("attendees");
 				
@@ -103,9 +104,9 @@ public class Meetings {
 						
 						Attendee attendee = new Attendee();
 						
-						attendee.setUserID(elementAttendee.getElementsByTagName("userID").item(0).getTextContent());
-						attendee.setFullName(elementAttendee.getElementsByTagName("fullName").item(0).getTextContent());
-						attendee.setRole(elementAttendee.getElementsByTagName("role").item(0).getTextContent());
+						attendee.setUserID(elementAttendee.getElementsByTagName("userID").item(0).getFirstChild().getNodeValue());
+						attendee.setFullName(elementAttendee.getElementsByTagName("fullName").item(0).getFirstChild().getNodeValue());
+						attendee.setRole(elementAttendee.getElementsByTagName("role").item(0).getFirstChild().getNodeValue());
 						
 						meeting.getAttendees().add(attendee);
 					}

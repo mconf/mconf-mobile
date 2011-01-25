@@ -96,15 +96,15 @@ public class BigBlueButtonApi {
 			e.printStackTrace();
 		}
 
-		if (doc.getElementsByTagName("returncode").item(0).getTextContent()
+		if (doc.getElementsByTagName("returncode").item(0).getFirstChild().getNodeValue()
 				.trim().equals("SUCCESS")) {
 
 				
 			return meetingID;
 		}
 		
-		return "Error " + doc.getElementsByTagName("messageKey").item(0).getTextContent().trim() 
-		+ ": " + doc.getElementsByTagName("message").item(0).getTextContent().trim();
+		return "Error " + doc.getElementsByTagName("messageKey").item(0).getFirstChild().getNodeValue().trim() 
+		+ ": " + doc.getElementsByTagName("message").item(0).getFirstChild().getNodeValue().trim();
 	}
 
 
@@ -165,7 +165,7 @@ public class BigBlueButtonApi {
 			e.printStackTrace();
 		}
 
-		if (doc.getElementsByTagName("returncode").item(0).getTextContent()
+		if (doc.getElementsByTagName("returncode").item(0).getFirstChild().getNodeValue()
 				.trim().equals("SUCCESS")) {
 
 			
@@ -179,8 +179,8 @@ public class BigBlueButtonApi {
 			return base_url_join + join_parameters + "&checksum=" + checksum("join" + join_parameters + salt);
 
 		}
-		return doc.getElementsByTagName("messageKey").item(0).getTextContent().trim() 
-		+ ": " + doc.getElementsByTagName("message").item(0).getTextContent().trim();
+		return doc.getElementsByTagName("messageKey").item(0).getFirstChild().getNodeValue().trim() 
+		+ ": " + doc.getElementsByTagName("message").item(0).getFirstChild().getNodeValue().trim();
 	}
 
 
@@ -298,9 +298,9 @@ public class BigBlueButtonApi {
 			e.printStackTrace();
 		}
 
-		if (doc.getElementsByTagName("returncode").item(0).getTextContent()
+		if (doc.getElementsByTagName("returncode").item(0).getFirstChild().getNodeValue()
 				.trim().equals("SUCCESS")) {
-			return doc.getElementsByTagName("running").item(0).getTextContent().trim();
+			return doc.getElementsByTagName("running").item(0).getFirstChild().getNodeValue().trim();
 		}
 		
 		return  "false";
@@ -357,8 +357,8 @@ public class BigBlueButtonApi {
 			String newXMldocument = startTag;
 			for (int i = 0; i < meetingsList.getLength(); i++) {
 				Element meeting = (Element) meetingsList.item(i);
-				String meetingID = meeting.getElementsByTagName("meetingID").item(0).getTextContent();
-				String password = meeting.getElementsByTagName("moderatorPW").item(0).getTextContent();
+				String meetingID = meeting.getElementsByTagName("meetingID").item(0).getFirstChild().getNodeValue();
+				String password = meeting.getElementsByTagName("moderatorPW").item(0).getFirstChild().getNodeValue();
 				
 				data = getMeetingInfo(meetingID, password);
 				
@@ -400,13 +400,13 @@ public class BigBlueButtonApi {
 			e.printStackTrace();
 		}
 		
-		if (doc.getElementsByTagName("returncode").item(0).getTextContent()
+		if (doc.getElementsByTagName("returncode").item(0).getFirstChild().getNodeValue()
 				.trim().equals("SUCCESS")) {
 			return "true";
 		}
 		
-		return  "Error " + doc.getElementsByTagName("messageKey").item(0).getTextContent().trim() 
-		+ ": " + doc.getElementsByTagName("message").item(0).getTextContent().trim();
+		return  "Error " + doc.getElementsByTagName("messageKey").item(0).getFirstChild().getNodeValue().trim() 
+		+ ": " + doc.getElementsByTagName("message").item(0).getFirstChild().getNodeValue().trim();
 		
 	}
 

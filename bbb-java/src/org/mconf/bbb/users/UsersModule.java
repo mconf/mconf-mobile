@@ -79,11 +79,7 @@ public class UsersModule extends Module implements ISharedObjectListener {
 			}
 			if (method.equals("participantJoined")) {
 				Participant p = new Participant((Map<String, Object>) params.get(0));
-				for (IBigBlueButtonClientListener l : handler.getListeners()) {
-					l.onParticipantJoined(p);
-				}
-				log.debug("participant joined: {}", p);
-				participants.put(p.getUserId(), p);
+				onParticipantJoined(p);
 				return;
 			}
 		}
@@ -133,9 +129,8 @@ public class UsersModule extends Module implements ISharedObjectListener {
 			Map<String, Object> participantsMap = (Map<String, Object>) args.get("participants");
 			
 			for (Map.Entry<String, Object> entry : participantsMap.entrySet()) {
-				Participant participant = new Participant((Map<String, Object>) entry.getValue());
-				log.info("new participant: {}", participant.toString());
-				participants.put(participant.getUserId(), participant);			
+				Participant p = new Participant((Map<String, Object>) entry.getValue());
+				onParticipantJoined(p);
 			}
 			return true;
 		}
@@ -144,6 +139,14 @@ public class UsersModule extends Module implements ISharedObjectListener {
 	
 	public Map<Integer, Participant> getParticipants() {
 		return participants;
+	}
+	
+	public void onParticipantJoined(Participant p) {
+		for (IBigBlueButtonClientListener l : handler.getListeners()) {
+			l.onParticipantJoined(p);
+		}				
+		log.info("new participant: {}", p.toString());
+		participants.put(p.getUserId(), p);			
 	}
 	
 }

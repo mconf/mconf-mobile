@@ -42,6 +42,10 @@ public class BigBlueButtonClient implements IBigBlueButtonClient {
 	private BigBlueButtonApi api;
 	private Meetings meetings = new Meetings();
 	private RtmpConnectionHandler handler;
+
+	private ClientBootstrap bootstrap;
+
+	private ChannelFuture future;
 	
 	
 	public List<Meeting> getMeetings() {
@@ -165,8 +169,8 @@ public class BigBlueButtonClient implements IBigBlueButtonClient {
 	}
 	
 	private void connect(final ClientOptions options, final JoinedMeeting meeting) {  
-        final ClientBootstrap bootstrap = getBootstrap(Executors.newCachedThreadPool(), options, meeting);
-        final ChannelFuture future = bootstrap.connect(new InetSocketAddress(options.getHost(), options.getPort()));
+        bootstrap = getBootstrap(Executors.newCachedThreadPool(), options, meeting);
+        future = bootstrap.connect(new InetSocketAddress(options.getHost(), options.getPort()));
         future.awaitUninterruptibly();
         if(!future.isSuccess()) {
             future.getCause().printStackTrace();
@@ -175,6 +179,12 @@ public class BigBlueButtonClient implements IBigBlueButtonClient {
 //        future.getChannel().getCloseFuture().awaitUninterruptibly();
 //        bootstrap.getFactory().releaseExternalResources();
     }
+	
+	public void disconnect() {
+		future.getChannel().close();
+		future.getChannel().getCloseFuture().awaitUninterruptibly();
+		bootstrap.getFactory().releaseExternalResources();
+	}
 	
 	private ClientBootstrap getBootstrap(final Executor executor, final ClientOptions options, final JoinedMeeting meeting) {
         final ChannelFactory factory = new NioClientSocketChannelFactory(executor, executor);

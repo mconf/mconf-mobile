@@ -58,21 +58,21 @@ public class JoinedMeeting {
 			doc.getDocumentElement().normalize();
 
 			Element nodeResponse = (Element) doc.getElementsByTagName("response").item(0);
-			returncode = nodeResponse.getElementsByTagName("returncode").item(0).getTextContent();
+			returncode = nodeResponse.getElementsByTagName("returncode").item(0).getFirstChild().getNodeValue();
 			
 			if (returncode.equals("SUCCESS")) {		
-				fullname = nodeResponse.getElementsByTagName("fullname").item(0).getTextContent();
-				confname = nodeResponse.getElementsByTagName("confname").item(0).getTextContent();
-				meetingID = nodeResponse.getElementsByTagName("meetingID").item(0).getTextContent();
-				externUserID = nodeResponse.getElementsByTagName("externUserID").item(0).getTextContent();
-				role = nodeResponse.getElementsByTagName("role").item(0).getTextContent();
-				conference = nodeResponse.getElementsByTagName("conference").item(0).getTextContent();
-				room = nodeResponse.getElementsByTagName("room").item(0).getTextContent();
-				voicebridge = nodeResponse.getElementsByTagName("voicebridge").item(0).getTextContent();
-				webvoiceconf = nodeResponse.getElementsByTagName("webvoiceconf").item(0).getTextContent();
-				mode = nodeResponse.getElementsByTagName("mode").item(0).getTextContent();
-				record = nodeResponse.getElementsByTagName("record").item(0).getTextContent();
-				welcome = nodeResponse.getElementsByTagName("welcome").item(0).getTextContent();			
+				fullname = nodeResponse.getElementsByTagName("fullname").item(0).getFirstChild().getNodeValue();
+				confname = nodeResponse.getElementsByTagName("confname").item(0).getFirstChild().getNodeValue();
+				meetingID = nodeResponse.getElementsByTagName("meetingID").item(0).getFirstChild().getNodeValue();
+				externUserID = nodeResponse.getElementsByTagName("externUserID").item(0).getFirstChild().getNodeValue();
+				role = nodeResponse.getElementsByTagName("role").item(0).getFirstChild().getNodeValue();
+				conference = nodeResponse.getElementsByTagName("conference").item(0).getFirstChild().getNodeValue();
+				room = nodeResponse.getElementsByTagName("room").item(0).getFirstChild().getNodeValue();
+				voicebridge = nodeResponse.getElementsByTagName("voicebridge").item(0).getFirstChild().getNodeValue();
+				webvoiceconf = nodeResponse.getElementsByTagName("webvoiceconf").item(0).getFirstChild().getNodeValue();
+				mode = nodeResponse.getElementsByTagName("mode").item(0).getFirstChild().getNodeValue();
+				record = nodeResponse.getElementsByTagName("record").item(0).getFirstChild().getNodeValue();
+				welcome = nodeResponse.getElementsByTagName("welcome").item(0).getFirstChild().getNodeValue();			
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
