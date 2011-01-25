@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,10 +24,16 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class Client extends ListActivity implements IBigBlueButtonClientListener {
 	public static final int MENU_PUBLIC_CHAT = Menu.FIRST;
-	public static final int MENU_QUIT = Menu.FIRST + 1;
+	public static final int MENU_PRIVATE_CHAT = Menu.FIRST + 1;
+	public static final int MENU_QUIT = Menu.FIRST + 2;
 	
+	public static final int PUBLIC_CHAT = 1;
+	public static final int PRIVATE_CHAT= 0;
+
 	public static BigBlueButtonClient bbbClient = new BigBlueButtonClient();
 	private ArrayAdapter<String> listViewAdapter;
+
+	public String contactName= new String();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -61,12 +68,16 @@ public class Client extends ListActivity implements IBigBlueButtonClientListener
         		// set the message to display
         		AlertDialog.Builder alertbox = new AlertDialog.Builder(context);
         		alertbox.setMessage("Start private chat with " + ((TextView) view).getText() +"?");
-
+        		contactName = (String) ((TextView) view).getText();
         		// add a neutral button to the alert box and assign a click listener
         		alertbox.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
         			public void onClick(DialogInterface dialog, int id) {
         				//start private chat
-        				System.out.println("private chat");
+        				Intent chatIntent = new Intent(getApplicationContext(), Chat.class);
+		                chatIntent.putExtra("contactName", contactName);
+		                chatIntent.putExtra("chatMode", PRIVATE_CHAT);
+		                startActivityForResult(chatIntent, 0);
+        				
         			}
         		});
         		alertbox.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -95,12 +106,16 @@ public class Client extends ListActivity implements IBigBlueButtonClientListener
         switch (item.getItemId()) {
 	        case MENU_PUBLIC_CHAT:
 	            //abrir o chat
-	            break;
+            	Intent chatIntent = new Intent(getApplicationContext(), Chat.class);
+                chatIntent.putExtra("chatMode", PUBLIC_CHAT);
+                startActivityForResult(chatIntent, 0);
+                
+                return true;
 	        case MENU_QUIT:
 	        	bbbClient.removeListener(this);
 	        	bbbClient.disconnect();
 	        	finish();
-	        	break;
+                return true;
         }
        
         return super.onOptionsItemSelected(item);

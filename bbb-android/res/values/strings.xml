@@ -2,8 +2,9 @@
 <resources>
     <string name="hello">Hello World, BBBandroid!</string>
     <string name="app_name">BigBlueButton</string>
-    
-<string name="login_welcome">Welcome to MConf</string>
-<string name="login_name">Name:</string>
-<string name="login_button_join">Join</string>
+    <string name="login_welcome">Welcome to MConf</string>
+    <string name="login_name">Name:</string>
+    <string name="login_button_join">Join</string>
+    <string name="send_message">Send</string>
+    <string name="cancel_button">Cancel</string>
 </resources>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout android:id="@+id/RelativeLayout01" 
+android:layout_width="fill_parent" 
+android:layout_height="fill_parent" 
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:background="@color/background">
+
+	<ImageView android:layout_height="wrap_content" 
+	android:id="@+id/bbb_logo" 
+	android:layout_width="wrap_content" 
+	android:src="@drawable/bbb_logo"
+	 android:layout_alignParentTop="true" 
+	 android:layout_alignParentRight="true" 
+	 android:layout_alignParentLeft="false">
+	 </ImageView>
+
+	<TextView android:layout_height="wrap_content" 
+	android:layout_width="wrap_content" android:text="hello" 
+	android:id="@+id/chatMode" android:layout_toLeftOf="@+id/bbb_logo" 
+	android:layout_alignTop="@+id/bbb_logo" 
+	android:layout_alignBottom="@+id/bbb_logo"
+	 android:layout_alignParentLeft="true"
+	 android:textColor="#000000">
+	 </TextView>
+	 
+	 <EditText android:layout_height="wrap_content" 
+	android:layout_width="fill_parent" 
+	android:id="@+id/chatMessage" 
+	android:layout_toLeftOf="@+id/sendMessage" 
+	android:layout_alignTop="@+id/sendMessage" 
+	android:layout_alignBottom="@+id/sendMessage">
+	</EditText>
+	
+	<Button android:layout_height="wrap_content" 
+	android:text="@string/send_message" 
+	android:layout_width="wrap_content" 
+	android:id="@+id/sendMessage" 
+	android:layout_alignParentRight="true" 
+	android:layout_alignParentBottom="true">
+	</Button>
+
+	<ListView android:layout_height="wrap_content" 
+	android:dividerHeight="0px" android:id="@+id/messages" 
+	android:layout_width="wrap_content" 
+	android:layout_below="@+id/chatMode" 
+	android:layout_alignLeft="@+id/chatMode" 
+	android:layout_alignRight="@+id/chatMode" 
+	android:layout_alignParentRight="true">
+	</ListView>
+
+</RelativeLayout>
+
+
