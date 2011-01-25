@@ -8,35 +8,72 @@
 	android:gravity="center_vertical"
 	>
 
-	<ImageView android:src="@drawable/amadou_logo"
-		android:layout_centerHorizontal="true" android:id="@+id/login_img_bbb_logo"
-		android:layout_height="wrap_content" android:layout_width="wrap_content" 
-		android:layout_alignParentTop="true" />
+	<ImageView 
+		android:src="@drawable/amadou_logo"
+		android:layout_centerHorizontal="true" 
+		android:id="@+id/login_img_bbb_logo"
+		android:layout_height="wrap_content" 
+		android:layout_width="wrap_content" 
+		android:layout_alignParentTop="true" 
+	/>
 
-	<TextView android:id="@+id/login_label_welcome" android:text="@string/login_welcome"
-		android:layout_width="wrap_content" android:layout_height="wrap_content"
-		android:layout_centerHorizontal="true" android:textColor="#000000"
-		android:layout_below="@+id/login_img_bbb_logo"/>
+	<TextView 
+		android:id="@+id/login_label_welcome" 
+		android:text="@string/login_welcome"
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"
+		android:layout_centerHorizontal="true" 
+		android:textColor="#000000"
+		android:layout_below="@+id/login_img_bbb_logo"
+	/>
 	
 
-	<TextView android:id="@+id/login_label_name" android:text="@string/login_name"
-		android:layout_centerHorizontal="true" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:layout_below="@+id/login_label_welcome"
-		android:textColor="#000000" />
+	<TextView 
+		android:id="@+id/login_label_name" 
+		android:text="@string/login_name"
+		android:textColor="#000000"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" 
+		android:layout_centerHorizontal="true" 
+		android:layout_below="@+id/login_label_welcome"
+	/>
 
-	<EditText android:id="@+id/login_edittext_name"
-		android:layout_height="wrap_content" android:layout_width="150dp"
-		android:layout_centerHorizontal="true" android:layout_below="@+id/login_label_name"
-		android:singleLine="true" />
+	<EditText 
+		android:id="@+id/login_edittext_name"
+		android:layout_height="wrap_content" 
+		android:layout_width="150dp"
+		android:layout_centerHorizontal="true" 
+		android:layout_below="@+id/login_label_name"
+		android:singleLine="true" 
+	/>
 
+	<TextView 
+		android:id="@+id/login_label_meeting" 
+		android:text="Meeting: "
+		android:textColor="#000000" 
+		android:layout_centerHorizontal="true" 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" 
+		android:layout_below="@+id/login_edittext_name"
+	/>
 
-	<Button android:text="@string/login_button_join" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:id="@+id/login_button_join"
-		android:layout_toRightOf="@+id/login_edittext_name"
-		android:layout_alignBottom="@+id/login_edittext_name" />
+    <Spinner 
+        android:id="@+id/login_spinner"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true" 
+        android:layout_below="@+id/login_label_meeting"
+    />
+
+	<Button
+		android:id="@+id/login_button_join"
+		android:text="@string/login_button_join" 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" 
+		android:layout_toRightOf="@+id/login_spinner"
+        android:layout_below="@+id/login_label_meeting"
+		
+	/>
                
-
-
-
 </RelativeLayout>
 

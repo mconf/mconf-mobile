@@ -1,6 +1,11 @@
 package org.mconf.bbb.android;
 
 
+import org.mconf.bbb.BigBlueButtonClient;
+import org.mconf.bbb.IBigBlueButtonClientListener;
+import org.mconf.bbb.chat.ChatMessage;
+import org.mconf.bbb.users.Participant;
+
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
@@ -16,9 +21,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class Client extends ListActivity {
-	public static final int CHAT_ID = Menu.FIRST;
+public class Client extends ListActivity implements IBigBlueButtonClientListener {
+	public static final int MENU_PUBLIC_CHAT = Menu.FIRST;
+	public static final int MENU_QUIT = MENU_PUBLIC_CHAT + 1;
 	
+	public static BigBlueButtonClient bbbClient = new BigBlueButtonClient();
+	private ArrayAdapter<String> listViewAdapter;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,14 +36,18 @@ public class Client extends ListActivity {
         
         
         Bundle extras = getIntent().getExtras();
-        String Username = extras.getString("Username");
+        String username = extras.getString("username");
+        Toast.makeText(getApplicationContext(),"Be welcome, " + username, Toast.LENGTH_SHORT).show(); 
         
-        Toast welcome = Toast.makeText(getApplicationContext(),"hello " + Username, Toast.LENGTH_LONG);  
-        welcome.show(); 
+//        listViewAdapter = new ArrayAdapter<String>(this, R.layout.contact);
+        listViewAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        ListView view = getListView();
+        view.setTextFilterEnabled(true);
+        view.setAdapter(listViewAdapter);
         
-        addContacts();
-
-
+        bbbClient.addListener(this);
+        
+        
         ListView lv = getListView();
         lv.setTextFilterEnabled(true);
         final Context context = this;
@@ -73,27 +86,71 @@ public class Client extends ListActivity {
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         boolean result = super.onCreateOptionsMenu(menu);
-        menu.add(0, CHAT_ID, 0, "Chat Público");
+        menu.add(0, MENU_PUBLIC_CHAT, 0, "Public chat");
+        menu.add(0, MENU_QUIT, 0, "Quit");
         return result;
     }
 	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case CHAT_ID:
-            //abrir o chat
-            return true;
+	        case MENU_PUBLIC_CHAT:
+	            //abrir o chat
+	            break;
+	        case MENU_QUIT:
+	        	bbbClient.removeListener(this);
+	        	bbbClient.disconnect();
+	        	finish();
+	        	break;
         }
        
         return super.onOptionsItemSelected(item);
     }
 	
-	public void addContacts()
-	{
-		Mocap handler = new Mocap();
-		String[] contacts;
-		contacts = handler.getContacts(); //função que busca os cantatos logados na sala do BBB [a ser definida]
-		// Now create an array adapter and set it to display using our row
-		this.setListAdapter(new ArrayAdapter<String>(this,R.layout.contact, contacts)); 
-
+	@Override
+	public void onConnected() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onDisconnected() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onKickUserCallback() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onParticipantJoined(final Participant p) {
+		runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				listViewAdapter.notifyDataSetChanged();
+				listViewAdapter.add(p.getName());
+			}
+		});		
+	}
+	@Override
+	public void onParticipantLeft(final Participant p) {
+		runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				listViewAdapter.notifyDataSetChanged();
+				listViewAdapter.remove(p.getName());
+			}
+		});
+	}
+	@Override
+	public void onPrivateChatMessage(ChatMessage message, Participant source) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onPublicChatMessage(ChatMessage message, Participant source) {
+		// TODO Auto-generated method stub
+		
 	}
 }
