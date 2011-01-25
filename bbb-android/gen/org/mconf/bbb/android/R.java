@@ -21,11 +21,13 @@ public final class R {
         public static final int avatar=0x7f060001;
         public static final int comment=0x7f060005;
         public static final int email_url=0x7f060003;
-        public static final int login_button_join=0x7f06000b;
+        public static final int login_button_join=0x7f06000d;
         public static final int login_edittext_name=0x7f06000a;
         public static final int login_img_bbb_logo=0x7f060007;
+        public static final int login_label_meeting=0x7f06000b;
         public static final int login_label_name=0x7f060009;
         public static final int login_label_welcome=0x7f060008;
+        public static final int login_spinner=0x7f06000c;
         public static final int name=0x7f060002;
         public static final int postTitle=0x7f060004;
         public static final int status=0x7f060006;
