@@ -34,7 +34,29 @@ public class Meetings {
 	
 	/*
 	 * bbb.getMeetings()
+	 * 
 	 * <meetings>
+	 * 	<meeting>
+	 * 		<returncode>SUCCESS</returncode>
+	 * 		<meetingID>Minha sala's meeting</meetingID>
+	 * 		<attendeePW>ap</attendeePW>
+	 * 		<moderatorPW>mp</moderatorPW>
+	 * 		<running>true</running>
+	 * 		<hasBeenForciblyEnded>false</hasBeenForciblyEnded>
+	 * 		<startTime>Wed Jan 26 14:57:24 UTC 2011</startTime>
+	 * 		<endTime>null</endTime>
+	 * 		<participantCount>1</participantCount>
+	 * 		<moderatorCount>1</moderatorCount>
+	 * 		<attendees>
+	 * 			<attendee>
+	 * 				<userID>ilf7tbt6b6lm</userID>
+	 * 				<fullName>Minha sala</fullName>
+	 * 				<role>MODERATOR</role>
+	 * 			</attendee>
+	 * 		</attendees>
+	 * 		<messageKey></messageKey>
+	 * 		<message></message>
+	 * 	</meeting>
 	 * 	<meeting>
 	 * 		<returncode>SUCCESS</returncode>
 	 * 		<meetingID>Demo Meeting</meetingID>
@@ -42,13 +64,13 @@ public class Meetings {
 	 * 		<moderatorPW>mp</moderatorPW>
 	 * 		<running>true</running>
 	 * 		<hasBeenForciblyEnded>false</hasBeenForciblyEnded>
-	 * 		<startTime>Fri Dec 31 16:35:11 UTC 2010</startTime>
+	 * 		<startTime>Wed Jan 26 14:54:01 UTC 2011</startTime>
 	 * 		<endTime>null</endTime>
 	 * 		<participantCount>1</participantCount>
 	 * 		<moderatorCount>1</moderatorCount>
 	 * 		<attendees>
 	 * 			<attendee>
-	 * 				<userID>l4s3gwwcl2j4</userID>
+	 * 				<userID>jgrnbt7di7aj</userID>
 	 * 				<fullName>Felipe</fullName>
 	 * 				<role>MODERATOR</role>
 	 * 			</attendee>
@@ -67,8 +89,9 @@ public class Meetings {
 			Document doc = db.parse(new ByteArrayInputStream(str.getBytes("UTF-8")));
 			doc.getDocumentElement().normalize();
 
-			NodeList nodeMeetings = doc.getElementsByTagName("meetings");		
+			NodeList nodeMeetings = doc.getElementsByTagName("meeting");
 			// if nodeMeetings.getLength() == 0 and the conference is on, probably the "salt" is wrong
+			log.debug("parsing: {}", str);
 			log.debug("nodeMeetings.getLength() = {}", nodeMeetings.getLength());
 			for (int i = 0; i < nodeMeetings.getLength(); ++i) {
 				Element elementMeeting = (Element) nodeMeetings.item(i);
