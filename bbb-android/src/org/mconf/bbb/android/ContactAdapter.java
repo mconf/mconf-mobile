@@ -16,6 +16,8 @@ import android.widget.TextView;
 
 public class ContactAdapter extends BaseAdapter {
 	private Context context;
+	ImageView presenter;
+	View view;
 
     private List<IParticipant> listContact;
 
@@ -39,7 +41,25 @@ public class ContactAdapter extends BaseAdapter {
     	contact=(Contact) listContact.get(location);
     	listContact.remove(contact);
     }
+    
+    public void setPresenterStatus(Contact changedStatus)
+    {
+    	 ImageView presenter = (ImageView) view.findViewById(R.id.presenter);
+        if(changedStatus.isPresenter())
+        	presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.presenter));
+        else
+        	presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.empty));
+    }
 
+    public void setStreamStatus( Contact changedStatus)
+    {
+    	ImageView stream = (ImageView) view.findViewById(R.id.stream);
+        if(changedStatus.hasStream())
+        	stream.setImageDrawable(this.context.getResources().getDrawable(R.drawable.stream));
+        else
+        	stream.setImageDrawable(this.context.getResources().getDrawable(R.drawable.empty));
+    }
+    //continuar refatorando
     
     public int getCount() {
         return listContact.size();
@@ -55,12 +75,13 @@ public class ContactAdapter extends BaseAdapter {
 
     public View getView(int position, View convertView, ViewGroup viewGroup) {
         Contact entry = (Contact) listContact.get(position);
+        
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.contact, null);
         }
-        
+        view = convertView;
         
         TextView contactName = (TextView) convertView.findViewById(R.id.contact_name);
         contactName.setText(entry.getName());
@@ -73,18 +94,9 @@ public class ContactAdapter extends BaseAdapter {
         else
         	moderator.setImageDrawable(this.context.getResources().getDrawable(R.drawable.empty));
         
+        setPresenterStatus(entry);
+        setStreamStatus(entry);
         
-        ImageView presenter = (ImageView) convertView.findViewById(R.id.presenter);
-        if(entry.isPresenter())
-        	presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.presenter));
-        else
-        	presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.empty));
-        
-        ImageView stream = (ImageView) convertView.findViewById(R.id.stream);
-        if(entry.hasStream())
-        	stream.setImageDrawable(this.context.getResources().getDrawable(R.drawable.stream));
-        else
-        	stream.setImageDrawable(this.context.getResources().getDrawable(R.drawable.empty));
         
         ImageView raiseHand = (ImageView) convertView.findViewById(R.id.raise_hand);
         if(entry.isRaiseHand())

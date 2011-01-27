@@ -13,4 +13,8 @@ public interface IBigBlueButtonClientListener {
 	public void onParticipantLeft(IParticipant p);
 	public void onParticipantJoined(IParticipant p);
 	
+	public void onParticipanChangedPresenterStatus(IParticipant p);
+	public void onParticipantChangedStreamStatus(IParticipant p);
+	public void onParticipanChangedRaiseHandStatus(IParticipant p);
+	
 }

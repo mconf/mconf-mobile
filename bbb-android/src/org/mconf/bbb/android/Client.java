@@ -40,6 +40,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static BigBlueButtonClient bbbClient = new BigBlueButtonClient();
 	private ContactAdapter adapter;
 	public String contactName= new String();
+	List<IParticipant> listOfContacts;
 	
 
 	@Override
@@ -55,7 +56,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
         
         ListView list = (ListView)findViewById(R.id.list);
         
-        List<IParticipant> listOfContacts = new ArrayList<IParticipant>();
+         listOfContacts = new ArrayList<IParticipant>();
         adapter = new ContactAdapter(this, listOfContacts);
         
         
@@ -75,8 +76,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
         		// When clicked, show a dialog to confirm the private chat
         		// set the message to display
         		AlertDialog.Builder alertbox = new AlertDialog.Builder(context);
-        		alertbox.setMessage("Start private chat with " + ((TextView) view).getText() +"?");
-        		contactName = (String) ((TextView) view).getText();
+        		
+        		alertbox.setMessage("Start private chat with " + listOfContacts.get(position).getName() +"?");
+        		contactName = listOfContacts.get(position).getName();
         		// add a neutral button to the alert box and assign a click listener
         		alertbox.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
         			public void onClick(DialogInterface dialog, int id) {
@@ -170,6 +172,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			}
 		});
 	}
+	
+	
+	
 	@Override
 	public void onPrivateChatMessage(ChatMessage message, IParticipant source) {
 		// TODO Auto-generated method stub
@@ -177,6 +182,31 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	}
 	@Override
 	public void onPublicChatMessage(ChatMessage message, IParticipant source) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onParticipanChangedPresenterStatus(final IParticipant p) {
+		// TODO Auto-generated method stub
+		runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				adapter.notifyDataSetChanged();
+				
+				adapter.setPresenterStatus((Contact)p);
+				//como fazer funcionar?
+			}
+		});
+		
+	}
+	@Override
+	public void onParticipantChangedStreamStatus(IParticipant p) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onParticipanChangedRaiseHandStatus(IParticipant p) {
 		// TODO Auto-generated method stub
 		
 	}
