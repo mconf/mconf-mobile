@@ -1,11 +1,16 @@
 package org.mconf.bbb.android;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.users.Participant;
 
+
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
@@ -17,12 +22,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
+import android.util.Log;
 
-public class Client extends ListActivity implements IBigBlueButtonClientListener {
+public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static final int MENU_PUBLIC_CHAT = Menu.FIRST;
 	public static final int MENU_PRIVATE_CHAT = Menu.FIRST + 1;
 	public static final int MENU_QUIT = Menu.FIRST + 2;
@@ -31,9 +38,9 @@ public class Client extends ListActivity implements IBigBlueButtonClientListener
 	public static final int PRIVATE_CHAT= 0;
 
 	public static BigBlueButtonClient bbbClient = new BigBlueButtonClient();
-	private ArrayAdapter<String> listViewAdapter;
-
+	private ContactAdapter adapter;
 	public String contactName= new String();
+	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -46,19 +53,28 @@ public class Client extends ListActivity implements IBigBlueButtonClientListener
         String username = extras.getString("username");
         Toast.makeText(getApplicationContext(),"Be welcome, " + username, Toast.LENGTH_SHORT).show(); 
         
-//        listViewAdapter = new ArrayAdapter<String>(this, R.layout.contact);
-        listViewAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        ListView list = (ListView)findViewById(R.id.list);
+        
+        List<Contact> listOfContacts = new ArrayList<Contact>();
+        adapter = new ContactAdapter(this, listOfContacts);
+        
+        
+//       listViewAdapter = new ArrayAdapter<String>(this, R.layout.contact);
+   /*     listViewAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
         ListView view = getListView();
         view.setTextFilterEnabled(true);
         view.setAdapter(listViewAdapter);
-        
+        */
         bbbClient.addListener(this);
         
+        list.setAdapter(adapter);
         
-        ListView lv = getListView();
-        lv.setTextFilterEnabled(true);
+        
+        //ListView lv = getListView();
+        //lv.setTextFilterEnabled(true);
+        
         final Context context = this;
-        lv.setOnItemClickListener(new OnItemClickListener() {
+        list.setOnItemClickListener(new OnItemClickListener() {
         	@Override
         	public void onItemClick(AdapterView<?> parent, View view,
         			int position, long id) {
@@ -141,8 +157,11 @@ public class Client extends ListActivity implements IBigBlueButtonClientListener
 			
 			@Override
 			public void run() {
-				listViewAdapter.notifyDataSetChanged();
-				listViewAdapter.add(p.getName());
+				
+				
+				adapter.notifyDataSetChanged();
+				System.out.println("novo");
+				 adapter.addSection(p);
 			}
 		});		
 	}
@@ -152,8 +171,8 @@ public class Client extends ListActivity implements IBigBlueButtonClientListener
 			
 			@Override
 			public void run() {
-				listViewAdapter.notifyDataSetChanged();
-				listViewAdapter.remove(p.getName());
+				adapter.notifyDataSetChanged();
+				// modificar adapter.remove(p.getName());
 			}
 		});
 	}
