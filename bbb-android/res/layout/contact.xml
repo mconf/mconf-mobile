@@ -4,6 +4,7 @@
 <RelativeLayout android:id="@+id/RelativeLayout01"
 android:layout_width="fill_parent"
 android:layout_height="fill_parent"
+android:background ="@color/background"
 xmlns:android="http://schemas.android.com/apk/res/android">
      
      <ImageView android:id="@+id/moderator"
@@ -18,8 +19,9 @@ xmlns:android="http://schemas.android.com/apk/res/android">
 	android:layout_height="wrap_content"
 	android:layout_toRightOf="@+id/moderator"
 	android:layout_alignTop="@+id/moderator"
-	android.textSize = "30sp"
-	>
+	android:textAppearance="?android:attr/textAppearanceLarge" 
+	android:minHeight="?android:attr/listPreferredItemHeight" 
+	android:gravity="center">
 	 </TextView>
 	
 	<ImageView android:id="@+id/raise_hand"

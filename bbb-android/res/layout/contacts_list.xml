@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background ="@color/background"
     >
 
   <ListView android:id="@+id/list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:divider="@color/background"
+        android:layout_alignParentTop="true"
+
         />
-  	<TextView android:id="@+id/empty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="no contacts"
-        />
+  	
         
-
-
-
-</LinearLayout>
+		<ImageView android:id="@+id/bbb" 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"
+		android:src="@drawable/bbb_logo"
+		android:baselineAlignBottom= "true" 
+		android:layout_alignParentBottom="true"
+		></ImageView>
+</RelativeLayout>

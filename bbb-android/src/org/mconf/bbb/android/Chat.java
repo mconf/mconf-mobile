@@ -3,17 +3,21 @@ package org.mconf.bbb.android;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
+import org.mconf.bbb.chat.ChatModule;
 
 
 public class Chat extends Activity{
 	final static int PUBLIC_CHAT = 1;
 	final static int PRIVATE_CHAT= 0;
 	int chatMode;
+	private ArrayAdapter<String> listViewAdapter;
 	
 	private void setChatMode(int mode)
 	{
@@ -25,20 +29,24 @@ public class Chat extends Activity{
 		return this.chatMode;
 	}
 	
-	public void addChatMessage()
+	public void addChatMessage(String message)
 	{
 		
-//		String[] contacts;
-//		contacts = handler.getContacts(); //função que busca os cantatos logados na sala do BBB [a ser definida]
-		// Now create an array adapter and set it to display using our row
-//		this.setListAdapter(new ArrayAdapter<String>(this,R.layout.contact, contacts)); 
-
+		listViewAdapter.notifyDataSetChanged();
+		listViewAdapter.add(message);
+		
 	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.chat);
+        
+        listViewAdapter = new ArrayAdapter<String>(this, R.layout.chat_message);
+        ListView view = (ListView)findViewById(R.id.messages);
+        view.setTextFilterEnabled(true);
+        view.setAdapter(listViewAdapter);
         
         Bundle extras = getIntent().getExtras();
         int mode = extras.getInt("chatMode");
@@ -66,6 +74,7 @@ public class Chat extends Activity{
 					EditText chatMessageEdit = (EditText) findViewById(R.id.chatMessage);
 			    	String chatMessage = chatMessageEdit.getText().toString();
 			    	System.out.println(chatMessage);
+			    	addChatMessage(chatMessage);
 			    	chatMessageEdit.setText("");
 					//mandar a mensagem
 			    	//if(this.getChatMode()==PUBLIC_CHAT)

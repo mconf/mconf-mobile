@@ -46,7 +46,8 @@ android:background="@color/background">
 	android:layout_below="@+id/chatMode" 
 	android:layout_alignLeft="@+id/chatMode" 
 	android:layout_alignRight="@+id/chatMode" 
-	android:layout_alignParentRight="true">
+	android:layout_alignParentRight="true"
+	android:divider="@color/background">
 	</ListView>
 
 </RelativeLayout>
