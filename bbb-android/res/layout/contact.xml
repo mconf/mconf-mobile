@@ -17,8 +17,9 @@ xmlns:android="http://schemas.android.com/apk/res/android">
 	android:layout_width="wrap_content"
 	android:layout_height="wrap_content"
 	android:layout_toRightOf="@+id/moderator"
-	 android:layout_alignTop="@+id/moderator"
-	 android:layout_alignBottom="@+id/moderator">
+	android:layout_alignTop="@+id/moderator"
+	android.textSize = "30sp"
+	>
 	 </TextView>
 	
 	<ImageView android:id="@+id/raise_hand"

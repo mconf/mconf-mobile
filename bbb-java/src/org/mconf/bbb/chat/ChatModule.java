@@ -12,7 +12,7 @@ import org.jboss.netty.channel.Channel;
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.Module;
 import org.mconf.bbb.RtmpConnectionHandler;
-import org.mconf.bbb.users.Participant;
+import org.mconf.bbb.users.IParticipant;
 import org.red5.server.api.IAttributeStore;
 import org.red5.server.api.so.IClientSharedObject;
 import org.red5.server.api.so.ISharedObjectBase;
@@ -175,11 +175,11 @@ public class ChatModule extends Module implements ISharedObjectListener {
 	}
 	
 	public void onPublicChatMessage(ChatMessage chatMessage) {
-		Participant source = handler.getUsers().getParticipants().get(chatMessage.getUserId());
+		IParticipant source = handler.getUsers().getParticipants().get(chatMessage.getUserId());
 		onPublicChatMessage(chatMessage, source);
 	}
 	
-	public void onPublicChatMessage(ChatMessage chatMessage, Participant source) {
+	public void onPublicChatMessage(ChatMessage chatMessage, IParticipant source) {
 		for (IBigBlueButtonClientListener l : handler.getListeners()) {
 			l.onPublicChatMessage(chatMessage, source);
 		}
@@ -187,7 +187,7 @@ public class ChatModule extends Module implements ISharedObjectListener {
 		publicChatMessages.add(chatMessage);
 	}
 
-	public void onPrivateChatMessage(ChatMessage chatMessage, Participant source) {
+	public void onPrivateChatMessage(ChatMessage chatMessage, IParticipant source) {
 		for (IBigBlueButtonClientListener l : handler.getListeners()) {
 			l.onPrivateChatMessage(chatMessage, source);
 		}

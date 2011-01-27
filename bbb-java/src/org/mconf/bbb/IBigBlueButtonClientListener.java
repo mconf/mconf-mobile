@@ -1,16 +1,16 @@
 package org.mconf.bbb;
 
 import org.mconf.bbb.chat.ChatMessage;
-import org.mconf.bbb.users.Participant;
+import org.mconf.bbb.users.IParticipant;
 
 public interface IBigBlueButtonClientListener {
 
-	public void onPublicChatMessage(ChatMessage message, Participant source);
-	public void onPrivateChatMessage(ChatMessage message, Participant source);
+	public void onPublicChatMessage(ChatMessage message, IParticipant source);
+	public void onPrivateChatMessage(ChatMessage message, IParticipant source);
 	public void onConnected();
 	public void onDisconnected();
 	public void onKickUserCallback();
-	public void onParticipantLeft(Participant p);
-	public void onParticipantJoined(Participant p);
+	public void onParticipantLeft(IParticipant p);
+	public void onParticipantJoined(IParticipant p);
 	
 }

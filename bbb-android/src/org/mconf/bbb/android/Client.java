@@ -7,7 +7,7 @@ import java.util.List;
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.chat.ChatMessage;
-import org.mconf.bbb.users.Participant;
+import org.mconf.bbb.users.IParticipant;
 
 
 import android.app.Activity;
@@ -55,31 +55,23 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
         
         ListView list = (ListView)findViewById(R.id.list);
         
-        List<Contact> listOfContacts = new ArrayList<Contact>();
+        List<IParticipant> listOfContacts = new ArrayList<IParticipant>();
         adapter = new ContactAdapter(this, listOfContacts);
         
         
-//       listViewAdapter = new ArrayAdapter<String>(this, R.layout.contact);
-   /*     listViewAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-        ListView view = getListView();
-        view.setTextFilterEnabled(true);
-        view.setAdapter(listViewAdapter);
-        */
+
         bbbClient.addListener(this);
         
         list.setAdapter(adapter);
         
-        
-        //ListView lv = getListView();
-        //lv.setTextFilterEnabled(true);
-        
+                       
         final Context context = this;
         list.setOnItemClickListener(new OnItemClickListener() {
         	@Override
         	public void onItemClick(AdapterView<?> parent, View view,
         			int position, long id) {
 
-
+        		
         		// When clicked, show a dialog to confirm the private chat
         		// set the message to display
         		AlertDialog.Builder alertbox = new AlertDialog.Builder(context);
@@ -109,6 +101,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
         	}
 
         });
+      
 	}
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -152,7 +145,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		
 	}
 	@Override
-	public void onParticipantJoined(final Participant p) {
+	public void onParticipantJoined(final IParticipant p) {
 		runOnUiThread(new Runnable() {
 			
 			@Override
@@ -160,29 +153,30 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				
 				
 				adapter.notifyDataSetChanged();
-				System.out.println("novo");
-				 adapter.addSection(p);
+				adapter.addSection(p);
 			}
 		});		
 	}
 	@Override
-	public void onParticipantLeft(final Participant p) {
+	public void onParticipantLeft(final IParticipant p) {
 		runOnUiThread(new Runnable() {
 			
 			@Override
 			public void run() {
 				adapter.notifyDataSetChanged();
-				// modificar adapter.remove(p.getName());
+				
+				adapter.removeSection(p.getName());
+				
 			}
 		});
 	}
 	@Override
-	public void onPrivateChatMessage(ChatMessage message, Participant source) {
+	public void onPrivateChatMessage(ChatMessage message, IParticipant source) {
 		// TODO Auto-generated method stub
 		
 	}
 	@Override
-	public void onPublicChatMessage(ChatMessage message, Participant source) {
+	public void onPublicChatMessage(ChatMessage message, IParticipant source) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -2,7 +2,7 @@ package org.mconf.bbb.android;
 
 import java.util.List;
 
-import org.mconf.bbb.users.Participant;
+import org.mconf.bbb.users.IParticipant;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -17,16 +17,27 @@ import android.widget.TextView;
 public class ContactAdapter extends BaseAdapter {
 	private Context context;
 
-    private List<Contact> listContact;
+    private List<IParticipant> listContact;
 
-    public ContactAdapter(Context context, List<Contact> listContact) {
+    public ContactAdapter(Context context, List<IParticipant> listContact) {
         this.context = context;
         this.listContact = listContact;
     }
     
-    public void addSection(Participant adapter) {
-    	Contact contact = (Contact)adapter;
-        listContact.add(contact);
+    public void addSection(IParticipant newParticipant) {
+    	Contact contact = new Contact (newParticipant);
+       listContact.add(contact);
+    	
+         }
+    
+    public void removeSection(String name){
+    	Contact contact;
+    	int location=0;
+    	while(listContact.get(location).getName().equals(name)==false)
+    		location++;
+    	
+    	contact=(Contact) listContact.get(location);
+    	listContact.remove(contact);
     }
 
     
@@ -43,7 +54,7 @@ public class ContactAdapter extends BaseAdapter {
     }
 
     public View getView(int position, View convertView, ViewGroup viewGroup) {
-        Contact entry = listContact.get(position);
+        Contact entry = (Contact) listContact.get(position);
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -52,8 +63,8 @@ public class ContactAdapter extends BaseAdapter {
         
         
         TextView contactName = (TextView) convertView.findViewById(R.id.contact_name);
-        contactName.setText(entry.getContactName());
-        
+        contactName.setText(entry.getName());
+        contactName.setTag(entry.getName());
 
        
         ImageView moderator = (ImageView) convertView.findViewById(R.id.moderator);

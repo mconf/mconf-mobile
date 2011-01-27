@@ -69,7 +69,7 @@ public class UsersModule extends Module implements ISharedObjectListener {
 				return;
 			}
 			if (method.equals("participantLeft")) {
-				Participant p = participants.get(((Double) params.get(0)).intValue());
+				IParticipant p = participants.get(((Double) params.get(0)).intValue());
 				for (IBigBlueButtonClientListener l : handler.getListeners()) {
 					l.onParticipantLeft(p);
 				}
