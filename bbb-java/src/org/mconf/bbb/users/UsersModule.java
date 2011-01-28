@@ -82,6 +82,11 @@ public class UsersModule extends Module implements ISharedObjectListener {
 				onParticipantJoined(p);
 				return;
 			}
+			if (method.equals("participantStatusChange")) {
+				Participant p = participants.get(((Double) params.get(0)).intValue());
+				onParticipantStatusChange(p, (String) params.get(1), params.get(2));
+				return;
+			}
 		}
 	}
 
@@ -147,6 +152,30 @@ public class UsersModule extends Module implements ISharedObjectListener {
 		}				
 		log.info("new participant: {}", p.toString());
 		participants.put(p.getUserId(), p);			
+	}
+	
+	private void onParticipantStatusChange(Participant p, String key,
+			Object value) {
+		log.debug("participantStatusChange: " + p.getName() + " status: " + key + " value: " + value.toString());
+		if (key.equals("presenter")) {
+			p.getStatus().setPresenter((Boolean) value);
+			for (IBigBlueButtonClientListener l : handler.getListeners()) {
+				l.onParticipantStatusChangePresenter(p);
+			}
+		} else if (key.equals("hasStream")) {
+			p.getStatus().setHasStream((Boolean) value);
+			for (IBigBlueButtonClientListener l : handler.getListeners()) {
+				l.onParticipantStatusChangeHasStream(p);
+			}
+		} else if (key.equals("streamName")) {
+			p.getStatus().setStreamName((String) value);
+		} else if (key.equals("raiseHand")) {
+			p.getStatus().setRaiseHand((Boolean) value);
+			for (IBigBlueButtonClientListener l : handler.getListeners()) {
+				l.onParticipantStatusChangeRaiseHand(p);
+			}
+		}
+		
 	}
 	
 }

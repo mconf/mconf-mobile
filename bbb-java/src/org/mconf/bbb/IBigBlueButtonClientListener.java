@@ -2,6 +2,7 @@ package org.mconf.bbb;
 
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.users.IParticipant;
+import org.mconf.bbb.users.Participant;
 
 public interface IBigBlueButtonClientListener {
 
@@ -13,8 +14,8 @@ public interface IBigBlueButtonClientListener {
 	public void onParticipantLeft(IParticipant p);
 	public void onParticipantJoined(IParticipant p);
 	
-	public void onParticipanChangedPresenterStatus(IParticipant p);
-	public void onParticipantChangedStreamStatus(IParticipant p);
-	public void onParticipanChangedRaiseHandStatus(IParticipant p);
+	public void onParticipantStatusChangePresenter(IParticipant p);
+	public void onParticipantStatusChangeHasStream(IParticipant p);
+	public void onParticipantStatusChangeRaiseHand(IParticipant p);
 	
 }

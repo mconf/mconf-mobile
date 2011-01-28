@@ -234,9 +234,9 @@ public class BigBlueButtonClient implements IBigBlueButtonClient {
 		client.load();
 		
 		if (!client.getMeetings().isEmpty()) {
-			JoinedMeeting meeting = client.join(client.getMeetings().get(0), "Eclipse", false);
+			JoinedMeeting meeting = client.join("Demo Meeting", "Eclipse", false);
 			if (meeting != null) {
-				client.connectToRtmp(meeting);
+				log.info("CONNECTED!");
 			}
 		}
 	}
