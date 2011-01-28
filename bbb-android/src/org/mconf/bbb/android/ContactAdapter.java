@@ -8,7 +8,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,29 +25,26 @@ public class ContactAdapter extends BaseAdapter {
         this.listContact = listContact;
     }
     
-    public void addSection(IParticipant newParticipant) {
-    	Contact contact = new Contact (newParticipant);
-       listContact.add(contact);
-    	
-         }
+    public void addSection(IParticipant participant) {
+    	Contact contact = new Contact(participant);
+    	listContact.add(contact);
+    }
     
-    public void removeSection(String name){
-    	Contact contact;
-    	int location=0;
-    	while(listContact.get(location).getName().equals(name)==false)
-    		location++;
-    	
-    	contact=(Contact) listContact.get(location);
-    	listContact.remove(contact);
+    public void removeSection(IParticipant participant){
+    	for (IParticipant c : listContact)
+    		if (participant.getUserId() == c.getUserId()) {
+    			listContact.remove(c);
+    			break;
+    		}    			
     }
     
     public void setPresenterStatus(Contact changedStatus)
     {
-    	 ImageView presenter = (ImageView) view.findViewById(R.id.presenter);
-        if(changedStatus.isPresenter())
-        	presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.presenter));
-        else
-        	presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.empty));
+    	ImageView presenter = (ImageView) view.findViewById(R.id.presenter);
+    	if(changedStatus.isPresenter())
+    		presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.presenter));
+    	else
+    		presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.empty));
     }
 
     public void setStreamStatus( Contact changedStatus)

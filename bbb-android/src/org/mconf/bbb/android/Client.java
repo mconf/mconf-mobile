@@ -153,10 +153,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			
 			@Override
 			public void run() {
-				
-				
-				adapter.notifyDataSetChanged();
 				adapter.addSection(p);
+				adapter.notifyDataSetChanged();
 			}
 		});		
 	}
@@ -166,10 +164,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			
 			@Override
 			public void run() {
-				adapter.notifyDataSetChanged();
-				
-				adapter.removeSection(p.getName());
-				
+				adapter.removeSection(p);
+				adapter.notifyDataSetChanged();		
 			}
 		});
 	}

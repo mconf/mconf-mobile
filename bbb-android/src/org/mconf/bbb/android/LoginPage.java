@@ -72,7 +72,7 @@ public class LoginPage extends Activity {
                 		return;
                 	}
 
-                	if (Client.bbbClient.join(Client.bbbClient.getMeetings().get(spinner.getSelectedItemPosition()), username, false) == null) {
+                	if (Client.bbbClient.join((String) spinner.getSelectedItem(), username, false) == null) {
 	                	Toast.makeText(getApplicationContext(), "Can't join the meeting", Toast.LENGTH_SHORT);
 	                	return;
 	                }
