@@ -7,8 +7,9 @@ public class Status {
 	private boolean raiseHand;
 	private boolean hasStream;
 	private boolean presenter;
+	private String streamName;
 
-	public Status(Map<String, Boolean> param) {
+	public Status(Map<String, Object> param) {
 		decode(param);
 	}
 	
@@ -16,10 +17,11 @@ public class Status {
 	 * example:
 	 * {raiseHand=false, hasStream=false, presenter=true}
 	 */
-	public void decode(Map<String, Boolean> param) {
-		raiseHand = param.get("raiseHand");
-		hasStream = param.get("hasStream");
-		presenter = param.get("presenter");
+	public void decode(Map<String, Object> param) {
+		raiseHand = (Boolean) param.get("raiseHand");
+		hasStream = (Boolean) param.get("hasStream");
+		streamName = hasStream? (String) param.get("streamName") : "";
+		presenter = (Boolean) param.get("presenter");
 	}
 
 	public boolean isRaiseHand() {
@@ -38,6 +40,14 @@ public class Status {
 		this.hasStream = hasStream;
 	}
 
+	public String getStreamName() {
+		return streamName;
+	}
+
+	public void setStreamName(String streamName) {
+		this.streamName = streamName;
+	}
+
 	public boolean isPresenter() {
 		return presenter;
 	}
@@ -49,7 +59,8 @@ public class Status {
 	@Override
 	public String toString() {
 		return "Status [hasStream=" + hasStream + ", presenter=" + presenter
-				+ ", raiseHand=" + raiseHand + "]";
+				+ ", raiseHand=" + raiseHand + ", streamName=" + streamName
+				+ "]";
 	}
 
 }

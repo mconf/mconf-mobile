@@ -23,7 +23,7 @@ public class Participant implements IParticipant {
 	 */
 	@SuppressWarnings("unchecked")
 	public void decode(Map<String, Object> param) {
-		status = new Status((Map<String, Boolean>) param.get("status"));
+		status = new Status((Map<String, Object>) param.get("status"));
 		name = (String) param.get("name");
 		userid = ((Double) param.get("userid")).intValue();
 		role = (String) param.get("role");
