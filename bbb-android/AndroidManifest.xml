@@ -12,7 +12,7 @@
 		</activity>
 		<activity android:name="Client" android:label="@string/app_name">
 		</activity>
-		<activity android:name="Chat" android:label="@string/app_name">
+		<activity android:name="PrivateChat" android:label="@string/app_name">
 		</activity>
 
 	</application>

@@ -13,6 +13,9 @@ import org.mconf.bbb.users.IParticipant;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -43,6 +46,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public String contactName= new String();
 	List<IParticipant> listOfContacts;
 	int userID;
+	String username = new String();
+	final static int NOTIFICATION_ID = 1;
 	
 	public String getContactName()
 	{
@@ -57,7 +62,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
         
         
         Bundle extras = getIntent().getExtras();
-        String username = extras.getString("username");
+       username = extras.getString("username");
         Toast.makeText(getApplicationContext(),"Be welcome, " + username, Toast.LENGTH_SHORT).show(); 
         
         ListView list = (ListView)findViewById(R.id.list);
@@ -90,10 +95,13 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
         		alertbox.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
         			public void onClick(DialogInterface dialog, int id) {
         				//start private chat
-        				Intent chatIntent = new Intent(getApplicationContext(), Chat.class);
-		                chatIntent.putExtra("contactName", contactName);
-		                chatIntent.putExtra("chatMode", PRIVATE_CHAT);
+        				Intent chatIntent = new Intent(getApplicationContext(), PrivateChat.class);
+		                
+        				chatIntent.putExtra("contactName", contactName);
+		                chatIntent.putExtra("myName", username);
 		                chatIntent.putExtra("userID", userID );
+		                chatIntent.putExtra("chatMessage", "");
+		                
 		                startActivityForResult(chatIntent, 0);
         				
         			}
@@ -125,7 +133,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
         switch (item.getItemId()) {
 	        case MENU_PUBLIC_CHAT:
 	            //abrir o chat
-            	Intent chatIntent = new Intent(getApplicationContext(), Chat.class);
+            	Intent chatIntent = new Intent(getApplicationContext(), PrivateChat.class);
                 chatIntent.putExtra("chatMode", PUBLIC_CHAT);
                 startActivityForResult(chatIntent, 0);
                 
@@ -181,16 +189,44 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	
 	@Override
 	public void onPrivateChatMessage(ChatMessage message, IParticipant source) {
+		 CharSequence title = "Hello";
+	        CharSequence messagewhat = "Hello, Android!";
+	 
+	        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+	        Notification notification = new Notification(R.drawable.icon_bbb, "New Private Message!", System.currentTimeMillis());
+	 
+	        Intent notificationIntent = new Intent(this, PrivateChat.class);
+	        
+	        notificationIntent.putExtra("chatMessage", message.getMessage());
+	        notificationIntent.putExtra("contactName", source.getName());
+	        notificationIntent.putExtra("myName", username);
+	        notificationIntent.putExtra("userID", source.getUserId() );
+	        
+	        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+	        
+            
+	        notification.setLatestEventInfo(getApplicationContext(), title, messagewhat, contentIntent);
+	        notificationManager.notify(NOTIFICATION_ID, notification);
 		// TODO Auto-generated method stub
 		
 	}
 	@Override
 	public void onPublicChatMessage(ChatMessage message, IParticipant source) {
 		// TODO Auto-generated method stub
-		
+
 	}
+
+	
+	
+	
+	public BigBlueButtonClient getBbbClient()
+	{
+		return this.bbbClient;
+	}
+
 	@Override
-	public void onParticipanChangedPresenterStatus(final IParticipant p) {
+	public void onParticipantStatusChangePresenter(final IParticipant p) {
 		// TODO Auto-generated method stub
 		runOnUiThread(new Runnable() {
 			
@@ -198,25 +234,21 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			public void run() {
 				adapter.notifyDataSetChanged();
 				
-				adapter.setPresenterStatus((Contact)p);
-				//como fazer funcionar?
+				adapter.setPresenterStatus((Contact) p);
+				//cast exception
 			}
 		});
-		
 	}
+
 	@Override
-	public void onParticipantChangedStreamStatus(IParticipant p) {
+	public void onParticipantStatusChangeHasStream(IParticipant p) {
 		// TODO Auto-generated method stub
 		
 	}
+
 	@Override
-	public void onParticipanChangedRaiseHandStatus(IParticipant p) {
+	public void onParticipantStatusChangeRaiseHand(IParticipant p) {
 		// TODO Auto-generated method stub
 		
-	}
-	
-	public BigBlueButtonClient getBbbClient()
-	{
-		return this.bbbClient;
 	}
 }

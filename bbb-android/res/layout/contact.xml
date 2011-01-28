@@ -11,7 +11,8 @@ xmlns:android="http://schemas.android.com/apk/res/android">
      android:layout_width="wrap_content"
      android:layout_alignParentLeft="true"
      android:layout_height="wrap_content"
-     android:layout_centerVertical="true">
+     android:layout_centerVertical="true"
+     >
      </ImageView>
      
 	<TextView  android:id="@+id/contact_name"
@@ -21,14 +22,18 @@ xmlns:android="http://schemas.android.com/apk/res/android">
 	android:layout_alignTop="@+id/moderator"
 	android:textAppearance="?android:attr/textAppearanceLarge" 
 	android:minHeight="?android:attr/listPreferredItemHeight" 
-	android:gravity="center">
+	android:gravity="center"
+	android:textColor="@color/text_color"
+	android:text = "hello">
 	 </TextView>
 	
-	<ImageView android:id="@+id/raise_hand"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:layout_toRightOf="@+id/contact_name"
-	android:layout_alignTop="@+id/contact_name">
+	<ImageView android:id="@+id/raise_hand" 
+	android:src="@drawable/raise_hand" 
+	android:layout_height="wrap_content" 
+	android:layout_width="wrap_content" 
+	android:layout_toRightOf="@+id/contact_name" 
+	android:layout_alignTop="@+id/contact_name" 
+	android:layout_alignBottom="@+id/contact_name">
 	</ImageView>
 	
 	<ImageView android:id="@+id/stream"
@@ -46,6 +51,8 @@ xmlns:android="http://schemas.android.com/apk/res/android">
 	android:layout_alignTop="@+id/stream"
 	 android:layout_alignBottom="@+id/stream" >
 	 </ImageView>
+
+
 </RelativeLayout>
 
 	
