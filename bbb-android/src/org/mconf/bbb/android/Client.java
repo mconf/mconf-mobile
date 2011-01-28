@@ -42,7 +42,12 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	private ContactAdapter adapter;
 	public String contactName= new String();
 	List<IParticipant> listOfContacts;
+	int userID;
 	
+	public String getContactName()
+	{
+		return this.contactName;
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -80,6 +85,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
         		
         		alertbox.setMessage("Start private chat with " + listOfContacts.get(position).getName() +"?");
         		contactName = listOfContacts.get(position).getName();
+        		userID = listOfContacts.get(position).getUserId();
         		// add a neutral button to the alert box and assign a click listener
         		alertbox.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
         			public void onClick(DialogInterface dialog, int id) {
@@ -87,6 +93,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
         				Intent chatIntent = new Intent(getApplicationContext(), Chat.class);
 		                chatIntent.putExtra("contactName", contactName);
 		                chatIntent.putExtra("chatMode", PRIVATE_CHAT);
+		                chatIntent.putExtra("userID", userID );
 		                startActivityForResult(chatIntent, 0);
         				
         			}
@@ -206,5 +213,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public void onParticipanChangedRaiseHandStatus(IParticipant p) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public BigBlueButtonClient getBbbClient()
+	{
+		return this.bbbClient;
 	}
 }

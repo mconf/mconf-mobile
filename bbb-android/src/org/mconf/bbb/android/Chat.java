@@ -18,6 +18,8 @@ public class Chat extends Activity{
 	final static int PRIVATE_CHAT= 0;
 	int chatMode;
 	private ArrayAdapter<String> listViewAdapter;
+	private Client client = new Client();
+	int userID;
 	
 	private void setChatMode(int mode)
 	{
@@ -29,12 +31,12 @@ public class Chat extends Activity{
 		return this.chatMode;
 	}
 	
-	public void addChatMessage(String message)
+	public void addPrivateChatMessage(String message, int userID)
 	{
 		
 		listViewAdapter.notifyDataSetChanged();
-		listViewAdapter.add(message);
-		
+		listViewAdapter.add(client.getContactName()+": " + message);
+		client.getBbbClient().sendPrivateChatMessage(message, userID);
 	}
 	
 	@Override
@@ -63,26 +65,25 @@ public class Chat extends Activity{
 			 chatMode=(TextView) findViewById(R.id.chatMode);
 			 chatMode.setText("Private chat with " + contactName);
 			 this.setChatMode(mode);
+			 
+			 userID = extras.getInt("userID");
+			 Button send = (Button)findViewById(R.id.sendMessage);
+				send.setOnClickListener( new OnClickListener()
+		        {
+		               @Override
+		                public void onClick(View viewParam)
+		                {
+							EditText chatMessageEdit = (EditText) findViewById(R.id.chatMessage);
+					    	String chatMessage = chatMessageEdit.getText().toString();
+					    	System.out.println(chatMessage);
+					    	addPrivateChatMessage(chatMessage, userID);
+					    	chatMessageEdit.setText("");
+										    		
+		                }
+		        }
+				);
+			}
 		}
 		
-		Button send = (Button)findViewById(R.id.sendMessage);
-		send.setOnClickListener( new OnClickListener()
-        {
-               @Override
-                public void onClick(View viewParam)
-                {
-					EditText chatMessageEdit = (EditText) findViewById(R.id.chatMessage);
-			    	String chatMessage = chatMessageEdit.getText().toString();
-			    	System.out.println(chatMessage);
-			    	addChatMessage(chatMessage);
-			    	chatMessageEdit.setText("");
-					//mandar a mensagem
-			    	//if(this.getChatMode()==PUBLIC_CHAT)
-			    		//mandar para todos
-			    	//else
-			    		
-                }
-        }
-		);
-	}
+		
 }
