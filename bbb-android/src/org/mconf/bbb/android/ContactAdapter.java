@@ -44,16 +44,16 @@ public class ContactAdapter extends BaseAdapter {
     	if(changedStatus.isPresenter())
     		presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.presenter));
     	else
-    		presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.empty));
+    		presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.user));
     }
 
     public void setStreamStatus( Contact changedStatus)
     {
     	ImageView stream = (ImageView) view.findViewById(R.id.stream);
         if(changedStatus.hasStream())
-        	stream.setImageDrawable(this.context.getResources().getDrawable(R.drawable.stream));
+        	stream.setImageDrawable(this.context.getResources().getDrawable(R.drawable.webcam));
         else
-        	stream.setImageDrawable(this.context.getResources().getDrawable(R.drawable.empty));
+        	stream.setVisibility(ImageView.INVISIBLE);
     }
     //continuar refatorando
     
@@ -86,9 +86,9 @@ public class ContactAdapter extends BaseAdapter {
        
         ImageView moderator = (ImageView) convertView.findViewById(R.id.moderator);
         if(entry.isModerator())
-           	moderator.setImageDrawable(this.context.getResources().getDrawable(R.drawable.moderator));
+           	moderator.setImageDrawable(this.context.getResources().getDrawable(R.drawable.administrator));
         else
-        	moderator.setImageDrawable(this.context.getResources().getDrawable(R.drawable.empty));
+        	moderator.setImageDrawable(this.context.getResources().getDrawable(R.drawable.participant));
         
         setPresenterStatus(entry);
         setStreamStatus(entry);
@@ -96,9 +96,9 @@ public class ContactAdapter extends BaseAdapter {
         
         ImageView raiseHand = (ImageView) convertView.findViewById(R.id.raise_hand);
         if(entry.isRaiseHand())
-        	raiseHand.setImageDrawable(this.context.getResources().getDrawable(R.drawable.raise_hand));
+        	raiseHand.setImageDrawable(this.context.getResources().getDrawable(R.drawable.raisehand));
         else
-        	raiseHand.setImageDrawable(this.context.getResources().getDrawable(R.drawable.empty));
+        	raiseHand.setVisibility(ImageView.INVISIBLE);
                       
 
         return convertView;
