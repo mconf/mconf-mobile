@@ -1,5 +1,6 @@
 package org.mconf.bbb.android;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
@@ -8,13 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.ArrayAdapter;
@@ -32,7 +34,6 @@ public class LoginPage extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.login);
         
         final Spinner spinner = (Spinner) findViewById(R.id.login_spinner);
@@ -41,17 +42,18 @@ public class LoginPage extends Activity {
         spinner.setAdapter(spinnerAdapter);
 
         spinner.setOnTouchListener(new OnTouchListener() {
-			
+
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+				if (event.getAction() == MotionEvent.ACTION_DOWN) {					
 					updateMeetingsList();
-				}
+					return true;
+				} 
 				return false;
 			}
 		});
         
-        final Button join = (Button)findViewById(R.id.login_button_join);       
+        final Button join = (Button) findViewById(R.id.login_button_join);       
         join.setOnClickListener( new OnClickListener()
         {
                @Override
@@ -60,7 +62,7 @@ public class LoginPage extends Activity {
                 	EditText usernameEditText = (EditText) findViewById(R.id.login_edittext_name);
                 	String username = usernameEditText.getText().toString();
                 	                	 
-                	if (username.length() < 1) {                		
+                	if (username.length() < 1) {
                 		Toast.makeText(getApplicationContext(),"Empty username", Toast.LENGTH_SHORT).show();  
                         return;
                 	}
@@ -75,7 +77,6 @@ public class LoginPage extends Activity {
 	                	return;
 	                }
 	                
-	                //chamar a outra view
 	                Intent myIntent = new Intent(getApplicationContext(), Client.class);
 	                myIntent.putExtra("username", username);
 	                startActivity(myIntent);
@@ -104,18 +105,46 @@ public class LoginPage extends Activity {
         	return;
         }
         
-        final List<Meeting> meetings = Client.bbbClient.getMeetings();
-        
-        runOnUiThread(new Runnable() {
-			
+		final ProgressDialog progressDialog = ProgressDialog.show(this, "", "Updating meeting list", true);
+		
+		new Thread(new Runnable() {
 			@Override
 			public void run() {
-		        spinnerAdapter.clear();
-		        for (Meeting m : meetings) {
-		        	spinnerAdapter.add(m.getMeetingID());
-		        }
-		        spinnerAdapter.notifyDataSetChanged();
+				final List<Meeting> meetings = Client.bbbClient.getMeetings();
+
+				progressDialog.dismiss();
+				
+		        runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+				        spinnerAdapter.clear();
+				        for (Meeting m : meetings) {
+				        	spinnerAdapter.add(m.getMeetingID());
+				        }
+				        spinnerAdapter.sort(new Comparator<String>() {
+							
+							@Override
+							public int compare(String s1, String s2) {
+								return s1.compareTo(s2);
+							}
+						});
+				        spinnerAdapter.notifyDataSetChanged();
+				        Spinner spinner = (Spinner) findViewById(R.id.login_spinner);
+				        spinner.performClick();
+					}
+				});
 			}
-		});
+		}).start();
+    }
+    
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    	if (keyCode == KeyEvent.KEYCODE_BACK) {
+    		log.debug("KEYCODE_BACK");
+    		moveTaskToBack(true);
+    		return true;
+    	}    		
+    	return super.onKeyDown(keyCode, event);
     }
 }
