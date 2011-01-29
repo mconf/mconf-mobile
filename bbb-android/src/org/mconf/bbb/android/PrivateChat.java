@@ -88,8 +88,6 @@ public class PrivateChat extends Activity implements IBigBlueButtonClientListene
         chatMode.setText("Private chat with " + contactName);
                 
         setChatMessage(extras.getString("chatMessage"));
-        //não recebe direito a mensagem.. por que?
-        System.out.println(getChatMessage());
         if(getChatMessage().length()> 1)
         {
         	listViewAdapter.notifyDataSetChanged();
@@ -105,7 +103,6 @@ public class PrivateChat extends Activity implements IBigBlueButtonClientListene
         	{
         		EditText chatMessageEdit = (EditText) findViewById(R.id.chatMessage);
         		String chatMessage = chatMessageEdit.getText().toString();
-        		System.out.println(chatMessage);
         		sendPrivateChatMessage(chatMessage, userID);
         		chatMessageEdit.setText("");
 
@@ -184,6 +181,8 @@ public class PrivateChat extends Activity implements IBigBlueButtonClientListene
 		// TODO Auto-generated method stub
 		
 	}
+
+	
 }
 		
 		

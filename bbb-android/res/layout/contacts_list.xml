@@ -1,24 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background ="@color/background"
-    >
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:background="@color/background">
 
-  <ListView android:id="@+id/list"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:divider="@color/background"
-        android:layout_alignParentTop="true"
 
-        />
-  	
-        
-		<ImageView android:id="@+id/bbb" 
-		android:layout_width="wrap_content" 
-		android:layout_height="wrap_content"
-		android:src="@drawable/bbb_logo"
-		android:baselineAlignBottom= "true" 
-		android:layout_alignParentBottom="true"
-		></ImageView>
+
+	<ListView android:id="@+id/list" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:divider="@color/background"
+		android:layout_alignTop="@+id/userText" />
+
+
+	<ImageView android:id="@+id/bbb" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:src="@drawable/bbb_logo"
+		android:baselineAlignBottom="true" android:layout_alignParentBottom="true"></ImageView>
+
+	<TextView android:id="@+id/userText" android:layout_height="wrap_content"
+		android:layout_alignParentTop="true" android:layout_width="wrap_content"
+		android:textColor="@color/text_color"
+		android:text="Users" android:textSize="20sp" android:layout_centerHorizontal="true"
+		 android:gravity="center|right"></TextView>
+		
+		
+	<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="wrap_content" android:layout_height="230dip"
+		android:id="@+id/frameLayout" android:layout_gravity="bottom"
+		android:baselineAlignBottom="true" android:layout_alignParentBottom="true">
+
+		<SlidingDrawer android:layout_height="wrap_content"
+			android:handle="@+id/handle" android:content="@+id/content"
+			android:id="@+id/slide" android:orientation="vertical"
+			android:layout_width="fill_parent">
+
+
+			<Button android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@id/handle" 
+				android:background="@drawable/icon_bbb"
+				android:gravity="right"></Button>
+
+
+			<RelativeLayout android:id="@id/content"
+				android:layout_width="fill_parent" android:layout_height="fill_parent"
+				xmlns:android="http://schemas.android.com/apk/res/android"
+				android:background="@color/background">
+
+				<TextView android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:id="@+id/chatMode" android:layout_toLeftOf="@+id/bbb_logo"
+					android:layout_alignTop="@+id/bbb_logo" android:layout_alignBottom="@+id/bbb_logo"
+					android:layout_alignParentLeft="true" android:textColor="#000000">
+				</TextView>
+
+				<EditText android:layout_height="wrap_content"
+					android:layout_width="fill_parent" android:id="@+id/chatMessage"
+					android:layout_toLeftOf="@+id/sendMessage" android:layout_alignTop="@+id/sendMessage"
+					android:layout_alignBottom="@+id/sendMessage">
+				</EditText>
+
+				<Button android:layout_height="wrap_content" android:text="@string/send_message"
+					android:layout_width="wrap_content" android:id="@+id/sendMessage"
+					android:layout_alignParentRight="true"
+					android:layout_alignParentBottom="true">
+				</Button>
+
+				<ListView android:layout_height="wrap_content"
+					android:dividerHeight="0px" android:id="@+id/messages"
+					android:layout_width="wrap_content" android:layout_below="@+id/chatMode"
+					android:layout_alignLeft="@+id/chatMode" android:layout_alignRight="@+id/chatMode"
+					android:layout_alignParentRight="true" android:divider="@color/background">
+				</ListView>
+
+			</RelativeLayout>
+
+		</SlidingDrawer>
+	</FrameLayout>
 </RelativeLayout>

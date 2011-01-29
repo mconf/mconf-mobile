@@ -24,16 +24,23 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.util.Log;
+import android.widget.SlidingDrawer.OnDrawerCloseListener;
+import android.widget.SlidingDrawer.OnDrawerOpenListener;
 
-public class Client extends Activity implements IBigBlueButtonClientListener {
+
+public class Client extends Activity implements IBigBlueButtonClientListener  {
 	public static final int MENU_PUBLIC_CHAT = Menu.FIRST;
 	public static final int MENU_PRIVATE_CHAT = Menu.FIRST + 1;
 	public static final int MENU_QUIT = Menu.FIRST + 2;
@@ -49,6 +56,11 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	String username = new String();
 	final static int NOTIFICATION_ID = 1;
 	
+	private ArrayAdapter<String> listViewAdapter;
+	SlidingDrawer slidingDrawer;
+	Button slideHandleButton;
+
+	
 	public String getContactName()
 	{
 		return this.contactName;
@@ -59,6 +71,13 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.contacts_list);   
+        slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
+        slideHandleButton = (Button) findViewById(R.id.handle);
+        
+        listViewAdapter = new ArrayAdapter<String>(this, R.layout.chat_message);
+        ListView view = (ListView)findViewById(R.id.messages);
+        view.setTextFilterEnabled(true);
+        view.setAdapter(listViewAdapter);
         
         
         Bundle extras = getIntent().getExtras();
@@ -75,7 +94,42 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
         bbbClient.addListener(this);
         
         list.setAdapter(adapter);
+        //abrir o chat público
         
+        slidingDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
+
+        	@Override
+        	public void onDrawerOpened() {
+        	
+        		 Button send = (Button)findViewById(R.id.sendMessage);
+        	        send.setOnClickListener( new OnClickListener()
+        	        {
+        	        	@Override
+        	        	public void onClick(View viewParam)
+        	        	{
+        	        		EditText chatMessageEdit = (EditText) findViewById(R.id.chatMessage);
+        	        		String chatMessage = chatMessageEdit.getText().toString();
+        	        		sendPublicChatMessage(chatMessage);
+        	        		chatMessageEdit.setText("");
+
+        	        	}
+        	        }
+        	        );
+        	        
+        		
+        	}
+        	});
+
+        	slidingDrawer.setOnDrawerCloseListener(new OnDrawerCloseListener() {
+
+        	@Override
+        	public void onDrawerClosed() {
+        		System.out.println("chat publico fechado");
+        	}
+        	});
+
+        	
+
                        
         final Context context = this;
         list.setOnItemClickListener(new OnItemClickListener() {
@@ -121,6 +175,14 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
         });
       
 	}
+	public void sendPublicChatMessage(String message)
+	{
+		
+		listViewAdapter.notifyDataSetChanged();
+		listViewAdapter.add(username+": " + message);
+		Client.bbbClient.sendPublicChatMessage(message);
+	}
+	
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         boolean result = super.onCreateOptionsMenu(menu);
@@ -189,8 +251,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	
 	@Override
 	public void onPrivateChatMessage(ChatMessage message, IParticipant source) {
-		 CharSequence title = "Hello";
-	        CharSequence messagewhat = "Hello, Android!";
+		 CharSequence title = "New private message!";
+	        CharSequence showmessage = source.getName() + " is talking to you!";
 	 
 	        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 	        Notification notification = new Notification(R.drawable.icon_bbb, "New Private Message!", System.currentTimeMillis());
@@ -206,15 +268,22 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 	        
             
-	        notification.setLatestEventInfo(getApplicationContext(), title, messagewhat, contentIntent);
+	        notification.setLatestEventInfo(getApplicationContext(), title, showmessage, contentIntent);
 	        notificationManager.notify(NOTIFICATION_ID, notification);
 		// TODO Auto-generated method stub
 		
 	}
 	@Override
-	public void onPublicChatMessage(ChatMessage message, IParticipant source) {
+	public void onPublicChatMessage(final ChatMessage message, final IParticipant source) {
 		// TODO Auto-generated method stub
+		runOnUiThread(new Runnable() {
 
+			@Override
+			public void run() {
+				listViewAdapter.notifyDataSetChanged();
+				listViewAdapter.add(source.getName()+": " + message.getMessage());
+			}
+		});
 	}
 
 	
@@ -226,7 +295,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	}
 
 	@Override
-	public void onParticipantStatusChangePresenter(final IParticipant p) {
+	public void  onParticipantStatusChangePresenter(final IParticipant p) {
 		// TODO Auto-generated method stub
 		runOnUiThread(new Runnable() {
 			
@@ -251,4 +320,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		// TODO Auto-generated method stub
 		
 	}
+
+	
 }
