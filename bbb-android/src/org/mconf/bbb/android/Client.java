@@ -109,7 +109,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
         	        	{
         	        		EditText chatMessageEdit = (EditText) findViewById(R.id.chatMessage);
         	        		String chatMessage = chatMessageEdit.getText().toString();
-        	        		sendPublicChatMessage(chatMessage);
+        	        		bbbClient.sendPublicChatMessage(chatMessage);
         	        		chatMessageEdit.setText("");
 
         	        	}
@@ -175,14 +175,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
         });
       
 	}
-	public void sendPublicChatMessage(String message)
-	{
 		
-		listViewAdapter.notifyDataSetChanged();
-		listViewAdapter.add(username+": " + message);
-		Client.bbbClient.sendPublicChatMessage(message);
-	}
-	
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         boolean result = super.onCreateOptionsMenu(menu);
@@ -281,7 +274,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 			@Override
 			public void run() {
 				listViewAdapter.notifyDataSetChanged();
-				listViewAdapter.add(source.getName()+": " + message.getMessage());
+				if(source!=null)
+					listViewAdapter.add(source.getName()+": " + message.getMessage());
 			}
 		});
 	}
@@ -303,22 +297,40 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 			public void run() {
 				adapter.notifyDataSetChanged();
 				
-				adapter.setPresenterStatus((Contact) p);
+				adapter.setPresenterStatus(new Contact(p));
 				//cast exception
 			}
 		});
 	}
 
 	@Override
-	public void onParticipantStatusChangeHasStream(IParticipant p) {
+	public void onParticipantStatusChangeHasStream(final IParticipant p) {
 		// TODO Auto-generated method stub
-		
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				adapter.notifyDataSetChanged();
+
+				adapter.setStreamStatus(new Contact(p));
+				//cast exception
+			}
+		});
 	}
 
 	@Override
-	public void onParticipantStatusChangeRaiseHand(IParticipant p) {
+	public void onParticipantStatusChangeRaiseHand(final IParticipant p) {
 		// TODO Auto-generated method stub
-		
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				adapter.notifyDataSetChanged();
+
+				adapter.setRaiseHandStatus(new Contact(p));
+				//cast exception
+			}
+		});
 	}
 
 	

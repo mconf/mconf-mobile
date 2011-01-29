@@ -43,8 +43,10 @@ public class ContactAdapter extends BaseAdapter {
     	ImageView presenter = (ImageView) view.findViewById(R.id.presenter);
     	if(changedStatus.isPresenter())
     		presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.presenter));
+    	
     	else
     		presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.user));
+    	
     }
 
     public void setStreamStatus( Contact changedStatus)
@@ -55,7 +57,16 @@ public class ContactAdapter extends BaseAdapter {
         else
         	stream.setVisibility(ImageView.INVISIBLE);
     }
-    //continuar refatorando
+       
+    public void setRaiseHandStatus(Contact changedStatus)
+    {
+    	 ImageView raiseHand = (ImageView) view.findViewById(R.id.raise_hand);
+         if(changedStatus.isRaiseHand())
+            raiseHand.setImageDrawable(this.context.getResources().getDrawable(R.drawable.raisehand));
+         else
+         	raiseHand.setVisibility(ImageView.INVISIBLE);
+         	
+    }
     
     public int getCount() {
         return listContact.size();
@@ -92,13 +103,9 @@ public class ContactAdapter extends BaseAdapter {
         
         setPresenterStatus(entry);
         setStreamStatus(entry);
+        setRaiseHandStatus(entry);
         
-        
-        ImageView raiseHand = (ImageView) convertView.findViewById(R.id.raise_hand);
-        if(entry.isRaiseHand())
-        	raiseHand.setImageDrawable(this.context.getResources().getDrawable(R.drawable.raisehand));
-        else
-        	raiseHand.setVisibility(ImageView.INVISIBLE);
+       
                       
 
         return convertView;
