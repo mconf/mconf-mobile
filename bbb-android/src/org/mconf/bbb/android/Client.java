@@ -44,7 +44,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 	public static final int MENU_PUBLIC_CHAT = Menu.FIRST;
 	public static final int MENU_PRIVATE_CHAT = Menu.FIRST + 1;
 	public static final int MENU_QUIT = Menu.FIRST + 2;
-	
+
 	public static final int PUBLIC_CHAT = 1;
 	public static final int PRIVATE_CHAT= 0;
 
@@ -55,12 +55,12 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 	int userID;
 	String username = new String();
 	final static int NOTIFICATION_ID = 1;
-	
+
 	private ArrayAdapter<String> listViewAdapter;
 	SlidingDrawer slidingDrawer;
 	Button slideHandleButton;
 
-	
+
 	public String getContactName()
 	{
 		return this.contactName;
@@ -68,159 +68,158 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.contacts_list);   
-        slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
-        slideHandleButton = (Button) findViewById(R.id.handle);
-        
-        listViewAdapter = new ArrayAdapter<String>(this, R.layout.chat_message);
-        ListView view = (ListView)findViewById(R.id.messages);
-        view.setTextFilterEnabled(true);
-        view.setAdapter(listViewAdapter);
-        
-        
-        Bundle extras = getIntent().getExtras();
-       username = extras.getString("username");
-        Toast.makeText(getApplicationContext(),"Be welcome, " + username, Toast.LENGTH_SHORT).show(); 
-        
-        ListView list = (ListView)findViewById(R.id.list);
-        
-         listOfContacts = new ArrayList<IParticipant>();
-        adapter = new ContactAdapter(this, listOfContacts);
-        
-        
+		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		setContentView(R.layout.contacts_list);   
+		slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
+		slideHandleButton = (Button) findViewById(R.id.handle);
 
-        bbbClient.addListener(this);
-        
-        list.setAdapter(adapter);
-        //abrir o chat público
-        
-        slidingDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
+		listViewAdapter = new ArrayAdapter<String>(this, R.layout.chat_message);
+		ListView view = (ListView)findViewById(R.id.messages);
+		view.setTextFilterEnabled(true);
+		view.setAdapter(listViewAdapter);
 
-        	@Override
-        	public void onDrawerOpened() {
-        	
-        		 Button send = (Button)findViewById(R.id.sendMessage);
-        	        send.setOnClickListener( new OnClickListener()
-        	        {
-        	        	@Override
-        	        	public void onClick(View viewParam)
-        	        	{
-        	        		EditText chatMessageEdit = (EditText) findViewById(R.id.chatMessage);
-        	        		String chatMessage = chatMessageEdit.getText().toString();
-        	        		bbbClient.sendPublicChatMessage(chatMessage);
-        	        		chatMessageEdit.setText("");
 
-        	        	}
-        	        }
-        	        );
-        	        
-        		
-        	}
-        	});
+		Bundle extras = getIntent().getExtras();
+		username = extras.getString("username");
+		Toast.makeText(getApplicationContext(),"Be welcome, " + username, Toast.LENGTH_SHORT).show(); 
 
-        	slidingDrawer.setOnDrawerCloseListener(new OnDrawerCloseListener() {
+		ListView list = (ListView)findViewById(R.id.list);
 
-        	@Override
-        	public void onDrawerClosed() {
-        		System.out.println("chat publico fechado");
-        	}
-        	});
+		listOfContacts = new ArrayList<IParticipant>();
+		adapter = new ContactAdapter(this, listOfContacts);
 
-        	
 
-                       
-        final Context context = this;
-        list.setOnItemClickListener(new OnItemClickListener() {
-        	@Override
-        	public void onItemClick(AdapterView<?> parent, View view,
-        			int position, long id) {
 
-        		
-        		// When clicked, show a dialog to confirm the private chat
-        		// set the message to display
-        		AlertDialog.Builder alertbox = new AlertDialog.Builder(context);
-        		
-        		alertbox.setMessage("Start private chat with " + listOfContacts.get(position).getName() +"?");
-        		contactName = listOfContacts.get(position).getName();
-        		userID = listOfContacts.get(position).getUserId();
-        		// add a neutral button to the alert box and assign a click listener
-        		alertbox.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-        			public void onClick(DialogInterface dialog, int id) {
-        				//start private chat
-        				Intent chatIntent = new Intent(getApplicationContext(), PrivateChat.class);
-		                
-        				chatIntent.putExtra("contactName", contactName);
-		                chatIntent.putExtra("myName", username);
-		                chatIntent.putExtra("userID", userID );
-		                chatIntent.putExtra("chatMessage", "");
-		                
-		                startActivityForResult(chatIntent, 0);
-        				
-        			}
-        		});
-        		alertbox.setNegativeButton("No", new DialogInterface.OnClickListener() {
-        			public void onClick(DialogInterface dialog, int id) {
-        				dialog.cancel();
-        			}
-        		});
+		bbbClient.addListener(this);
 
-        		// show it
+		list.setAdapter(adapter);
+		//abrir o chat público
 
-        		alertbox.show();
+		slidingDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
 
-        	}
+			@Override
+			public void onDrawerOpened() {
 
-        });
-      
+				Button send = (Button)findViewById(R.id.sendMessage);
+				send.setOnClickListener( new OnClickListener()
+				{
+					@Override
+					public void onClick(View viewParam)
+					{
+						EditText chatMessageEdit = (EditText) findViewById(R.id.chatMessage);
+						String chatMessage = chatMessageEdit.getText().toString();
+						bbbClient.sendPublicChatMessage(chatMessage);
+						chatMessageEdit.setText("");
+
+					}
+				}
+				);
+
+
+			}
+		});
+
+		slidingDrawer.setOnDrawerCloseListener(new OnDrawerCloseListener() {
+
+			@Override
+			public void onDrawerClosed() {
+				 }
+		});
+
+
+
+
+		final Context context = this;
+		list.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+
+
+				// When clicked, show a dialog to confirm the private chat
+				// set the message to display
+				AlertDialog.Builder alertbox = new AlertDialog.Builder(context);
+
+				alertbox.setMessage("Start private chat with " + listOfContacts.get(position).getName() +"?");
+				contactName = listOfContacts.get(position).getName();
+				userID = listOfContacts.get(position).getUserId();
+				// add a neutral button to the alert box and assign a click listener
+				alertbox.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						//start private chat
+						Intent chatIntent = new Intent(getApplicationContext(), PrivateChat.class);
+
+						chatIntent.putExtra("contactName", contactName);
+						chatIntent.putExtra("myName", username);
+						chatIntent.putExtra("userID", userID );
+						chatIntent.putExtra("chatMessage", "");
+
+						startActivityForResult(chatIntent, 0);
+
+					}
+				});
+				alertbox.setNegativeButton("No", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+
+				// show it
+
+				alertbox.show();
+
+			}
+
+		});
+
 	}
-		
+
 	@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        boolean result = super.onCreateOptionsMenu(menu);
-        menu.add(0, MENU_PUBLIC_CHAT, 0, "Public chat");
-        menu.add(0, MENU_QUIT, 0, "Quit");
-        return result;
-    }
+	public boolean onCreateOptionsMenu(Menu menu) {
+		boolean result = super.onCreateOptionsMenu(menu);
+		menu.add(0, MENU_PUBLIC_CHAT, 0, "Public chat");
+		menu.add(0, MENU_QUIT, 0, "Quit");
+		return result;
+	}
 	@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-	        case MENU_PUBLIC_CHAT:
-	            //abrir o chat
-            	Intent chatIntent = new Intent(getApplicationContext(), PrivateChat.class);
-                chatIntent.putExtra("chatMode", PUBLIC_CHAT);
-                startActivityForResult(chatIntent, 0);
-                
-                return true;
-	        case MENU_QUIT:
-	        	bbbClient.removeListener(this);
-	        	bbbClient.disconnect();
-	        	finish();
-                return true;
-        }
-       
-        return super.onOptionsItemSelected(item);
-    }
-	
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case MENU_PUBLIC_CHAT:
+			//abrir o chat
+			Intent chatIntent = new Intent(getApplicationContext(), PrivateChat.class);
+			chatIntent.putExtra("chatMode", PUBLIC_CHAT);
+			startActivityForResult(chatIntent, 0);
+
+			return true;
+		case MENU_QUIT:
+			bbbClient.removeListener(this);
+			bbbClient.disconnect();
+			finish();
+			return true;
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
+
 	@Override
 	public void onConnected() {
 		// TODO Auto-generated method stub
-		
+
 	}
 	@Override
 	public void onDisconnected() {
-		
+
 	}
 	@Override
 	public void onKickUserCallback() {
 		// TODO Auto-generated method stub
-		
+
 	}
 	@Override
 	public void onParticipantJoined(final IParticipant p) {
 		runOnUiThread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				adapter.addSection(p);
@@ -231,7 +230,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 	@Override
 	public void onParticipantLeft(final IParticipant p) {
 		runOnUiThread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				adapter.removeSection(p);
@@ -239,32 +238,32 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 			}
 		});
 	}
-	
-	
-	
+
+
+
 	@Override
 	public void onPrivateChatMessage(ChatMessage message, IParticipant source) {
-		 CharSequence title = "New private message!";
-	        CharSequence showmessage = source.getName() + " is talking to you!";
-	 
-	        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-	        Notification notification = new Notification(R.drawable.icon_bbb, "New Private Message!", System.currentTimeMillis());
-	 
-	        Intent notificationIntent = new Intent(this, PrivateChat.class);
-	        
-	        notificationIntent.putExtra("chatMessage", message.getMessage());
-	        notificationIntent.putExtra("contactName", source.getName());
-	        notificationIntent.putExtra("myName", username);
-	        notificationIntent.putExtra("userID", source.getUserId() );
-	        
-	        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+		CharSequence title = "New private message!";
+		CharSequence showmessage = source.getName() + " is talking to you!";
 
-	        
-            
-	        notification.setLatestEventInfo(getApplicationContext(), title, showmessage, contentIntent);
-	        notificationManager.notify(NOTIFICATION_ID, notification);
+		NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+		Notification notification = new Notification(R.drawable.icon_bbb, "New Private Message!", System.currentTimeMillis());
+
+		Intent notificationIntent = new Intent(this, PrivateChat.class);
+
+		notificationIntent.putExtra("chatMessage", message.getMessage());
+		notificationIntent.putExtra("contactName", source.getName());
+		notificationIntent.putExtra("myName", username);
+		notificationIntent.putExtra("userID", source.getUserId() );
+
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+
+
+		notification.setLatestEventInfo(getApplicationContext(), title, showmessage, contentIntent);
+		notificationManager.notify(NOTIFICATION_ID, notification);
 		// TODO Auto-generated method stub
-		
+
 	}
 	@Override
 	public void onPublicChatMessage(final ChatMessage message, final IParticipant source) {
@@ -280,9 +279,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 		});
 	}
 
-	
-	
-	
+
+
+
 	public BigBlueButtonClient getBbbClient()
 	{
 		return this.bbbClient;
@@ -292,11 +291,11 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 	public void  onParticipantStatusChangePresenter(final IParticipant p) {
 		// TODO Auto-generated method stub
 		runOnUiThread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				adapter.notifyDataSetChanged();
-				
+
 				adapter.setPresenterStatus(new Contact(p));
 				//cast exception
 			}
@@ -328,10 +327,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 				adapter.notifyDataSetChanged();
 
 				adapter.setRaiseHandStatus(new Contact(p));
-				//cast exception
+				
 			}
 		});
 	}
 
-	
+
 }

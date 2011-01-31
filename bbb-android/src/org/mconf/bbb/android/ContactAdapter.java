@@ -42,30 +42,38 @@ public class ContactAdapter extends BaseAdapter {
     {
     	ImageView presenter = (ImageView) view.findViewById(R.id.presenter);
     	if(changedStatus.isPresenter())
+    	{
     		presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.presenter));
-    	
+    		presenter.setVisibility(ImageView.VISIBLE);
+    	}
     	else
     		presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.user));
-    	
+
     }
 
     public void setStreamStatus( Contact changedStatus)
     {
     	ImageView stream = (ImageView) view.findViewById(R.id.stream);
         if(changedStatus.hasStream())
+        {
         	stream.setImageDrawable(this.context.getResources().getDrawable(R.drawable.webcam));
+        	stream.setVisibility(ImageView.VISIBLE);
+        }
         else
         	stream.setVisibility(ImageView.INVISIBLE);
     }
        
     public void setRaiseHandStatus(Contact changedStatus)
     {
-    	 ImageView raiseHand = (ImageView) view.findViewById(R.id.raise_hand);
-         if(changedStatus.isRaiseHand())
-            raiseHand.setImageDrawable(this.context.getResources().getDrawable(R.drawable.raisehand));
-         else
-         	raiseHand.setVisibility(ImageView.INVISIBLE);
-         	
+    	ImageView raiseHand = (ImageView) view.findViewById(R.id.raise_hand);
+    	if(changedStatus.isRaiseHand())
+    	{
+    		raiseHand.setImageDrawable(this.context.getResources().getDrawable(R.drawable.raisehand));
+    		raiseHand.setVisibility(ImageView.VISIBLE);
+    	}
+    	else
+    		raiseHand.setVisibility(ImageView.INVISIBLE);
+
     }
     
     public int getCount() {

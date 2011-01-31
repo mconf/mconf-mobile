@@ -2,55 +2,37 @@
 
 
 <RelativeLayout android:id="@+id/RelativeLayout01"
-android:layout_width="fill_parent"
-android:layout_height="fill_parent"
-android:background ="@color/background"
-xmlns:android="http://schemas.android.com/apk/res/android" 
-android:gravity="center">
-     
-     <ImageView android:id="@+id/moderator"
-     android:layout_width="wrap_content"
-     android:layout_alignParentLeft="true"
-     android:layout_height="wrap_content"
-     android:layout_centerVertical="true"
-     >
-     </ImageView>
-     
-	<TextView  android:id="@+id/contact_name"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:layout_toRightOf="@+id/moderator"
-	android:layout_alignTop="@+id/moderator"
-	android:textAppearance="?android:attr/textAppearanceLarge" 
-	android:minHeight="?android:attr/listPreferredItemHeight" 
-	android:gravity="center"
-	android:textColor="@color/text_color"
-	>
-	 </TextView>
-	
-	<ImageView android:id="@+id/raise_hand" 
-	android:layout_height="wrap_content" 
-	android:layout_width="wrap_content" 
-	android:layout_toRightOf="@+id/contact_name" 
-	android:layout_alignTop="@+id/contact_name" 
-	android:layout_alignBottom="@+id/contact_name">
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:background="@color/background" xmlns:android="http://schemas.android.com/apk/res/android"
+	android:gravity="left">
+
+	<ImageView android:id="@+id/moderator" android:layout_width="wrap_content"
+		android:layout_alignParentLeft="true" android:layout_height="wrap_content"
+		android:layout_centerVertical="true">
 	</ImageView>
-	
-	<ImageView android:id="@+id/stream"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:layout_toRightOf="@+id/raise_hand"
-	android:layout_alignTop="@+id/raise_hand"
-	 android:layout_alignBottom="@+id/raise_hand" >
-	 </ImageView>
-	 
-	 <ImageView android:id="@+id/presenter"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:layout_toRightOf="@+id/stream"
-	android:layout_alignTop="@+id/stream"
-	 android:layout_alignBottom="@+id/stream" >
-	 </ImageView>
+
+	<TextView android:id="@+id/contact_name" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:layout_toRightOf="@+id/moderator"
+		android:layout_alignTop="@+id/moderator" android:textAppearance="?android:attr/textAppearanceLarge"
+		android:minHeight="30px"
+		android:gravity="center" android:textColor="@color/text_color">
+	</TextView>
+
+	<ImageView android:id="@+id/raise_hand"
+		android:layout_height="wrap_content" android:layout_width="wrap_content"
+		android:layout_toRightOf="@+id/contact_name" android:layout_alignTop="@+id/contact_name"
+		android:layout_alignBottom="@+id/contact_name">
+	</ImageView>
+
+	<ImageView android:id="@+id/stream" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:layout_toRightOf="@+id/raise_hand"
+		android:layout_alignTop="@+id/raise_hand" android:layout_alignBottom="@+id/raise_hand">
+	</ImageView>
+
+	<ImageView android:id="@+id/presenter" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:layout_toRightOf="@+id/stream"
+		android:layout_alignTop="@+id/stream" android:layout_alignBottom="@+id/stream">
+	</ImageView>
 
 
 </RelativeLayout>
