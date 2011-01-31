@@ -114,16 +114,25 @@ public class PrivateChat extends Activity implements IBigBlueButtonClientListene
 	}
 	
 	@Override
-	public void onPrivateChatMessage(final ChatMessage message, IParticipant source) {
+	public void onPrivateChatMessage(final ChatMessage message, final IParticipant source) {
 		// TODO Auto-generated method stub
 		runOnUiThread(new Runnable() {
 
 			@Override
 			public void run() {
+				if(source.getUserId()== userID)
+				{
+					
 				String realMessage = new String(); 
 				realMessage = message.getMessage();
 				listViewAdapter.notifyDataSetChanged();
 				listViewAdapter.add(message.getUsername()+": " + realMessage);
+				}
+				else
+				{
+					//cria outra tab, com outro chat privado
+					//se já existe a tab, só abre ela
+				}
 			}
 		});
 	}

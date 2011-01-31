@@ -136,11 +136,12 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 
-
+				//se o ID da pessoa clicada for diferente do meu ID
+				
 				// When clicked, show a dialog to confirm the private chat
 				// set the message to display
 				AlertDialog.Builder alertbox = new AlertDialog.Builder(context);
-
+				
 				alertbox.setMessage("Start private chat with " + listOfContacts.get(position).getName() +"?");
 				contactName = listOfContacts.get(position).getName();
 				userID = listOfContacts.get(position).getUserId();
@@ -243,6 +244,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 
 	@Override
 	public void onPrivateChatMessage(ChatMessage message, IParticipant source) {
+		//mostra notificações mesmo quando já se está na activity do chat privado com a pessoa
 		CharSequence title = "New private message!";
 		CharSequence showmessage = source.getName() + " is talking to you!";
 
