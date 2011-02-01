@@ -8,11 +8,11 @@ import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.users.IParticipant;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,20 +28,19 @@ import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SlidingDrawer;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
-import android.util.Log;
 import android.widget.SlidingDrawer.OnDrawerCloseListener;
 import android.widget.SlidingDrawer.OnDrawerOpenListener;
 
 
 public class Client extends Activity implements IBigBlueButtonClientListener  {
+	private static final Logger log = LoggerFactory.getLogger(Client.class);
+
 	public static final int MENU_PUBLIC_CHAT = Menu.FIRST;
 	public static final int MENU_PRIVATE_CHAT = Menu.FIRST + 1;
 	public static final int MENU_QUIT = Menu.FIRST + 2;
@@ -94,7 +94,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 		bbbClient.addListener(this);
 
 		list.setAdapter(adapter);
-		//abrir o chat público
+		//abrir o chat pï¿½blico
 
 		slidingDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
 
@@ -179,7 +179,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
-		menu.add(0, MENU_PUBLIC_CHAT, 0, "Public chat");
+//		menu.add(0, MENU_PUBLIC_CHAT, 0, "Public chat");
 		menu.add(0, MENU_QUIT, 0, "Quit");
 		return result;
 	}
@@ -202,6 +202,16 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 
 		return super.onOptionsItemSelected(item);
 	}
+	
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    	if (keyCode == KeyEvent.KEYCODE_BACK) {
+    		log.debug("KEYCODE_BACK");
+    		moveTaskToBack(true);
+    		return true;
+    	}    		
+    	return super.onKeyDown(keyCode, event);
+    }
 
 	@Override
 	public void onConnected() {
@@ -244,7 +254,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 
 	@Override
 	public void onPrivateChatMessage(ChatMessage message, IParticipant source) {
-		//mostra notificações mesmo quando já se está na activity do chat privado com a pessoa
+		//mostra notificaï¿½ï¿½es mesmo quando jï¿½ se estï¿½ na activity do chat privado com a pessoa
 		CharSequence title = "New private message!";
 		CharSequence showmessage = source.getName() + " is talking to you!";
 

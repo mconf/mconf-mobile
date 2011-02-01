@@ -47,7 +47,7 @@
 		android:layout_below="@+id/login_label_name"
 		android:singleLine="true" 
 		android:text="Android"
-	/>
+	android:selectAllOnFocus="true"/>
 
 	<TextView 
 		android:id="@+id/login_label_meeting" 

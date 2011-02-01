@@ -73,7 +73,7 @@ public class LoginPage extends Activity {
                 	}
 
                 	if (Client.bbbClient.join((String) spinner.getSelectedItem(), username, false) == null) {
-	                	Toast.makeText(getApplicationContext(), "Can't join the meeting", Toast.LENGTH_SHORT);
+	                	Toast.makeText(getApplicationContext(), "Can't join the meeting", Toast.LENGTH_SHORT).show();
 	                	return;
 	                }
 	                
@@ -95,13 +95,14 @@ public class LoginPage extends Activity {
 		try {
 			p.load(assetManager.open("bigbluebutton.properties"));
 		} catch (Exception e) {
-			e.printStackTrace();
-			Toast.makeText(getApplicationContext(), "Can't find the properties file", Toast.LENGTH_LONG);
-			log.error("Can't find/load the properties file");
+			Toast.makeText(this, "Can't find the properties file", Toast.LENGTH_SHORT).show();
+			log.error("Can't find the properties file");
+			return;
 		}
 			        
         if (!Client.bbbClient.load(p.getProperty("bigbluebutton.web.serverURL"), p.getProperty("beans.dynamicConferenceService.securitySalt"))) {
-        	Toast.makeText(getApplicationContext(), "Can't load the properties file", Toast.LENGTH_LONG);
+        	Toast.makeText(this, "Can't contact the server. Try it later", Toast.LENGTH_SHORT).show();
+			log.error("Can't contact the server. Try it later");
         	return;
         }
         
