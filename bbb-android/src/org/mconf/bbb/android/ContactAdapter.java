@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 public class ContactAdapter extends BaseAdapter {
 	private Context context;
-	ImageView presenter;
 	View view;
 
     private List<IParticipant> listContact;

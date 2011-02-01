@@ -12,4 +12,23 @@
         <item name="android:textColor">@color/text_color</item>
         <item name="android:typeface">sans</item>
     </style>
+    <style name="ChatUser" parent="@android:style/TextAppearance.Small">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/chat_user</item>
+        <item name="android:typeface">sans</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="ChatMessage" parent="@android:style/TextAppearance.Small">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/chat_message</item>
+        <item name="android:typeface">sans</item>
+    </style>
+    <style name="ChatTime" parent="@android:style/TextAppearance.Small">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/chat_time</item>
+        <item name="android:typeface">sans</item>
+    </style>
 </resources>

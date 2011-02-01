@@ -7,4 +7,7 @@
 <color name="title_background">#afbac0</color>
 <color name="title_background_onfocus">#cccccc</color>
 <color name="text_selected">#003297</color>
+<color name="chat_user">#000000</color>
+<color name="chat_message">#000000</color>
+<color name="chat_time">#afbac0</color>
 </resources>

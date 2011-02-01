@@ -19,14 +19,14 @@
 		android:layout_below="@+id/label_participants"/>
 	
 	<ListView android:id="@+id/list" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:divider="@color/title_background_onfocus"
+		android:layout_height="fill_parent" android:divider="@color/title_background_onfocus"
 		android:dividerHeight="2dp" android:layout_below="@+id/separator1"
 		android:layout_marginBottom="42dp" />
 
 	<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="wrap_content" android:layout_height="fill_parent"
-		android:id="@+id/frameLayout" android:layout_gravity="bottom"
-		android:baselineAlignBottom="true" android:layout_alignParentBottom="true"
+		android:id="@+id/frameLayout"
+		android:layout_alignParentBottom="true"
 		android:layout_below="@+id/separator1">
 
 		<SlidingDrawer android:layout_height="fill_parent"
@@ -47,11 +47,13 @@
 				xmlns:android="http://schemas.android.com/apk/res/android"
 				android:background="@color/background">
 
-				<ListView android:layout_height="wrap_content"
-					android:layout_above="@+id/chatMessage" android:layout_below="@+id/chatMode"
+				<ListView android:layout_height="fill_parent"
+					android:layout_above="@+id/bottom_bar" android:layout_below="@+id/chatMode"
 					android:layout_alignLeft="@+id/chatMode"
 					android:dividerHeight="2dp" android:id="@+id/messages"
-					android:layout_width="wrap_content" android:divider="@color/title_background_onfocus"/>
+					android:layout_width="wrap_content" android:divider="@color/title_background_onfocus"
+					android:stackFromBottom="true"
+				/>
 				
 				<RelativeLayout android:id="@+id/bottom_bar"
 					android:layout_width="fill_parent" android:layout_height="wrap_content"
