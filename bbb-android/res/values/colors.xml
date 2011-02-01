@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 <color name="background">#E3DFDF</color>
+<!-- color name="background">#768c97</color-->
 <color name="text_color">#000000</color>
 <color name="chat_background">#E9E7E7</color>
+<color name="title_background">#afbac0</color>
+<color name="title_background_onfocus">#cccccc</color>
+<color name="text_selected">#003297</color>
 </resources>

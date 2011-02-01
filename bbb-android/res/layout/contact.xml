@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
 <RelativeLayout android:id="@+id/RelativeLayout01"
 	android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="42dp"
 	android:background="@color/background" xmlns:android="http://schemas.android.com/apk/res/android"
@@ -20,13 +19,12 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content" 
 		android:layout_toRightOf="@+id/moderator"
-		android:textAppearance="?android:attr/textAppearanceLarge"
+		android:textAppearance="@style/ParticipantNameStyle"
 		android:layout_marginLeft="5dp"
 		android:layout_centerVertical="true"
 		android:text="Test test"
-		android:typeface="sans"
-		android:textColor="@color/text_color"
-	/>
+		android:layout_toLeftOf="@+id/stream"
+		android:lines="1" android:scrollHorizontally="true"/>
 
 	
 
@@ -36,6 +34,7 @@
 		android:layout_centerVertical="true"
 		android:src="@drawable/webcam"
 		android:layout_marginRight="5dp"
+		android:layout_marginLeft="5dp"
 	/>
 
 	<ImageView android:id="@+id/presenter" android:layout_width="wrap_content"

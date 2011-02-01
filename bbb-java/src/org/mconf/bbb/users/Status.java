@@ -13,6 +13,9 @@ public class Status {
 		decode(param);
 	}
 	
+	public Status() {
+	}
+
 	/*
 	 * example:
 	 * {raiseHand=false, hasStream=false, presenter=true}

@@ -1,86 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
 	android:background="@color/background">
 
 	<TextView android:layout_height="wrap_content"
-		android:layout_width="fill_parent" android:id="@+id/anything"
+		android:layout_width="fill_parent" android:id="@+id/label_participants"
 		android:layout_alignParentTop="true"
+		android:textAppearance="@style/TitleStyle"
 		android:text="List of participants"
-		android:layout_centerHorizontal="true"
-		android:textColor="#000000">
-	</TextView>
+		android:gravity="center"
+		android:background="@color/title_background_onfocus"
+		android:minHeight="42dp"/>
 
-
+	<LinearLayout android:id="@+id/separator1" xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="fill_parent" android:layout_height="2dp"
+		android:background="@color/title_background"
+		android:layout_below="@+id/label_participants"/>
+	
 	<ListView android:id="@+id/list" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:divider="@color/background"
-		android:layout_below="@+id/anything"
-		android:layout_alignTop="@+id/userText" />
-
-
-	<!--  <TextView android:id="@+id/userText" android:layout_height="wrap_content"
-		android:layout_alignParentTop="true" android:layout_width="wrap_content"
-		android:textColor="@color/text_color" android:text="Users"
-		android:textSize="20sp" android:layout_centerHorizontal="true"
-		android:gravity="center|right"></TextView> 
-	-->
-
+		android:layout_height="wrap_content" android:divider="@color/title_background_onfocus"
+		android:dividerHeight="2dp" android:layout_below="@+id/separator1"
+		android:layout_marginBottom="42dp" />
 
 	<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="wrap_content" android:layout_height="fill_parent"
 		android:id="@+id/frameLayout" android:layout_gravity="bottom"
-		android:baselineAlignBottom="true" android:layout_alignParentBottom="true">
+		android:baselineAlignBottom="true" android:layout_alignParentBottom="true"
+		android:layout_below="@+id/separator1">
 
 		<SlidingDrawer android:layout_height="fill_parent"
 			android:handle="@+id/handle" android:content="@+id/content"
 			android:id="@+id/slide" android:orientation="vertical"
 			android:layout_width="fill_parent">
 
-
-			<Button android:layout_width="wrap_content"
+			<Button android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:id="@id/handle"
-				android:background="@drawable/public_chat"></Button>
-
+				android:textAppearance="@style/TitleStyle"
+				android:text="Public chat"
+				android:background="@color/title_background_onfocus"
+				android:minHeight="42dp"		
+				android:gravity="center"/>
 
 			<RelativeLayout android:id="@id/content"
 				android:layout_width="fill_parent" android:layout_height="fill_parent"
 				xmlns:android="http://schemas.android.com/apk/res/android"
 				android:background="@color/background">
 
-				<TextView android:layout_height="wrap_content"
-					android:layout_width="wrap_content" android:id="@+id/chatMode"
-					android:layout_toLeftOf="@+id/bbb_logo" android:layout_alignTop="@+id/bbb_logo"
-					android:layout_alignBottom="@+id/bbb_logo"
-					android:layout_alignParentLeft="true" android:textColor="#000000">
-				</TextView>
-
-				<EditText android:layout_height="wrap_content"
-					android:layout_width="fill_parent" android:id="@+id/chatMessage"
-					android:layout_toLeftOf="@+id/sendMessage" android:layout_alignTop="@+id/sendMessage"
-					android:layout_alignBottom="@+id/sendMessage">
-				</EditText>
-
-				<Button android:layout_height="wrap_content" android:text="@string/send_message"
-					android:layout_width="wrap_content" android:id="@+id/sendMessage"
-					android:layout_alignParentRight="true"
-					android:layout_alignParentBottom="true">
-				</Button>
-
-				<LinearLayout android:id="@+id/linearLayout"
-					android:layout_width="wrap_content" android:layout_height="wrap_content"
-					xmlns:android="http://schemas.android.com/apk/res/android"
+				<ListView android:layout_height="wrap_content"
 					android:layout_above="@+id/chatMessage" android:layout_below="@+id/chatMode"
 					android:layout_alignLeft="@+id/chatMode"
-					android:layout_alignParentRight="true" android:background="@color/chat_background">
-					<ListView android:layout_height="wrap_content"
-						android:dividerHeight="0px" android:id="@+id/messages"
-						android:layout_width="wrap_content" android:divider="@color/chat_background"
-						android:transcriptMode="alwaysScroll">
-					</ListView>
-				</LinearLayout>
+					android:dividerHeight="2dp" android:id="@+id/messages"
+					android:layout_width="wrap_content" android:divider="@color/title_background_onfocus"/>
+				
+				<RelativeLayout android:id="@+id/bottom_bar"
+					android:layout_width="fill_parent" android:layout_height="wrap_content"
+					xmlns:android="http://schemas.android.com/apk/res/android"
+					android:background="@color/title_background_onfocus"
+					android:layout_alignParentBottom="true">
+								
+					<EditText android:layout_height="wrap_content"
+						android:layout_width="fill_parent" android:id="@+id/chatMessage"
+						android:layout_marginLeft="5dp"
+						android:layout_marginRight="5dp"
+						android:layout_marginTop="5dp"
+						android:layout_toLeftOf="@+id/sendMessage"/>
+	
+					<Button android:layout_height="wrap_content" android:text="@string/send_message"
+						android:layout_width="wrap_content" android:id="@+id/sendMessage"
+						android:layout_alignParentRight="true"
+						android:layout_marginRight="5dp"
+						android:layout_marginTop="5dp"/>
+						
+				</RelativeLayout>
 
 			</RelativeLayout>
 
 		</SlidingDrawer>
+		
 	</FrameLayout>
+	
 </RelativeLayout>
