@@ -42,7 +42,7 @@
 	<EditText 
 		android:id="@+id/login_edittext_name"
 		android:layout_height="wrap_content" 
-		android:layout_width="150dp"
+		android:layout_width="200dp"
 		android:layout_centerHorizontal="true" 
 		android:layout_below="@+id/login_label_name"
 		android:singleLine="true" 
@@ -61,7 +61,7 @@
 
     <Spinner 
         android:id="@+id/login_spinner"
-        android:layout_width="150dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true" 
         android:layout_below="@+id/login_label_meeting"

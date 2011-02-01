@@ -2,39 +2,58 @@
 
 
 <RelativeLayout android:id="@+id/RelativeLayout01"
-	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="42dp"
 	android:background="@color/background" xmlns:android="http://schemas.android.com/apk/res/android"
-	android:gravity="left">
+	android:gravity="center">
 
-	<ImageView android:id="@+id/moderator" android:layout_width="wrap_content"
-		android:layout_alignParentLeft="true" android:layout_height="wrap_content"
-		android:layout_centerVertical="true">
-	</ImageView>
+	<ImageView android:id="@+id/moderator" 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:minHeight="24dp"
+		android:minWidth="24dp"
+		android:layout_centerVertical="true"
+		android:layout_marginLeft="5dp"
+		android:src="@drawable/administrator" 
+	/>
 
-	<TextView android:id="@+id/contact_name" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:layout_toRightOf="@+id/moderator"
-		android:layout_alignTop="@+id/moderator" android:textAppearance="?android:attr/textAppearanceLarge"
-		android:minHeight="30px"
-		android:gravity="center" android:textColor="@color/text_color">
-	</TextView>
+	<TextView android:id="@+id/contact_name" 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" 
+		android:layout_toRightOf="@+id/moderator"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+		android:layout_marginLeft="5dp"
+		android:layout_centerVertical="true"
+		android:text="Test test"
+		android:typeface="sans"
+		android:textColor="@color/text_color"
+	/>
 
-	<ImageView android:id="@+id/raise_hand"
-		android:layout_height="wrap_content" android:layout_width="wrap_content"
-		android:layout_toRightOf="@+id/contact_name" android:layout_alignTop="@+id/contact_name"
-		android:layout_alignBottom="@+id/contact_name">
-	</ImageView>
+	
 
 	<ImageView android:id="@+id/stream" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:layout_toRightOf="@+id/raise_hand"
-		android:layout_alignTop="@+id/raise_hand" android:layout_alignBottom="@+id/raise_hand">
-	</ImageView>
+		android:layout_height="wrap_content" android:layout_toLeftOf="@+id/presenter"
+		android:minWidth="24dp" android:minHeight="24dp"
+		android:layout_centerVertical="true"
+		android:src="@drawable/webcam"
+		android:layout_marginRight="5dp"
+	/>
 
 	<ImageView android:id="@+id/presenter" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:layout_toRightOf="@+id/stream"
-		android:layout_alignTop="@+id/stream" android:layout_alignBottom="@+id/stream">
-	</ImageView>
+		android:layout_height="wrap_content" android:layout_toLeftOf="@+id/raise_hand"
+		android:minWidth="24dp" android:minHeight="24dp"
+		android:layout_centerVertical="true"
+		android:src="@drawable/presenter"
+		android:layout_marginRight="5dp"
+	/>
 
 
+	<ImageView android:id="@+id/raise_hand" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:src="@drawable/raisehand_big"
+		android:minWidth="24dp" android:minHeight="24dp"
+		android:layout_alignParentRight="true"
+		android:layout_centerVertical="true"
+		android:layout_marginRight="5dp"
+	/>
 </RelativeLayout>
 
 	

@@ -3,10 +3,18 @@
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
 	android:background="@color/background">
 
+	<TextView android:layout_height="wrap_content"
+		android:layout_width="fill_parent" android:id="@+id/anything"
+		android:layout_alignParentTop="true"
+		android:text="List of participants"
+		android:layout_centerHorizontal="true"
+		android:textColor="#000000">
+	</TextView>
 
 
 	<ListView android:id="@+id/list" android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:divider="@color/background"
+		android:layout_below="@+id/anything"
 		android:layout_alignTop="@+id/userText" />
 
 

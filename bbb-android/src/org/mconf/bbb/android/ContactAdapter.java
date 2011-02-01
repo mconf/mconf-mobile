@@ -43,11 +43,11 @@ public class ContactAdapter extends BaseAdapter {
     	ImageView presenter = (ImageView) view.findViewById(R.id.presenter);
     	if(changedStatus.isPresenter())
     	{
-    		presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.presenter));
+    		presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.presenter_big));
     		presenter.setVisibility(ImageView.VISIBLE);
     	}
     	else
-    		presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.user));
+    		presenter.setVisibility(ImageView.INVISIBLE);
 
     }
 
@@ -56,7 +56,7 @@ public class ContactAdapter extends BaseAdapter {
     	ImageView stream = (ImageView) view.findViewById(R.id.stream);
         if(changedStatus.hasStream())
         {
-        	stream.setImageDrawable(this.context.getResources().getDrawable(R.drawable.webcam));
+        	stream.setImageDrawable(this.context.getResources().getDrawable(R.drawable.webcam_big));
         	stream.setVisibility(ImageView.VISIBLE);
         }
         else
@@ -68,7 +68,7 @@ public class ContactAdapter extends BaseAdapter {
     	ImageView raiseHand = (ImageView) view.findViewById(R.id.raise_hand);
     	if(changedStatus.isRaiseHand())
     	{
-    		raiseHand.setImageDrawable(this.context.getResources().getDrawable(R.drawable.raisehand));
+    		raiseHand.setImageDrawable(this.context.getResources().getDrawable(R.drawable.raisehand_big));
     		raiseHand.setVisibility(ImageView.VISIBLE);
     	}
     	else
@@ -104,10 +104,12 @@ public class ContactAdapter extends BaseAdapter {
 
        
         ImageView moderator = (ImageView) convertView.findViewById(R.id.moderator);
-        if(entry.isModerator())
-           	moderator.setImageDrawable(this.context.getResources().getDrawable(R.drawable.administrator));
+        if(entry.isModerator()) {
+           	moderator.setImageDrawable(this.context.getResources().getDrawable(R.drawable.administrator_big));
+           	moderator.setVisibility(ImageView.VISIBLE);
+        }
         else
-        	moderator.setImageDrawable(this.context.getResources().getDrawable(R.drawable.participant));
+        	moderator.setVisibility(ImageView.INVISIBLE);
         
         setPresenterStatus(entry);
         setStreamStatus(entry);
