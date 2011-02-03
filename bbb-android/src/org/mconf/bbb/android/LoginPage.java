@@ -43,13 +43,17 @@ import android.view.View.OnTouchListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 
 public class LoginPage extends Activity {
 	
 	private static final Logger log = LoggerFactory.getLogger(LoginPage.class);
 	private ArrayAdapter<String> spinnerAdapter;
+	private boolean moderator;
 	
     /** Called when the activity is first created. */
     @Override
@@ -92,8 +96,8 @@ public class LoginPage extends Activity {
                 		Toast.makeText(getApplicationContext(),"Please select a meeting", Toast.LENGTH_SHORT).show();
                 		return;
                 	}
-
-                	if (Client.bbb.join((String) spinner.getSelectedItem(), username, false) == null) {
+                	
+                	if (Client.bbb.join((String) spinner.getSelectedItem(), username, moderator) == null) {
 	                	Toast.makeText(getApplicationContext(), "Can't join the meeting", Toast.LENGTH_SHORT).show();
 	                	return;
 	                }
@@ -106,6 +110,25 @@ public class LoginPage extends Activity {
                 }
         	}
         );
+
+    	updateRoleOption();
+    	RadioGroup role = (RadioGroup) findViewById(R.id.login_role);
+    	role.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				updateRoleOption();
+			}
+		});
+        
+    }
+    
+    private void updateRoleOption() {
+		RadioButton moderator = (RadioButton) findViewById(R.id.login_role_moderator);
+		if (moderator.isChecked())
+			this.moderator = true;
+		else
+			this.moderator = false;
     }
     
     private void updateMeetingsList() {
