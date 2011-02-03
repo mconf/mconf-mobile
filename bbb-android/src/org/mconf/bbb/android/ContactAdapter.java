@@ -1,5 +1,6 @@
 package org.mconf.bbb.android;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.mconf.bbb.users.IParticipant;
@@ -17,11 +18,10 @@ public class ContactAdapter extends BaseAdapter {
 	private Context context;
 	View view;
 
-    private List<IParticipant> listContact;
+    private List<IParticipant> listContact = new ArrayList<IParticipant>();
 
-    public ContactAdapter(Context context, List<IParticipant> listContact) {
+    public ContactAdapter(Context context) {
         this.context = context;
-        this.listContact = listContact;
     }
     
     public void addSection(IParticipant participant) {
@@ -84,7 +84,15 @@ public class ContactAdapter extends BaseAdapter {
     }
 
     public long getItemId(int position) {
-        return position;
+        return listContact.get(position).getUserId();
+    }
+    
+    public Contact getUserById(int id) {
+    	for (IParticipant contact : listContact) {
+    		if (contact.getUserId() == id)
+    			return (Contact) contact;
+    	}
+    	return null;
     }
 
     public View getView(int position, View convertView, ViewGroup viewGroup) {

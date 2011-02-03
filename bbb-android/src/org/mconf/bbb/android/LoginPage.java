@@ -72,7 +72,7 @@ public class LoginPage extends Activity {
                 		return;
                 	}
 
-                	if (Client.bbbClient.join((String) spinner.getSelectedItem(), username, false) == null) {
+                	if (Client.bbb.join((String) spinner.getSelectedItem(), username, false) == null) {
 	                	Toast.makeText(getApplicationContext(), "Can't join the meeting", Toast.LENGTH_SHORT).show();
 	                	return;
 	                }
@@ -100,7 +100,7 @@ public class LoginPage extends Activity {
 			return;
 		}
 			        
-        if (!Client.bbbClient.load(p.getProperty("bigbluebutton.web.serverURL"), p.getProperty("beans.dynamicConferenceService.securitySalt"))) {
+        if (!Client.bbb.load(p.getProperty("bigbluebutton.web.serverURL"), p.getProperty("beans.dynamicConferenceService.securitySalt"))) {
         	Toast.makeText(this, "Can't contact the server. Try it later", Toast.LENGTH_SHORT).show();
 			log.error("Can't contact the server. Try it later");
         	return;
@@ -111,7 +111,7 @@ public class LoginPage extends Activity {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				final List<Meeting> meetings = Client.bbbClient.getMeetings();
+				final List<Meeting> meetings = Client.bbb.getMeetings();
 
 				progressDialog.dismiss();
 				
