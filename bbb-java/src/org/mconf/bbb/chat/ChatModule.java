@@ -172,6 +172,9 @@ public class ChatModule extends Module implements ISharedObjectListener {
 		
     	Command command = new CommandAmf0("chat.privateMessage", null, chatMessage.encode(), Double.valueOf(handler.getMyUserId()), Double.valueOf(userid));
     	handler.writeCommandExpectingResult(channel, command);
+
+    	// the message sent should be received like on public chat
+    	onPrivateChatMessage(chatMessage, handler.getUsers().getParticipants().get(userid));
 	}
 	
 	public void onPublicChatMessage(ChatMessage chatMessage) {
