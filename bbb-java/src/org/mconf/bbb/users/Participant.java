@@ -99,4 +99,36 @@ public class Participant implements IParticipant {
 				+ status + ", userid=" + userid + "]";
 	}
 
+	public boolean isModerator() {
+		return role.equals("MODERATOR");
+	}
+	
+	public void setModerator(boolean moderator) {
+		role = moderator? "MODERATOR" : "VIEWER";
+	}
+	
+	public boolean isPresenter() {
+		return status.isPresenter();
+	}
+	
+	public void setPresenter(boolean presenter) {
+		status.setPresenter(presenter);
+	}
+	
+	
+	public boolean hasStream() {
+		return status.isHasStream();
+	}
+	
+	public void setHasStream(boolean hasStream) {
+		status.setHasStream(hasStream);
+	}
+	
+	public boolean isRaiseHand() {
+		return status.isRaiseHand();
+	}
+	
+	public void setRaiseHand(boolean raiseHand) {
+		status.setRaiseHand(raiseHand);
+	}	
 }
