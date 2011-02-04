@@ -54,6 +54,7 @@ public class LoginPage extends Activity {
 	private static final Logger log = LoggerFactory.getLogger(LoginPage.class);
 	private ArrayAdapter<String> spinnerAdapter;
 	private boolean moderator;
+	private String username;
 	private static final String labelCreateMeeting = "== Create a new meeting ==";
 	
     /** Called when the activity is first created. */
@@ -61,6 +62,15 @@ public class LoginPage extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+        
+        Bundle extras = getIntent().getExtras();
+        if (extras == null || extras.getString("username") == null)
+        	username = "Android";
+        else
+        	username = extras.getString("username");
+        
+        final EditText editName = (EditText) findViewById(R.id.login_edittext_name);
+        editName.setText(username);
         
         final Spinner spinner = (Spinner) findViewById(R.id.login_spinner);
         spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
