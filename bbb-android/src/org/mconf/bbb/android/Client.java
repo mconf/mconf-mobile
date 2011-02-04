@@ -55,6 +55,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 	public static final int MENU_PUBLIC_CHAT = Menu.FIRST;
 	public static final int MENU_PRIVATE_CHAT = Menu.FIRST + 1;
 	public static final int MENU_QUIT = Menu.FIRST + 2;
+	public static final int MENU_LOGOUT = Menu.FIRST + 3;
 
 	public static final int PUBLIC_CHAT = 1;
 	public static final int PRIVATE_CHAT= 0;
@@ -90,8 +91,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 		contactAdapter = new ContactAdapter(this);
 		contactListView.setAdapter(contactAdapter);
 
-		bbb.addListener(this);
-
 		Button send = (Button)findViewById(R.id.sendMessage);
 		send.setOnClickListener( new OnClickListener() {
 			@Override
@@ -114,8 +113,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 				if (contact.getUserId() != bbb.getHandler().getMyUserId())
 					startPrivateChat(contact);
 			}
-
 		});
+		
+		bbb.addListener(this);
 	}
 	
 	private void startPrivateChat(Contact contact) {
@@ -129,22 +129,32 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 //		startActivityForResult(intent, 0);
 		startActivity(intent);
 	}
-
+	
+	@Override
+	protected void onDestroy() {
+		bbb.removeListener(this);
+		bbb.disconnect();
+		super.onDestroy();
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
-		menu.add(0, MENU_QUIT, 0, "Quit");
+		menu.add(0, MENU_LOGOUT, 0, "Logout").setIcon(android.R.drawable.ic_menu_revert);
+		menu.add(0, MENU_QUIT, 0, "Quit").setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 		return result;
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case MENU_QUIT:
-				bbb.removeListener(this);
-				bbb.disconnect();
+			case MENU_LOGOUT:
+				startActivity(new Intent(this, LoginPage.class));
 				finish();
 				return true;
-			}
+			case MENU_QUIT:
+				finish();
+				return true;
+		}
 
 		return super.onOptionsItemSelected(item);
 	}
