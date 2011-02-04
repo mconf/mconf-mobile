@@ -71,6 +71,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 	protected SlidingDrawer slidingDrawer;
 	protected Button slideHandleButton;
 
+	Intent notificationIntent = null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -119,15 +120,19 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 	}
 	
 	private void startPrivateChat(Contact contact) {
-		Intent intent = contact.getIntent();		
-		if (intent == null) {
-			intent = new Intent(getApplicationContext(), PrivateChat.class);
-			intent.putExtra("username", contact.getName());
-			intent.putExtra("userId", contact.getUserId());
-			contact.setIntent(intent);
-		}
-//		startActivityForResult(intent, 0);
-		startActivity(intent);
+			
+		if (notificationIntent == null) {
+			log.debug("creating a new intent");
+			notificationIntent = new Intent(getApplicationContext(), PrivateChat.class);
+			notificationIntent.putExtra("username", contact.getName());
+			notificationIntent.putExtra("userId", contact.getUserId());
+			notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+			
+		} else {
+			log.debug("reusing intent");
+			notificationIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+			}
+		startActivity(notificationIntent);
 	}
 	
 	@Override
@@ -219,16 +224,16 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 		Notification notification = new Notification(R.drawable.icon_bbb, title, System.currentTimeMillis());
 		
 		
-		Intent notificationIntent = contact.getIntent();
+		
 		PendingIntent contentIntent = null;
 		if (notificationIntent == null) {
 			log.debug("creating a new intent");
 			notificationIntent = new Intent(getApplicationContext(), PrivateChat.class);
 			notificationIntent.putExtra("username", contact.getName());
 			notificationIntent.putExtra("userId", contact.getUserId());
-			contact.setIntent(notificationIntent);
+			
 
-			contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);		
+			contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);		
 		} else {
 			log.debug("reusing intent");
 			contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);		

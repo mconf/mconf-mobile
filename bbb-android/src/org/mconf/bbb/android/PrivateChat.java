@@ -31,76 +31,138 @@ import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 
 public class PrivateChat extends Activity implements IBigBlueButtonClientListener {
 
 	private static final Logger log = LoggerFactory.getLogger(PrivateChat.class);
 	protected ChatAdapter chatAdapter;
-	
-	protected int userId;
-	protected String username;
 
 	
+	ViewFlipper flipper;  
+
+
+	private void addChild(ViewFlipper flip, int userId, String username){
+		int index=0;
+		View view = getView();
+
+		if(flip.getChildCount()==0){
+			flip.addView(view,index);
+		}
+		else{
+			flip.addView(view,flip.getChildCount());
+		}
+	}
+	
+	private View getView(){
+		LayoutInflater inflater = this.getLayoutInflater();
+		View view = inflater.inflate(R.layout.chat, null);        
+		return view;
+	}
+
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.chat);
-        Bundle extras = getIntent().getExtras();
-        userId = extras.getInt("userId");
-        username = extras.getString("username");
-        
-        setTitle("Private chat with " + username);
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.private_chat);
 
-        log.debug("creating PrivateChat activity");
-        
+		flipper=(ViewFlipper)findViewById(R.id.manyPages); 
+
+		flipper.setInAnimation(AnimationUtils.loadAnimation(this, R.anim.push_left_in)); 
+		flipper.setOutAnimation(AnimationUtils.loadAnimation(this, R.anim.push_left_out));  
+
+		Bundle extras = getIntent().getExtras();
+		int userId = extras.getInt("userId");
+		String username = extras.getString("username");
+
+		addChild(flipper, userId, username);
+
+		log.debug("creating first PrivateChat activity");
+
+		flipper.setDisplayedChild(0);
+
+		//onde colocar esse adapter, os listeners e tal?
 		chatAdapter = new ChatAdapter(this);
 		final ListView chatListView = (ListView)findViewById(R.id.messages);
 		chatListView.setAdapter(chatAdapter);
 
+		
 		Button send = (Button) findViewById(R.id.sendMessage);
 		send.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				EditText text = (EditText) findViewById(R.id.chatMessage);
 				if (text.getText().toString().length() > 0) {
-					Client.bbb.sendPrivateChatMessage(text.getText().toString(), userId);
+					//Client.bbb.sendPrivateChatMessage(text.getText().toString(), userId);
 					text.setText("");
 				}
 			}
 		});
-		
+
 		List<ChatMessage> messages = Client.bbb.getHandler().getChat().getPrivateChatMessage().get(userId);
 		if (messages != null)
 			for (ChatMessage message : messages) {
 				onPrivateChatMessage(message);
 			}
-		
+
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notificationManager.cancel(Client.PRIVATE_CHAT_NOTIFICATION_ID + userId);
-   	}
-	
+	}
+
+	@Override
+	public void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		Bundle extras = getIntent().getExtras();
+		int userId = extras.getInt("userId");
+		boolean hasUserId=false;
+		int index;
+		int childAt=-1;
+		String username = extras.getString("username");
+		for(index=0; index<flipper.getChildCount(); index++)
+		{
+			TextView text = (TextView)flipper.getChildAt(index).findViewById(R.id.userID);
+			if(text.getText().equals(Integer.toString(userId)))
+			{
+				hasUserId = true;
+				childAt=index;
+			}
+		}
+		if(hasUserId)
+			flipper.setDisplayedChild(childAt);
+		else
+		{
+			log.debug("creating PrivateChat activity");
+			addChild(flipper, userId, username);
+			flipper.setDisplayedChild(flipper.getChildCount()+1);
+		}
+	}
+	 
 	@Override
 	protected void onStart() {
 		super.onStart();
 		log.debug("adding this as bbb listener");
-        Client.bbb.addListener(this);		
+		Client.bbb.addListener(this);		
 	}
-	
+
 	@Override
 	protected void onStop() {
 		super.onStop();
 		log.debug("removing this as bbb listener");
 		Client.bbb.removeListener(this);
 	}
-	
+
 	void onPrivateChatMessage(final ChatMessage message) {
 		runOnUiThread(new Runnable() {
 
@@ -111,69 +173,69 @@ public class PrivateChat extends Activity implements IBigBlueButtonClientListene
 			}
 		});
 	}
-	
+
 	@Override
 	public void onPrivateChatMessage(final ChatMessage message, final IParticipant source) {
-		if (source.getUserId()== userId) {
+		/*if (source.getUserId()== userId) {
 			onPrivateChatMessage(message);
-		}
+		}*/
 	}
 
 	@Override
 	public void onPublicChatMessage(ChatMessage message, IParticipant source) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onConnected() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onDisconnected() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onKickUserCallback() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onParticipantLeft(IParticipant p) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onParticipantJoined(IParticipant p) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onParticipantStatusChangePresenter(IParticipant p) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onParticipantStatusChangeHasStream(IParticipant p) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onParticipantStatusChangeRaiseHand(IParticipant p) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
-		
-		
+
+
 
