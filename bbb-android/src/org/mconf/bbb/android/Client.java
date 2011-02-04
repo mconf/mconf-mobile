@@ -132,6 +132,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 	
 	@Override
 	protected void onDestroy() {
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		notificationManager.cancelAll();
+		
 		bbb.removeListener(this);
 		bbb.disconnect();
 		super.onDestroy();
