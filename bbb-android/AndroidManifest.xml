@@ -11,9 +11,9 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name=".Client" android:label="@string/app_name">
-		</activity>
-		<activity android:name="PrivateChat">
+		<activity android:name=".Client"/>
+		<activity android:name=".OpenClientSliderActivity"/>
+		<activity android:name=".PrivateChat" android:launchMode="singleTask">
 		</activity>
 
 	</application>

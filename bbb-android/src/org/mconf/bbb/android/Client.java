@@ -32,8 +32,13 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -47,21 +52,18 @@ import android.widget.ListView;
 import android.widget.SlidingDrawer;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.SlidingDrawer.OnDrawerOpenListener;
 
 
-public class Client extends Activity implements IBigBlueButtonClientListener  {
+public class Client extends Activity implements IBigBlueButtonClientListener {
 	private static final Logger log = LoggerFactory.getLogger(Client.class);
 
-	public static final int MENU_PUBLIC_CHAT = Menu.FIRST;
-	public static final int MENU_PRIVATE_CHAT = Menu.FIRST + 1;
-	public static final int MENU_QUIT = Menu.FIRST + 2;
-	public static final int MENU_LOGOUT = Menu.FIRST + 3;
+	public static final int MENU_QUIT = Menu.FIRST;
+	public static final int MENU_LOGOUT = Menu.FIRST + 1;
 
-	public static final int PUBLIC_CHAT = 1;
-	public static final int PRIVATE_CHAT= 0;
+	public static final int CHAT_NOTIFICATION_ID = 77000;
 	
-	public static final int PUBLIC_CHAT_NOTIFICATION_ID = 77000;
-	public static final int PRIVATE_CHAT_NOTIFICATION_ID = 77000;
+	public static final String ACTION_OPEN_SLIDER = "org.mconf.bbb.android.Client.OPEN_SLIDER";
 
 	public static BigBlueButtonClient bbb = new BigBlueButtonClient();
 	protected ContactAdapter contactAdapter;
@@ -70,8 +72,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 	protected String myusername;
 	protected SlidingDrawer slidingDrawer;
 	protected Button slideHandleButton;
+	
+	protected ClientBroadcastReceiver receiver = new ClientBroadcastReceiver();
 
-	Intent notificationIntent = null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -80,6 +83,15 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 		slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
 		slideHandleButton = (Button) findViewById(R.id.handle);
 
+		slidingDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
+			
+			@Override
+			public void onDrawerOpened() {
+				NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+				notificationManager.cancel(CHAT_NOTIFICATION_ID);
+			}
+		});
+		
 		Bundle extras = getIntent().getExtras();
 		myusername = extras.getString("username");
 		Toast.makeText(getApplicationContext(),"Be welcome, " + myusername, Toast.LENGTH_SHORT).show(); 
@@ -100,6 +112,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 				String chatMessage = chatMessageEdit.getText().toString();
 				bbb.sendPublicChatMessage(chatMessage);
 				chatMessageEdit.setText("");
+				chatListView.setSelection(chatListView.getCount());
 			}
 		});
 
@@ -117,22 +130,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 		});
 		
 		bbb.addListener(this);
-	}
-	
-	private void startPrivateChat(Contact contact) {
-			
-		if (notificationIntent == null) {
-			log.debug("creating a new intent");
-			notificationIntent = new Intent(getApplicationContext(), PrivateChat.class);
-			notificationIntent.putExtra("username", contact.getName());
-			notificationIntent.putExtra("userId", contact.getUserId());
-			notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-			
-		} else {
-			log.debug("reusing intent");
-			notificationIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-			}
-		startActivity(notificationIntent);
+
+		IntentFilter i = new IntentFilter(Client.ACTION_OPEN_SLIDER);
+		registerReceiver(receiver, i);
+		log.debug("registering broadcast receiver");
 	}
 	
 	@Override
@@ -140,9 +141,34 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notificationManager.cancelAll();
 		
+		unregisterReceiver(receiver);
+		
 		bbb.removeListener(this);
 		bbb.disconnect();
 		super.onDestroy();
+	}
+	
+	private class ClientBroadcastReceiver extends BroadcastReceiver {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.getAction().equals(ACTION_OPEN_SLIDER)) {
+				if (!slidingDrawer.isOpened())
+					slidingDrawer.open();
+			}
+		}
+		
+	}
+	
+	private void startPrivateChat(Contact contact) {
+
+		Intent intent = new Intent(getApplicationContext(), PrivateChat.class);
+		intent.putExtra("username", contact.getName());
+		intent.putExtra("userId", contact.getUserId());
+		intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+		startActivity(intent);
 	}
 	
 	@Override
@@ -219,73 +245,47 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 		if (message.getUserId() == bbb.getHandler().getMyUserId())
 			return;
 		
-		Contact contact = contactAdapter.getUserById(source.getUserId());
-		
-		String title = "New message arrived";
-
-		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		Notification notification = new Notification(R.drawable.icon_bbb, title, System.currentTimeMillis());
-		
-		
-		
-		PendingIntent contentIntent = null;
-		if (notificationIntent == null) {
-			log.debug("creating a new intent");
-			notificationIntent = new Intent(getApplicationContext(), PrivateChat.class);
-			notificationIntent.putExtra("username", contact.getName());
-			notificationIntent.putExtra("userId", contact.getUserId());
-			
-
-			contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);		
-		} else {
-			log.debug("reusing intent");
-			contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);		
-		}
-
-		
-		notification.setLatestEventInfo(getApplicationContext(), title, "from " + source.getName(), contentIntent);
-		notificationManager.notify(PRIVATE_CHAT_NOTIFICATION_ID + message.getUserId(), notification);
-		
-//		showNotification(message, source, true);
+		showNotification(message, source, true);
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		
-		log.debug("onActivityResult");
+		log.debug("onActivityResult requestCode=" + requestCode + " resultCode=" + resultCode);
+		super.onActivityResult(requestCode, resultCode, data);		
 	}
 	
 	public void showNotification(ChatMessage message, IParticipant source, boolean privateChat) {
-		String title = "New message arrived";
+		String contentTitle = "New " + (privateChat? "private": "public") + " message from " + message.getUsername();
 
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		Notification notification = new Notification(R.drawable.icon_bbb, title, System.currentTimeMillis());
+		Notification notification = new Notification(R.drawable.icon_bbb, contentTitle, System.currentTimeMillis());
 		
 		Intent notificationIntent = null;
 		if (privateChat) {
-			notificationIntent = new Intent(this, PrivateChat.class);
-			notificationIntent.putExtra("chatMessage", message.getMessage());
-			notificationIntent.putExtra("contactName", source.getName());
-			notificationIntent.putExtra("myName", myusername);
-			notificationIntent.putExtra("userID", source.getUserId());
+			Contact contact = contactAdapter.getUserById(source.getUserId());			
 
-			PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-			notification.setLatestEventInfo(getApplicationContext(), title, "from " + source.getName(), contentIntent);
-			notificationManager.notify(PRIVATE_CHAT_NOTIFICATION_ID, notification);
+			notificationIntent = new Intent(getApplicationContext(), PrivateChat.class);
+			notificationIntent.putExtra("username", contact.getName());
+			notificationIntent.putExtra("userId", contact.getUserId());
+			/**
+			 *  http://groups.google.com/group/android-developers/browse_thread/thread/e61ec1e8d88ea94d
+			 */
+			notificationIntent.setData((Uri.parse("custom://"+SystemClock.elapsedRealtime()))); 
+
+			PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+			notification.setLatestEventInfo(getApplicationContext(), contentTitle, message.getMessage(), contentIntent);
+			notificationManager.notify(CHAT_NOTIFICATION_ID + message.getUserId(), notification);
 		} else {
-//			notificationIntent = new Intent(this, OnPublicChatMessage.class);
-//
-//			PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-//			notification.setLatestEventInfo(this, title, "from " + source.getName(), contentIntent);
-//			notificationManager.notify(PUBLIC_CHAT_NOTIFICATION_ID, notification);
+			notificationIntent = new Intent(getApplicationContext(), OpenClientSliderActivity.class);
+			
+			PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+			notification.setLatestEventInfo(getApplicationContext(), contentTitle, message.getMessage(), contentIntent);
+			notificationManager.notify(CHAT_NOTIFICATION_ID, notification);	
 		}
 	}
 	
 	@Override
 	public void onPublicChatMessage(final ChatMessage message, final IParticipant source) {
-		// \TODO implement notification on public chat messages
-//		showNotification(message, source, false);
 		runOnUiThread(new Runnable() {
 
 			@Override
@@ -294,6 +294,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener  {
 				chatAdapter.notifyDataSetChanged();
 			}
 		});
+		
+		showNotification(message, source, false);
 	}
 
 	@Override

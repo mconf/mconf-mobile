@@ -21,16 +21,19 @@
 
 package org.mconf.bbb.android;
 
-import org.mconf.bbb.users.IParticipant;
-import org.mconf.bbb.users.Participant;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
 
-public class Contact extends Participant {
-
-	public Contact(IParticipant partic) {
-		this.setName(partic.getName());
-		this.setStatus(partic.getStatus());
-		this.setRole(partic.getRole());
-		this.setUserId(partic.getUserId());
+public class OpenClientSliderActivity extends Activity {
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		Intent i = new Intent(Client.ACTION_OPEN_SLIDER);
+		sendBroadcast(i);
+		
+		finish();
 	}
-
 }
+

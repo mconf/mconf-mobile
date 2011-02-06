@@ -54,7 +54,7 @@ public class LoginPage extends Activity {
 	private static final Logger log = LoggerFactory.getLogger(LoginPage.class);
 	private ArrayAdapter<String> spinnerAdapter;
 	private boolean moderator;
-	private static final String labelCreateMeeting = "== Create a new meeting ==";
+//	private static final String labelCreateMeeting = "== Create a new meeting ==";
 	
     /** Called when the activity is first created. */
     @Override
@@ -84,24 +84,33 @@ public class LoginPage extends Activity {
 //			@Override
 //			public void onItemSelected(AdapterView<?> parent, View view,
 //					int position, long id) {
+//				
 //				// the create new meeting label
-//				if (position == 0) {
+//				if (spinnerAdapter.getItem(position).equals(labelCreateMeeting)) {
 //					final AlertDialog.Builder alert = new AlertDialog.Builder(LoginPage.this);
 //					final EditText input = new EditText(LoginPage.this);
+//					alert.setTitle("New meeting");
+//					alert.setMessage("Enter the meeting name:");
 //					alert.setView(input);
 //					alert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
 //						
 //						@Override
 //						public void onClick(DialogInterface dialog, int which) {
-//							// TODO Auto-generated method stub
-//							
+//							runOnUiThread(new Runnable() {
+//								
+//								@Override
+//								public void run() {
+//									spinnerAdapter.add(input.getText().toString());
+//									spinnerAdapter.notifyDataSetChanged();
+//									spinner.setSelection(spinnerAdapter.getCount()-1);
+//								}
+//							});
 //						}
 //					});
 //					alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 //						
 //						@Override
 //						public void onClick(DialogInterface dialog, int which) {
-//							// TODO Auto-generated method stub
 //							
 //						}
 //					});
@@ -200,7 +209,6 @@ public class LoginPage extends Activity {
 					@Override
 					public void run() {
 				        spinnerAdapter.clear();
-				        spinnerAdapter.add(labelCreateMeeting);
 				        for (Meeting m : meetings) {
 				        	spinnerAdapter.add(m.getMeetingID());
 				        }
@@ -211,6 +219,7 @@ public class LoginPage extends Activity {
 								return s1.compareTo(s2);
 							}
 						});
+//				        spinnerAdapter.add(labelCreateMeeting);
 				        spinnerAdapter.notifyDataSetChanged();
 				        Spinner spinner = (Spinner) findViewById(R.id.login_spinner);
 				        spinner.performClick();
