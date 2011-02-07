@@ -31,6 +31,7 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.mconf.bbb.api.JoinedMeeting;
 import org.mconf.bbb.chat.ChatModule;
+import org.mconf.bbb.listeners.ListenersModule;
 import org.mconf.bbb.users.UsersModule;
 import org.red5.server.so.SharedObjectMessage;
 import org.slf4j.Logger;
@@ -85,8 +86,9 @@ public class RtmpConnectionHandler extends ClientHandler {
 	
 	private ChatModule chat;
 	private UsersModule users;
+	private ListenersModule listeners;
 
-	Set<IBigBlueButtonClientListener> listeners = new LinkedHashSet<IBigBlueButtonClientListener>();
+	Set<IBigBlueButtonClientListener> eventListeners = new LinkedHashSet<IBigBlueButtonClientListener>();
 	
 	public RtmpConnectionHandler(ClientOptions options, JoinedMeeting meeting) {
 		super(options);		
@@ -170,8 +172,13 @@ public class RtmpConnectionHandler extends ClientHandler {
 	                	break;
 	                } else if (users.onQueryParticipants(resultFor, command)) {
                 		chat = new ChatModule(this, channel);
+                		listeners = new ListenersModule(this, channel);
 	                	break;
 	                } else if (chat.onGetChatMessages(resultFor, command)) {
+	                	break;
+	                } else if (listeners.onGetCurrentUsers(resultFor, command)) {
+	                	break;
+	                } else if (listeners.onGetRoomMuteState(resultFor, command)) {
 	                	break;
 	                }
 	            }
@@ -209,14 +216,14 @@ public class RtmpConnectionHandler extends ClientHandler {
 	}
 	
 	public void addListener(IBigBlueButtonClientListener listener) {
-		listeners.add(listener);
+		eventListeners.add(listener);
 	}
 
 	public void removeListener(IBigBlueButtonClientListener listener) {
-		listeners.remove(listener);
+		eventListeners.remove(listener);
 	}
 
 	public Set<IBigBlueButtonClientListener> getListeners() {
-		return listeners;
+		return eventListeners;
 	}
 }

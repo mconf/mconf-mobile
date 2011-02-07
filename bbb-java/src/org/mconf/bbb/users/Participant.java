@@ -29,6 +29,12 @@ public class Participant implements IParticipant {
 	private String name;
 	private int userid;
 	private String role;
+	
+	// listener stuff
+	private boolean listener;
+	private boolean muted;
+	private boolean locked;
+	private boolean talking;
 
 	public Participant() {
 		
@@ -151,5 +157,45 @@ public class Participant implements IParticipant {
 	
 	public void setRaiseHand(boolean raiseHand) {
 		status.setRaiseHand(raiseHand);
+	}
+
+	public int getUserid() {
+		return userid;
+	}
+
+	public void setUserid(int userid) {
+		this.userid = userid;
+	}
+
+	public boolean isListener() {
+		return listener;
+	}
+
+	public void setListener(boolean listener) {
+		this.listener = listener;
+	}
+
+	public boolean isMuted() {
+		return muted;
+	}
+
+	public void setMuted(boolean muted) {
+		this.muted = muted;
+	}
+
+	public boolean isLocked() {
+		return locked;
+	}
+
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+	}
+
+	public boolean isTalking() {
+		return talking;
+	}
+
+	public void setTalking(boolean talking) {
+		this.talking = talking;
 	}	
 }

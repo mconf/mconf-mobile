@@ -270,7 +270,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			/**
 			 *  http://groups.google.com/group/android-developers/browse_thread/thread/e61ec1e8d88ea94d
 			 */
-			notificationIntent.setData((Uri.parse("custom://"+SystemClock.elapsedRealtime()))); 
+			notificationIntent.setData(Uri.parse("custom://"+SystemClock.elapsedRealtime())); 
 
 			PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
 			notification.setLatestEventInfo(getApplicationContext(), contentTitle, message.getMessage(), contentIntent);
