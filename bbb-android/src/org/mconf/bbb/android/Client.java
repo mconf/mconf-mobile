@@ -138,13 +138,14 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	
 	@Override
 	protected void onDestroy() {
-		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		notificationManager.cancelAll();
-		
-		unregisterReceiver(receiver);
-		
 		bbb.removeListener(this);
 		bbb.disconnect();
+
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		notificationManager.cancelAll();	
+
+		unregisterReceiver(receiver);
+
 		super.onDestroy();
 	}
 	
@@ -182,7 +183,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case MENU_LOGOUT:
-				startActivity(new Intent(this, LoginPage.class));
+				Intent login = new Intent(this, LoginPage.class);
+				login.putExtra("username", myusername);
+				startActivity(login);
 				finish();
 				return true;
 			case MENU_QUIT:
