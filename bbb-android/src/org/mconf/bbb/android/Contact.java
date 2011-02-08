@@ -25,9 +25,13 @@ import org.mconf.bbb.users.IParticipant;
 import org.mconf.bbb.users.Participant;
 
 public class Contact extends Participant {
-
-	private int backgroundColor = R.color.background;
 	
+	public static final int CONTACT_NORMAL = 0;
+	public static final int CONTACT_ON_PUBLIC_MESSAGE = 1;
+	public static final int CONTACT_ON_PRIVATE_MESSAGE = 2;
+	
+	private int chatStatus = CONTACT_NORMAL;
+
 	public Contact(IParticipant partic) {
 		this.setName(partic.getName());
 		this.setStatus(partic.getStatus());
@@ -35,12 +39,12 @@ public class Contact extends Participant {
 		this.setUserId(partic.getUserId());
 	}
 
-	public void setBackgroundColor(int backgroundColor) {
-		this.backgroundColor = backgroundColor;
+	public void setChatStatus(int chatStatus) {
+		this.chatStatus = chatStatus;
 	}
 
-	public int getBackgroundColor() {
-		return backgroundColor;
+	public int getChatStatus() {
+		return chatStatus;
 	}
 
 }

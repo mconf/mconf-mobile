@@ -22,12 +22,13 @@
 package org.mconf.bbb.android;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.mconf.bbb.users.IParticipant;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -144,16 +145,54 @@ public class ContactAdapter extends BaseAdapter {
         setStreamStatus(entry);
         setRaiseHandStatus(entry);
         
-        convertView.setBackgroundResource(entry.getBackgroundColor());
+        int color;
+        switch (entry.getChatStatus()) {
+        	case Contact.CONTACT_ON_PRIVATE_MESSAGE:
+        		color = android.R.color.black;
+        		break;
+        	case Contact.CONTACT_ON_PUBLIC_MESSAGE:
+        		color = android.R.color.white;
+        		break;
+    		default:
+    			color = R.color.background;
+        }
+        
+        convertView.setBackgroundResource(color);
 
         return convertView;
     }
 
-	public void onChatMessage(boolean showNotification, int userId) {
-		if (showNotification)
-			getUserById(userId).setBackgroundColor(Color.RED);
-		else
-			getUserById(userId).setBackgroundColor(R.color.background);
+	public void setChatStatus(int userId, int chatStatus) {
+//		getUserById(userId).setChatStatus(chatStatus);
+	}
+
+	public void sort() {
+		Collections.sort(listContact, new Comparator<IParticipant>() {
+
+			@Override
+			public int compare(IParticipant object1, IParticipant object2) {
+				Contact p1 = (Contact) object1;
+				Contact p2 = (Contact) object2;
+				
+				if (p1.getChatStatus() != Contact.CONTACT_NORMAL && p2.getChatStatus() == Contact.CONTACT_NORMAL)
+					return -1;
+				if (p2.getChatStatus() != Contact.CONTACT_NORMAL && p1.getChatStatus() == Contact.CONTACT_NORMAL)
+					return 1;				
+				
+				if (p1.isModerator() && !p2.isModerator())
+					return -1;
+				if (p2.isModerator() && !p1.isModerator())
+					return 1;
+				
+				if (p1.isPresenter() && !p2.isPresenter())
+					return -1;
+				if (p2.isPresenter() && !p1.isPresenter())
+					return 1;
+				
+				return p1.getName().compareToIgnoreCase(p2.getName());
+			}
+		}); 
+		
 	}
 
 }

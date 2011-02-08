@@ -32,10 +32,7 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -73,7 +70,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	protected SlidingDrawer slidingDrawer;
 	protected Button slideHandleButton;
 	
-	protected ClientBroadcastReceiver receiver = new ClientBroadcastReceiver();
+//	protected ClientBroadcastReceiver receiver = new ClientBroadcastReceiver();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -112,6 +109,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				String chatMessage = chatMessageEdit.getText().toString();
 				bbb.sendPublicChatMessage(chatMessage);
 				chatMessageEdit.setText("");
+				// it's not working correctly
 				chatListView.setSelection(chatListView.getCount());
 			}
 		});
@@ -131,9 +129,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		
 		bbb.addListener(this);
 
-		IntentFilter i = new IntentFilter(Client.ACTION_OPEN_SLIDER);
-		registerReceiver(receiver, i);
-		log.debug("registering broadcast receiver");
+//		IntentFilter i = new IntentFilter(Client.ACTION_OPEN_SLIDER);
+//		registerReceiver(receiver, i);
+//		log.debug("registering broadcast receiver");
 	}
 	
 	@Override
@@ -144,22 +142,22 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notificationManager.cancelAll();	
 
-		unregisterReceiver(receiver);
+//		unregisterReceiver(receiver);
 
 		super.onDestroy();
 	}
 	
-	private class ClientBroadcastReceiver extends BroadcastReceiver {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			if (intent.getAction().equals(ACTION_OPEN_SLIDER)) {
-				if (!slidingDrawer.isOpened())
-					slidingDrawer.open();
-			}
-		}
-		
-	}
+//	private class ClientBroadcastReceiver extends BroadcastReceiver {
+//
+//		@Override
+//		public void onReceive(Context context, Intent intent) {
+//			if (intent.getAction().equals(ACTION_OPEN_SLIDER)) {
+//				if (!slidingDrawer.isOpened())
+//					slidingDrawer.open();
+//			}
+//		}
+//		
+//	}
 	
 	private void startPrivateChat(Contact contact) {
 
@@ -227,6 +225,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			@Override
 			public void run() {
 				contactAdapter.addSection(p);
+				contactAdapter.sort();
 				contactAdapter.notifyDataSetChanged();
 			}
 		});		
@@ -238,6 +237,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			@Override
 			public void run() {
 				contactAdapter.removeSection(p);
+				contactAdapter.sort();
 				contactAdapter.notifyDataSetChanged();		
 			}
 		});
@@ -245,19 +245,11 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 	@Override
 	public void onPrivateChatMessage(ChatMessage message, IParticipant source) {
+		// if the message received was sent from me, don't show any notification
 		if (message.getUserId() == bbb.getHandler().getMyUserId())
 			return;
 		
 		showNotification(message, source, true);
-		
-		contactAdapter.onChatMessage(true, source.getUserId());
-		runOnUiThread(new Runnable() {
-			
-			@Override
-			public void run() {
-				contactAdapter.notifyDataSetInvalidated();
-			}
-		});
 	}
 
 	@Override
@@ -266,7 +258,31 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		super.onActivityResult(requestCode, resultCode, data);		
 	}
 	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		log.debug("onNewIntent");
+		super.onNewIntent(intent);
+		
+		if (intent.getAction().equals(ACTION_OPEN_SLIDER)) {
+			if (!slidingDrawer.isOpened())
+				slidingDrawer.open();			
+		}
+	}
+	
 	public void showNotification(ChatMessage message, IParticipant source, boolean privateChat) {
+		// remember that source could be null! that happens when a user send a message and log out - the list of participants don't have the entry anymore
+		
+		// change the background color of the message source
+		contactAdapter.setChatStatus(message.getUserId(), privateChat? Contact.CONTACT_ON_PRIVATE_MESSAGE: Contact.CONTACT_ON_PUBLIC_MESSAGE);
+		runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				contactAdapter.sort();
+				contactAdapter.notifyDataSetInvalidated();
+			}
+		});		
+		
 		String contentTitle = "New " + (privateChat? "private": "public") + " message from " + message.getUsername();
 
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -288,12 +304,17 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			notification.setLatestEventInfo(getApplicationContext(), contentTitle, message.getMessage(), contentIntent);
 			notificationManager.notify(CHAT_NOTIFICATION_ID + message.getUserId(), notification);
 		} else {
-			notificationIntent = new Intent(getApplicationContext(), OpenClientSliderActivity.class);
+			notificationIntent = new Intent(getApplicationContext(), Client.class);
+			notificationIntent.setAction(ACTION_OPEN_SLIDER);
 			
-			PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+			PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
 			notification.setLatestEventInfo(getApplicationContext(), contentTitle, message.getMessage(), contentIntent);
 			notificationManager.notify(CHAT_NOTIFICATION_ID, notification);	
 		}
+	}
+	
+	public void dismissNotification(int userId) {
+		
 	}
 	
 	@Override
@@ -307,7 +328,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			}
 		});
 		
-		showNotification(message, source, false);
+		if (!slidingDrawer.isShown() || !slidingDrawer.isOpened())
+			showNotification(message, source, false);
 	}
 
 	@Override
