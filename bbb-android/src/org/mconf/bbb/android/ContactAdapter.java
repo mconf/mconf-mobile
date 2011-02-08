@@ -27,6 +27,7 @@ import java.util.List;
 import org.mconf.bbb.users.IParticipant;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -143,10 +144,16 @@ public class ContactAdapter extends BaseAdapter {
         setStreamStatus(entry);
         setRaiseHandStatus(entry);
         
-       
-                      
+        convertView.setBackgroundResource(entry.getBackgroundColor());
 
         return convertView;
     }
+
+	public void onChatMessage(boolean showNotification, int userId) {
+		if (showNotification)
+			getUserById(userId).setBackgroundColor(Color.RED);
+		else
+			getUserById(userId).setBackgroundColor(R.color.background);
+	}
 
 }

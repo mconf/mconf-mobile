@@ -26,11 +26,21 @@ import org.mconf.bbb.users.Participant;
 
 public class Contact extends Participant {
 
+	private int backgroundColor = R.color.background;
+	
 	public Contact(IParticipant partic) {
 		this.setName(partic.getName());
 		this.setStatus(partic.getStatus());
 		this.setRole(partic.getRole());
 		this.setUserId(partic.getUserId());
+	}
+
+	public void setBackgroundColor(int backgroundColor) {
+		this.backgroundColor = backgroundColor;
+	}
+
+	public int getBackgroundColor() {
+		return backgroundColor;
 	}
 
 }

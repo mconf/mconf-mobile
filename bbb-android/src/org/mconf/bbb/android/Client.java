@@ -249,6 +249,15 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			return;
 		
 		showNotification(message, source, true);
+		
+		contactAdapter.onChatMessage(true, source.getUserId());
+		runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				contactAdapter.notifyDataSetInvalidated();
+			}
+		});
 	}
 
 	@Override
