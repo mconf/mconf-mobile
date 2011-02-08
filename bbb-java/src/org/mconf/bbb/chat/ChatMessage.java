@@ -39,7 +39,7 @@ public class ChatMessage {
 	
 	public ChatMessage() {
 		color = "0";
-		time = new SimpleDateFormat("hh:mm").format(System.currentTimeMillis());
+		time = new SimpleDateFormat("HH:mm").format(System.currentTimeMillis());
 		language = "en";
 	}
 	
