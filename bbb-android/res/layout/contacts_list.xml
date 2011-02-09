@@ -8,7 +8,7 @@
 		android:layout_width="fill_parent" android:id="@+id/label_participants"
 		android:layout_alignParentTop="true"
 		android:textAppearance="@style/TitleStyle"
-		android:text="List of participants"
+		android:text="@string/list_participants"
 		android:gravity="center"
 		android:background="@color/title_background_onfocus"
 		android:minHeight="42dp"/>
@@ -37,7 +37,7 @@
 			<Button android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:id="@id/handle"
 				android:textAppearance="@style/TitleStyle"
-				android:text="Public chat"
+				android:text="@string/public_chat"
 				android:background="@color/title_background_onfocus"
 				android:minHeight="42dp"		
 				android:gravity="center"/>

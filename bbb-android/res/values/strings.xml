@@ -7,4 +7,8 @@
     <string name="login_button_join">Join</string>
     <string name="send_message">Send</string>
     <string name="cancel_button">Cancel</string>
+    <string name="list_participants">List of participants</string>
+    <string name="public_chat">Public chat</string>
+     <string name="meeting">Meeting:</string>
+    
 </resources>
