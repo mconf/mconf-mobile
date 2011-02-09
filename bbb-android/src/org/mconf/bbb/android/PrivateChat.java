@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.chat.ChatMessage;
@@ -150,15 +151,12 @@ public class PrivateChat extends Activity {
 	}
 	
 	private RemoteParticipant getParticipantByViewId(int viewId) {
-		Iterator<Integer> it = participants.keySet().iterator(); 
-		while(it.hasNext()) { 
-			Object key = it.next();  
-			RemoteParticipant part = participants.get(key);
-			log.debug("view id: " + viewId + "partId: " + part.getViewId());
-			if(viewId==part.getViewId())
-				return part;
+		for (Entry<Integer, RemoteParticipant> entry : participants.entrySet()) {
+			if (entry.getValue().getViewId() == viewId)
+				return entry.getValue();
 		}
 		return null;
+		
 	}
 	
 	private RemoteParticipant createParticipant(int userId, String username) {
@@ -277,9 +275,9 @@ public class PrivateChat extends Activity {
                 	flipper.setInAnimation(slideRight);
                 	flipper.setOutAnimation(slideRight);
                 	viewID =flipper.getChildAt(flipper.getDisplayedChild() -1).getId();
-                   System.out.println("viewId: " + viewID);
-                    	setTitle(getParticipantByViewId(viewID).getUsername());
-                    
+                	System.out.println("hey");
+                    setTitle(getParticipantByViewId(viewID).getUsername());
+                    System.out.println("hello");
                 	flipper.showPrevious();
                 }
             } catch (Exception e) {
