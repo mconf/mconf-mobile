@@ -52,13 +52,13 @@ import android.widget.ViewFlipper;
 
 public class PrivateChat extends Activity {
 
-	
+
 	private class RemoteParticipant implements IBigBlueButtonClientListener {
 		private int userId;
 		private int viewId;
 		private String username;
 		private ChatAdapter chatAdapter;
-		
+
 		public int getUserId() {
 			return userId;
 		}
@@ -100,11 +100,11 @@ public class PrivateChat extends Activity {
 		public void onParticipantStatusChangePresenter(IParticipant p) {}
 		@Override
 		public void onParticipantStatusChangeRaiseHand(IParticipant p) {}
-		
+
 		public void onPrivateChatMessage(final ChatMessage message) {
 			log.debug("private message handled");
 			runOnUiThread(new Runnable() {
-	
+
 				@Override
 				public void run() {
 					chatAdapter.add(message);
@@ -124,16 +124,17 @@ public class PrivateChat extends Activity {
 		@Override
 		public void onPublicChatMessage(ChatMessage message, IParticipant source) {}
 	}
-	
+
 	private static final Logger log = LoggerFactory.getLogger(PrivateChat.class);
 
 	// userId x remote participant
 	protected static Map<Integer, RemoteParticipant> participants = new HashMap<Integer, RemoteParticipant>();
-	
+
+
 	private static final int SWIPE_MIN_DISTANCE = 120;
 	private static final int SWIPE_MAX_OFF_PATH = 400;
 	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
-	
+
 	private GestureDetector gestureDetector;
 	View.OnTouchListener gestureListener;
 	private Animation slideLeft;
@@ -145,48 +146,57 @@ public class PrivateChat extends Activity {
 		flipper.addView(getView(), index);
 		return index;
 	}
-	
+
 	private View getView() {
 		return getLayoutInflater().inflate(R.layout.chat, null);        
 	}
-	
+
 	private RemoteParticipant getParticipantByViewId(int viewId) {
-		for (Entry<Integer, RemoteParticipant> entry : participants.entrySet()) {
-			if (entry.getValue().getViewId() == viewId)
-				return entry.getValue();
+
+		Iterator<RemoteParticipant> it = participants.values().iterator();
+
+		while (it.hasNext()) {
+
+			RemoteParticipant part = it.next();
+
+
+			if (part.getViewId() == viewId)
+				return part;
 		}
+
 		return null;
-		
+
 	}
-	
+
 	private RemoteParticipant createParticipant(int userId, String username) {
 		log.debug("creating a new remote participant");
-		
+
 		final RemoteParticipant p = new RemoteParticipant();
 		p.setUserId(userId);
 		p.setUsername(username);
 		p.setViewId(addView());
 		p.setChatAdapter(new ChatAdapter(this));
-		
-		slideLeft = AnimationUtils.loadAnimation(this, R.anim.slide_left);
-        slideRight = AnimationUtils.loadAnimation(this, R.anim.slide_right);
+		participants.put(userId, p);
 
-        gestureDetector = new GestureDetector(new MyGestureDetector());
-        gestureListener = new View.OnTouchListener() {
-            public boolean onTouch(View v, MotionEvent event) {
-                if (gestureDetector.onTouchEvent(event)) {
-                    return true;
-                }
-                return false;
-            }
-        };
-		
+		slideLeft = AnimationUtils.loadAnimation(this, R.anim.slide_left);
+		slideRight = AnimationUtils.loadAnimation(this, R.anim.slide_right);
+
+		gestureDetector = new GestureDetector(new MyGestureDetector());
+		gestureListener = new View.OnTouchListener() {
+			public boolean onTouch(View v, MotionEvent event) {
+				if (gestureDetector.onTouchEvent(event)) {
+					return true;
+				}
+				return false;
+			}
+		};
+
 		final ListView chatListView = (ListView) flipper.getChildAt(p.getViewId()).findViewById(R.id.messages);
 		chatListView.setAdapter(p.getChatAdapter());
 		Client.bbb.addListener(p);
 
-		
-		
+
+
 		Button send = (Button) flipper.getChildAt(p.getViewId()).findViewById(R.id.sendMessage);
 		send.setOnClickListener(new OnClickListener() {
 
@@ -202,19 +212,19 @@ public class PrivateChat extends Activity {
 		});
 		return p;
 	}
-	
+
 	private void displayView(Bundle extras) {
 		int userId = extras.getInt("userId");
 		String username = extras.getString("username");
-		
+
 		setTitle("Private chat with " + username);		
-		
+
 		RemoteParticipant p = participants.get(userId);
 		if (p == null)
 			p = createParticipant(userId, username);
-		
+
 		log.debug("displaying view of userId=" + userId + " and username=" + username);
-		
+
 		List<ChatMessage> messages = Client.bbb.getHandler().getChat().getPrivateChatMessage().get(userId);
 		if (messages != null)
 			for (ChatMessage message : messages) {
@@ -230,15 +240,15 @@ public class PrivateChat extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.private_chat);
 
-		
+
 		log.debug("creating first PrivateChat activity");
 
 		flipper = (ViewFlipper) findViewById(R.id.manyPages); 
-		
-        
+
+
 		displayView(getIntent().getExtras());
 	}
-	
+
 	private void cancelNotification(int userId) {
 		log.debug("cancelling notification from " + userId);
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -248,51 +258,53 @@ public class PrivateChat extends Activity {
 	@Override
 	public void onNewIntent(Intent intent) {
 		log.debug("onNewIntent");
-		
+
 		super.onNewIntent(intent);
-		
+
 		displayView(intent.getExtras());
 	}
-	 
-	
+
+
 	class MyGestureDetector extends SimpleOnGestureListener {
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            try {
-                if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
-                    return false;
-                // right to left swipe
-                int viewID;
-                if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                	flipper.setInAnimation(slideLeft);
-                	flipper.setOutAnimation(slideLeft);
-                	viewID =flipper.getChildAt(flipper.getDisplayedChild() + 1).getId();
-                    
-                    setTitle(getParticipantByViewId(viewID).getUsername());
-            
-                    flipper.showNext();
-                }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                	flipper.setInAnimation(slideRight);
-                	flipper.setOutAnimation(slideRight);
-                	viewID =flipper.getChildAt(flipper.getDisplayedChild() -1).getId();
-                	System.out.println("hey");
-                    setTitle(getParticipantByViewId(viewID).getUsername());
-                    System.out.println("hello");
-                	flipper.showPrevious();
-                }
-            } catch (Exception e) {
-                // nothing
-            }
-            return false;
-        }
-    }
+		@Override
+		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+			try {
+				if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
+					return false;
+				// right to left swipe
+				int viewID;
+				if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+					flipper.setInAnimation(slideLeft);
+					flipper.setOutAnimation(slideLeft);
+					flipper.showNext();
+					viewID =flipper.getDisplayedChild();
+
+					setTitle("Private chat with "+getParticipantByViewId(viewID).getUsername());
+
+
+				}  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+					flipper.setInAnimation(slideRight);
+					flipper.setOutAnimation(slideRight);
+					flipper.showPrevious();
+					viewID =flipper.getDisplayedChild();
+					setTitle("Private chat with " +getParticipantByViewId(viewID).getUsername());
+
+
+				}
+			} catch (Exception e) {
+				// nothing
+			}
+			return false;
+		}
+	}
 	@Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (gestureDetector.onTouchEvent(event))
-	        return true;
-	    else
-	    	return false;
-    }
+	public boolean onTouchEvent(MotionEvent event) {
+		if (gestureDetector.onTouchEvent(event))
+			return true;
+		else
+			return false;
+	}
 }
 
 
