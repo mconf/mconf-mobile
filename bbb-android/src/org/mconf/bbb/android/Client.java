@@ -62,6 +62,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	
 	public static final String ACTION_OPEN_SLIDER = "org.mconf.bbb.android.Client.OPEN_SLIDER";
 	public static final String ACTION_BRING_TO_FRONT = "org.mconf.bbb.android.Client.BRING_TO_FRONT";
+
+	private static final int FINISHED = 123;
+
+	
 	
 	public static BigBlueButtonClient bbb = new BigBlueButtonClient();
 	protected ContactAdapter contactAdapter;
@@ -165,9 +169,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		Intent intent = new Intent(getApplicationContext(), PrivateChat.class);
 		intent.putExtra("username", contact.getName());
 		intent.putExtra("userId", contact.getUserId());
-		intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
-		
-
 		startActivity(intent);
 	}
 	
@@ -185,9 +186,11 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				Intent login = new Intent(this, LoginPage.class);
 				login.putExtra("username", myusername);
 				startActivity(login);
+				setResult(FINISHED);
 				finish();
 				return true;
 			case MENU_QUIT:
+				setResult(FINISHED);
 				finish();
 				return true;
 		}
@@ -303,7 +306,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			 */
 			notificationIntent.setData(Uri.parse("custom://"+SystemClock.elapsedRealtime())); 
 
-			PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT );
+			PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
 			notification.setLatestEventInfo(getApplicationContext(), contentTitle, message.getMessage(), contentIntent);
 			notificationManager.notify(CHAT_NOTIFICATION_ID + message.getUserId(), notification);
 		} else {

@@ -39,6 +39,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -136,11 +138,17 @@ public class PrivateChat extends Activity {
 	private static final int SWIPE_MAX_OFF_PATH = 400;
 	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 	public static final String ACTION_BRING_TO_FRONT = "org.mconf.bbb.android.Client.BRING_TO_FRONT";
+	public static final int MENU_QUIT = Menu.FIRST;
+	public static final int MENU_LOGOUT = Menu.FIRST + 1;
+
+	private static final int FINISHED = 123;
 
 	private GestureDetector gestureDetector;
 	View.OnTouchListener gestureListener;
-	private Animation slideLeft;
-	private Animation slideRight;
+	private Animation LeftIn;
+	private Animation LeftOut;
+	private Animation RightIn;
+	private Animation RightOut;
 	private ViewFlipper flipper;
 
 	private int addView() {
@@ -180,18 +188,13 @@ public class PrivateChat extends Activity {
 		p.setChatAdapter(new ChatAdapter(this));
 		participants.put(userId, p);
 
-		slideLeft = AnimationUtils.loadAnimation(this, R.anim.slide_left);
-		slideRight = AnimationUtils.loadAnimation(this, R.anim.slide_right);
-
-		gestureDetector = new GestureDetector(new MyGestureDetector());
-		gestureListener = new View.OnTouchListener() {
-			public boolean onTouch(View v, MotionEvent event) {
-				if (gestureDetector.onTouchEvent(event)) {
-					return true;
-				}
-				return false;
+		List<ChatMessage> messages = Client.bbb.getHandler().getChat().getPrivateChatMessage().get(userId);
+		if (messages != null)
+			for (ChatMessage message : messages) {
+				p.onPrivateChatMessage(message);
 			}
-		};
+		
+		
 
 		final ListView chatListView = (ListView) flipper.getChildAt(p.getViewId()).findViewById(R.id.messages);
 		chatListView.setAdapter(p.getChatAdapter());
@@ -219,6 +222,7 @@ public class PrivateChat extends Activity {
 		int userId = extras.getInt("userId");
 		String username = extras.getString("username");
 
+		
 		setTitle("Private chat with " + username);		
 
 		RemoteParticipant p = participants.get(userId);
@@ -227,11 +231,7 @@ public class PrivateChat extends Activity {
 
 		log.debug("displaying view of userId=" + userId + " and username=" + username);
 
-		List<ChatMessage> messages = Client.bbb.getHandler().getChat().getPrivateChatMessage().get(userId);
-		if (messages != null)
-			for (ChatMessage message : messages) {
-				p.onPrivateChatMessage(message);
-			}
+		
 
 		flipper.setDisplayedChild(p.getViewId());
 		cancelNotification(userId);
@@ -243,12 +243,25 @@ public class PrivateChat extends Activity {
 		setContentView(R.layout.private_chat);
 
 
-		log.debug("creating first PrivateChat activity");
+		log.debug("ON CREATE");
 
 		flipper = (ViewFlipper) findViewById(R.id.manyPages); 
 
 
 		displayView(getIntent().getExtras());
+		LeftIn = AnimationUtils.loadAnimation(this, R.anim.push_left_in);
+		LeftOut = AnimationUtils.loadAnimation(this, R.anim.push_left_out);
+		RightIn = AnimationUtils.loadAnimation(this, R.anim.slide_right);
+		RightOut=AnimationUtils.loadAnimation(this, R.anim.fade);
+		gestureDetector = new GestureDetector(new MyGestureDetector());
+		gestureListener = new View.OnTouchListener() {
+			public boolean onTouch(View v, MotionEvent event) {
+				if (gestureDetector.onTouchEvent(event)) {
+					return true;
+				}
+				return false;
+			}
+		};
 	}
 
 	private void cancelNotification(int userId) {
@@ -263,40 +276,43 @@ public class PrivateChat extends Activity {
 
 		super.onNewIntent(intent);
 
+		log.debug("ON NEW INTENT");
 		displayView(intent.getExtras());
-		log.debug("onNewIntent");
+		
 	}
 
 
 	class MyGestureDetector extends SimpleOnGestureListener {
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+			if(participants.size()>1)
+			{
+				try {
+					if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
+						return false;
+					// right to left swipe
+					int viewID;
+					if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+						flipper.setInAnimation(LeftIn);
+						flipper.setOutAnimation(LeftOut);
+						flipper.showNext();
+						viewID =flipper.getDisplayedChild();
 
-			try {
-				if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
-					return false;
-				// right to left swipe
-				int viewID;
-				if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-					flipper.setInAnimation(slideLeft);
-					flipper.setOutAnimation(slideLeft);
-					flipper.showNext();
-					viewID =flipper.getDisplayedChild();
-
-					setTitle("Private chat with "+getParticipantByViewId(viewID).getUsername());
-
-
-				}  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-					flipper.setInAnimation(slideRight);
-					flipper.setOutAnimation(slideRight);
-					flipper.showPrevious();
-					viewID =flipper.getDisplayedChild();
-					setTitle("Private chat with " +getParticipantByViewId(viewID).getUsername());
+						setTitle("Private chat with "+getParticipantByViewId(viewID).getUsername());
 
 
+					}  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+						flipper.setInAnimation(RightIn);
+						flipper.setOutAnimation(RightOut);
+						flipper.showPrevious();
+						viewID =flipper.getDisplayedChild();
+						setTitle("Private chat with " +getParticipantByViewId(viewID).getUsername());
+
+
+					}
+				} catch (Exception e) {
+					// nothing
 				}
-			} catch (Exception e) {
-				// nothing
 			}
 			return false;
 		}
@@ -311,27 +327,31 @@ public class PrivateChat extends Activity {
 	
 	   
 	@Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)  {
-        if (Integer.parseInt(android.os.Build.VERSION.SDK) < 5
-                && keyCode == KeyEvent.KEYCODE_BACK
-                && event.getRepeatCount() == 0) {
-            System.out.println("onKeyDown Called");
-            onBackPressed();
-        }
-
-        return super.onKeyDown(keyCode, event);
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    	if (keyCode == KeyEvent.KEYCODE_BACK) {
+    		
+    		Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
+        	bringBackClient.setAction(ACTION_BRING_TO_FRONT);
+        	System.out.println("moving to back");
+        	startActivityForResult(bringBackClient, FINISHED);
+        	return true;
+    	}
+    	log.debug("killing");
+    	return super.onKeyDown(keyCode, event);
     }
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    log.debug("got result" + resultCode);
+	    super.onActivityResult(requestCode, resultCode, data);
+	    if(requestCode==FINISHED&&resultCode==RESULT_OK)
+	    	finish();
+	    
+	    	
+	}
 
-    @Override
-    public void onBackPressed() {
-    	Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
-    	bringBackClient.setAction(ACTION_BRING_TO_FRONT);
-    	System.out.println("moving to back");
-    	startActivity(bringBackClient);
 
-        return ;
-    } 
-
+    
 }
 
 
