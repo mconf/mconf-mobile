@@ -35,7 +35,6 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -187,29 +186,42 @@ public class LoginPage extends Activity {
     }
     
     private void updateMeetingsList() {
-        Resources resources = getApplicationContext().getResources();
-        AssetManager assetManager = resources.getAssets();
-
-		Properties p = new Properties();
-		try {
-			p.load(assetManager.open("bigbluebutton.properties"));
-		} catch (Exception e) {
-			Toast.makeText(this, "Can't find the properties file", Toast.LENGTH_SHORT).show();
-			log.error("Can't find the properties file");
-			return;
-		}
-			        
-        if (!Client.bbb.load(p.getProperty("bigbluebutton.web.serverURL"), p.getProperty("beans.dynamicConferenceService.securitySalt"))) {
-        	Toast.makeText(this, "Can't contact the server. Try it later", Toast.LENGTH_SHORT).show();
-			log.error("Can't contact the server. Try it later");
-        	return;
-        }
-        
-		final ProgressDialog progressDialog = ProgressDialog.show(this, "", "Updating meeting list", true);
+		final ProgressDialog progressDialog = ProgressDialog.show(this, "Updating meeting list", "Please wait", true);
 		
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
+		        Resources resources = getApplicationContext().getResources();
+		        AssetManager assetManager = resources.getAssets();
+
+				Properties p = new Properties();
+				try {
+					p.load(assetManager.open("bigbluebutton.properties"));
+				} catch (Exception e) {
+		        	progressDialog.dismiss();
+		        	runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							Toast.makeText(getApplicationContext(), "Can't find the properties file", Toast.LENGTH_SHORT).show();							
+						}
+					});
+					log.error("Can't find the properties file");
+					return;
+				}
+					        
+		        if (!Client.bbb.load(p.getProperty("bigbluebutton.web.serverURL"), p.getProperty("beans.dynamicConferenceService.securitySalt"))) {
+		        	progressDialog.dismiss();
+		        	runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							Toast.makeText(getApplicationContext(), "Can't contact the server. Try it later", Toast.LENGTH_SHORT).show();
+						}
+					});
+					log.error("Can't contact the server. Try it later");
+		        	return;
+		        }
+		        
+
 				final List<Meeting> meetings = Client.bbb.getMeetings();
 
 				progressDialog.dismiss();
@@ -239,13 +251,13 @@ public class LoginPage extends Activity {
 		}).start();
     }
     
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-    	if (keyCode == KeyEvent.KEYCODE_BACK) {
-    		log.debug("KEYCODE_BACK");
-    		moveTaskToBack(true);
-    		return true;
-    	}    		
-    	return super.onKeyDown(keyCode, event);
-    }
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//    	if (keyCode == KeyEvent.KEYCODE_BACK) {
+//    		log.debug("KEYCODE_BACK");
+//    		moveTaskToBack(true);
+//    		return true;
+//    	}    		
+//    	return super.onKeyDown(keyCode, event);
+//    }
 }
