@@ -61,7 +61,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static final int CHAT_NOTIFICATION_ID = 77000;
 	
 	public static final String ACTION_OPEN_SLIDER = "org.mconf.bbb.android.Client.OPEN_SLIDER";
-
+	public static final String ACTION_BRING_TO_FRONT = "org.mconf.bbb.android.Client.BRING_TO_FRONT";
+	
 	public static BigBlueButtonClient bbb = new BigBlueButtonClient();
 	protected ContactAdapter contactAdapter;
 	protected ChatAdapter chatAdapter;
@@ -165,7 +166,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		intent.putExtra("username", contact.getName());
 		intent.putExtra("userId", contact.getUserId());
 		intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		
 
 		startActivity(intent);
 	}
@@ -245,11 +246,13 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 	@Override
 	public void onPrivateChatMessage(ChatMessage message, IParticipant source) {
+
 		// if the message received was sent from me, don't show any notification
 		if (message.getUserId() == bbb.getHandler().getMyUserId())
 			return;
-		
+
 		showNotification(message, source, true);
+
 	}
 
 	@Override
@@ -300,7 +303,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			 */
 			notificationIntent.setData(Uri.parse("custom://"+SystemClock.elapsedRealtime())); 
 
-			PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+			PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT );
 			notification.setLatestEventInfo(getApplicationContext(), contentTitle, message.getMessage(), contentIntent);
 			notificationManager.notify(CHAT_NOTIFICATION_ID + message.getUserId(), notification);
 		} else {

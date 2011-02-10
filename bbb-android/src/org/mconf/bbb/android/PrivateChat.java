@@ -38,6 +38,7 @@ import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -134,6 +135,7 @@ public class PrivateChat extends Activity {
 	private static final int SWIPE_MIN_DISTANCE = 120;
 	private static final int SWIPE_MAX_OFF_PATH = 400;
 	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+	public static final String ACTION_BRING_TO_FRONT = "org.mconf.bbb.android.Client.BRING_TO_FRONT";
 
 	private GestureDetector gestureDetector;
 	View.OnTouchListener gestureListener;
@@ -257,11 +259,12 @@ public class PrivateChat extends Activity {
 
 	@Override
 	public void onNewIntent(Intent intent) {
-		log.debug("onNewIntent");
+		
 
 		super.onNewIntent(intent);
 
 		displayView(intent.getExtras());
+		log.debug("onNewIntent");
 	}
 
 
@@ -305,6 +308,30 @@ public class PrivateChat extends Activity {
 		else
 			return false;
 	}
+	
+	   
+	@Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)  {
+        if (Integer.parseInt(android.os.Build.VERSION.SDK) < 5
+                && keyCode == KeyEvent.KEYCODE_BACK
+                && event.getRepeatCount() == 0) {
+            System.out.println("onKeyDown Called");
+            onBackPressed();
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onBackPressed() {
+    	Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
+    	bringBackClient.setAction(ACTION_BRING_TO_FRONT);
+    	System.out.println("moving to back");
+    	startActivity(bringBackClient);
+
+        return ;
+    } 
+
 }
 
 
