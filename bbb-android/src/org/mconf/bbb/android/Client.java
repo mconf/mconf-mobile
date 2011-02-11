@@ -225,9 +225,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
-		menu.add(0, MENU_LOGOUT, 0, "Logout").setIcon(android.R.drawable.ic_menu_revert);
-		menu.add(0, MENU_QUIT, 0, "Quit").setIcon(android.R.drawable.ic_menu_close_clear_cancel);
-		menu.add(0, MENU_RAISE_HAND, 0, "Raise hand").setIcon(android.R.drawable.ic_menu_myplaces);
+		menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, "Raise hand").setIcon(android.R.drawable.ic_menu_myplaces);
+		menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, "Logout").setIcon(android.R.drawable.ic_menu_revert);
+		menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, "Quit").setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 		return result;
 	}
 	@Override
