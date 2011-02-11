@@ -21,6 +21,7 @@
 
 package org.mconf.bbb.users;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -83,10 +84,13 @@ public class UsersModule extends Module implements ISharedObjectListener {
 		
 		if (so.equals(participantsSO)) {
 			if (method.equals("kickUserCallback")) {
-				for (IBigBlueButtonClientListener l : handler.getListeners()) {
-					l.onKickUserCallback();
+				int userId = ((Double) params.get(0)).intValue();
+				if (userId == handler.getMyUserId()) {
+					// \TODO the kickUserCallback should be handled with the userId as parameter
+					for (IBigBlueButtonClientListener l : handler.getListeners())
+						l.onKickUserCallback();
+					channel.close();
 				}
-				channel.close();
 				return;
 			}
 			if (method.equals("participantLeft")) {
@@ -196,7 +200,40 @@ public class UsersModule extends Module implements ISharedObjectListener {
 				l.onParticipantStatusChangeRaiseHand(p);
 			}
 		}
-		
+	}
+	
+	public void raiseHand(boolean value) {
+    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getMyUserId(), "raiseHand", value);
+    	handler.writeCommandExpectingResult(channel, cmd);
+	}
+	
+	public void assignPresenter(int userId) {
+    	Command cmd = new CommandAmf0("participants.assignPresenter", null, userId, handler.getMyUserId());
+    	handler.writeCommandExpectingResult(channel, cmd);
+	}
+	
+	public void addStream(String streamName) {
+    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getMyUserId(), streamName);
+    	handler.writeCommandExpectingResult(channel, cmd);
+    	
+    	cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getMyUserId(), "hasStream", true);
+    	handler.writeCommandExpectingResult(channel, cmd);
+	}
+	
+	public void removeStream(String streamName) {
+    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getMyUserId(), "");
+    	handler.writeCommandExpectingResult(channel, cmd);
+    	
+    	cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getMyUserId(), "hasStream", false);
+    	handler.writeCommandExpectingResult(channel, cmd);
+	}
+	
+	public void kickUser(int userId) {
+		if (handler.getUsers().getParticipants().get(handler.getMyUserId()).isModerator()) {
+			List<Object> list = new ArrayList<Object>();
+			list.add(userId);
+			participantsSO.sendMessage("kickUserCallback", list);
+		}
 	}
 	
 }

@@ -271,5 +271,16 @@ public class BigBlueButtonClient implements IBigBlueButtonClient {
 	public void removeListener(IBigBlueButtonClientListener listener) {
 		handler.removeListener(listener);
 	}
+	
+	public void raiseHand(boolean value) {
+		handler.getUsers().raiseHand(value);
+	}
 
+	public void assignPresenter(int userId) {
+		handler.getUsers().assignPresenter(userId);
+	}
+	
+	public void kickUser(int userId) {
+		handler.getUsers().kickUser(userId);
+	}
 }
