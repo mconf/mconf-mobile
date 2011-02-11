@@ -21,10 +21,14 @@
 
 package org.mconf.bbb.android;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.users.IParticipant;
+import org.mconf.bbb.users.Participant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -154,17 +158,40 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
-	                                ContextMenuInfo menuInfo) {
-	  super.onCreateContextMenu(menu, v, menuInfo);
-	  AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-	  final Contact contact = (Contact) contactAdapter.getItem(info.position);
-	  if(contact.getUserId()!= bbb.getHandler().getMyUserId())
-	  {
-		  menu.add(0, KICK_USER, 0, "Kick User");
-		  menu.add(0, MUTE_USER, 0, "Mute User");
-	  }
-	  if(!contact.isPresenter())
-		  menu.add(0, SET_PRESENTER, 0, "Set Presenter");
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+		final Contact contact = (Contact) contactAdapter.getItem(info.position);
+		if(isModerator())
+		{
+			if(contact.getUserId()!= bbb.getHandler().getMyUserId())
+			{
+				menu.add(0, KICK_USER, 0, "Kick User");
+				menu.add(0, MUTE_USER, 0, "Mute User");
+			}
+			if(!contact.isPresenter())
+				menu.add(0, SET_PRESENTER, 0, "Set Presenter");
+		}
+	}
+	
+	public boolean isModerator()
+	{
+		int myUserId = bbb.getHandler().getMyUserId();
+		Contact contact;
+		for(int position=0; position<contactAdapter.getCount(); position++)
+		{
+			contact = (Contact) contactAdapter.getItem(position); 
+
+			if (contact.getUserId() == myUserId)
+			{
+				if(contact.isModerator())
+					return true;
+				else return false;
+			}
+
+		}
+		return false;
+
 	}
 	
 	@Override
@@ -174,13 +201,13 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		final Contact contact = (Contact) contactAdapter.getItem(info.position);
 		 switch (item.getItemId()) {
 		  case KICK_USER:
-		    log.debug("kick");
+		    bbb.kickUser(contact.getUserId());
 		    return true;
 		  case MUTE_USER:
 		    log.debug("mute");
 		    return true;
 		  case SET_PRESENTER:
-			  log.debug("presenter");
+			  bbb.assignPresenter(contact.getUserId());
 			  return true;
 		  }
 		    return super.onContextItemSelected(item);
@@ -247,7 +274,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				return true;
 				
 			case MENU_RAISE_HAND:
-				log.debug("raise hand");
+				bbb.raiseHand(true);
 				return true;
 		}
 
