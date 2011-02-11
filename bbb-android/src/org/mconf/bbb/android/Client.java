@@ -36,13 +36,17 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -57,13 +61,22 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 	public static final int MENU_QUIT = Menu.FIRST;
 	public static final int MENU_LOGOUT = Menu.FIRST + 1;
-
+	public static final int MENU_RAISE_HAND = Menu.FIRST + 2;
+	
 	public static final int CHAT_NOTIFICATION_ID = 77000;
 	
 	public static final String ACTION_OPEN_SLIDER = "org.mconf.bbb.android.Client.OPEN_SLIDER";
 	public static final String ACTION_BRING_TO_FRONT = "org.mconf.bbb.android.Client.BRING_TO_FRONT";
 
-	private static final int FINISHED = 123;
+	public static final int KICK_USER = Menu.FIRST;
+	public static final int MUTE_USER = Menu.FIRST+1;
+	public static final int SET_PRESENTER = Menu.FIRST+2;
+
+	
+
+	
+
+	
 
 	
 	
@@ -74,6 +87,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	protected String myusername;
 	protected SlidingDrawer slidingDrawer;
 	protected Button slideHandleButton;
+	
+	protected boolean loggedIn=true;
 	
 //	protected ClientBroadcastReceiver receiver = new ClientBroadcastReceiver();
 
@@ -133,11 +148,44 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		});
 		
 		bbb.addListener(this);
+		registerForContextMenu((ListView)findViewById(R.id.list));
 
-//		IntentFilter i = new IntentFilter(Client.ACTION_OPEN_SLIDER);
-//		registerReceiver(receiver, i);
-//		log.debug("registering broadcast receiver");
 	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+	                                ContextMenuInfo menuInfo) {
+	  super.onCreateContextMenu(menu, v, menuInfo);
+	  AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+	  final Contact contact = (Contact) contactAdapter.getItem(info.position);
+	  if(contact.getUserId()!= bbb.getHandler().getMyUserId())
+	  {
+		  menu.add(0, KICK_USER, 0, "Kick User");
+		  menu.add(0, MUTE_USER, 0, "Mute User");
+	  }
+	  if(!contact.isPresenter())
+		  menu.add(0, SET_PRESENTER, 0, "Set Presenter");
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+		final Contact contact = (Contact) contactAdapter.getItem(info.position);
+		 switch (item.getItemId()) {
+		  case KICK_USER:
+		    log.debug("kick");
+		    return true;
+		  case MUTE_USER:
+		    log.debug("mute");
+		    return true;
+		  case SET_PRESENTER:
+			  log.debug("presenter");
+			  return true;
+		  }
+		    return super.onContextItemSelected(item);
+		  
+		}
 	
 	@Override
 	protected void onDestroy() {
@@ -177,21 +225,29 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		boolean result = super.onCreateOptionsMenu(menu);
 		menu.add(0, MENU_LOGOUT, 0, "Logout").setIcon(android.R.drawable.ic_menu_revert);
 		menu.add(0, MENU_QUIT, 0, "Quit").setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+		menu.add(0, MENU_RAISE_HAND, 0, "Raise Hand").setIcon(android.R.drawable.ic_menu_myplaces);
 		return result;
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent= new Intent("bbb.android.action.FINISH"); ;
 		switch (item.getItemId()) {
 			case MENU_LOGOUT:
+				bbb.disconnect();
 				Intent login = new Intent(this, LoginPage.class);
 				login.putExtra("username", myusername);
 				startActivity(login);
-				setResult(FINISHED);
+				sendBroadcast(intent);
 				finish();
 				return true;
 			case MENU_QUIT:
-				setResult(FINISHED);
+				bbb.disconnect();
+				sendBroadcast(intent);
 				finish();
+				return true;
+				
+			case MENU_RAISE_HAND:
+				log.debug("raise hand");
 				return true;
 		}
 
@@ -201,6 +257,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
     	if (keyCode == KeyEvent.KEYCODE_BACK) {
+    		Intent intent = new Intent("bbb.android.action.SEND_TO_BACK");
+    		sendBroadcast(intent);
     		log.debug("KEYCODE_BACK");
     		moveTaskToBack(true);
     		return true;
@@ -306,7 +364,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			 */
 			notificationIntent.setData(Uri.parse("custom://"+SystemClock.elapsedRealtime())); 
 
-			PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+			PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(),0, notificationIntent,Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
 			notification.setLatestEventInfo(getApplicationContext(), contentTitle, message.getMessage(), contentIntent);
 			notificationManager.notify(CHAT_NOTIFICATION_ID + message.getUserId(), notification);
 		} else {
@@ -372,6 +430,16 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				contactAdapter.notifyDataSetChanged();
 			}
 		});
+	}
+	
+	public boolean isLoggedIn()
+	{
+		return loggedIn;
+	}
+	
+	public void setLoggedIn(boolean state)
+	{
+		loggedIn=state;
 	}
 
 }

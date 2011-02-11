@@ -176,7 +176,7 @@ public class BigBlueButtonClient implements IBigBlueButtonClient {
 			
 			return null;
 		}
-
+		
 		return joined;
 	}
 	
@@ -205,7 +205,8 @@ public class BigBlueButtonClient implements IBigBlueButtonClient {
 		future.getChannel().close();
 		future.getChannel().getCloseFuture().awaitUninterruptibly();
 		bootstrap.getFactory().releaseExternalResources();
-	}
+		}
+	
 	
 	private ClientBootstrap getBootstrap(final Executor executor, final ClientOptions options, final JoinedMeeting meeting) {
         final ChannelFactory factory = new NioClientSocketChannelFactory(executor, executor);

@@ -158,7 +158,7 @@ public class LoginPage extends Activity {
 	                
 	                Intent myIntent = new Intent(getApplicationContext(), Client.class);
 	                myIntent.putExtra("username", username);
-	                startActivityForResult(myIntent,0);
+	                startActivity(myIntent);
          
 	                finish();
                 }

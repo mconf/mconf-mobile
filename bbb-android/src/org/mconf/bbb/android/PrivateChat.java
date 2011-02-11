@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
+import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.users.IParticipant;
@@ -35,7 +35,10 @@ import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
@@ -53,15 +56,32 @@ import android.widget.ListView;
 import android.widget.ViewFlipper;
 
 
-public class PrivateChat extends Activity {
+public class PrivateChat extends Activity{
 
+	
 
 	private class RemoteParticipant implements IBigBlueButtonClientListener {
 		private int userId;
 		private int viewId;
 		private String username;
 		private ChatAdapter chatAdapter;
+		private boolean chatClosed=false;
+		private boolean notify =false;
+		
+		public void setChatClosed(boolean chatClosed) {
+			this.chatClosed = chatClosed;
+		}
 
+		public boolean isChatClosed() {
+			return chatClosed;
+		}
+		public void setNotify(boolean notify) {
+			this.notify = notify;
+		}
+
+		public boolean isNotify() {
+			return notify;
+		}
 		public int getUserId() {
 			return userId;
 		}
@@ -74,7 +94,7 @@ public class PrivateChat extends Activity {
 		public void setViewId(int viewId) {
 			this.viewId = viewId;
 		}
-		@SuppressWarnings("unused")
+		
 		public String getUsername() {
 			return username;
 		}
@@ -124,8 +144,13 @@ public class PrivateChat extends Activity {
 					cancelNotification(userId);
 			}
 		}
+		
+		
+		
 		@Override
 		public void onPublicChatMessage(ChatMessage message, IParticipant source) {}
+
+		
 	}
 
 	private static final Logger log = LoggerFactory.getLogger(PrivateChat.class);
@@ -138,10 +163,8 @@ public class PrivateChat extends Activity {
 	private static final int SWIPE_MAX_OFF_PATH = 400;
 	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 	public static final String ACTION_BRING_TO_FRONT = "org.mconf.bbb.android.Client.BRING_TO_FRONT";
-	public static final int MENU_QUIT = Menu.FIRST;
-	public static final int MENU_LOGOUT = Menu.FIRST + 1;
+	public static final int MENU_CLOSE = Menu.FIRST;
 
-	private static final int FINISHED = 123;
 
 	private GestureDetector gestureDetector;
 	View.OnTouchListener gestureListener;
@@ -150,7 +173,27 @@ public class PrivateChat extends Activity {
 	private Animation RightIn;
 	private Animation RightOut;
 	private ViewFlipper flipper;
+	
+    
+	
+	
+	BroadcastReceiver finishedReceiver = new BroadcastReceiver(){ 
+		public void onReceive(Context context, Intent intent)
+		{ 
+			PrivateChat.this.finish(); // we finish PrivateChat here when receiving the broadcast 
+		} 
+	};
 
+	BroadcastReceiver moveToBack = new BroadcastReceiver(){ 
+		public void onReceive(Context context, Intent intent)
+		{ 
+			log.debug("sent to back");
+			PrivateChat.this.moveTaskToBack(true); 
+		} 
+	};
+		
+
+	
 	private int addView() {
 		int index = flipper.getChildCount();
 		flipper.addView(getView(), index);
@@ -160,7 +203,28 @@ public class PrivateChat extends Activity {
 	private View getView() {
 		return getLayoutInflater().inflate(R.layout.chat, null);        
 	}
+	
+	private void removeParticipant(Integer key)
+	{
+		participants.remove(key);
+	}
 
+	private Integer getParticipantKeyByViewId(int viewID)
+	{
+		Iterator<Integer> it = participants.keySet().iterator();
+
+		while (it.hasNext()) {
+
+			Integer key = it.next();
+			RemoteParticipant part = participants.get(key);
+
+			if (part.getViewId() == viewID)
+				return key;
+		}
+
+		return null;
+	}
+	
 	private RemoteParticipant getParticipantByViewId(int viewId) {
 
 		Iterator<RemoteParticipant> it = participants.values().iterator();
@@ -180,22 +244,24 @@ public class PrivateChat extends Activity {
 
 	private RemoteParticipant createParticipant(int userId, String username) {
 		log.debug("creating a new remote participant");
-
+		
 		final RemoteParticipant p = new RemoteParticipant();
 		p.setUserId(userId);
 		p.setUsername(username);
 		p.setViewId(addView());
 		p.setChatAdapter(new ChatAdapter(this));
 		participants.put(userId, p);
-
-		List<ChatMessage> messages = Client.bbb.getHandler().getChat().getPrivateChatMessage().get(userId);
-		if (messages != null)
-			for (ChatMessage message : messages) {
-				p.onPrivateChatMessage(message);
-			}
+		if(!p.isChatClosed()) //se o chat não foi fechado pelo usuário e tem notificações
+		{
+			List<ChatMessage> messages = Client.bbb.getHandler().getChat().getPrivateChatMessage().get(userId);
+			if (messages != null)
+				for (ChatMessage message : messages) {
+					p.onPrivateChatMessage(message);
+				}
+		}
 		
 		
-
+		p.setChatClosed(false);
 		final ListView chatListView = (ListView) flipper.getChildAt(p.getViewId()).findViewById(R.id.messages);
 		chatListView.setAdapter(p.getChatAdapter());
 		Client.bbb.addListener(p);
@@ -247,7 +313,7 @@ public class PrivateChat extends Activity {
 
 		flipper = (ViewFlipper) findViewById(R.id.manyPages); 
 
-
+		
 		displayView(getIntent().getExtras());
 		LeftIn = AnimationUtils.loadAnimation(this, R.anim.push_left_in);
 		LeftOut = AnimationUtils.loadAnimation(this, R.anim.push_left_out);
@@ -262,8 +328,29 @@ public class PrivateChat extends Activity {
 				return false;
 			}
 		};
+		registerFinishedReceiver();
+		registerMoveToBackReceiver();
 	}
 
+	private void registerFinishedReceiver(){ 
+		IntentFilter filter = new IntentFilter("bbb.android.action.FINISH"); 
+		registerReceiver(finishedReceiver, filter); 
+	}
+	
+	private void registerMoveToBackReceiver(){ 
+		IntentFilter filter = new IntentFilter("bbb.android.action.SEND_TO_BACK"); 
+		registerReceiver(moveToBack, filter); 
+	}
+	
+	@Override
+	public void onDestroy()
+	{ super.onDestroy(); 
+	unregisterReceiver(finishedReceiver);
+	unregisterReceiver(moveToBack);
+	}
+	
+	
+	
 	private void cancelNotification(int userId) {
 		log.debug("cancelling notification from " + userId);
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -332,8 +419,7 @@ public class PrivateChat extends Activity {
     		
     		Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
         	bringBackClient.setAction(ACTION_BRING_TO_FRONT);
-        	System.out.println("moving to back");
-        	startActivityForResult(bringBackClient, FINISHED);
+        	startActivity(bringBackClient);
         	return true;
     	}
     	log.debug("killing");
@@ -341,17 +427,40 @@ public class PrivateChat extends Activity {
     }
 	
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	    log.debug("got result" + resultCode);
-	    super.onActivityResult(requestCode, resultCode, data);
-	    if(requestCode==FINISHED&&resultCode==RESULT_OK)
-	    	finish();
-	    
-	    	
+	public boolean onCreateOptionsMenu(Menu menu) {
+		boolean result = super.onCreateOptionsMenu(menu);
+		menu.add(0, MENU_CLOSE, 0, "Close Chat").setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+		return result;
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		
+		switch (item.getItemId()) {
+		case MENU_CLOSE:
+			int viewID =flipper.getDisplayedChild();
+			if(participants.size()>1)
+			{
+				flipper.showPrevious();
+				removeParticipant(getParticipantKeyByViewId(viewID));
+				viewID=flipper.getDisplayedChild();
+				setTitle("Private chat with "+getParticipantByViewId(viewID).getUsername());
+			}
+			else
+			{
+				Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
+	        	bringBackClient.setAction(ACTION_BRING_TO_FRONT);
+	        	startActivity(bringBackClient);
+	        	removeParticipant(getParticipantKeyByViewId(viewID));
+			}
+			getParticipantByViewId(viewID).setChatClosed(true);
+			return true;
+		}
 
-    
+		return super.onOptionsItemSelected(item);
+	}
+
+	
 }
 
 
