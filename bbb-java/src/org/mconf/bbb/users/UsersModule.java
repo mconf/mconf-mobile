@@ -207,9 +207,22 @@ public class UsersModule extends Module implements ISharedObjectListener {
     	handler.writeCommandExpectingResult(channel, cmd);
 	}
 	
-	public void assignPresenter(int userId) {
-    	Command cmd = new CommandAmf0("participants.assignPresenter", null, userId, handler.getMyUserId());
+	public void setPresenter(int userId, boolean value) {
+    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, userId, "presenter", value);
     	handler.writeCommandExpectingResult(channel, cmd);
+	}
+	
+	public void assignPresenter(int userId) {
+		for (Participant p : participants.values()) {
+			if (p.isPresenter()) {
+				if (p.getUserid() == userId)
+					return;
+				else
+					setPresenter(p.getUserid(), false);
+			}
+		}
+		
+		setPresenter(userId, true);
 	}
 	
 	public void addStream(String streamName) {
