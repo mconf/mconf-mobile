@@ -251,7 +251,7 @@ public class PrivateChat extends Activity{
 		p.setViewId(addView());
 		p.setChatAdapter(new ChatAdapter(this));
 		participants.put(userId, p);
-		if(!p.isChatClosed()) //se o chat n„o foi fechado pelo usu·rio e tem notificaÁıes
+		if(!p.isChatClosed()) //se o chat n√£o foi fechado pelo usu√°rio e tem notifica√ß√µes
 		{
 			List<ChatMessage> messages = Client.bbb.getHandler().getChat().getPrivateChatMessage().get(userId);
 			if (messages != null)
