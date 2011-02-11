@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.users.IParticipant;
@@ -65,23 +64,23 @@ public class PrivateChat extends Activity{
 		private int viewId;
 		private String username;
 		private ChatAdapter chatAdapter;
-		private boolean chatClosed=false;
-		private boolean notify =false;
-		
-		public void setChatClosed(boolean chatClosed) {
-			this.chatClosed = chatClosed;
-		}
-
-		public boolean isChatClosed() {
-			return chatClosed;
-		}
-		public void setNotify(boolean notify) {
-			this.notify = notify;
-		}
-
-		public boolean isNotify() {
-			return notify;
-		}
+//		private boolean chatClosed=false;
+//		private boolean notify =false;
+//		
+//		public void setChatClosed(boolean chatClosed) {
+//			this.chatClosed = chatClosed;
+//		}
+//
+//		public boolean isChatClosed() {
+//			return chatClosed;
+//		}
+//		public void setNotify(boolean notify) {
+//			this.notify = notify;
+//		}
+//
+//		public boolean isNotify() {
+//			return notify;
+//		}
 		public int getUserId() {
 			return userId;
 		}
@@ -162,7 +161,7 @@ public class PrivateChat extends Activity{
 	private static final int SWIPE_MIN_DISTANCE = 120;
 	private static final int SWIPE_MAX_OFF_PATH = 400;
 	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
-	public static final String ACTION_BRING_TO_FRONT = "org.mconf.bbb.android.Client.BRING_TO_FRONT";
+//	public static final String ACTION_BRING_TO_FRONT = "org.mconf.bbb.android.Client.BRING_TO_FRONT";
 	public static final int MENU_CLOSE = Menu.FIRST;
 
 
@@ -251,7 +250,7 @@ public class PrivateChat extends Activity{
 		p.setViewId(addView());
 		p.setChatAdapter(new ChatAdapter(this));
 		participants.put(userId, p);
-		if(!p.isChatClosed()) //se o chat não foi fechado pelo usuário e tem notificações
+//		if(!p.isChatClosed()) //se o chat não foi fechado pelo usuário e tem notificações
 		{
 			List<ChatMessage> messages = Client.bbb.getHandler().getChat().getPrivateChatMessage().get(userId);
 			if (messages != null)
@@ -261,8 +260,14 @@ public class PrivateChat extends Activity{
 		}
 		
 		
-		p.setChatClosed(false);
+//		p.setChatClosed(false);
 		final ListView chatListView = (ListView) flipper.getChildAt(p.getViewId()).findViewById(R.id.messages);
+		chatListView.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				return gestureDetector.onTouchEvent(event);
+			}
+		});
 		chatListView.setAdapter(p.getChatAdapter());
 		Client.bbb.addListener(p);
 
@@ -322,10 +327,7 @@ public class PrivateChat extends Activity{
 		gestureDetector = new GestureDetector(new MyGestureDetector());
 		gestureListener = new View.OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event) {
-				if (gestureDetector.onTouchEvent(event)) {
-					return true;
-				}
-				return false;
+				return gestureDetector.onTouchEvent(event);
 			}
 		};
 		registerFinishedReceiver();
@@ -343,10 +345,10 @@ public class PrivateChat extends Activity{
 	}
 	
 	@Override
-	public void onDestroy()
-	{ super.onDestroy(); 
-	unregisterReceiver(finishedReceiver);
-	unregisterReceiver(moveToBack);
+	public void onDestroy() { 
+		super.onDestroy(); 
+		unregisterReceiver(finishedReceiver);
+		unregisterReceiver(moveToBack);
 	}
 	
 	
@@ -397,6 +399,7 @@ public class PrivateChat extends Activity{
 
 
 					}
+					return true;
 				} catch (Exception e) {
 					// nothing
 				}
@@ -406,10 +409,7 @@ public class PrivateChat extends Activity{
 	}
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		if (gestureDetector.onTouchEvent(event))
-			return true;
-		else
-			return false;
+		return gestureDetector.onTouchEvent(event);
 	}
 	
 	   
@@ -418,7 +418,7 @@ public class PrivateChat extends Activity{
     	if (keyCode == KeyEvent.KEYCODE_BACK) {
     		
     		Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
-        	bringBackClient.setAction(ACTION_BRING_TO_FRONT);
+//        	bringBackClient.setAction(ACTION_BRING_TO_FRONT);
         	startActivity(bringBackClient);
         	return true;
     	}
@@ -437,24 +437,24 @@ public class PrivateChat extends Activity{
 	public boolean onOptionsItemSelected(MenuItem item) {
 		
 		switch (item.getItemId()) {
-		case MENU_CLOSE:
-			int viewID =flipper.getDisplayedChild();
-			if(participants.size()>1)
-			{
-				flipper.showPrevious();
-				removeParticipant(getParticipantKeyByViewId(viewID));
-				viewID=flipper.getDisplayedChild();
-				setTitle("Private chat with "+getParticipantByViewId(viewID).getUsername());
-			}
-			else
-			{
-				Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
-	        	bringBackClient.setAction(ACTION_BRING_TO_FRONT);
-	        	startActivity(bringBackClient);
-	        	removeParticipant(getParticipantKeyByViewId(viewID));
-			}
-			getParticipantByViewId(viewID).setChatClosed(true);
-			return true;
+			case MENU_CLOSE:
+				int viewID =flipper.getDisplayedChild();
+				if(participants.size()>1)
+				{
+					flipper.showPrevious();
+					removeParticipant(getParticipantKeyByViewId(viewID));
+					viewID=flipper.getDisplayedChild();
+					setTitle("Private chat with "+getParticipantByViewId(viewID).getUsername());
+				}
+				else
+				{
+//					Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
+//		        	bringBackClient.setAction(ACTION_BRING_TO_FRONT);
+		        	removeParticipant(getParticipantKeyByViewId(viewID));
+		        	finish();
+//		        	startActivity(bringBackClient);
+				}
+				return true;
 		}
 
 		return super.onOptionsItemSelected(item);

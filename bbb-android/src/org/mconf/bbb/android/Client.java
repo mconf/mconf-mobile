@@ -65,7 +65,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static final int CHAT_NOTIFICATION_ID = 77000;
 	
 	public static final String ACTION_OPEN_SLIDER = "org.mconf.bbb.android.Client.OPEN_SLIDER";
-	public static final String ACTION_BRING_TO_FRONT = "org.mconf.bbb.android.Client.BRING_TO_FRONT";
+//	public static final String ACTION_BRING_TO_FRONT = "org.mconf.bbb.android.Client.BRING_TO_FRONT";
 
 	public static final int KICK_USER = Menu.FIRST;
 	public static final int MUTE_USER = Menu.FIRST+1;
@@ -94,6 +94,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		log.debug("onCreate");
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.contacts_list);   
 		slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
@@ -191,6 +192,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	
 	@Override
 	protected void onDestroy() {
+		log.debug("onDestroy");
+		
 		bbb.removeListener(this);
 		bbb.disconnect();
 
@@ -230,6 +233,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, "Quit").setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 		return result;
 	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent intent= new Intent("bbb.android.action.FINISH"); ;
@@ -332,7 +336,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		log.debug("onNewIntent");
 		super.onNewIntent(intent);
 		
-		if (intent.getAction().equals(ACTION_OPEN_SLIDER)) {
+		if (intent.getAction() == null)
+			return;
+		else if (intent.getAction().equals(ACTION_OPEN_SLIDER)) {
 			if (!slidingDrawer.isOpened())
 				slidingDrawer.open();			
 		}
