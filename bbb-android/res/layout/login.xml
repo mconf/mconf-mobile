@@ -3,7 +3,7 @@
 
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="horizontal" android:layout_width="fill_parent"
+	android:orientation="vertical" android:layout_width="fill_parent"
 	android:background="@color/background" android:layout_height="fill_parent"
 	android:gravity="center_vertical"
 	>
@@ -15,7 +15,7 @@
 		android:layout_height="wrap_content" 
 		android:layout_width="wrap_content" 
 		android:layout_alignParentTop="true" 
-		android:layout_marginBottom="30dp"
+		android:layout_marginBottom="30dip"
 	/>
 
 	<TextView 
@@ -31,7 +31,7 @@
 	<EditText 
 		android:id="@+id/login_edittext_name"
 		android:layout_height="wrap_content" 
-		android:layout_width="200dp"
+		android:layout_width="230dip"
 		android:layout_centerHorizontal="true" 
 		android:layout_below="@+id/login_label_name"
 		android:singleLine="true" 
@@ -49,24 +49,28 @@
 
     <Spinner 
         android:id="@+id/login_spinner"
-        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true" 
+        android:layout_width="0dip"
         android:layout_below="@+id/login_label_meeting"
+        android:layout_alignRight="@+id/login_edittext_name"
+        android:layout_alignLeft="@+id/login_edittext_name"
     />
+
+    <RadioGroup android:layout_width="wrap_content" android:layout_below="@+id/login_spinner" android:layout_height="wrap_content" android:layout_alignLeft="@+id/login_spinner" android:id="@+id/login_role" android:orientation="horizontal">
+        <RadioButton android:layout_width="wrap_content" android:id="@+id/login_role_moderator" android:layout_height="wrap_content" android:text="Moderator" android:textColor="#000000"/>
+        <RadioButton android:layout_width="wrap_content" android:id="@+id/login_role_viewer" android:layout_height="wrap_content" android:text="Viewer" android:checked="true" android:textColor="#000000"/>
+    </RadioGroup>
 
 	<Button
 		android:id="@+id/login_button_join"
 		android:text="@string/login_button_join" 
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content" 
-		android:layout_toRightOf="@+id/login_spinner"
-        android:layout_below="@+id/login_label_meeting"
+        android:layout_below="@+id/login_role"
+        android:layout_alignRight="@+id/login_edittext_name"
+        android:layout_alignLeft="@+id/login_edittext_name"
+        android:layout_marginTop="50dip"
 	/>
                
-    <RadioGroup android:layout_width="wrap_content" android:layout_below="@+id/login_spinner" android:layout_height="wrap_content" android:layout_alignLeft="@+id/login_spinner" android:id="@+id/login_role" android:orientation="horizontal">
-        <RadioButton android:layout_width="wrap_content" android:id="@+id/login_role_moderator" android:layout_height="wrap_content" android:text="Moderator" android:textColor="#000000"/>
-        <RadioButton android:layout_width="wrap_content" android:id="@+id/login_role_viewer" android:layout_height="wrap_content" android:text="Viewer" android:checked="true" android:textColor="#000000"/>
-    </RadioGroup>
 </RelativeLayout>
 
