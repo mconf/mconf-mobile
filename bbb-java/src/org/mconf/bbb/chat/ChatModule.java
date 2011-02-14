@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.jboss.netty.channel.Channel;
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.Module;
-import org.mconf.bbb.RtmpConnectionHandler;
+import org.mconf.bbb.MainRtmpConnection;
 import org.mconf.bbb.users.IParticipant;
 import org.red5.server.api.IAttributeStore;
 import org.red5.server.api.so.IClientSharedObject;
@@ -52,14 +52,14 @@ public class ChatModule extends Module implements ISharedObjectListener {
 	private List<ChatMessage> publicChatMessages = Collections.synchronizedList(new ArrayList<ChatMessage>());
 	private Map<Integer, List<ChatMessage>> privateChatMessages = new ConcurrentHashMap<Integer, List<ChatMessage>>();
 
-	public ChatModule(RtmpConnectionHandler handler, Channel channel) {
+	public ChatModule(MainRtmpConnection handler, Channel channel) {
 		super(handler, channel);
 		
 		publicChatSO = handler.getSharedObject("chatSO", false);
 		publicChatSO.addSharedObjectListener(this);
 		publicChatSO.connect(channel);
 		
-		privateChatSO = handler.getSharedObject(Integer.toString(handler.getMyUserId()), false);
+		privateChatSO = handler.getSharedObject(Integer.toString(handler.getContext().getMyUserId()), false);
 		privateChatSO.addSharedObjectListener(this);
 		privateChatSO.connect(channel);
 	}
@@ -111,7 +111,7 @@ public class ChatModule extends Module implements ISharedObjectListener {
 				// example: [97, oi|Felipe|0|14:35|en|97]
 				int userid = Integer.parseInt((String) ((LinkedList<String>) params).get(0));
 				String strParams = ((LinkedList<String>) params).get(1);
-				onPrivateChatMessage(new ChatMessage(strParams), handler.getUsers().getParticipants().get(userid));
+				onPrivateChatMessage(new ChatMessage(strParams), handler.getContext().getUsersModule().getParticipants().get(userid));
 				return;
 			}
 		}
@@ -173,8 +173,8 @@ public class ChatModule extends Module implements ISharedObjectListener {
 	public void sendPublicChatMessage(String message) {
 		ChatMessage chatMessage = new ChatMessage();
 		chatMessage.setMessage(message);
-		chatMessage.setUsername(handler.getJoinedMeeting().getFullname());
-		chatMessage.setUserId(handler.getMyUserId());
+		chatMessage.setUsername(handler.getContext().getJoinedMeeting().getFullname());
+		chatMessage.setUserId(handler.getContext().getMyUserId());
 
     	Command command = new CommandAmf0("chat.sendMessage", null, chatMessage.encode());
     	handler.writeCommandExpectingResult(channel, command);
@@ -188,23 +188,23 @@ public class ChatModule extends Module implements ISharedObjectListener {
 	public void sendPrivateChatMessage(String message, int userid) {
 		ChatMessage chatMessage = new ChatMessage();
 		chatMessage.setMessage(message);
-		chatMessage.setUsername(handler.getJoinedMeeting().getFullname());
-		chatMessage.setUserId(handler.getMyUserId());
+		chatMessage.setUsername(handler.getContext().getJoinedMeeting().getFullname());
+		chatMessage.setUserId(handler.getContext().getMyUserId());
 		
-    	Command command = new CommandAmf0("chat.privateMessage", null, chatMessage.encode(), Double.valueOf(handler.getMyUserId()), Double.valueOf(userid));
+    	Command command = new CommandAmf0("chat.privateMessage", null, chatMessage.encode(), Double.valueOf(handler.getContext().getMyUserId()), Double.valueOf(userid));
     	handler.writeCommandExpectingResult(channel, command);
 
     	// the message sent should be received like on public chat
-    	onPrivateChatMessage(chatMessage, handler.getUsers().getParticipants().get(userid));
+    	onPrivateChatMessage(chatMessage, handler.getContext().getUsersModule().getParticipants().get(userid));
 	}
 	
 	public void onPublicChatMessage(ChatMessage chatMessage) {
-		IParticipant source = handler.getUsers().getParticipants().get(chatMessage.getUserId());
+		IParticipant source = handler.getContext().getUsersModule().getParticipants().get(chatMessage.getUserId());
 		onPublicChatMessage(chatMessage, source);
 	}
 	
 	public void onPublicChatMessage(ChatMessage chatMessage, IParticipant source) {
-		for (IBigBlueButtonClientListener l : handler.getListeners()) {
+		for (IBigBlueButtonClientListener l : handler.getContext().getListeners()) {
 			l.onPublicChatMessage(chatMessage, source);
 		}
 		log.info("handling public chat message: {}", chatMessage);
@@ -212,7 +212,7 @@ public class ChatModule extends Module implements ISharedObjectListener {
 	}
 
 	public void onPrivateChatMessage(ChatMessage chatMessage, IParticipant source) {
-		for (IBigBlueButtonClientListener l : handler.getListeners()) {
+		for (IBigBlueButtonClientListener l : handler.getContext().getListeners()) {
 			l.onPrivateChatMessage(chatMessage, source);
 		}
 		synchronized (privateChatMessages) {
@@ -229,6 +229,14 @@ public class ChatModule extends Module implements ISharedObjectListener {
 	
 	public Map<Integer, List<ChatMessage>> getPrivateChatMessage() {
 		return privateChatMessages;
+	}
+
+	@Override
+	public boolean onCommand(String resultFor, Command command) {
+		if (onGetChatMessages(resultFor, command))
+			return true;
+		else
+			return false;
 	}
 
 }

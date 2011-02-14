@@ -143,7 +143,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				final Contact contact = (Contact) contactAdapter.getItem(position); 
 
 				//se o ID da pessoa clicada for diferente do meu ID
-				if (contact.getUserId() != bbb.getHandler().getMyUserId())
+				if (contact.getUserId() != bbb.getMyUserId())
 					startPrivateChat(contact);
 			}
 		});
@@ -157,8 +157,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 		final Contact contact = (Contact) contactAdapter.getItem(info.position);
-		if (bbb.getHandler().getUsers().getParticipants().get(bbb.getHandler().getMyUserId()).isModerator()) {
-			if (contact.getUserId()!= bbb.getHandler().getMyUserId()) {
+		if (bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator()) {
+			if (contact.getUserId()!= bbb.getMyUserId()) {
 				menu.add(0, KICK_USER, 0, "Kick");
 				// \TODO not implemented yet
 //				menu.add(0, MUTE_USER, 0, "Mute");
@@ -253,7 +253,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				return true;
 				
 			case MENU_RAISE_HAND:
-				if (bbb.getHandler().getUsers().getParticipants().get(bbb.getHandler().getMyUserId()).isRaiseHand())
+				if (bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isRaiseHand())
 					bbb.raiseHand(false);
 				else
 					bbb.raiseHand(true);
@@ -318,7 +318,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public void onPrivateChatMessage(ChatMessage message, IParticipant source) {
 
 		// if the message received was sent from me, don't show any notification
-		if (message.getUserId() == bbb.getHandler().getMyUserId())
+		if (message.getUserId() == bbb.getMyUserId())
 			return;
 
 		showNotification(message, source, true);

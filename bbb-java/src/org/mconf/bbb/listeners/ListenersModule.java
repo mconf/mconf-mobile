@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.jboss.netty.channel.Channel;
+import org.mconf.bbb.MainRtmpConnection;
 import org.mconf.bbb.Module;
-import org.mconf.bbb.RtmpConnectionHandler;
 import org.red5.server.api.IAttributeStore;
 import org.red5.server.api.so.IClientSharedObject;
 import org.red5.server.api.so.ISharedObjectBase;
@@ -44,7 +44,7 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 	
 	private Map<Integer, Listener> listeners = new HashMap<Integer, Listener>();
 
-	public ListenersModule(RtmpConnectionHandler handler, Channel channel) {
+	public ListenersModule(MainRtmpConnection handler, Channel channel) {
 		super(handler, channel);
 		
 		voiceSO = handler.getSharedObject("meetMeUsersSO", false);
@@ -254,6 +254,15 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 	public void onSharedObjectUpdate(ISharedObjectBase so,
 			Map<String, Object> values) {
 		log.debug("onSharedObjectUpdate3");
+	}
+
+	@Override
+	public boolean onCommand(String resultFor, Command command) {
+		if (onGetCurrentUsers(resultFor, command)
+				|| onGetRoomMuteState(resultFor, command)) {
+			return true;
+		} else
+			return false;
 	}
 
 }
