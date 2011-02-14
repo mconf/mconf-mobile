@@ -24,11 +24,18 @@ package org.mconf.bbb;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executor;
 
+import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
+import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.mconf.bbb.api.JoinedMeeting;
 import org.mconf.bbb.chat.ChatModule;
 import org.mconf.bbb.listeners.ListenersModule;
@@ -38,8 +45,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.flazr.amf.Amf0Object;
+import com.flazr.rtmp.RtmpDecoder;
+import com.flazr.rtmp.RtmpEncoder;
 import com.flazr.rtmp.RtmpMessage;
 import com.flazr.rtmp.client.ClientHandler;
+import com.flazr.rtmp.client.ClientHandshakeHandler;
 import com.flazr.rtmp.client.ClientOptions;
 import com.flazr.rtmp.message.AbstractMessage;
 import com.flazr.rtmp.message.Command;
@@ -76,26 +86,36 @@ import com.flazr.rtmp.message.Control;
  * whiteboard
  */
 
-public class RtmpConnectionHandler extends ClientHandler {
+public class MainRtmpConnection extends RtmpConnection {
 
-    private static final Logger log = LoggerFactory.getLogger(RtmpConnectionHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(MainRtmpConnection.class);
     
-    private JoinedMeeting meeting;
-    
-	private int myUserId;
-	
-	private ChatModule chat;
-	private UsersModule users;
-	private ListenersModule listeners;
-
-	Set<IBigBlueButtonClientListener> eventListeners = new LinkedHashSet<IBigBlueButtonClientListener>();
-	
-	public RtmpConnectionHandler(ClientOptions options, JoinedMeeting meeting) {
-		super(options);		
-		this.meeting = meeting;
+	public MainRtmpConnection(ClientOptions options, BigBlueButtonClient context) {
+		super(options, context);
 	}
 	
-    public Command connect() {
+	@Override
+	protected ClientBootstrap getBootstrap(Executor executor) {
+        final ChannelFactory factory = new NioClientSocketChannelFactory(executor, executor);
+        final ClientBootstrap bootstrap = new ClientBootstrap(factory);
+        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
+			@Override
+			public ChannelPipeline getPipeline() throws Exception {
+		        final ChannelPipeline pipeline = Channels.pipeline();
+		        pipeline.addLast("handshaker", new ClientHandshakeHandler(options));
+		        pipeline.addLast("decoder", new RtmpDecoder());
+		        pipeline.addLast("encoder", new RtmpEncoder());
+		        pipeline.addLast("handler", MainRtmpConnection.this);
+		        return pipeline;
+			}
+		});
+        bootstrap.setOption("tcpNoDelay" , true);
+        bootstrap.setOption("keepAlive", true);
+        return bootstrap;
+	}
+
+	@Override
+	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
         Amf0Object object = AbstractMessage.object(
                 AbstractMessage.pair("app", options.getAppName()),
                 AbstractMessage.pair("flashVer", "WIN 9,0,124,2"),
@@ -107,10 +127,12 @@ public class RtmpConnectionHandler extends ClientHandler {
                 AbstractMessage.pair("capabilities", 15.0),
                 AbstractMessage.pair("videoFunction", 1.0));
 
+        JoinedMeeting meeting = context.getJoinedMeeting();
         Command connect = new CommandAmf0("connect", object, meeting.getFullname(), meeting.getRole(), meeting.getConference(), meeting.getMode(), meeting.getRoom(), meeting.getVoicebridge(), meeting.getRecord().equals("true"), meeting.getExternUserID());
-        return connect;
-    }
-    
+
+        writeCommandExpectingResult(e.getChannel(), connect);
+	}
+	
     @SuppressWarnings("unchecked")
 	public String connectGetCode(Command command) {
     	return ((Map<String, Object>) command.getArg(0)).get("code").toString();
@@ -123,8 +145,7 @@ public class RtmpConnectionHandler extends ClientHandler {
     
     public boolean onGetMyUserId(String resultFor, Command command) {
     	if (resultFor.equals("getMyUserId")) {
-	    	myUserId = Integer.parseInt((String) command.getArg(0));
-	    	log.info("My userID is {}", myUserId);
+	    	context.setMyUserId(Integer.parseInt((String) command.getArg(0)));
 	    	return true;
     	} else
     		return false;
@@ -167,20 +188,23 @@ public class RtmpConnectionHandler extends ClientHandler {
 	                		channel.close();
 	                	}
 	                	return;
-	                } else if(onGetMyUserId(resultFor, command)) {
-	                	users = new UsersModule(this, channel);
+	                } else if (onGetMyUserId(resultFor, command)) {
+	                	context.createUsersModule(this, channel);
 	                	break;
-	                } else if (users.onQueryParticipants(resultFor, command)) {
-                		chat = new ChatModule(this, channel);
-                		listeners = new ListenersModule(this, channel);
-	                	break;
-	                } else if (chat.onGetChatMessages(resultFor, command)) {
-	                	break;
-	                } else if (listeners.onGetCurrentUsers(resultFor, command)) {
-	                	break;
-	                } else if (listeners.onGetRoomMuteState(resultFor, command)) {
+	                } else if (context.onCommand(resultFor, command)) {
 	                	break;
 	                }
+//	                } else if (users.onQueryParticipants(resultFor, command)) {
+//                		chat = new ChatModule(this, channel);
+//                		listeners = new ListenersModule(this, channel);
+//	                	break;
+//	                } else if (chat.onGetChatMessages(resultFor, command)) {
+//	                	break;
+//	                } else if (listeners.onGetCurrentUsers(resultFor, command)) {
+//	                	break;
+//	                } else if (listeners.onGetRoomMuteState(resultFor, command)) {
+//	                	break;
+//	                }
 	            }
 	            break;
 	            
@@ -194,36 +218,8 @@ public class RtmpConnectionHandler extends ClientHandler {
         }
 	}
 	
-	@Override
-	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
-		writeCommandExpectingResult(e.getChannel(), connect());
+	public BigBlueButtonClient getContext() {
+		return context;
 	}
 	
-	public int getMyUserId() {
-		return myUserId;
-	}
-
-	public JoinedMeeting getJoinedMeeting() {
-		return meeting;
-	}
-
-	public ChatModule getChat() {
-		return chat;
-	}
-	
-	public UsersModule getUsers() {
-		return users;
-	}
-	
-	public void addListener(IBigBlueButtonClientListener listener) {
-		eventListeners.add(listener);
-	}
-
-	public void removeListener(IBigBlueButtonClientListener listener) {
-		eventListeners.remove(listener);
-	}
-
-	public Set<IBigBlueButtonClientListener> getListeners() {
-		return eventListeners;
-	}
 }

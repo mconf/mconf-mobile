@@ -157,7 +157,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 		final Contact contact = (Contact) contactAdapter.getItem(info.position);
-		if (bbb.getHandler().getUsers().getParticipants().get(bbb.getHandler().getMyUserId()).isModerator()) {
+		if (bbb.getHandler().getUsersModule().getParticipants().get(bbb.getHandler().getMyUserId()).isModerator()) {
 			if (contact.getUserId()!= bbb.getHandler().getMyUserId()) {
 				menu.add(0, KICK_USER, 0, "Kick");
 				// \TODO not implemented yet
@@ -253,7 +253,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				return true;
 				
 			case MENU_RAISE_HAND:
-				if (bbb.getHandler().getUsers().getParticipants().get(bbb.getHandler().getMyUserId()).isRaiseHand())
+				if (bbb.getHandler().getUsersModule().getParticipants().get(bbb.getHandler().getMyUserId()).isRaiseHand())
 					bbb.raiseHand(false);
 				else
 					bbb.raiseHand(true);

@@ -26,7 +26,7 @@ import java.util.Map;
 
 import org.jboss.netty.channel.Channel;
 import org.mconf.bbb.Module;
-import org.mconf.bbb.RtmpConnectionHandler;
+import org.mconf.bbb.MainRtmpConnection;
 import org.mconf.bbb.users.Participant;
 import org.red5.server.api.IAttributeStore;
 import org.red5.server.api.so.IClientSharedObject;
@@ -42,7 +42,7 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 	private static final Logger log = LoggerFactory.getLogger(ListenersModule.class);
 	private final IClientSharedObject voiceSO;
 
-	public ListenersModule(RtmpConnectionHandler handler, Channel channel) {
+	public ListenersModule(MainRtmpConnection handler, Channel channel) {
 		super(handler, channel);
 		
 		voiceSO = handler.getSharedObject("meetMeUsersSO", false);
@@ -59,7 +59,7 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 
 	public void doGetCurrentUsers() {
     	Command cmd = new CommandAmf0("voice.getMeetMeUsers", null);
-    	handler.writeCommandExpectingResult(channel, cmd);
+    	context.writeCommandExpectingResult(channel, cmd);
 	}
 
 	/*
@@ -115,7 +115,7 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 
 	public void doGetRoomMuteState() {
     	Command cmd = new CommandAmf0("voice.isRoomMuted", null);
-    	handler.writeCommandExpectingResult(channel, cmd);
+    	context.writeCommandExpectingResult(channel, cmd);
 	}
 
 	public boolean onGetRoomMuteState(String resultFor, Command command) {
@@ -127,22 +127,22 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 
 	public void doLockMuteUser(int userId, boolean lock) {
     	Command cmd = new CommandAmf0("voice.lockMuteUser", null, Double.valueOf(userId), Boolean.valueOf(lock));
-    	handler.writeCommandExpectingResult(channel, cmd);
+    	context.writeCommandExpectingResult(channel, cmd);
 	}
 	
 	public void doMuteUnmuteUser(int userId, boolean mute) {
     	Command cmd = new CommandAmf0("voice.muteUnmuteUser", null, Double.valueOf(userId), Boolean.valueOf(mute));
-    	handler.writeCommandExpectingResult(channel, cmd);
+    	context.writeCommandExpectingResult(channel, cmd);
 	}
 	
 	public void doMuteAllUsers(boolean mute) {
     	Command cmd = new CommandAmf0("voice.muteAllUsers", null, Boolean.valueOf(mute));
-    	handler.writeCommandExpectingResult(channel, cmd);
+    	context.writeCommandExpectingResult(channel, cmd);
 	}
 	
 	public void doEjectUser(int userId) {
     	Command cmd = new CommandAmf0("voice.kickUSer", null, Double.valueOf(userId));
-    	handler.writeCommandExpectingResult(channel, cmd);
+    	context.writeCommandExpectingResult(channel, cmd);
 	}
 	
 	@Override
