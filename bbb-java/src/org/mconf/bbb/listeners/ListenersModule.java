@@ -21,13 +21,13 @@
 
 package org.mconf.bbb.listeners;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.jboss.netty.channel.Channel;
 import org.mconf.bbb.Module;
 import org.mconf.bbb.RtmpConnectionHandler;
-import org.mconf.bbb.users.Participant;
 import org.red5.server.api.IAttributeStore;
 import org.red5.server.api.so.IClientSharedObject;
 import org.red5.server.api.so.ISharedObjectBase;
@@ -41,6 +41,8 @@ import com.flazr.rtmp.message.CommandAmf0;
 public class ListenersModule extends Module implements ISharedObjectListener {
 	private static final Logger log = LoggerFactory.getLogger(ListenersModule.class);
 	private final IClientSharedObject voiceSO;
+	
+	private Map<Integer, Listener> listeners = new HashMap<Integer, Listener>();
 
 	public ListenersModule(RtmpConnectionHandler handler, Channel channel) {
 		super(handler, channel);
@@ -90,6 +92,7 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 	 */
 	public boolean onGetCurrentUsers(String resultFor, Command command) {
 		if (resultFor.equals("voice.getMeetMeUsers")) {
+//			\TODO the userId is different from the UsersModule
 //			Map<String, Object> currentUsers = (Map<String, Object>) command.getArg(0);
 //			int count = ((Double) currentUsers.get("count")).intValue();
 //			if (count > 0) {
@@ -160,13 +163,69 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 		log.debug("onSharedObjectDisconnect");
 	}
 
+	public class Listener {
+		private int userId;
+		private String cidName;
+		private String cidNum;
+		private boolean muted;
+		private boolean talking;
+		private boolean locked;
+		
+		public Listener(List<?> params) {
+			cidName = (String) params.get(0);
+			cidNum = (String) params.get(1);
+			muted = (Boolean) params.get(2);
+			talking = (Boolean) params.get(3);
+			locked = (Boolean) params.get(4);
+		}
+		public void setUserId(int userId) {
+			this.userId = userId;
+		}
+		public int getUserId() {
+			return userId;
+		}
+		public String getCidName() {
+			return cidName;
+		}
+		public void setCidName(String cidName) {
+			this.cidName = cidName;
+		}
+		public String getCidNum() {
+			return cidNum;
+		}
+		public void setCidNum(String cidNum) {
+			this.cidNum = cidNum;
+		}
+		public boolean isMuted() {
+			return muted;
+		}
+		public void setMuted(boolean muted) {
+			this.muted = muted;
+		}
+		public boolean isTalking() {
+			return talking;
+		}
+		public void setTalking(boolean talking) {
+			this.talking = talking;
+		}
+		public boolean isLocked() {
+			return locked;
+		}
+		public void setLocked(boolean locked) {
+			this.locked = locked;
+		}
+	}
+	
 	@Override
 	public void onSharedObjectSend(ISharedObjectBase so, String method,
 			List<?> params) {
 		if (method.equals("userJoin")) {
 //			meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userJoin, [5.0, Felipe, Felipe, false, false, false]) }
+			Listener user = new Listener(params);
 		} else if (method.equals("userTalk")) {
 //			meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userTalk, [5.0, true]) }
+			Listener user = listeners.get(params.get(0));
+			user.setTalking((Boolean) params.get(1));
 		} else if (method.equals("userLockedMute")) {
 			
 		} else if (method.equals("userMute")) {
