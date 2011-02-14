@@ -39,10 +39,12 @@ import com.flazr.rtmp.message.Command;
 import com.flazr.rtmp.message.CommandAmf0;
 
 public class ListenersModule extends Module implements ISharedObjectListener {
+	
 	private static final Logger log = LoggerFactory.getLogger(ListenersModule.class);
 	private final IClientSharedObject voiceSO;
 	
 	private Map<Integer, Listener> listeners = new HashMap<Integer, Listener>();
+	private boolean roomMuted;
 
 	public ListenersModule(MainRtmpConnection handler, Channel channel) {
 		super(handler, channel);
@@ -90,27 +92,27 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 		server command: _result
 		result for method call: voice.getMeetMeUsers
 	 */
+	@SuppressWarnings("unchecked")
 	public boolean onGetCurrentUsers(String resultFor, Command command) {
 		if (resultFor.equals("voice.getMeetMeUsers")) {
-//			\TODO the userId is different from the UsersModule
-//			Map<String, Object> currentUsers = (Map<String, Object>) command.getArg(0);
-//			int count = ((Double) currentUsers.get("count")).intValue();
-//			if (count > 0) {
-//				Map<String, Object> participants = (Map<String, Object>) currentUsers.get("participants");
-//				
-//				for (Map.Entry<String, Object> entry : participants.entrySet()) {
-//					int userId = Integer.parseInt(entry.getKey());
-//					log.debug("userId=" + userId);
-//					Participant p = handler.getUsers().getParticipants().get(userId);
-//					
-//					Map<String, Object> attributes = (Map<String, Object>) entry.getValue();
-//					p.setListener(true);
-//					p.setTalking((Boolean) attributes.get("talking"));					
-//					p.setMuted((Boolean) attributes.get("muted"));					
-//					p.setLocked((Boolean) attributes.get("locked"));
-//					log.debug("OK");
-//				}
-//			}
+			
+			
+			listeners.clear();
+			// the userId is different from the UsersModule
+			Map<String, Object> currentUsers = (Map<String, Object>) command.getArg(0);
+			int count = ((Double) currentUsers.get("count")).intValue();
+			if (count > 0) {
+				Map<String, Object> participants = (Map<String, Object>) currentUsers.get("participants");
+				
+				for (Map.Entry<String, Object> entry : participants.entrySet()) {
+					int userId = Integer.parseInt(entry.getKey());
+					log.debug("userId=" + userId);
+					
+					Listener listener = new Listener((Map<String, Object>) entry.getValue());
+					log.debug("new listener: " + listener.toString());
+					listeners.put(userId, listener);
+				}
+			}
 			return true;
 		}
 		return false;
@@ -123,6 +125,7 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 
 	public boolean onGetRoomMuteState(String resultFor, Command command) {
 		if (resultFor.equals("voice.isRoomMuted")) {
+			setRoomMuted((Boolean) command.getArg(0));
 			return true;
 		}
 		return false;
@@ -163,77 +166,46 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 		log.debug("onSharedObjectDisconnect");
 	}
 
-	public class Listener {
-		private int userId;
-		private String cidName;
-		private String cidNum;
-		private boolean muted;
-		private boolean talking;
-		private boolean locked;
-		
-		public Listener(List<?> params) {
-			cidName = (String) params.get(0);
-			cidNum = (String) params.get(1);
-			muted = (Boolean) params.get(2);
-			talking = (Boolean) params.get(3);
-			locked = (Boolean) params.get(4);
-		}
-		public void setUserId(int userId) {
-			this.userId = userId;
-		}
-		public int getUserId() {
-			return userId;
-		}
-		public String getCidName() {
-			return cidName;
-		}
-		public void setCidName(String cidName) {
-			this.cidName = cidName;
-		}
-		public String getCidNum() {
-			return cidNum;
-		}
-		public void setCidNum(String cidNum) {
-			this.cidNum = cidNum;
-		}
-		public boolean isMuted() {
-			return muted;
-		}
-		public void setMuted(boolean muted) {
-			this.muted = muted;
-		}
-		public boolean isTalking() {
-			return talking;
-		}
-		public void setTalking(boolean talking) {
-			this.talking = talking;
-		}
-		public boolean isLocked() {
-			return locked;
-		}
-		public void setLocked(boolean locked) {
-			this.locked = locked;
-		}
-	}
-	
+
 	@Override
 	public void onSharedObjectSend(ISharedObjectBase so, String method,
 			List<?> params) {
 		if (method.equals("userJoin")) {
-//			meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userJoin, [5.0, Felipe, Felipe, false, false, false]) }
-			Listener user = new Listener(params);
+			//	meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userJoin, [5.0, Felipe, Felipe, false, false, false]) }
+			Listener listener = new Listener(params);
+			listeners.put(listener.getUserId(), listener);
 		} else if (method.equals("userTalk")) {
-//			meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userTalk, [5.0, true]) }
-			Listener user = listeners.get(params.get(0));
-			user.setTalking((Boolean) params.get(1));
+			//	meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userTalk, [5.0, true]) }
+			Listener listener = listeners.get(params.get(0));
+			if (listener != null)
+				listener.setTalking((Boolean) params.get(1));
+			else
+				log.error("Can't find the listener");
 		} else if (method.equals("userLockedMute")) {
-			
+			// meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userLockedMute, [4.0, true]) }
+			Listener listener = listeners.get(params.get(0));
+			if (listener != null)
+				listener.setLocked((Boolean) params.get(1));
+			else
+				log.error("Can't find the listener");
 		} else if (method.equals("userMute")) {
-			
+			// meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userMute, [4.0, true]) }
+			Listener listener = listeners.get(params.get(0));
+			if (listener != null)
+				listener.setMuted((Boolean) params.get(1));
+			else
+				log.error("Can't find the listener");			
 		} else if (method.equals("userLeft")) {
-			
+			// meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userLeft, [2.0]) }
+			int userId = ((Double) params.get(0)).intValue();
+			Listener listener = listeners.get(userId);
+			if (listener != null)
+				listeners.remove(userId);
+			else
+				log.error("Can't find the listener");			
 		} else if (method.equals("muteStateCallback")) {
-			
+			// meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, muteStateCallback, [false]) }
+			setRoomMuted((Boolean) params.get(0));
 		}
 		log.debug("onSharedObjectSend");
 	}
@@ -263,6 +235,18 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 			return true;
 		} else
 			return false;
+	}
+
+	public void setRoomMuted(boolean roomMuted) {
+		this.roomMuted = roomMuted;
+	}
+
+	public boolean isRoomMuted() {
+		return roomMuted;
+	}
+
+	public Map<Integer, Listener> getListeners() {
+		return listeners;
 	}
 
 }
