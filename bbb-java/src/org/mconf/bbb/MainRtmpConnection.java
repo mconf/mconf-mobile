@@ -21,9 +21,7 @@
 
 package org.mconf.bbb;
 
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Executor;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
@@ -37,9 +35,6 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.mconf.bbb.api.JoinedMeeting;
-import org.mconf.bbb.chat.ChatModule;
-import org.mconf.bbb.listeners.ListenersModule;
-import org.mconf.bbb.users.UsersModule;
 import org.red5.server.so.SharedObjectMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +43,6 @@ import com.flazr.amf.Amf0Object;
 import com.flazr.rtmp.RtmpDecoder;
 import com.flazr.rtmp.RtmpEncoder;
 import com.flazr.rtmp.RtmpMessage;
-import com.flazr.rtmp.client.ClientHandler;
 import com.flazr.rtmp.client.ClientHandshakeHandler;
 import com.flazr.rtmp.client.ClientOptions;
 import com.flazr.rtmp.message.AbstractMessage;
@@ -191,20 +185,9 @@ public class MainRtmpConnection extends RtmpConnection {
 	                } else if (onGetMyUserId(resultFor, command)) {
 	                	context.createUsersModule(this, channel);
 	                	break;
-	                } else if (context.onCommand(resultFor, command)) {
-	                	break;
-	                }
-//	                } else if (users.onQueryParticipants(resultFor, command)) {
-//                		chat = new ChatModule(this, channel);
-//                		listeners = new ListenersModule(this, channel);
-//	                	break;
-//	                } else if (chat.onGetChatMessages(resultFor, command)) {
-//	                	break;
-//	                } else if (listeners.onGetCurrentUsers(resultFor, command)) {
-//	                	break;
-//	                } else if (listeners.onGetRoomMuteState(resultFor, command)) {
-//	                	break;
-//	                }
+	                } 
+	                context.onCommand(resultFor, command);
+                	break;
 	            }
 	            break;
 	            

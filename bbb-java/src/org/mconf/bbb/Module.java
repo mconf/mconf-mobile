@@ -34,5 +34,5 @@ public abstract class Module {
 		this.channel = channel;
 	}
 	
-	abstract protected boolean onCommand(String resultFor, Command command);
+	abstract public boolean onCommand(String resultFor, Command command);
 }

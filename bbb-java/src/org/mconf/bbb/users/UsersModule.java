@@ -85,9 +85,9 @@ public class UsersModule extends Module implements ISharedObjectListener {
 		if (so.equals(participantsSO)) {
 			if (method.equals("kickUserCallback")) {
 				int userId = ((Double) params.get(0)).intValue();
-				if (userId == context.getMyUserId()) {
+				if (userId == handler.getContext().getMyUserId()) {
 					// \TODO the kickUserCallback should be handled with the userId as parameter
-					for (IBigBlueButtonClientListener l : context.getListeners())
+					for (IBigBlueButtonClientListener l : handler.getContext().getListeners())
 						l.onKickUserCallback();
 					channel.close();
 				}
@@ -95,7 +95,7 @@ public class UsersModule extends Module implements ISharedObjectListener {
 			}
 			if (method.equals("participantLeft")) {
 				IParticipant p = participants.get(((Double) params.get(0)).intValue());
-				for (IBigBlueButtonClientListener l : context.getListeners()) {
+				for (IBigBlueButtonClientListener l : handler.getContext().getListeners()) {
 					l.onParticipantLeft(p);
 				}
 				log.debug("participantLeft: {}", p);
@@ -138,7 +138,7 @@ public class UsersModule extends Module implements ISharedObjectListener {
 	 */
 	public void doQueryParticipants() {
     	Command cmd = new CommandAmf0("participants.getParticipants", null);
-    	context.writeCommandExpectingResult(channel, cmd);
+    	handler.writeCommandExpectingResult(channel, cmd);
 	}
 	
 	/**
@@ -172,7 +172,7 @@ public class UsersModule extends Module implements ISharedObjectListener {
 	}
 	
 	public void onParticipantJoined(Participant p) {
-		for (IBigBlueButtonClientListener l : context.getListeners()) {
+		for (IBigBlueButtonClientListener l : handler.getContext().getListeners()) {
 			l.onParticipantJoined(p);
 		}				
 		log.info("new participant: {}", p.toString());
@@ -184,32 +184,32 @@ public class UsersModule extends Module implements ISharedObjectListener {
 		log.debug("participantStatusChange: " + p.getName() + " status: " + key + " value: " + value.toString());
 		if (key.equals("presenter")) {
 			p.getStatus().setPresenter((Boolean) value);
-			for (IBigBlueButtonClientListener l : context.getListeners()) {
+			for (IBigBlueButtonClientListener l : handler.getContext().getListeners()) {
 				l.onParticipantStatusChangePresenter(p);
 			}
 		} else if (key.equals("hasStream")) {
 			p.getStatus().setHasStream((Boolean) value);
-			for (IBigBlueButtonClientListener l : context.getListeners()) {
+			for (IBigBlueButtonClientListener l : handler.getContext().getListeners()) {
 				l.onParticipantStatusChangeHasStream(p);
 			}
 		} else if (key.equals("streamName")) {
 			p.getStatus().setStreamName((String) value);
 		} else if (key.equals("raiseHand")) {
 			p.getStatus().setRaiseHand((Boolean) value);
-			for (IBigBlueButtonClientListener l : context.getListeners()) {
+			for (IBigBlueButtonClientListener l : handler.getContext().getListeners()) {
 				l.onParticipantStatusChangeRaiseHand(p);
 			}
 		}
 	}
 	
 	public void raiseHand(boolean value) {
-    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, context.getMyUserId(), "raiseHand", value);
-    	context.writeCommandExpectingResult(channel, cmd);
+    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "raiseHand", value);
+    	handler.writeCommandExpectingResult(channel, cmd);
 	}
 	
 	public void setPresenter(int userId, boolean value) {
     	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, userId, "presenter", value);
-    	context.writeCommandExpectingResult(channel, cmd);
+    	handler.writeCommandExpectingResult(channel, cmd);
 	}
 	
 	public void assignPresenter(int userId) {
@@ -226,23 +226,23 @@ public class UsersModule extends Module implements ISharedObjectListener {
 	}
 	
 	public void addStream(String streamName) {
-    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, context.getMyUserId(), streamName);
-    	context.writeCommandExpectingResult(channel, cmd);
+    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), streamName);
+    	handler.writeCommandExpectingResult(channel, cmd);
     	
-    	cmd = new CommandAmf0("participants.setParticipantStatus", null, context.getMyUserId(), "hasStream", true);
-    	context.writeCommandExpectingResult(channel, cmd);
+    	cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "hasStream", true);
+    	handler.writeCommandExpectingResult(channel, cmd);
 	}
 	
 	public void removeStream(String streamName) {
-    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, context.getMyUserId(), "");
-    	context.writeCommandExpectingResult(channel, cmd);
+    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "");
+    	handler.writeCommandExpectingResult(channel, cmd);
     	
-    	cmd = new CommandAmf0("participants.setParticipantStatus", null, context.getMyUserId(), "hasStream", false);
-    	context.writeCommandExpectingResult(channel, cmd);
+    	cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "hasStream", false);
+    	handler.writeCommandExpectingResult(channel, cmd);
 	}
 	
 	public void kickUser(int userId) {
-		if (context.getUsersModule().getParticipants().get(context.getMyUserId()).isModerator()) {
+		if (handler.getContext().getUsersModule().getParticipants().get(handler.getContext().getMyUserId()).isModerator()) {
 			List<Object> list = new ArrayList<Object>();
 			list.add(userId);
 			participantsSO.sendMessage("kickUserCallback", list);
@@ -250,9 +250,13 @@ public class UsersModule extends Module implements ISharedObjectListener {
 	}
 
 	@Override
-	protected boolean onCommand(String resultFor, Command command) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean onCommand(String resultFor, Command command) {
+		if (onQueryParticipants(resultFor, command)) {
+			handler.getContext().createChatModule(handler, channel);
+			handler.getContext().createListenersModule(handler, channel);
+			return true;
+		} else
+			return false;
 	}
 	
 }

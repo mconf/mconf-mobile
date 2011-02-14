@@ -151,10 +151,12 @@ public class LoginPage extends Activity {
                 		return;
                 	}
                 	
-                	if (Client.bbb.join((String) spinner.getSelectedItem(), username, moderator) == null) {
+               		Client.bbb.setJoinedMeeting(Client.bbb.getJoinService().join((String) spinner.getSelectedItem(), username, moderator));
+               		if (Client.bbb.getJoinedMeeting() == null) {
 	                	Toast.makeText(getApplicationContext(), "Can't join the meeting", Toast.LENGTH_SHORT).show();
 	                	return;
-	                }
+	                } else
+	                	Client.bbb.connectBigBlueButton();
 	                
 	                Intent myIntent = new Intent(getApplicationContext(), Client.class);
 	                myIntent.putExtra("username", username);
@@ -209,7 +211,7 @@ public class LoginPage extends Activity {
 					return;
 				}
 					        
-		        if (!Client.bbb.load(p.getProperty("bigbluebutton.web.serverURL"), p.getProperty("beans.dynamicConferenceService.securitySalt"))) {
+		        if (!Client.bbb.getJoinService().load(p.getProperty("bigbluebutton.web.serverURL"), p.getProperty("beans.dynamicConferenceService.securitySalt"))) {
 		        	progressDialog.dismiss();
 		        	runOnUiThread(new Runnable() {
 						@Override
@@ -222,7 +224,7 @@ public class LoginPage extends Activity {
 		        }
 		        
 
-				final List<Meeting> meetings = Client.bbb.getMeetings();
+				final List<Meeting> meetings = Client.bbb.getJoinService().getMeetings();
 
 				progressDialog.dismiss();
 				

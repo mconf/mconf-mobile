@@ -67,6 +67,10 @@ public class BigBlueButtonClient {
 		return myUserId;
 	}
 
+	public void createChatModule(MainRtmpConnection handler, Channel channel) {
+		chatModule = new ChatModule(handler, channel);
+	}
+
 	public ChatModule getChatModule() {
 		return chatModule;
 	}
@@ -80,6 +84,11 @@ public class BigBlueButtonClient {
 		return usersModule;
 	}
 	
+	public void createListenersModule(MainRtmpConnection handler,
+			Channel channel) {
+		listenersModule = new ListenersModule(handler, channel);
+	}
+
 	public ListenersModule getListenersModule() {
 		return listenersModule;
 	}
@@ -108,7 +117,7 @@ public class BigBlueButtonClient {
 		this.joinedMeeting = joinedMeeting;
 	}
 
-	private void connectBigBlueButton() {
+	public void connectBigBlueButton() {
 		ClientOptions opt = new ClientOptions();
 		opt.setClientVersionToUse(Utils.fromHex("00000000"));
 		opt.setHost(joinService.getServerUrl().toLowerCase().replace("http://", ""));
@@ -122,6 +131,10 @@ public class BigBlueButtonClient {
 	@SuppressWarnings("unused")
 	private void connectSip() {
 		
+	}
+	
+	public void disconnect() {
+		mainConnection.disconnect();
 	}
 	
 //	public MainRtmpConnection getHandler() {

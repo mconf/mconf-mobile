@@ -232,9 +232,11 @@ public class ChatModule extends Module implements ISharedObjectListener {
 	}
 
 	@Override
-	protected boolean onCommand(String resultFor, Command command) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean onCommand(String resultFor, Command command) {
+		if (onGetChatMessages(resultFor, command))
+			return true;
+		else
+			return false;
 	}
 
 }
