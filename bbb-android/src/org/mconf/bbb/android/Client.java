@@ -65,7 +65,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static final int CHAT_NOTIFICATION_ID = 77000;
 	
 	public static final String ACTION_OPEN_SLIDER = "org.mconf.bbb.android.Client.OPEN_SLIDER";
-//	public static final String ACTION_BRING_TO_FRONT = "org.mconf.bbb.android.Client.BRING_TO_FRONT";
+	private static final String FINISH = "bbb.android.action.FINISH";
+
+	private static final String SEND_TO_BACK = "bbb.android.action.SEND_TO_BACK";
 
 	public static final int KICK_USER = Menu.FIRST;
 	public static final int MUTE_USER = Menu.FIRST+1;
@@ -222,6 +224,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		Intent intent = new Intent(getApplicationContext(), PrivateChat.class);
 		intent.putExtra("username", contact.getName());
 		intent.putExtra("userId", contact.getUserId());
+		intent.putExtra("notified", false);
 		startActivity(intent);
 	}
 	
@@ -236,7 +239,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Intent intent= new Intent("bbb.android.action.FINISH"); ;
+		Intent intent= new Intent(FINISH);
 		switch (item.getItemId()) {
 			case MENU_LOGOUT:
 				bbb.disconnect();
@@ -266,7 +269,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
     	if (keyCode == KeyEvent.KEYCODE_BACK) {
-    		Intent intent = new Intent("bbb.android.action.SEND_TO_BACK");
+    		Intent intent = new Intent(SEND_TO_BACK);
     		sendBroadcast(intent);
     		log.debug("KEYCODE_BACK");
     		moveTaskToBack(true);
@@ -370,6 +373,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			notificationIntent = new Intent(getApplicationContext(), PrivateChat.class);
 			notificationIntent.putExtra("username", contact.getName());
 			notificationIntent.putExtra("userId", contact.getUserId());
+			notificationIntent.putExtra("notified", true);
 			/**
 			 *  http://groups.google.com/group/android-developers/browse_thread/thread/e61ec1e8d88ea94d
 			 */
