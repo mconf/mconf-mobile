@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/574/trunk/src/org/zoolu/sip/dialog
+END
+Dialog.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/50/trunk/src/org/zoolu/sip/dialog/Dialog.java
+END
+ExtendedInviteDialog.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/574/trunk/src/org/zoolu/sip/dialog/ExtendedInviteDialog.java
+END
+NotifierDialog.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/50/trunk/src/org/zoolu/sip/dialog/NotifierDialog.java
+END
+SubscriberDialog.java
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/50/trunk/src/org/zoolu/sip/dialog/SubscriberDialog.java
+END
+InviteDialogListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/50/trunk/src/org/zoolu/sip/dialog/InviteDialogListener.java
+END
+ExtendedInviteDialogListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/!svn/ver/50/trunk/src/org/zoolu/sip/dialog/ExtendedInviteDialogListener.java
+END
+NotifierDialogListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/50/trunk/src/org/zoolu/sip/dialog/NotifierDialogListener.java
+END
+SubscriberDialogListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/!svn/ver/50/trunk/src/org/zoolu/sip/dialog/SubscriberDialogListener.java
+END
+DialogInfo.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/50/trunk/src/org/zoolu/sip/dialog/DialogInfo.java
+END
+InviteDialog.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/555/trunk/src/org/zoolu/sip/dialog/InviteDialog.java
+END

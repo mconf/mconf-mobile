@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/574/trunk/src/org/zoolu/sip/message
+END
+BaseMessage.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/555/trunk/src/org/zoolu/sip/message/BaseMessage.java
+END
+SipMethods.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/50/trunk/src/org/zoolu/sip/message/SipMethods.java
+END
+BaseMessageOtp.java
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/50/trunk/src/org/zoolu/sip/message/BaseMessageOtp.java
+END
+Message.java
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/50/trunk/src/org/zoolu/sip/message/Message.java
+END
+BaseMessageFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/574/trunk/src/org/zoolu/sip/message/BaseMessageFactory.java
+END
+BaseSipResponses.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/50/trunk/src/org/zoolu/sip/message/BaseSipResponses.java
+END
+BaseSipMethods.java
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/377/trunk/src/org/zoolu/sip/message/BaseSipMethods.java
+END
+MessageFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/555/trunk/src/org/zoolu/sip/message/MessageFactory.java
+END
+SipResponses.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/50/trunk/src/org/zoolu/sip/message/SipResponses.java
+END

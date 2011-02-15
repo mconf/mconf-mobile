@@ -1,0 +1,245 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex
+END
+lsp.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/lsp.c
+END
+bits.c
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/bits.c
+END
+nb_celp.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/nb_celp.c
+END
+lsp.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/lsp.h
+END
+quant_lsp.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/quant_lsp.c
+END
+nb_celp.h
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/nb_celp.h
+END
+exc_8_128_table.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/exc_8_128_table.c
+END
+cb_search.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/cb_search.c
+END
+quant_lsp.h
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/quant_lsp.h
+END
+sb_celp.h
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/sb_celp.h
+END
+lpc.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/lpc.c
+END
+cb_search.h
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/cb_search.h
+END
+os_support.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/os_support.h
+END
+speex_callbacks.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/speex_callbacks.c
+END
+lpc.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/lpc.h
+END
+speex.c
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/speex.c
+END
+gain_table_lbr.c
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/gain_table_lbr.c
+END
+gain_table.c
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/gain_table.c
+END
+math_approx.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/math_approx.h
+END
+vbr.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/vbr.c
+END
+vbr.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/vbr.h
+END
+ltp.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/ltp.c
+END
+fixed_generic.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/fixed_generic.h
+END
+ltp.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/ltp.h
+END
+exc_5_256_table.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/exc_5_256_table.c
+END
+lsp_tables_nb.c
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/lsp_tables_nb.c
+END
+window.c
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/window.c
+END
+modes.c
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/modes.c
+END
+filters.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/filters.c
+END
+modes.h
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/modes.h
+END
+filters.h
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/filters.h
+END
+arch.h
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/arch.h
+END
+exc_5_64_table.c
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/exc_5_64_table.c
+END
+stack_alloc.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/stack_alloc.h
+END
+vq.c
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/vq.c
+END
+high_lsp_tables.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/high_lsp_tables.c
+END
+exc_10_32_table.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/exc_10_32_table.c
+END
+vq.h
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/vq.h
+END
+exc_20_32_table.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/exc_20_32_table.c
+END
+exc_10_16_table.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/libspeex/exc_10_16_table.c
+END

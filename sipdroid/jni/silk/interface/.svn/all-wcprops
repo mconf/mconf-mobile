@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/503/trunk/jni/silk/interface
+END
+SKP_Silk_SDK_API.h
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/503/trunk/jni/silk/interface/SKP_Silk_SDK_API.h
+END
+SKP_Silk_errors.h
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/503/trunk/jni/silk/interface/SKP_Silk_errors.h
+END
+SKP_Silk_control.h
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/503/trunk/jni/silk/interface/SKP_Silk_control.h
+END
+SKP_Silk_typedef.h
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/503/trunk/jni/silk/interface/SKP_Silk_typedef.h
+END

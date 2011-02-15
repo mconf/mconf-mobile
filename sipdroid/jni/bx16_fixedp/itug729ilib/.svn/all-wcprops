@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/itug729ilib
+END
+oper_32b.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/itug729ilib/oper_32b.h
+END
+basic_op.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/itug729ilib/basic_op.h
+END
+typedef.h
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/itug729ilib/typedef.h
+END
+readme.txt
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/itug729ilib/readme.txt
+END
+oper_32b.c
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/itug729ilib/oper_32b.c
+END

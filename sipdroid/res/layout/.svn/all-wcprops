@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 34
+/svn/!svn/ver/596/trunk/res/layout
+END
+ongoing_call_notification.xml
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/50/trunk/res/layout/ongoing_call_notification.xml
+END
+incall.xml
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/459/trunk/res/layout/incall.xml
+END
+create_dialog.xml
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/596/trunk/res/layout/create_dialog.xml
+END
+call_card.xml
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/278/trunk/res/layout/call_card.xml
+END
+call_card_person_info.xml
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/50/trunk/res/layout/call_card_person_info.xml
+END
+call_card_popup.xml
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/278/trunk/res/layout/call_card_popup.xml
+END
+sipdroid.xml
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/596/trunk/res/layout/sipdroid.xml
+END
+video_camera.xml
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/542/trunk/res/layout/video_camera.xml
+END

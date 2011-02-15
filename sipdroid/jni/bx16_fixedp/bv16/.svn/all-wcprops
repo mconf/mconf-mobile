@@ -1,0 +1,161 @@
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16
+END
+fineptch.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/fineptch.c
+END
+bv16strct.h
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/bv16strct.h
+END
+coarptch.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/coarptch.c
+END
+gainquan.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/gainquan.c
+END
+postfilt.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/postfilt.c
+END
+excquan.c
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/excquan.c
+END
+decoder.c
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/decoder.c
+END
+bv.c
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/bv.c
+END
+ptquan.c
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/ptquan.c
+END
+postfilt.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/postfilt.h
+END
+preproc.c
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/preproc.c
+END
+tables.c
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/tables.c
+END
+lspdec.c
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/lspdec.c
+END
+bv16cnst.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/bv16cnst.h
+END
+bitpack.c
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/bitpack.c
+END
+plc.c
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/plc.c
+END
+encoder.c
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/encoder.c
+END
+bitpack.h
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/bitpack.h
+END
+g192.c
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/g192.c
+END
+levelest.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/levelest.c
+END
+bv16.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/bv16.h
+END
+lspquan.c
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/lspquan.c
+END
+g192.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/g192.h
+END
+gaindec.c
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/gaindec.c
+END
+excdec.c
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/excdec.c
+END
+bv16externs.h
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bv16/bv16externs.h
+END

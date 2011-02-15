@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/583/trunk/src/org/sipdroid/codecs
+END
+G711.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/553/trunk/src/org/sipdroid/codecs/G711.java
+END
+Codecs.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/583/trunk/src/org/sipdroid/codecs/Codecs.java
+END
+G722.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/517/trunk/src/org/sipdroid/codecs/G722.java
+END
+alaw.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/553/trunk/src/org/sipdroid/codecs/alaw.java
+END
+Speex.java
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/508/trunk/src/org/sipdroid/codecs/Speex.java
+END
+GSM.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/514/trunk/src/org/sipdroid/codecs/GSM.java
+END
+ulaw.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/553/trunk/src/org/sipdroid/codecs/ulaw.java
+END
+CodecBase.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/533/trunk/src/org/sipdroid/codecs/CodecBase.java
+END
+SILK24.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/510/trunk/src/org/sipdroid/codecs/SILK24.java
+END
+SILK16.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/510/trunk/src/org/sipdroid/codecs/SILK16.java
+END
+SILK8.java
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/510/trunk/src/org/sipdroid/codecs/SILK8.java
+END
+Codec.java
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/508/trunk/src/org/sipdroid/codecs/Codec.java
+END
+BV16.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/510/trunk/src/org/sipdroid/codecs/BV16.java
+END

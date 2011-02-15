@@ -1,0 +1,491 @@
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp
+END
+schedule.h
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/schedule.h
+END
+bert.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/bert.h
+END
+super_tone_rx.h
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/super_tone_rx.h
+END
+tone_detect.h
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/tone_detect.h
+END
+modem_echo.h
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/modem_echo.h
+END
+t30_api.h
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/t30_api.h
+END
+t4_rx.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/t4_rx.h
+END
+v27ter_tx.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/v27ter_tx.h
+END
+complex.h
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/complex.h
+END
+crc.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/crc.h
+END
+v22bis.h
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/v22bis.h
+END
+t31.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/t31.h
+END
+v42bis.h
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/v42bis.h
+END
+ima_adpcm.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/ima_adpcm.h
+END
+t35.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/t35.h
+END
+async.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/async.h
+END
+v18.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/v18.h
+END
+tone_generate.h
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/tone_generate.h
+END
+vector_float.h
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/vector_float.h
+END
+v29rx.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/v29rx.h
+END
+gsm0610.h
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/gsm0610.h
+END
+playout.h
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/playout.h
+END
+t38_gateway.h
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/t38_gateway.h
+END
+complex_filters.h
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/complex_filters.h
+END
+expose.h
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/expose.h
+END
+t38_non_ecm_buffer.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/t38_non_ecm_buffer.h
+END
+telephony.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/telephony.h
+END
+t38_terminal.h
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/t38_terminal.h
+END
+hdlc.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/hdlc.h
+END
+v42.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/v42.h
+END
+t30_logging.h
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/t30_logging.h
+END
+vector_int.h
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/vector_int.h
+END
+noise.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/noise.h
+END
+fax_modems.h
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/fax_modems.h
+END
+modem_connect_tones.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/modem_connect_tones.h
+END
+version.h
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/version.h
+END
+myinttypes.h
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/myinttypes.h
+END
+timing.h
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/timing.h
+END
+v17tx.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/v17tx.h
+END
+dc_restore.h
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/dc_restore.h
+END
+bitstream.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/bitstream.h
+END
+arctan2.h
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/arctan2.h
+END
+awgn.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/awgn.h
+END
+fast_convert.h
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/fast_convert.h
+END
+v8.h
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/v8.h
+END
+super_tone_tx.h
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/super_tone_tx.h
+END
+t4_tx.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/t4_tx.h
+END
+v27ter_rx.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/v27ter_rx.h
+END
+complex_vector_int.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/complex_vector_int.h
+END
+time_scale.h
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/time_scale.h
+END
+biquad.h
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/biquad.h
+END
+t30.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/t30.h
+END
+dds.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/dds.h
+END
+echo.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/echo.h
+END
+plc.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/plc.h
+END
+lpc10.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/lpc10.h
+END
+g711.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/g711.h
+END
+t30_fcf.h
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/t30_fcf.h
+END
+oki_adpcm.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/oki_adpcm.h
+END
+t38_core.h
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/t38_core.h
+END
+swept_tone.h
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/swept_tone.h
+END
+at_interpreter.h
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/at_interpreter.h
+END
+power_meter.h
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/power_meter.h
+END
+g168models.h
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/g168models.h
+END
+dtmf.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/dtmf.h
+END
+v29tx.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/v29tx.h
+END
+saturated.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/saturated.h
+END
+bell_r2_mf.h
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/bell_r2_mf.h
+END
+sig_tone.h
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/sig_tone.h
+END
+silence_gen.h
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/silence_gen.h
+END
+fax.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/fax.h
+END
+complex_vector_float.h
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/complex_vector_float.h
+END
+adsi.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/adsi.h
+END
+fir.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/fir.h
+END
+g722.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/g722.h
+END
+bit_operations.h
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/bit_operations.h
+END
+fsk.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/fsk.h
+END
+queue.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/queue.h
+END
+g726.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/g726.h
+END
+logging.h
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/logging.h
+END
+v17rx.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp/v17rx.h
+END

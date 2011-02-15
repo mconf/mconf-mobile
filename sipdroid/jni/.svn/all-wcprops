@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 27
+/svn/!svn/ver/583/trunk/jni
+END
+bv16_jni.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/474/trunk/jni/bv16_jni.cpp
+END
+OSNetworkSystem.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/156/trunk/jni/OSNetworkSystem.cpp
+END
+g722_jni.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/533/trunk/jni/g722_jni.cpp
+END
+speex_jni.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/460/trunk/jni/speex_jni.cpp
+END
+Android.mk
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/!svn/ver/514/trunk/jni/Android.mk
+END
+gsm_jni.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/514/trunk/jni/gsm_jni.cpp
+END
+Application.mk
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/583/trunk/jni/Application.mk
+END
+silk24_jni.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/503/trunk/jni/silk24_jni.cpp
+END
+silk16_jni.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/503/trunk/jni/silk16_jni.cpp
+END
+silk8_jni.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/503/trunk/jni/silk8_jni.cpp
+END

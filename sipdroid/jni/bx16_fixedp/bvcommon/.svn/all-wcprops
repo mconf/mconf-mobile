@@ -1,0 +1,131 @@
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon
+END
+ptdec.c
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/ptdec.c
+END
+levdur.c
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/levdur.c
+END
+utility.c
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/utility.c
+END
+typedef.h
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/typedef.h
+END
+utility.h
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/utility.h
+END
+allzero.c
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/allzero.c
+END
+basop32.c
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/basop32.c
+END
+memutil.c
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/memutil.c
+END
+autocor.c
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/autocor.c
+END
+stblzlsp.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/stblzlsp.c
+END
+basop32.h
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/basop32.h
+END
+memutil.h
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/memutil.h
+END
+lsp2a.c
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/lsp2a.c
+END
+a2lsp.c
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/a2lsp.c
+END
+mathtables.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/mathtables.c
+END
+bvcommon.h
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/bvcommon.h
+END
+mathutil.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/mathutil.c
+END
+allpole.c
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/allpole.c
+END
+vqdecode.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/vqdecode.c
+END
+cmtables.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/cmtables.c
+END
+mathutil.h
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/474/trunk/jni/bx16_fixedp/bvcommon/mathutil.h
+END

@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/437/trunk/src/org/sipdroid/net
+END
+KeepAliveSip.java
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/50/trunk/src/org/sipdroid/net/KeepAliveSip.java
+END
+SipdroidSocket.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/156/trunk/src/org/sipdroid/net/SipdroidSocket.java
+END
+RtpPacket.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/437/trunk/src/org/sipdroid/net/RtpPacket.java
+END
+KeepAliveUdp.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/182/trunk/src/org/sipdroid/net/KeepAliveUdp.java
+END
+RtpSocket.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/156/trunk/src/org/sipdroid/net/RtpSocket.java
+END

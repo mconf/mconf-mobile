@@ -1,0 +1,809 @@
+K 25
+svn:wc:ra_dav:version-url
+V 36
+/svn/!svn/ver/503/trunk/jni/silk/src
+END
+SKP_Silk_LPC_inv_pred_gain.c
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_LPC_inv_pred_gain.c
+END
+SKP_Silk_perceptual_parameters_FIX.h
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_perceptual_parameters_FIX.h
+END
+SKP_Silk_bwexpander_32.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_bwexpander_32.c
+END
+SKP_Silk_k2a_Q16.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_k2a_Q16.c
+END
+SKP_Silk_Inlines.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_Inlines.h
+END
+SKP_Silk_NLSF_MSVQ_decode.c
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_NLSF_MSVQ_decode.c
+END
+SKP_Silk_resample_3_4.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_resample_3_4.c
+END
+SKP_Silk_find_pred_coefs_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_find_pred_coefs_FIX.c
+END
+SKP_Silk_pulses_to_bytes.c
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_pulses_to_bytes.c
+END
+SKP_Silk_find_pitch_lags_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_find_pitch_lags_FIX.c
+END
+SKP_Silk_shell_coder.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_shell_coder.c
+END
+SKP_Silk_sigm_Q15.c
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_sigm_Q15.c
+END
+SKP_Silk_encode_parameters_v4.c
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_encode_parameters_v4.c
+END
+SKP_Silk_decode_core.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_decode_core.c
+END
+SKP_Silk_quant_LTP_gains_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_quant_LTP_gains_FIX.c
+END
+SKP_Silk_resample_1_2_coarse.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_resample_1_2_coarse.c
+END
+SKP_Silk_init_encoder_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_init_encoder_FIX.c
+END
+SKP_Silk_tables_NLSF_CB0_10.c
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_tables_NLSF_CB0_10.c
+END
+SKP_Silk_structs_FIX.h
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_structs_FIX.h
+END
+SKP_Silk_pitch_est_defines.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_pitch_est_defines.h
+END
+SKP_Silk_tables_NLSF_CB0_10.h
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_tables_NLSF_CB0_10.h
+END
+SKP_Silk_A2NLSF.c
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_A2NLSF.c
+END
+SKP_Silk_gain_quant.c
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_gain_quant.c
+END
+SKP_Silk_interpolate.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_interpolate.c
+END
+SKP_Silk_residual_energy_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_residual_energy_FIX.c
+END
+SKP_Silk_main.h
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_main.h
+END
+Silk_FIX.vcproj
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/503/trunk/jni/silk/src/Silk_FIX.vcproj
+END
+SKP_Silk_NLSF_MSVQ_encode_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_NLSF_MSVQ_encode_FIX.c
+END
+SKP_Silk_LPC_synthesis_filter.c
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_LPC_synthesis_filter.c
+END
+SKP_Silk_schur64.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_schur64.c
+END
+SKP_Silk_residual_energy16_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_residual_energy16_FIX.c
+END
+SKP_Silk_create_init_destroy.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_create_init_destroy.c
+END
+SKP_Silk_define.h
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_define.h
+END
+SKP_Silk_burg_modified.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_burg_modified.c
+END
+SKP_Silk_main_FIX.h
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_main_FIX.h
+END
+SKP_Silk_detect_SWB_input.c
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_detect_SWB_input.c
+END
+SKP_Silk_lowpass_int.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_lowpass_int.c
+END
+SKP_Silk_define_FIX.h
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_define_FIX.h
+END
+SKP_Silk_biquad.c
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_biquad.c
+END
+SKP_Silk_resample_3_1.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_resample_3_1.c
+END
+SKP_Silk_resample_2_3.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_resample_2_3.c
+END
+SKP_Silk_resample_4_3.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_resample_4_3.c
+END
+SKP_Silk_LTP_analysis_filter_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_LTP_analysis_filter_FIX.c
+END
+SKP_Silk_code_signs.c
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_code_signs.c
+END
+SKP_Silk_PLC.c
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_PLC.c
+END
+SKP_Silk_encode_parameters.c
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_encode_parameters.c
+END
+SKP_Silk_pitch_analysis_core.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_pitch_analysis_core.c
+END
+SKP_Silk_inner_prod_aligned.c
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_inner_prod_aligned.c
+END
+SKP_Silk_PLC.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_PLC.h
+END
+SKP_Silk_tables_NLSF_CB1_16.c
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_tables_NLSF_CB1_16.c
+END
+SKP_Silk_ana_filt_bank_1.c
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_ana_filt_bank_1.c
+END
+SKP_Silk_HP_variable_cutoff_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_HP_variable_cutoff_FIX.c
+END
+SKP_Silk_resample_rom.h
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_resample_rom.h
+END
+SKP_Silk_tables_NLSF_CB1_16.h
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_tables_NLSF_CB1_16.h
+END
+SKP_Silk_prefilter_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_prefilter_FIX.c
+END
+SKP_Silk_LBRR_reset.c
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_LBRR_reset.c
+END
+SKP_Silk_resample_2_1_coarse.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_resample_2_1_coarse.c
+END
+SKP_Silk_lin2log.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_lin2log.c
+END
+SKP_Silk_scale_vector.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_scale_vector.c
+END
+SKP_Silk_VAD.c
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_VAD.c
+END
+SKP_Silk_NLSF_VQ_sum_error_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_NLSF_VQ_sum_error_FIX.c
+END
+SKP_Silk_resample_1_2_coarsest.c
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_resample_1_2_coarsest.c
+END
+SKP_Silk_encode_frame_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_encode_frame_FIX.c
+END
+SKP_Silk_resample_2_3_coarsest.c
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_resample_2_3_coarsest.c
+END
+SKP_Silk_tables.h
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_tables.h
+END
+SKP_Silk_apply_sine_window.c
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_apply_sine_window.c
+END
+SKP_Silk_tables_sign.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_tables_sign.c
+END
+SKP_Silk_autocorr.c
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_autocorr.c
+END
+SKP_Silk_bwexpander.c
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_bwexpander.c
+END
+SKP_Silk_LSF_cos_table.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_LSF_cos_table.c
+END
+SKP_Silk_LTP_scale_ctrl_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_LTP_scale_ctrl_FIX.c
+END
+SKP_Silk_NSQ.c
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_NSQ.c
+END
+SKP_Silk_regularize_correlations_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_regularize_correlations_FIX.c
+END
+SKP_Silk_noise_shape_analysis_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_noise_shape_analysis_FIX.c
+END
+SKP_Silk_CNG.c
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_CNG.c
+END
+SKP_Silk_decoder_set_fs.c
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_decoder_set_fs.c
+END
+SKP_Silk_range_coder.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_range_coder.c
+END
+SKP_Silk_resample_1_2.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_resample_1_2.c
+END
+SKP_Silk_scale_copy_vector16.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_scale_copy_vector16.c
+END
+SKP_Silk_resample_3_2.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_resample_3_2.c
+END
+SKP_Silk_decode_pulses.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_decode_pulses.c
+END
+SKP_Silk_tables_type_offset.c
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_tables_type_offset.c
+END
+SKP_Silk_find_LPC_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_find_LPC_FIX.c
+END
+SKP_Silk_schur.c
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_schur.c
+END
+SKP_Silk_tables_pulses_per_block.c
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_tables_pulses_per_block.c
+END
+SKP_Silk_NLSF2A.c
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_NLSF2A.c
+END
+SKP_Silk_tables_LTP.c
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_tables_LTP.c
+END
+SKP_Silk_NLSF_VQ_weights_laroia.c
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_NLSF_VQ_weights_laroia.c
+END
+SKP_Silk_process_NLSFs_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_process_NLSFs_FIX.c
+END
+SKP_Silk_corrMatrix_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_corrMatrix_FIX.c
+END
+SKP_Silk_resample_2_3_coarse.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_resample_2_3_coarse.c
+END
+SKP_Silk_lowpass_short.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_lowpass_short.c
+END
+SKP_Silk_NLSF_stabilize.c
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_NLSF_stabilize.c
+END
+SKP_Silk_tables_gain.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_tables_gain.c
+END
+SKP_Silk_tables_other.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_tables_other.c
+END
+SKP_Silk_structs.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_structs.h
+END
+SKP_Silk_pitch_est_tables.c
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_pitch_est_tables.c
+END
+SKP_Silk_k2a.c
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_k2a.c
+END
+SKP_Silk_control_codec_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_control_codec_FIX.c
+END
+SKP_Silk_tables_NLSF_CB0_16.c
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_tables_NLSF_CB0_16.c
+END
+SKP_Silk_resample_2_3_rom.c
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_resample_2_3_rom.c
+END
+SKP_Silk_macros.h
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_macros.h
+END
+SKP_Silk_tables_NLSF_CB0_16.h
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_tables_NLSF_CB0_16.h
+END
+SKP_Silk_common_pitch_est_defines.h
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_common_pitch_est_defines.h
+END
+SKP_Silk_decode_frame.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_decode_frame.c
+END
+SKP_Silk_enc_API.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_enc_API.c
+END
+SKP_Silk_biquad_alt.c
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_biquad_alt.c
+END
+SKP_Silk_allpass_int.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_allpass_int.c
+END
+SKP_Silk_resample_1_3.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_resample_1_3.c
+END
+SKP_Silk_NLSF2A_stable.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_NLSF2A_stable.c
+END
+SKP_Silk_tables_NLSF_CB1_10.c
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_tables_NLSF_CB1_10.c
+END
+SKP_Silk_dec_API.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_dec_API.c
+END
+SKP_Silk_LPC_stabilize.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_LPC_stabilize.c
+END
+SKP_Silk_tables_pitch_lag.c
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_tables_pitch_lag.c
+END
+SKP_Silk_LP_variable_cutoff.c
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_LP_variable_cutoff.c
+END
+SKP_Silk_tables_NLSF_CB1_10.h
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_tables_NLSF_CB1_10.h
+END
+SKP_Silk_LPC_synthesis_order16.c
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_LPC_synthesis_order16.c
+END
+SKP_Silk_decode_indices_v4.c
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_decode_indices_v4.c
+END
+SKP_Silk_NSQ_del_dec.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_NSQ_del_dec.c
+END
+SKP_Silk_find_LTP_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_find_LTP_FIX.c
+END
+SKP_Silk_process_gains_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_process_gains_FIX.c
+END
+SKP_Silk_decode_parameters.c
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_decode_parameters.c
+END
+SKP_Silk_log2lin.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_log2lin.c
+END
+SKP_Silk_NLSF_VQ_rate_distortion_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_NLSF_VQ_rate_distortion_FIX.c
+END
+SKP_Silk_array_maxabs.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_array_maxabs.c
+END
+SKP_Silk_decode_parameters_v4.c
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_decode_parameters_v4.c
+END
+SKP_Silk_SigProc_FIX.h
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_SigProc_FIX.h
+END
+SKP_Silk_sum_sqr_shift.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_sum_sqr_shift.c
+END
+SKP_Silk_sort.c
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_sort.c
+END
+SKP_Silk_encode_pulses.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_encode_pulses.c
+END
+SKP_Silk_resample_3_2_rom.c
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_resample_3_2_rom.c
+END
+SKP_Silk_VQ_nearest_neighbor_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_VQ_nearest_neighbor_FIX.c
+END
+SKP_Silk_solve_LS_FIX.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_solve_LS_FIX.c
+END
+SKP_Silk_MA.c
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/503/trunk/jni/silk/src/SKP_Silk_MA.c
+END

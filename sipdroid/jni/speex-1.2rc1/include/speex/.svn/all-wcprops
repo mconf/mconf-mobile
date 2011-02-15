@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/include/speex
+END
+speex_config_types.h
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/include/speex/speex_config_types.h
+END
+speex_callbacks.h
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/include/speex/speex_callbacks.h
+END
+speex.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/include/speex/speex.h
+END
+speex_bits.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/include/speex/speex_bits.h
+END
+speex_types.h
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/460/trunk/jni/speex-1.2rc1/include/speex/speex_types.h
+END

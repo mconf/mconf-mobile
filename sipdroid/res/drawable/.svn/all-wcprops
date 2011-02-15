@@ -1,0 +1,431 @@
+K 25
+svn:wc:ra_dav:version-url
+V 36
+/svn/!svn/ver/553/trunk/res/drawable
+END
+ic_contacts_edit_contacts.png
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/50/trunk/res/drawable/ic_contacts_edit_contacts.png
+END
+icon22.png
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/50/trunk/res/drawable/icon22.png
+END
+sym_presence_available.png
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/50/trunk/res/drawable/sym_presence_available.png
+END
+ic_incall_answer.png
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/50/trunk/res/drawable/ic_incall_answer.png
+END
+ic_menu_dial_pad.png
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/553/trunk/res/drawable/ic_menu_dial_pad.png
+END
+ic_incall_ongoing.png
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/310/trunk/res/drawable/ic_incall_ongoing.png
+END
+picture_dialing.png
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/310/trunk/res/drawable/picture_dialing.png
+END
+incall_frame_ended_tall_port.9.png
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/50/trunk/res/drawable/incall_frame_ended_tall_port.9.png
+END
+icon64.png
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/50/trunk/res/drawable/icon64.png
+END
+sym_call_hold_on.png
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/50/trunk/res/drawable/sym_call_hold_on.png
+END
+incall_frame_hold_tall_port.9.png
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/50/trunk/res/drawable/incall_frame_hold_tall_port.9.png
+END
+incall_frame_normal_tall_port.9.png
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/50/trunk/res/drawable/incall_frame_normal_tall_port.9.png
+END
+picture_busy.png
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/50/trunk/res/drawable/picture_busy.png
+END
+auto_answer_disabled.png
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/273/trunk/res/drawable/auto_answer_disabled.png
+END
+contacts.png
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/50/trunk/res/drawable/contacts.png
+END
+sym_incoming_call_answer_options.png
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/50/trunk/res/drawable/sym_incoming_call_answer_options.png
+END
+stat_sys_phone_call_bluetooth.png
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/553/trunk/res/drawable/stat_sys_phone_call_bluetooth.png
+END
+people.png
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/473/trunk/res/drawable/people.png
+END
+goback.png
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/50/trunk/res/drawable/goback.png
+END
+icon32.png
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/50/trunk/res/drawable/icon32.png
+END
+ic_menu_end_call.png
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/182/trunk/res/drawable/ic_menu_end_call.png
+END
+sym_call_speakerphone_off.png
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/50/trunk/res/drawable/sym_call_speakerphone_off.png
+END
+ic_incall_end.png
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/50/trunk/res/drawable/ic_incall_end.png
+END
+sym_call.png
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/50/trunk/res/drawable/sym_call.png
+END
+sym_call_hold_off.png
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/50/trunk/res/drawable/sym_call_hold_off.png
+END
+sym_call_done.png
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/50/trunk/res/drawable/sym_call_done.png
+END
+exit.png
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/50/trunk/res/drawable/exit.png
+END
+picture_unknown_2.png
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/50/trunk/res/drawable/picture_unknown_2.png
+END
+picture_unknown_3.png
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/50/trunk/res/drawable/picture_unknown_3.png
+END
+ic_search_contacts.png
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/50/trunk/res/drawable/ic_search_contacts.png
+END
+configure.png
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/50/trunk/res/drawable/configure.png
+END
+sym_call_merge.png
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/50/trunk/res/drawable/sym_call_merge.png
+END
+sym_item_indicator.png
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/50/trunk/res/drawable/sym_item_indicator.png
+END
+incall_frame_connected_short.9.png
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/50/trunk/res/drawable/incall_frame_connected_short.9.png
+END
+conf.png
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/50/trunk/res/drawable/conf.png
+END
+sym_call_lcd.png
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/50/trunk/res/drawable/sym_call_lcd.png
+END
+stat_sys_phone_call.png
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/310/trunk/res/drawable/stat_sys_phone_call.png
+END
+save.png
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/50/trunk/res/drawable/save.png
+END
+sym_presence_offline.png
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/50/trunk/res/drawable/sym_presence_offline.png
+END
+picture_end.png
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/50/trunk/res/drawable/picture_end.png
+END
+incall_frame_ended_short.9.png
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/50/trunk/res/drawable/incall_frame_ended_short.9.png
+END
+picture_conference.png
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/50/trunk/res/drawable/picture_conference.png
+END
+sym_call_speakerphone_on.png
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/50/trunk/res/drawable/sym_call_speakerphone_on.png
+END
+ic_launcher_phone.png
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/83/trunk/res/drawable/ic_launcher_phone.png
+END
+incall_frame_hold_short.9.png
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/50/trunk/res/drawable/incall_frame_hold_short.9.png
+END
+incall_frame_normal_short.9.png
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/50/trunk/res/drawable/incall_frame_normal_short.9.png
+END
+mute.png
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/50/trunk/res/drawable/mute.png
+END
+sym_incoming_call_hold_answer.png
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/50/trunk/res/drawable/sym_incoming_call_hold_answer.png
+END
+sym_presence_away.png
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/50/trunk/res/drawable/sym_presence_away.png
+END
+incall_frame_connected_tall_land.9.png
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/310/trunk/res/drawable/incall_frame_connected_tall_land.9.png
+END
+sym_item_indicator_focus.png
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/50/trunk/res/drawable/sym_item_indicator_focus.png
+END
+sym_call_redial.png
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/50/trunk/res/drawable/sym_call_redial.png
+END
+ic_incall_add.png
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/50/trunk/res/drawable/ic_incall_add.png
+END
+sym_call_end.png
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/50/trunk/res/drawable/sym_call_end.png
+END
+sym_presence_idle.png
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/50/trunk/res/drawable/sym_presence_idle.png
+END
+sym_incoming_call_dont_answer.png
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/50/trunk/res/drawable/sym_incoming_call_dont_answer.png
+END
+incall_frame_ended_tall_land.9.png
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/50/trunk/res/drawable/incall_frame_ended_tall_land.9.png
+END
+incall_frame_hold_tall_land.9.png
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/50/trunk/res/drawable/incall_frame_hold_tall_land.9.png
+END
+sym_incoming_call_answer.png
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/50/trunk/res/drawable/sym_incoming_call_answer.png
+END
+im.png
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/50/trunk/res/drawable/im.png
+END
+incall_frame_normal_tall_land.9.png
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/50/trunk/res/drawable/incall_frame_normal_tall_land.9.png
+END
+sym_call_add_call.png
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/50/trunk/res/drawable/sym_call_add_call.png
+END
+sym_fav_five.png
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/50/trunk/res/drawable/sym_fav_five.png
+END
+ic_incall_hangup.png
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/50/trunk/res/drawable/ic_incall_hangup.png
+END
+incall_photo_border.9.png
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/50/trunk/res/drawable/incall_photo_border.9.png
+END
+ic_incall_onhold.png
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/50/trunk/res/drawable/ic_incall_onhold.png
+END
+incall_frame_connected_tall_port.9.png
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/310/trunk/res/drawable/incall_frame_connected_tall_port.9.png
+END
+picture_frame.png
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/50/trunk/res/drawable/picture_frame.png
+END
+auto_answer.png
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/273/trunk/res/drawable/auto_answer.png
+END
+home.png
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/50/trunk/res/drawable/home.png
+END
+picture_unknown.png
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/310/trunk/res/drawable/picture_unknown.png
+END

@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/583/trunk/src/org/zoolu/sip/transaction
+END
+AckTransactionServerListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/50/trunk/src/org/zoolu/sip/transaction/AckTransactionServerListener.java
+END
+InviteTransactionServerListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/!svn/ver/50/trunk/src/org/zoolu/sip/transaction/InviteTransactionServerListener.java
+END
+TransactionServerListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/50/trunk/src/org/zoolu/sip/transaction/TransactionServerListener.java
+END
+InviteTransactionClient.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/!svn/ver/583/trunk/src/org/zoolu/sip/transaction/InviteTransactionClient.java
+END
+AckTransactionClient.java
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/50/trunk/src/org/zoolu/sip/transaction/AckTransactionClient.java
+END
+TransactionClient.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/583/trunk/src/org/zoolu/sip/transaction/TransactionClient.java
+END
+Transaction.java
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/50/trunk/src/org/zoolu/sip/transaction/Transaction.java
+END
+TransactionClientListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/50/trunk/src/org/zoolu/sip/transaction/TransactionClientListener.java
+END
+AckTransactionServer.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/583/trunk/src/org/zoolu/sip/transaction/AckTransactionServer.java
+END
+InviteTransactionServer.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/!svn/ver/583/trunk/src/org/zoolu/sip/transaction/InviteTransactionServer.java
+END
+TransactionServer.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/583/trunk/src/org/zoolu/sip/transaction/TransactionServer.java
+END

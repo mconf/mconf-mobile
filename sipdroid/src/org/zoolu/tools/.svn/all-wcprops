@@ -1,0 +1,155 @@
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/570/trunk/src/org/zoolu/tools
+END
+HashSet.java
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/HashSet.java
+END
+Configurable.java
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/Configurable.java
+END
+Assert.java
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/Assert.java
+END
+ExceptionPrinter.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/ExceptionPrinter.java
+END
+Mangle.java
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/Mangle.java
+END
+MD5OTP.java
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/MD5OTP.java
+END
+LogLevel.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/LogLevel.java
+END
+InnerTimer.java
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/InnerTimer.java
+END
+Random.java
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/Random.java
+END
+Timer.java
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/Timer.java
+END
+AssertException.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/AssertException.java
+END
+Configure.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/Configure.java
+END
+Archive.java
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/Archive.java
+END
+Log.java
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/Log.java
+END
+InnerTimerListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/InnerTimerListener.java
+END
+InnerTimerST.java
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/InnerTimerST.java
+END
+MessageDigest.java
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/MessageDigest.java
+END
+Base64.java
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/570/trunk/src/org/zoolu/tools/Base64.java
+END
+MD5.java
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/MD5.java
+END
+DateFormat.java
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/DateFormat.java
+END
+TimerListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/TimerListener.java
+END
+SimpleDigest.java
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/SimpleDigest.java
+END
+RotatingLog.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/RotatingLog.java
+END
+Iterator.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/Iterator.java
+END
+Parser.java
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/50/trunk/src/org/zoolu/tools/Parser.java
+END

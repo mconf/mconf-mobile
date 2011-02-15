@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 35
+/svn/!svn/ver/517/trunk/jni/spandsp
+END
+mmx_sse_decs.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/513/trunk/jni/spandsp/mmx_sse_decs.h
+END
+gsm0610_decode.c
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/514/trunk/jni/spandsp/gsm0610_decode.c
+END
+g722.c
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/517/trunk/jni/spandsp/g722.c
+END
+gsm0610_preprocess.c
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/514/trunk/jni/spandsp/gsm0610_preprocess.c
+END
+floating_fudge.h
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/513/trunk/jni/spandsp/floating_fudge.h
+END
+gsm0610_short_term.c
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/514/trunk/jni/spandsp/gsm0610_short_term.c
+END
+gsm0610_rpe.c
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/514/trunk/jni/spandsp/gsm0610_rpe.c
+END
+gsm0610_long_term.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/514/trunk/jni/spandsp/gsm0610_long_term.c
+END
+gsm0610_encode.c
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/514/trunk/jni/spandsp/gsm0610_encode.c
+END
+gsm0610_lpc.c
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/514/trunk/jni/spandsp/gsm0610_lpc.c
+END
+gsm0610_local.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/514/trunk/jni/spandsp/gsm0610_local.h
+END
+vector_int.c
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/513/trunk/jni/spandsp/vector_int.c
+END
+spandsp.h
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/513/trunk/jni/spandsp/spandsp.h
+END

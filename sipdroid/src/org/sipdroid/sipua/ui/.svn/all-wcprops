@@ -1,0 +1,173 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/599/trunk/src/org/sipdroid/sipua/ui
+END
+Settings.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/596/trunk/src/org/sipdroid/sipua/ui/Settings.java
+END
+SipRingtonePreference.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/476/trunk/src/org/sipdroid/sipua/ui/SipRingtonePreference.java
+END
+InCallScreen.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/587/trunk/src/org/sipdroid/sipua/ui/InCallScreen.java
+END
+Caller.java
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/574/trunk/src/org/sipdroid/sipua/ui/Caller.java
+END
+InstantAutoCompleteTextView.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/!svn/ver/583/trunk/src/org/sipdroid/sipua/ui/InstantAutoCompleteTextView.java
+END
+LoopLocation.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/300/trunk/src/org/sipdroid/sipua/ui/LoopLocation.java
+END
+ChangeAccount.java
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/583/trunk/src/org/sipdroid/sipua/ui/ChangeAccount.java
+END
+Checkin.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/583/trunk/src/org/sipdroid/sipua/ui/Checkin.java
+END
+Receiver.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/596/trunk/src/org/sipdroid/sipua/ui/Receiver.java
+END
+RegisterService.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/574/trunk/src/org/sipdroid/sipua/ui/RegisterService.java
+END
+VideoPreview.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/105/trunk/src/org/sipdroid/sipua/ui/VideoPreview.java
+END
+OneShotLocation.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/300/trunk/src/org/sipdroid/sipua/ui/OneShotLocation.java
+END
+SIPUri.java
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/583/trunk/src/org/sipdroid/sipua/ui/SIPUri.java
+END
+CallScreen.java
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/586/trunk/src/org/sipdroid/sipua/ui/CallScreen.java
+END
+VideoCameraNew2.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/596/trunk/src/org/sipdroid/sipua/ui/VideoCameraNew2.java
+END
+Sipdroid.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/599/trunk/src/org/sipdroid/sipua/ui/Sipdroid.java
+END
+OneShotAlarm2.java
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/487/trunk/src/org/sipdroid/sipua/ui/OneShotAlarm2.java
+END
+Activity2.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/83/trunk/src/org/sipdroid/sipua/ui/Activity2.java
+END
+VideoCamera.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/596/trunk/src/org/sipdroid/sipua/ui/VideoCamera.java
+END
+CreateAccount.java
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/599/trunk/src/org/sipdroid/sipua/ui/CreateAccount.java
+END
+OwnWifi.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/538/trunk/src/org/sipdroid/sipua/ui/OwnWifi.java
+END
+SipdroidListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/50/trunk/src/org/sipdroid/sipua/ui/SipdroidListener.java
+END
+PSTN.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/553/trunk/src/org/sipdroid/sipua/ui/PSTN.java
+END
+LoopAlarm.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/187/trunk/src/org/sipdroid/sipua/ui/LoopAlarm.java
+END
+AutoAnswer.java
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/476/trunk/src/org/sipdroid/sipua/ui/AutoAnswer.java
+END
+VideoCameraNew.java
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/553/trunk/src/org/sipdroid/sipua/ui/VideoCameraNew.java
+END
+SIP.java
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/484/trunk/src/org/sipdroid/sipua/ui/SIP.java
+END
+OneShotAlarm.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/244/trunk/src/org/sipdroid/sipua/ui/OneShotAlarm.java
+END

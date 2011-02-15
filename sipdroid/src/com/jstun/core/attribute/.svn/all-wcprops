@@ -1,0 +1,113 @@
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/453/trunk/src/com/jstun/core/attribute
+END
+ChangedAddress.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/453/trunk/src/com/jstun/core/attribute/ChangedAddress.java
+END
+Password.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/453/trunk/src/com/jstun/core/attribute/Password.java
+END
+ResponseAddress.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/453/trunk/src/com/jstun/core/attribute/ResponseAddress.java
+END
+SourceAddress.java
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/453/trunk/src/com/jstun/core/attribute/SourceAddress.java
+END
+UnknownMessageAttributeException.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/453/trunk/src/com/jstun/core/attribute/UnknownMessageAttributeException.java
+END
+MessageAttribute.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/453/trunk/src/com/jstun/core/attribute/MessageAttribute.java
+END
+MessageAttributeParsingException.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/453/trunk/src/com/jstun/core/attribute/MessageAttributeParsingException.java
+END
+MappedAddress.java
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/453/trunk/src/com/jstun/core/attribute/MappedAddress.java
+END
+Username.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/453/trunk/src/com/jstun/core/attribute/Username.java
+END
+ReflectedFrom.java
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/453/trunk/src/com/jstun/core/attribute/ReflectedFrom.java
+END
+MessageIntegrity.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/453/trunk/src/com/jstun/core/attribute/MessageIntegrity.java
+END
+UnknownAttribute.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/453/trunk/src/com/jstun/core/attribute/UnknownAttribute.java
+END
+ErrorCode.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/453/trunk/src/com/jstun/core/attribute/ErrorCode.java
+END
+MessageAttributeException.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/453/trunk/src/com/jstun/core/attribute/MessageAttributeException.java
+END
+MappedResponseChangedSourceAddressReflectedFrom.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/!svn/ver/453/trunk/src/com/jstun/core/attribute/MappedResponseChangedSourceAddressReflectedFrom.java
+END
+MessageAttributeInterface.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/453/trunk/src/com/jstun/core/attribute/MessageAttributeInterface.java
+END
+Dummy.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/453/trunk/src/com/jstun/core/attribute/Dummy.java
+END
+ChangeRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/453/trunk/src/com/jstun/core/attribute/ChangeRequest.java
+END

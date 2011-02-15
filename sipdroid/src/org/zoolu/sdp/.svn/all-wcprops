@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/538/trunk/src/org/zoolu/sdp
+END
+SessionDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/538/trunk/src/org/zoolu/sdp/SessionDescriptor.java
+END
+TimeField.java
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/50/trunk/src/org/zoolu/sdp/TimeField.java
+END
+MediaField.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/50/trunk/src/org/zoolu/sdp/MediaField.java
+END
+ConnectionField.java
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/50/trunk/src/org/zoolu/sdp/ConnectionField.java
+END
+SdpParser.java
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/50/trunk/src/org/zoolu/sdp/SdpParser.java
+END
+AttributeField.java
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/50/trunk/src/org/zoolu/sdp/AttributeField.java
+END
+SessionNameField.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/50/trunk/src/org/zoolu/sdp/SessionNameField.java
+END
+SdpField.java
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/50/trunk/src/org/zoolu/sdp/SdpField.java
+END
+OriginField.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/50/trunk/src/org/zoolu/sdp/OriginField.java
+END
+MediaDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/447/trunk/src/org/zoolu/sdp/MediaDescriptor.java
+END
