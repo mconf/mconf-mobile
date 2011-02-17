@@ -61,6 +61,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static final int MENU_QUIT = Menu.FIRST;
 	public static final int MENU_LOGOUT = Menu.FIRST + 1;
 	public static final int MENU_RAISE_HAND = Menu.FIRST + 2;
+	public static final int MENU_START_VOICE = Menu.FIRST + 3;
 	
 	public static final int CHAT_NOTIFICATION_ID = 77000;
 	
@@ -154,16 +155,28 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	}
 	
 	@Override
+	protected void onStart() {
+		super.onStart();
+		
+//		SharedPreferences settings = getSharedPreferences("org.sipdroid.sipua_preferences", MODE_PRIVATE);
+//		Editor editor = settings.edit();
+//		editor.putString("PREF_USERNAME", myusername);
+//		editor.putString("PREF_SERVER", bbb.getJoinService().getServerUrl().replace("http://", ""));
+//		editor.commit();
+//		
+//		Receiver.engine(this).registerMore();
+	}
+	
+	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 		final Contact contact = (Contact) contactAdapter.getItem(info.position);
 		if (bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator()) {
-			if (contact.getUserId()!= bbb.getMyUserId()) {
+			if (contact.getUserId() != bbb.getMyUserId()) {
 				menu.add(0, KICK_USER, 0, "Kick");
-				// \TODO not implemented yet
-//				menu.add(0, MUTE_USER, 0, "Mute");
+				menu.add(0, MUTE_USER, 0, "Mute");
 			}
 			
 			if (!contact.isPresenter())
@@ -183,7 +196,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				bbb.kickUser(contact.getUserId());
 				return true;
 			case MUTE_USER:
-				log.debug("mute");
+				Toast.makeText(this, "Not implemented feature", Toast.LENGTH_SHORT).show();
 				return true;
 			case SET_PRESENTER:
 				bbb.assignPresenter(contact.getUserId());
@@ -232,6 +245,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
 		menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, "Raise hand").setIcon(android.R.drawable.ic_menu_myplaces);
+		menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, "Start voice").setIcon(android.R.drawable.ic_lock_silent_mode_off);
 		menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, "Logout").setIcon(android.R.drawable.ic_menu_revert);
 		menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, "Quit").setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 		return result;
@@ -241,6 +255,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent intent= new Intent(FINISH);
 		switch (item.getItemId()) {
+			case MENU_START_VOICE:
+				Toast.makeText(this, "Not implemented feature", Toast.LENGTH_SHORT).show();
+//				Receiver.engine(this).call(bbb.getJoinedMeeting().getVoicebridge(), true);
+				return true;
 			case MENU_LOGOUT:
 				bbb.disconnect();
 				Intent login = new Intent(this, LoginPage.class);
@@ -347,17 +365,17 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		}
 	}
 	
-	public void showNotification(ChatMessage message, IParticipant source, boolean privateChat) {
+	public void showNotification(final ChatMessage message, IParticipant source, final boolean privateChat) {
 		// remember that source could be null! that happens when a user send a message and log out - the list of participants don't have the entry anymore
 		
-		// change the background color of the message source
-		contactAdapter.setChatStatus(message.getUserId(), privateChat? Contact.CONTACT_ON_PRIVATE_MESSAGE: Contact.CONTACT_ON_PUBLIC_MESSAGE);
 		runOnUiThread(new Runnable() {
 			
 			@Override
 			public void run() {
+				// change the background color of the message source
+				contactAdapter.setChatStatus(message.getUserId(), privateChat? Contact.CONTACT_ON_PRIVATE_MESSAGE: Contact.CONTACT_ON_PUBLIC_MESSAGE);
 				contactAdapter.sort();
-				contactAdapter.notifyDataSetInvalidated();
+				contactAdapter.notifyDataSetChanged();
 			}
 		});		
 		
@@ -417,7 +435,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 			@Override
 			public void run() {
-				contactAdapter.setPresenterStatus(new Contact(p));
+				contactAdapter.getUserById(p.getUserId()).getStatus().setPresenter(p.getStatus().isPresenter());
 				contactAdapter.notifyDataSetChanged();
 			}
 		});
@@ -429,7 +447,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 			@Override
 			public void run() {
-				contactAdapter.setStreamStatus(new Contact(p));
+				contactAdapter.getUserById(p.getUserId()).getStatus().setHasStream(p.getStatus().isHasStream());
+				contactAdapter.getUserById(p.getUserId()).getStatus().setStreamName(p.getStatus().getStreamName());
 				contactAdapter.notifyDataSetChanged();
 			}
 		});
@@ -441,7 +460,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 			@Override
 			public void run() {
-				contactAdapter.setRaiseHandStatus(new Contact(p));			
+				contactAdapter.getUserById(p.getUserId()).getStatus().setRaiseHand(p.getStatus().isRaiseHand());
 				contactAdapter.notifyDataSetChanged();
 			}
 		});
