@@ -86,5 +86,15 @@ public class Status {
 				+ ", raiseHand=" + raiseHand + ", streamName=" + streamName
 				+ "]";
 	}
+	
+	@Override
+	public Status clone() {
+		Status clone = new Status();
+		clone.hasStream = this.hasStream;
+		clone.presenter = this.presenter;
+		clone.raiseHand = this.raiseHand;
+		clone.streamName = this.streamName;
+		return clone;
+	}
 
 }

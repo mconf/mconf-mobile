@@ -260,7 +260,7 @@ public class PrivateChat extends Activity{
 		else
 			p.setNotified(false);
 		
-		if(p.isNotified()) //se h� uma notifica��o
+		if(p.isNotified()) //se há uma notificação
 		{
 			List<ChatMessage> messages = Client.bbb.getChatModule().getPrivateChatMessage().get(userId);
 			if (messages != null)
