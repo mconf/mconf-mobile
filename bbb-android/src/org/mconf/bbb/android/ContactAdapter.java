@@ -61,6 +61,7 @@ public class ContactAdapter extends BaseAdapter {
     		listContact.remove(contact);
     }
     
+    
     public void setPresenterStatus(Contact changedStatus)
     {
     	ImageView presenter = (ImageView) view.findViewById(R.id.presenter);
@@ -147,15 +148,16 @@ public class ContactAdapter extends BaseAdapter {
         setRaiseHandStatus(entry);
         
         int color;
+        System.out.println(entry.getName()+entry.getChatStatus());
         switch (entry.getChatStatus()) {
         	case Contact.CONTACT_ON_PRIVATE_MESSAGE:
-        		color = android.R.color.black;
+        		color = R.color.title_background;
         		break;
         	case Contact.CONTACT_ON_PUBLIC_MESSAGE:
         		color = android.R.color.white;
         		break;
     		default:
-    			color = R.color.background;
+    				color = R.color.background;
         }
         
         convertView.setBackgroundResource(color);
@@ -164,7 +166,19 @@ public class ContactAdapter extends BaseAdapter {
     }
 
 	public void setChatStatus(int userId, int chatStatus) {
-//		getUserById(userId).setChatStatus(chatStatus);
+		if(getUserById(userId)!=null)
+			getUserById(userId).setChatStatus(chatStatus);
+	}
+	
+	public int getChatStatus(int position)
+	{
+		int userId = listContact.get(position).getUserId();
+		return getUserById(userId).getChatStatus();
+	}
+	
+	public int getUserId (int position)
+	{
+		return listContact.get(position).getUserId();
 	}
 
 	public void sort() {

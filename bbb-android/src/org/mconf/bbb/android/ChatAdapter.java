@@ -65,6 +65,16 @@ public class ChatAdapter extends BaseAdapter {
         return convertView;
     }
 
+	public boolean hasUser(int userId)
+	{
+		for(ChatMessage chatMessage:list)
+		{
+			if(chatMessage.getUserId()==userId)
+				return true;
+		}
+		return false;
+	}
+	
 	@Override
 	public int getCount() {
 		return list.size();

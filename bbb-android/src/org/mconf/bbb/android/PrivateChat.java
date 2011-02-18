@@ -164,6 +164,8 @@ public class PrivateChat extends Activity{
 
 	private static final String SEND_TO_BACK = "bbb.android.action.SEND_TO_BACK";
 
+	public static final String CHAT_CLOSED = "bbb.android.action.CHAT_CLOSED";
+
 
 	private GestureDetector gestureDetector;
 	View.OnTouchListener gestureListener;
@@ -173,7 +175,16 @@ public class PrivateChat extends Activity{
 	private Animation RightOut;
 	private ViewFlipper flipper;
 	
-  
+	public static boolean hasUserOnPrivateChat(int userId)
+	{
+		for(RemoteParticipant part:participants.values())
+		{
+			if(part.getUserId()==userId)
+				return true;
+		}
+		return false;
+	}
+	
 	BroadcastReceiver finishedReceiver = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
 		{ 
@@ -435,11 +446,11 @@ public class PrivateChat extends Activity{
     	if (keyCode == KeyEvent.KEYCODE_BACK) {
     		
     		Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
-//        	bringBackClient.setAction(ACTION_BRING_TO_FRONT);
+
         	startActivity(bringBackClient);
         	return true;
     	}
-    	log.debug("killing");
+    	
     	return super.onKeyDown(keyCode, event);
     }
 	
@@ -456,7 +467,9 @@ public class PrivateChat extends Activity{
 		switch (item.getItemId()) {
 			case MENU_CLOSE:
 				int viewID =flipper.getDisplayedChild();
-				
+				Intent chatClosed = new Intent(CHAT_CLOSED);
+				chatClosed.putExtra("userId", getParticipantByViewId(viewID).getUserId());
+				sendBroadcast(chatClosed);
 				if(participants.size()>1)
 				{
 					flipper.showPrevious();

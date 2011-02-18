@@ -32,7 +32,10 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -76,7 +79,19 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 	
 
-	
+	BroadcastReceiver chatClosed = new BroadcastReceiver(){ 
+		public void onReceive(Context context, Intent intent)
+		{ 
+			Bundle extras = intent.getExtras();
+			int userId= extras.getInt("userId");
+			if(chatAdapter.hasUser(userId))
+				contactAdapter.setChatStatus(userId, Contact.CONTACT_ON_PUBLIC_MESSAGE);
+			else
+				contactAdapter.setChatStatus(userId, Contact.CONTACT_NORMAL);
+			 
+			contactAdapter.notifyDataSetChanged();
+		} 
+	};
 
 	
 
@@ -109,6 +124,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			public void onDrawerOpened() {
 				NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 				notificationManager.cancel(CHAT_NOTIFICATION_ID);
+				openedDrawer();
 			}
 		});
 		
@@ -124,7 +140,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		contactAdapter = new ContactAdapter(this);
 		contactListView.setAdapter(contactAdapter);
 		registerForContextMenu(contactListView);
-
+		
+		
 		Button send = (Button)findViewById(R.id.sendMessage);
 		send.setOnClickListener( new OnClickListener() {
 			@Override
@@ -152,6 +169,12 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		});
 		
 		bbb.addListener(this);
+		registerChatClosedReceiver();
+	}
+	
+	private void registerChatClosedReceiver(){ 
+		IntentFilter filter = new IntentFilter(PrivateChat.CHAT_CLOSED); 
+		registerReceiver(chatClosed, filter); 
 	}
 	
 	@Override
@@ -232,8 +255,19 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 //		
 //	}
 	
-	private void startPrivateChat(Contact contact) {
+	private void startPrivateChat(final Contact contact) {
 
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				contactAdapter.setChatStatus(contact.getUserId(), Contact.CONTACT_ON_PRIVATE_MESSAGE); 
+				contactAdapter.notifyDataSetChanged();
+			}
+			
+		}
+		);
+		
 		Intent intent = new Intent(getApplicationContext(), PrivateChat.class);
 		intent.putExtra("username", contact.getName());
 		intent.putExtra("userId", contact.getUserId());
@@ -361,7 +395,11 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			return;
 		else if (intent.getAction().equals(ACTION_OPEN_SLIDER)) {
 			if (!slidingDrawer.isOpened())
-				slidingDrawer.open();			
+			{
+				slidingDrawer.open();
+				openedDrawer();
+			}
+				
 		}
 	}
 	
@@ -373,6 +411,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			@Override
 			public void run() {
 				// change the background color of the message source
+				
 				contactAdapter.setChatStatus(message.getUserId(), privateChat? Contact.CONTACT_ON_PRIVATE_MESSAGE: Contact.CONTACT_ON_PUBLIC_MESSAGE);
 				contactAdapter.sort();
 				contactAdapter.notifyDataSetChanged();
@@ -475,5 +514,23 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	{
 		loggedIn=state;
 	}
+	
+	public void openedDrawer()
+	{
+		int position;
+		for(position = 0; position<contactAdapter.getCount(); position++)
+		{
+			if(contactAdapter.getChatStatus(position)==Contact.CONTACT_ON_PUBLIC_MESSAGE)
+			{
+				if(PrivateChat.hasUserOnPrivateChat(contactAdapter.getUserId(position)))
+					contactAdapter.setChatStatus(contactAdapter.getUserId(position), Contact.CONTACT_ON_PRIVATE_MESSAGE);
+				else
+					contactAdapter.setChatStatus(contactAdapter.getUserId(position), Contact.CONTACT_NORMAL);
+			}
+		}
+		contactAdapter.sort();
+		contactAdapter.notifyDataSetChanged();
+	}
+
 
 }
