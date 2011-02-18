@@ -1,28 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="bbb-java" basedir=".">    
-
-	<property name="lib.dir" value="../flazr/target/flazr/lib/"/>
+<project name="bbb-java" basedir=".">
+	<property name="target.dir" value="target"/>
+	<property name="classes.dir" value="${target.dir}/classes"/>
+	<property name="lib.dir" value="${target.dir}/${ant.project.name}/lib"/>
+	<property name="flazr.dir" value="../flazr"/>
+	<property name="flazr.lib.dir" value="${flazr.dir}/target/flazr/lib/"/>
 	
     <path id="classpath">
-        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+        <fileset dir="${flazr.lib.dir}" includes="**/*.jar"/>
     </path>	
 	
     <target name="clean">
         <delete includeemptydirs="true" failonerror="false">
-            <fileset dir="bin"/>
+            <fileset dir="${target.dir}"/>
         </delete>      
     </target>
     
     <target name="compile">
-        <mkdir dir="bin"/>        
-        <javac srcdir="src" destdir="bin" debug="true" classpathref="classpath"/> 
-    </target>             
+    	<ant dir="${flazr.dir}" target="dist"/>
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="src" destdir="${classes.dir}" debug="true" classpathref="classpath"/> 
+    </target>
 
 	<target name="jar" depends="compile">
-		<delete file="bin/${ant.project.name}.jar" failonerror="false"/>
-	    <jar destfile="bin/${ant.project.name}.jar">
-	        <fileset dir="bin"/>
+        <mkdir dir="${lib.dir}"/>
+		<delete file="${lib.dir}/${ant.project.name}.jar" failonerror="false"/>
+	    <jar destfile="${lib.dir}/${ant.project.name}.jar">
+	        <fileset dir="${classes.dir}"/>
 	    </jar>
 	</target>
 </project>
