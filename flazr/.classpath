@@ -12,5 +12,5 @@
 	<classpathentry kind="lib" path="target/flazr/lib/slf4j-api-1.4.2.jar"/>
 	<classpathentry kind="lib" path="target/flazr/lib/slf4j-log4j12-1.4.2.jar"/>
 	<classpathentry kind="lib" path="target/flazr/lib/junit-4.8.1.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>

@@ -63,7 +63,8 @@
     <!-- ========================= DIST ============================ -->
 
     <target name="dist-input-version">
-        <input message="Release Version:" addproperty="flazr.version"/>
+        <!--input message="Release Version:" addproperty="flazr.version"/-->
+		<property name="flazr.version" value="0.7" />
     </target>
 
     <target name="dist" depends="dist-input-version, compile">
