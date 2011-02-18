@@ -48,6 +48,7 @@ public class JoinedMeeting {
 	private String mode;
 	private String record;
 	private String welcome;
+	private String message;
 
 	public JoinedMeeting() {
 		
@@ -94,6 +95,8 @@ public class JoinedMeeting {
 				mode = nodeResponse.getElementsByTagName("mode").item(0).getFirstChild().getNodeValue();
 				record = nodeResponse.getElementsByTagName("record").item(0).getFirstChild().getNodeValue();
 				welcome = nodeResponse.getElementsByTagName("welcome").item(0).getFirstChild().getNodeValue();			
+			} else {
+				message = nodeResponse.getElementsByTagName("message").item(0).getFirstChild().getNodeValue();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -156,15 +159,19 @@ public class JoinedMeeting {
 	public String getWelcome() {
 		return welcome;
 	}
+	
+	public String getMessage() {
+		return message;
+	}
 
 	@Override
 	public String toString() {
 		return "JoinedMeeting [conference=" + conference + ", confname="
 				+ confname + ", externUserID=" + externUserID + ", fullname="
-				+ fullname + ", meetingID=" + meetingID + ", mode=" + mode
-				+ ", record=" + record + ", returncode=" + returncode
-				+ ", role=" + role + ", room=" + room + ", voicebridge="
-				+ voicebridge + ", webvoiceconf=" + webvoiceconf + ", welcome="
-				+ welcome + "]";
+				+ fullname + ", meetingID=" + meetingID + ", message="
+				+ message + ", mode=" + mode + ", record=" + record
+				+ ", returncode=" + returncode + ", role=" + role + ", room="
+				+ room + ", voicebridge=" + voicebridge + ", webvoiceconf="
+				+ webvoiceconf + ", welcome=" + welcome + "]";
 	}
 }

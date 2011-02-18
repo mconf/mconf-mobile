@@ -1,18 +1,13 @@
 package org.mconf.bbb.api;
 
-import java.io.ByteArrayInputStream;
+import java.net.URLEncoder;
 import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
 public class JoinService {
 	private static final Logger log = LoggerFactory.getLogger(JoinService.class);
@@ -89,10 +84,9 @@ public class JoinService {
 //		}
 		
 		String joinUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?action=join"
-			+ "&meetingID=" + meeting.getMeetingID()
-			+ "&fullName=" + name
-			+ "&password=" + (moderator? meeting.getModeratorPW(): meeting.getAttendeePW());
-		joinUrl = joinUrl.replace(" ", "+");
+			+ "&meetingID=" + urlEncode(meeting.getMeetingID())
+			+ "&fullName=" + urlEncode(name)
+			+ "&password=" + urlEncode(moderator? meeting.getModeratorPW(): meeting.getAttendeePW());
 		log.debug(joinUrl);
 		
 		JoinedMeeting joinedMeeting = new JoinedMeeting();
@@ -100,18 +94,8 @@ public class JoinService {
 			HttpClient client = new HttpClient();
 			HttpMethod method = new GetMethod(joinUrl);
 			client.executeMethod(method);
-			joinUrl = method.getResponseBodyAsString().trim();
+			joinedMeeting.parse(method.getResponseBodyAsString().trim());
 			method.releaseConnection();
-			
-			method = new GetMethod(parseJoinUrl(joinUrl));
-			client.executeMethod(method);
-			method.releaseConnection();
-			
-			method = new GetMethod(serverUrl + "/bigbluebutton/api/enter");
-			client.executeMethod(method);
-			joinedMeeting.parse(method.getResponseBodyAsString());
-			method.releaseConnection();
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("Can't join the meeting {}", meeting.getMeetingID());
@@ -119,23 +103,22 @@ public class JoinService {
 			return null;
 		}
 		
-		this.joinedMeeting = joinedMeeting;
+		if (joinedMeeting.getReturncode().equals("SUCCESS")) {
+			this.joinedMeeting = joinedMeeting;
+		} else {
+			log.error(joinedMeeting.getMessage());
+		}
 		
 		return joinedMeeting;
 	}
 
-	private String parseJoinUrl(String joinUrl) throws Exception {
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db = dbf.newDocumentBuilder();
-		// \TODO need to check here!
-		joinUrl = joinUrl.replace("&", "&amp;");
-		log.debug(joinUrl);
-		Document doc = db.parse(new ByteArrayInputStream(joinUrl.getBytes("UTF-8")));
-		doc.getDocumentElement().normalize();
-	
-		NodeList nodeUrl = doc.getElementsByTagName("joinUrl");
-		
-		return nodeUrl.item(0).getFirstChild().getNodeValue().trim();
+	public static String urlEncode(String s) {	
+		try {
+			return URLEncoder.encode(s, "UTF-8");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "";
 	}
 	
 }
