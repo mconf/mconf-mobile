@@ -27,13 +27,12 @@ import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
+import org.mconf.bbb.android.R;
 import org.sipdroid.media.RtpStreamReceiver;
 import org.sipdroid.media.RtpStreamSender;
 import org.sipdroid.net.RtpPacket;
 import org.sipdroid.net.RtpSocket;
 import org.sipdroid.net.SipdroidSocket;
-import org.sipdroid.sipua.R;
-
 import android.content.Context;
 import android.hardware.Camera;
 import android.location.LocationManager;

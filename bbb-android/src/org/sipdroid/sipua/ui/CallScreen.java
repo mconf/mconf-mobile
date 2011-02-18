@@ -3,11 +3,11 @@ package org.sipdroid.sipua.ui;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import org.mconf.bbb.android.R;
 import org.sipdroid.media.RtpStreamReceiver;
 import org.sipdroid.net.RtpPacket;
 import org.sipdroid.net.RtpSocket;
 import org.sipdroid.net.SipdroidSocket;
-import org.sipdroid.sipua.R;
 import org.sipdroid.sipua.UserAgent;
 import org.sipdroid.sipua.ui.InstantAutoCompleteTextView;
 

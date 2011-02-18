@@ -24,10 +24,10 @@ package org.sipdroid.media;
 import java.io.IOException;
 import java.net.SocketException;
 
+import org.mconf.bbb.android.R;
 import org.sipdroid.net.RtpPacket;
 import org.sipdroid.net.RtpSocket;
 import org.sipdroid.net.SipdroidSocket;
-import org.sipdroid.sipua.R;
 import org.sipdroid.sipua.UserAgent;
 import org.sipdroid.sipua.ui.InCallScreen;
 import org.sipdroid.sipua.ui.Receiver;

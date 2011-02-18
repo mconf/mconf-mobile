@@ -22,9 +22,9 @@ package org.sipdroid.sipua.ui;
 
 import java.util.HashMap;
 
+import org.mconf.bbb.android.R;
 import org.sipdroid.media.RtpStreamReceiver;
 import org.sipdroid.media.RtpStreamSender;
-import org.sipdroid.sipua.R;
 import org.sipdroid.sipua.UserAgent;
 import org.sipdroid.sipua.phone.Call;
 import org.sipdroid.sipua.phone.CallCard;

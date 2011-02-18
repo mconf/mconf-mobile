@@ -24,6 +24,7 @@ package org.sipdroid.sipua;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import org.mconf.bbb.android.R;
 import org.sipdroid.net.KeepAliveSip;
 import org.sipdroid.sipua.ui.ChangeAccount;
 import org.sipdroid.sipua.ui.LoopAlarm;
@@ -179,7 +180,7 @@ public class SipdroidEngine implements RegisterAgentListener {
 			return true;
 	}
 
-	private String getContactURL(String username,SipProvider sip_provider) {
+	protected String getContactURL(String username,SipProvider sip_provider) {
 		int i = username.indexOf("@");
 		if (i != -1) {
 			// if the username already contains a @ 

@@ -27,10 +27,10 @@ import android.hardware.Camera;
 
 public class VideoCameraNew2 {
 	static void reconnect(Camera c) {
-		try {
-			c.reconnect();
-		} catch (IOException e) {
-			if (!Sipdroid.release) e.printStackTrace();
-		}
+//		try {
+//			c.reconnect();
+//		} catch (IOException e) {
+//			if (!Sipdroid.release) e.printStackTrace();
+//		}
 	}
 }
