@@ -173,7 +173,7 @@ public class ChatModule extends Module implements ISharedObjectListener {
 	public void sendPublicChatMessage(String message) {
 		ChatMessage chatMessage = new ChatMessage();
 		chatMessage.setMessage(message);
-		chatMessage.setUsername(handler.getContext().getJoinedMeeting().getFullname());
+		chatMessage.setUsername(handler.getContext().getJoinService().getJoinedMeeting().getFullname());
 		chatMessage.setUserId(handler.getContext().getMyUserId());
 
     	Command command = new CommandAmf0("chat.sendMessage", null, chatMessage.encode());
@@ -188,7 +188,7 @@ public class ChatModule extends Module implements ISharedObjectListener {
 	public void sendPrivateChatMessage(String message, int userid) {
 		ChatMessage chatMessage = new ChatMessage();
 		chatMessage.setMessage(message);
-		chatMessage.setUsername(handler.getContext().getJoinedMeeting().getFullname());
+		chatMessage.setUsername(handler.getContext().getJoinService().getJoinedMeeting().getFullname());
 		chatMessage.setUserId(handler.getContext().getMyUserId());
 		
     	Command command = new CommandAmf0("chat.privateMessage", null, chatMessage.encode(), Double.valueOf(handler.getContext().getMyUserId()), Double.valueOf(userid));

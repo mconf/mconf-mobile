@@ -121,7 +121,7 @@ public class MainRtmpConnection extends RtmpConnection {
                 AbstractMessage.pair("capabilities", 15.0),
                 AbstractMessage.pair("videoFunction", 1.0));
 
-        JoinedMeeting meeting = context.getJoinedMeeting();
+        JoinedMeeting meeting = context.getJoinService().getJoinedMeeting();
         Command connect = new CommandAmf0("connect", object, meeting.getFullname(), meeting.getRole(), meeting.getConference(), meeting.getMode(), meeting.getRoom(), meeting.getVoicebridge(), meeting.getRecord().equals("true"), meeting.getExternUserID());
 
         writeCommandExpectingResult(e.getChannel(), connect);

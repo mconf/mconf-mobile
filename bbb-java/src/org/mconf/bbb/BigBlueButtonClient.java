@@ -48,7 +48,6 @@ public class BigBlueButtonClient {
 	private MainRtmpConnection mainConnection;
 
 	private JoinService joinService = new JoinService();
-	private JoinedMeeting joinedMeeting = null;
 	
 	private int myUserId = -1;
 	private ChatModule chatModule = null;
@@ -57,7 +56,6 @@ public class BigBlueButtonClient {
 
 	private Set<IBigBlueButtonClientListener> eventListeners = new LinkedHashSet<IBigBlueButtonClientListener>();
 
-	
 	public void setMyUserId(int myUserId) {
 		this.myUserId = myUserId;
     	log.info("My userID is {}", myUserId);
@@ -109,19 +107,11 @@ public class BigBlueButtonClient {
 		return joinService;
 	}
 
-	public JoinedMeeting getJoinedMeeting() {
-		return joinedMeeting;
-	}
-
-	public void setJoinedMeeting(JoinedMeeting joinedMeeting) {
-		this.joinedMeeting = joinedMeeting;
-	}
-
 	public void connectBigBlueButton() {
 		ClientOptions opt = new ClientOptions();
 		opt.setClientVersionToUse(Utils.fromHex("00000000"));
 		opt.setHost(joinService.getServerUrl().toLowerCase().replace("http://", ""));
-		opt.setAppName("bigbluebutton/" + joinedMeeting.getConference());
+		opt.setAppName("bigbluebutton/" + joinService.getJoinedMeeting().getConference());
 		log.debug(opt.toString());
 		
 		mainConnection = new MainRtmpConnection(opt, this);
@@ -171,14 +161,12 @@ public class BigBlueButtonClient {
 
 	public static void main(String[] args) {
 		BigBlueButtonClient client = new BigBlueButtonClient();
-		client.getJoinService().load();
+		client.getJoinService().load("http://devbbb-mconf.no-ip.org");
 		
-		if (!client.getJoinService().getMeetings().isEmpty()) {
-			client.setJoinedMeeting(client.getJoinService().join("Demo Meeting", "Eclipse", false));
-			if (client.getJoinedMeeting() != null) {
-				client.connectBigBlueButton();
-				log.info("CONNECTED!");
-			}
+		client.getJoinService().join("Demo Meeting", "Eclipse", false);
+		if (client.getJoinService().getJoinedMeeting() != null) {
+			client.connectBigBlueButton();
+			log.info("CONNECTED!");
 		}
 	}
 

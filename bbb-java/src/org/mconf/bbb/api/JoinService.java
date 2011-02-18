@@ -1,22 +1,29 @@
 package org.mconf.bbb.api;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.ByteArrayInputStream;
 import java.util.List;
-import java.util.Properties;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 public class JoinService {
 	private static final Logger log = LoggerFactory.getLogger(JoinService.class);
 
-	private String serverUrl, salt;
-	private BigBlueButtonApi api;
+	private String serverUrl;
 	private Meetings meetings = new Meetings();
+	private JoinedMeeting joinedMeeting = null;
+	
+	public JoinedMeeting getJoinedMeeting() {
+		return joinedMeeting;
+	}
 
 	public List<Meeting> getMeetings() {
 		return meetings.getMeetings();
@@ -26,41 +33,21 @@ public class JoinService {
 		return serverUrl;
 	}
 
-	public void setServerUrl(String serverUrl) {
+	public boolean load(String serverUrl) {
 		this.serverUrl = serverUrl;
-	}
-
-	public String getSalt() {
-		return salt;
-	}
-
-	public void setSalt(String salt) {
-		this.salt = salt;
-	}
-
-	public boolean load() {
-		return load("bigbluebutton.properties");
-	}
-	
-	public boolean load(String filepath) {
-		Properties p = new Properties();
+		
+		String getMeetingsUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?action=getMeetings";
+		String strMeetings = null;
 		try {
-			p.load(new BufferedReader(new FileReader(filepath)));
+			HttpClient client = new HttpClient();
+			HttpMethod method = new GetMethod(getMeetingsUrl);
+			client.executeMethod(method);
+			strMeetings = method.getResponseBodyAsString().trim();
+			method.releaseConnection();
 		} catch (Exception e) {
 			e.printStackTrace();
-			log.error("Can't find/load the properties file");
-			return false;
 		}
 		
-		return load(p.getProperty("bigbluebutton.web.serverURL"), p.getProperty("beans.dynamicConferenceService.securitySalt"));
-	}
-
-	public boolean load(String serverUrl, String salt) {
-		this.serverUrl = serverUrl;
-		this.salt = salt;
-		this.api = new BigBlueButtonApi(serverUrl + "/bigbluebutton/", salt);
-		
-		String strMeetings = api.getMeetings();
 		if (strMeetings == null) {
 			log.info("Can't connect to {}", serverUrl);
 			return false;
@@ -82,38 +69,47 @@ public class JoinService {
 		return null;
 	}
 	
-	public boolean createMeeting(Meeting meeting) {
-		String create = api.createMeeting(meeting.getMeetingID(), 
-				"Welcome message", 
-				meeting.getModeratorPW(), 
-				meeting.getAttendeePW(), 
-				0, 
-				serverUrl);
-		log.debug("createMeeting: {}", create);
-		return create.equals(meeting.getMeetingID()); 
-	}
+//	public boolean createMeeting(Meeting meeting) {
+//		String create = api.createMeeting(meeting.getMeetingID(), 
+//				"Welcome message", 
+//				meeting.getModeratorPW(), 
+//				meeting.getAttendeePW(), 
+//				0, 
+//				serverUrl);
+//		log.debug("createMeeting: {}", create);
+//		return create.equals(meeting.getMeetingID()); 
+//	}
 	
 	public JoinedMeeting join(Meeting meeting, String name, boolean moderator) {
-		if (api.isMeetingRunning(meeting.getMeetingID()).equals("false")) {
-			if (!createMeeting(meeting)) {
-				log.error("The meeting {} is not running", meeting.getMeetingID());
-				return null;
-			}
-		}
+//		if (api.isMeetingRunning(meeting.getMeetingID()).equals("false")) {
+//			if (!createMeeting(meeting)) {
+//				log.error("The meeting {} is not running", meeting.getMeetingID());
+//				return null;
+//			}
+//		}
 		
-		String joinUrl = api.getJoinMeetingURL(name, meeting.getMeetingID(), moderator? meeting.getModeratorPW() : meeting.getAttendeePW());
+		String joinUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?action=join"
+			+ "&meetingID=" + meeting.getMeetingID()
+			+ "&fullName=" + name
+			+ "&password=" + (moderator? meeting.getModeratorPW(): meeting.getAttendeePW());
+		joinUrl = joinUrl.replace(" ", "+");
 		log.debug(joinUrl);
 		
-		JoinedMeeting joined = new JoinedMeeting();
+		JoinedMeeting joinedMeeting = new JoinedMeeting();
 		try {
 			HttpClient client = new HttpClient();
 			HttpMethod method = new GetMethod(joinUrl);
+			client.executeMethod(method);
+			joinUrl = method.getResponseBodyAsString().trim();
+			method.releaseConnection();
+			
+			method = new GetMethod(parseJoinUrl(joinUrl));
 			client.executeMethod(method);
 			method.releaseConnection();
 			
 			method = new GetMethod(serverUrl + "/bigbluebutton/api/enter");
 			client.executeMethod(method);
-			joined.parse(method.getResponseBodyAsString());
+			joinedMeeting.parse(method.getResponseBodyAsString());
 			method.releaseConnection();
 
 		} catch (Exception e) {
@@ -123,7 +119,23 @@ public class JoinService {
 			return null;
 		}
 		
-		return joined;
-	}
+		this.joinedMeeting = joinedMeeting;
 		
+		return joinedMeeting;
+	}
+
+	private String parseJoinUrl(String joinUrl) throws Exception {
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		// \TODO need to check here!
+		joinUrl = joinUrl.replace("&", "&amp;");
+		log.debug(joinUrl);
+		Document doc = db.parse(new ByteArrayInputStream(joinUrl.getBytes("UTF-8")));
+		doc.getDocumentElement().normalize();
+	
+		NodeList nodeUrl = doc.getElementsByTagName("joinUrl");
+		
+		return nodeUrl.item(0).getFirstChild().getNodeValue().trim();
+	}
+	
 }

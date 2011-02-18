@@ -151,8 +151,8 @@ public class LoginPage extends Activity {
                 		return;
                 	}
                 	
-               		Client.bbb.setJoinedMeeting(Client.bbb.getJoinService().join((String) spinner.getSelectedItem(), username, moderator));
-               		if (Client.bbb.getJoinedMeeting() == null) {
+               		Client.bbb.getJoinService().join((String) spinner.getSelectedItem(), username, moderator);
+               		if (Client.bbb.getJoinService().getJoinedMeeting() == null) {
 	                	Toast.makeText(getApplicationContext(), "Can't join the meeting", Toast.LENGTH_SHORT).show();
 	                	return;
 	                } else
@@ -193,25 +193,25 @@ public class LoginPage extends Activity {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-		        Resources resources = getApplicationContext().getResources();
-		        AssetManager assetManager = resources.getAssets();
-
-				Properties p = new Properties();
-				try {
-					p.load(assetManager.open("bigbluebutton.properties"));
-				} catch (Exception e) {
-		        	progressDialog.dismiss();
-		        	runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							Toast.makeText(getApplicationContext(), "Can't find the properties file", Toast.LENGTH_SHORT).show();							
-						}
-					});
-					log.error("Can't find the properties file");
-					return;
-				}
-					        
-		        if (!Client.bbb.getJoinService().load(p.getProperty("bigbluebutton.web.serverURL"), p.getProperty("beans.dynamicConferenceService.securitySalt"))) {
+//		        Resources resources = getApplicationContext().getResources();
+//		        AssetManager assetManager = resources.getAssets();
+//
+//				Properties p = new Properties();
+//				try {
+//					p.load(assetManager.open("bigbluebutton.properties"));
+//				} catch (Exception e) {
+//		        	progressDialog.dismiss();
+//		        	runOnUiThread(new Runnable() {
+//						@Override
+//						public void run() {
+//							Toast.makeText(getApplicationContext(), "Can't find the properties file", Toast.LENGTH_SHORT).show();							
+//						}
+//					});
+//					log.error("Can't find the properties file");
+//					return;
+//				}
+//					        
+		        if (!Client.bbb.getJoinService().load("http://devbbb-mconf.no-ip.org")) {
 		        	progressDialog.dismiss();
 		        	runOnUiThread(new Runnable() {
 						@Override
