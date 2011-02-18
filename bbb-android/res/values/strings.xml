@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, BBBandroid!</string>
-    <string name="app_name">BigBlueButton</string>
-    <string name="login_welcome">Welcome to MConf</string>
-    <string name="login_name">Name:</string>
-    <string name="login_button_join">Join</string>
-    <string name="send_message">Send</string>
-    <string name="cancel_button">Cancel</string>
-    <string name="list_participants">List of participants</string>
-    <string name="public_chat">Public chat</string>
-     <string name="meeting">Meeting:</string>
+	<string name="hello">Hello World, BBBandroid!</string>
+	<string name="app_name">BigBlueButton</string>
+	<string name="login_welcome">Welcome to MConf</string>
+	<string name="login_name">Name:</string>
+	<string name="login_button_join">Join</string>
+	<string name="send_message">Send</string>
+	<string name="cancel_button">Cancel</string>
+	<string name="list_participants">List of participants</string>
+	<string name="public_chat">Public chat</string>
+	<string name="meeting">Meeting:</string>
+	<string name="choose_server">Choose a server to connect:</string>
+	<string name="connect">Connect</string>
+	<string name="type_server">Or type a server URL:</string>
     
 </resources>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/relativeLayout1"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:background="@color/background">
+	<TextView android:id="@+id/choose_server" android:layout_height="wrap_content"
+		android:layout_width="fill_parent" android:layout_alignParentRight="true"
+		android:layout_alignParentLeft="true" android:layout_alignParentTop="true"
+		android:text="@string/choose_server" android:textColor="@color/text_color"
+		android:gravity="center"></TextView>
+	<ListView android:layout_height="fill_parent"
+		android:layout_above="@+id/bottom_bar" android:layout_below="@+id/choose_server"
+		android:layout_alignLeft="@+id/choose_server" android:dividerHeight="2dp"
+		android:id="@+id/servers" android:layout_width="wrap_content"
+		android:divider="@color/title_background_onfocus"
+		android:stackFromBottom="true" 
+		android:transcriptMode="alwaysScroll"
+		/>
+
+
+	<RelativeLayout android:id="@+id/bottom_bar"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:background="@color/title_background_onfocus"
+		android:layout_alignParentBottom="true">
+		<TextView android:id="@+id/type_server"
+			android:layout_height="wrap_content" android:layout_width="fill_parent"
+			android:layout_alignParentRight="true" android:gravity="center"
+			android:layout_alignParentLeft="true" android:layout_alignParentTop="true"
+			android:text="@string/type_server" android:textColor="@color/text_color"></TextView>
+
+		<EditText android:layout_height="wrap_content"
+			android:layout_width="fill_parent" android:id="@+id/serverURL"
+			android:layout_marginLeft="5dp" android:layout_marginRight="5dp"
+			android:layout_marginTop="5dp" android:layout_toLeftOf="@+id/connect"
+			android:layout_below="@+id/type_server"
+			android:singleLine="true" />
+
+		<Button android:layout_below="@+id/type_server"
+		android:layout_height="wrap_content" android:text="@string/connect"
+			android:layout_width="wrap_content" android:id="@+id/connect"
+			android:layout_alignParentRight="true" android:layout_marginRight="5dp"
+			android:layout_marginTop="5dp" />
+
+	</RelativeLayout>
+</RelativeLayout>

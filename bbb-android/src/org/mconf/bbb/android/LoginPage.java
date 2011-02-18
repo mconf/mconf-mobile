@@ -55,6 +55,7 @@ public class LoginPage extends Activity {
 	private boolean moderator;
 //	private static final String labelCreateMeeting = "== Create a new meeting ==";
 	private String username;
+	private String serverURL;
 	
     /** Called when the activity is first created. */
     @Override
@@ -63,6 +64,7 @@ public class LoginPage extends Activity {
         setContentView(R.layout.login);
         
         Bundle extras = getIntent().getExtras();
+        serverURL=extras.getString("serverURL");
         if (extras == null || extras.getString("username") == null)
         	username = "Android";
         else
@@ -211,7 +213,7 @@ public class LoginPage extends Activity {
 //					return;
 //				}
 //					        
-		        if (!Client.bbb.getJoinService().load("http://devbbb-mconf.no-ip.org")) {
+		        if (!Client.bbb.getJoinService().load(serverURL)) {
 		        	progressDialog.dismiss();
 		        	runOnUiThread(new Runnable() {
 						@Override
