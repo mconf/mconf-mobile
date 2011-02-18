@@ -34,7 +34,7 @@ public class Contact extends Participant {
 
 	public Contact(IParticipant partic) {
 		this.setName(partic.getName());
-		this.setStatus(partic.getStatus());
+		this.setStatus(partic.getStatus().clone());
 		this.setRole(partic.getRole());
 		this.setUserId(partic.getUserId());
 	}

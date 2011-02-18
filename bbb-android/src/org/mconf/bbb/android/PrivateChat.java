@@ -260,7 +260,7 @@ public class PrivateChat extends Activity{
 		else
 			p.setNotified(false);
 		
-		if(p.isNotified()) //se há uma notificação
+		if(p.isNotified()) //se hï¿½ uma notificaï¿½ï¿½o
 		{
 			List<ChatMessage> messages = Client.bbb.getChatModule().getPrivateChatMessage().get(userId);
 			if (messages != null)
@@ -399,25 +399,23 @@ public class PrivateChat extends Activity{
 					if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
 						return false;
 					// right to left swipe
-					int viewID;
 					if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-						flipper.setInAnimation(LeftIn);
-						flipper.setOutAnimation(LeftOut);
+//						flipper.setInAnimation(LeftIn);
+//						flipper.setOutAnimation(LeftOut);
 						flipper.showNext();
-						viewID =flipper.getDisplayedChild();
-
-						setTitle("Private chat with "+getParticipantByViewId(viewID).getUsername());
-
-
 					}  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-						flipper.setInAnimation(RightIn);
-						flipper.setOutAnimation(RightOut);
+//						flipper.setInAnimation(RightIn);
+//						flipper.setOutAnimation(RightOut);
 						flipper.showPrevious();
-						viewID =flipper.getDisplayedChild();
-						setTitle("Private chat with " +getParticipantByViewId(viewID).getUsername());
-
-
-					}
+					} else
+						return false;
+					
+					int viewId = flipper.getDisplayedChild();
+					setTitle("Private chat with " +getParticipantByViewId(viewId).getUsername());
+					
+					ListView chatListView = (ListView) flipper.getChildAt(viewId).findViewById(R.id.messages);
+					chatListView.setSelection(chatListView.getCount());
+					
 					return true;
 				} catch (Exception e) {
 					// nothing

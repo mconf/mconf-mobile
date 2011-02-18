@@ -27,6 +27,8 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.mconf.bbb.users.IParticipant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -38,6 +40,7 @@ import android.widget.TextView;
 
 
 public class ContactAdapter extends BaseAdapter {
+	private static final Logger log = LoggerFactory.getLogger(ContactAdapter.class);
 	private Context context;
 	View view;
 
@@ -53,11 +56,9 @@ public class ContactAdapter extends BaseAdapter {
     }
     
     public void removeSection(IParticipant participant){
-    	for (IParticipant c : listContact)
-    		if (participant.getUserId() == c.getUserId()) {
-    			listContact.remove(c);
-    			break;
-    		}    			
+    	Contact contact = getUserById(participant.getUserId());
+    	if (contact != null)
+    		listContact.remove(contact);
     }
     
     public void setPresenterStatus(Contact changedStatus)
