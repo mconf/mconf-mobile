@@ -88,6 +88,7 @@ include $(BUILD_SHARED_LIBRARY)
 
 SILK     := silk
 LOCAL_MODULE    := silkcommon
+LOCAL_MODULE_FILENAME   := silkcommon
 LOCAL_SRC_FILES :=  $(SILK)/src/SKP_Silk_A2NLSF.c \
 	$(SILK)/src/SKP_Silk_CNG.c \
 	$(SILK)/src/SKP_Silk_HP_variable_cutoff_FIX.c \
