@@ -1,0 +1,766 @@
+D/AndroidRuntime(  400): >>>>>>>>>>>>>> AndroidRuntime START <<<<<<<<<<<<<<
+D/AndroidRuntime(  400): CheckJNI is ON
+D/AndroidRuntime(  400): --- registering native functions ---
+D/ddm-heap(  400): Got feature list request
+I/ActivityManager(   52): Starting activity: Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 cmp=org.mconf.bbb.android/org.sipdroid.sipua.ui.Sipdroid }
+D/AndroidRuntime(  400): Shutting down VM
+D/dalvikvm(  400): DestroyJavaVM waiting for non-daemon threads to exit
+D/dalvikvm(  400): DestroyJavaVM shutting VM down
+D/dalvikvm(  400): HeapWorker thread shutting down
+D/dalvikvm(  400): HeapWorker thread has shut down
+D/jdwp    (  400): JDWP shutting down net...
+I/dalvikvm(  400): Debugger has detached; object registry had 1 entries
+D/dalvikvm(  400): VM cleaning up
+D/dalvikvm(  400): LinearAlloc 0x0 used 639500 of 5242880 (12%)
+E/AndroidRuntime(  400): ERROR: thread attach failed
+I/ARMAssembler(   52): generated scanline__00000077:03010104_00000004_00000000 [ 22 ipp] (41 ins) at [0x455830:0x4558d4] in 2821553 ns
+D/sipdroid(  401): TransactionClient#0: id: 636847155399@10.0.2.15-1-REGISTER-null-z9hG4bK01975
+D/sipdroid(  401): TransactionClient#0: created
+D/sipdroid(  401): TransactionClient#0: start
+D/sipdroid(  401): TransactionClient#0: changed transaction state: T_Trying
+D/dalvikvm(  401): GC freed 4457 objects / 295632 bytes in 55ms
+D/sipdroid(  401): 17:56:05.565 Mon 21 Feb 2011, 143.54.85.37:5060/udp (403 bytes): sent
+D/sipdroid(  401): REGISTER sip:devbbb-mconf.no-ip.org SIP/2.0
+D/sipdroid(  401): Via: SIP/2.0/UDP 10.0.2.15:53958;rport;branch=z9hG4bK01975
+D/sipdroid(  401): Max-Forwards: 70
+D/sipdroid(  401): To: <sip:emulador@devbbb-mconf.no-ip.org>
+D/sipdroid(  401): From: <sip:emulador@devbbb-mconf.no-ip.org>;tag=z9hG4bK72773351
+D/sipdroid(  401): Call-ID: 636847155399@10.0.2.15
+D/sipdroid(  401): CSeq: 1 REGISTER
+D/sipdroid(  401): Contact: <sip:emulador@10.0.2.15:53958;transport=udp>
+D/sipdroid(  401): Expires: 3600
+D/sipdroid(  401): User-Agent: Sipdroid/0.1/sdk
+D/sipdroid(  401): Content-Length: 0
+D/sipdroid(  401): 
+D/sipdroid(  401): -----End-of-message-----
+D/sipdroid(  401): 
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:05.628 Mon 21 Feb 2011, 143.54.85.37:5060/udp (610 bytes): received
+D/sipdroid(  401): SIP/2.0 401 Unauthorized
+D/sipdroid(  401): Via: SIP/2.0/UDP 143.54.132.71:53958;rport=59069;branch=z9hG4bK01975
+D/sipdroid(  401): From: <sip:emulador@devbbb-mconf.no-ip.org>;tag=z9hG4bK72773351
+D/sipdroid(  401): To: <sip:emulador@devbbb-mconf.no-ip.org>;tag=5XZp0D82eeKBB
+D/sipdroid(  401): Call-ID: 636847155399@10.0.2.15
+D/sipdroid(  401): CSeq: 1 REGISTER
+D/sipdroid(  401): User-Agent: FreeSWITCH-mod_sofia/1.0.head-git-
+D/sipdroid(  401): Allow: INVITE, ACK, BYE, CANCEL, OPTIONS, MESSAGE, UPDATE, INFO, REGISTER, REFER, NOTIFY
+D/sipdroid(  401): Supported: timer, precondition, path, replaces
+D/sipdroid(  401): WWW-Authenticate: Digest realm="devbbb-mconf.no-ip.org", nonce="387c3a1d-1f5f-4fdd-a276-642be056e0a4", algorithm=MD5, qop="auth"
+D/sipdroid(  401): Content-Length: 0
+D/sipdroid(  401): 
+D/sipdroid(  401): -----End-of-message-----
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:05.636 Mon 21 Feb 2011, 143.54.85.37:5060/udp (403 bytes): REGISTER sip:devbbb-mconf.no-ip.org SIP/2.0, sent
+D/sipdroid(  401): 
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:05.643 Mon 21 Feb 2011, 143.54.85.37:5060/udp (610 bytes): SIP/2.0 401 Unauthorized, received
+D/sipdroid(  401): 
+D/sipdroid(  401): TransactionClient#0: changed transaction state: T_Completed
+D/sipdroid(  401): ExtendedInviteDialog#0: changed dialog state: 0
+D/sipdroid(  401): ExtendedInviteDialog#0: changed dialog state: 1
+D/sipdroid(  401): TransactionServer#1: id: INVITE
+D/sipdroid(  401): TransactionServer#1: created
+D/sipdroid(  401): TransactionServer#1: start
+D/sipdroid(  401): TransactionServer#1: changed transaction state: T_Waiting
+D/sipdroid(  401): ExtendedInviteDialog#1: changed dialog state: 0
+D/sipdroid(  401): ExtendedInviteDialog#1: changed dialog state: 1
+D/sipdroid(  401): TransactionServer#2: id: INVITE
+D/sipdroid(  401): TransactionServer#2: created
+D/sipdroid(  401): TransactionServer#2: start
+D/sipdroid(  401): TransactionServer#2: changed transaction state: T_Waiting
+D/sipdroid(  401): TransactionClient#3: id: 636847155399@10.0.2.15-2-REGISTER-null-z9hG4bK33792
+D/sipdroid(  401): TransactionClient#3: created
+D/sipdroid(  401): TransactionClient#3: start
+D/sipdroid(  401): TransactionClient#3: changed transaction state: T_Trying
+D/sipdroid(  401): 17:56:06.175 Mon 21 Feb 2011, 143.54.85.37:5060/udp (668 bytes): sent
+D/sipdroid(  401): REGISTER sip:devbbb-mconf.no-ip.org SIP/2.0
+D/sipdroid(  401): Via: SIP/2.0/UDP 10.0.2.15:53958;rport;branch=z9hG4bK33792
+D/sipdroid(  401): Max-Forwards: 70
+D/sipdroid(  401): To: <sip:emulador@devbbb-mconf.no-ip.org>
+D/sipdroid(  401): From: <sip:emulador@devbbb-mconf.no-ip.org>;tag=z9hG4bK72773351
+D/sipdroid(  401): Call-ID: 636847155399@10.0.2.15
+D/sipdroid(  401): CSeq: 2 REGISTER
+D/sipdroid(  401): Contact: <sip:emulador@10.0.2.15:53958;transport=udp>
+D/sipdroid(  401): Expires: 3600
+D/sipdroid(  401): User-Agent: Sipdroid/0.1/sdk
+D/sipdroid(  401): Authorization: Digest username="emulador", realm="devbbb-mconf.no-ip.org", nonce="387c3a1d-1f5f-4fdd-a276-642be056e0a4", uri="sip:devbbb-mconf.no-ip.org", algorithm=MD5, qop=auth, nc=00000001, cnonce="846a7741747b061f", response="67e4968d34ba4c6f9ff11b167995c156"
+D/sipdroid(  401): Content-Length: 0
+D/sipdroid(  401): 
+D/sipdroid(  401): -----End-of-message-----
+D/sipdroid(  401): 
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:06.200 Mon 21 Feb 2011, 143.54.85.37:5060/udp (668 bytes): REGISTER sip:devbbb-mconf.no-ip.org SIP/2.0, sent
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:06.232 Mon 21 Feb 2011, 143.54.85.37:5060/udp (477 bytes): received
+D/sipdroid(  401): SIP/2.0 403 Forbidden
+D/sipdroid(  401): Via: SIP/2.0/UDP 143.54.132.71:53958;rport=59069;branch=z9hG4bK33792
+D/sipdroid(  401): From: <sip:emulador@devbbb-mconf.no-ip.org>;tag=z9hG4bK72773351
+D/sipdroid(  401): To: <sip:emulador@devbbb-mconf.no-ip.org>;tag=66rF28r6BQ9Xp
+D/sipdroid(  401): Call-ID: 636847155399@10.0.2.15
+D/sipdroid(  401): CSeq: 2 REGISTER
+D/sipdroid(  401): User-Agent: FreeSWITCH-mod_sofia/1.0.head-git-
+D/sipdroid(  401): Allow: INVITE, ACK, BYE, CANCEL, OPTIONS, MESSAGE, UPDATE, INFO, REGISTER, REFER, NOTIFY
+D/sipdroid(  401): Supported: timer, precondition, path, replaces
+D/sipdroid(  401): Content-Length: 0
+D/sipdroid(  401): 
+D/sipdroid(  401): -----End-of-message-----
+D/sipdroid(  401): 
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:06.258 Mon 21 Feb 2011, 143.54.85.37:5060/udp (477 bytes): SIP/2.0 403 Forbidden, received
+D/sipdroid(  401): 
+D/sipdroid(  401): TransactionClient#3: changed transaction state: T_Completed
+I/ActivityManager(   52): Displayed activity org.mconf.bbb.android/org.sipdroid.sipua.ui.Sipdroid: 1375 ms (total 1375 ms)
+D/sipdroid(  401): TransactionClient#0: Clearing timeout expired
+D/sipdroid(  401): TransactionClient#0: changed transaction state: T_Terminated
+D/dalvikvm(  197): GC freed 1523 objects / 92672 bytes in 80ms
+D/sipdroid(  401): TransactionClient#3: Clearing timeout expired
+D/sipdroid(  401): TransactionClient#3: changed transaction state: T_Terminated
+D/dalvikvm(  225): GC freed 519 objects / 45344 bytes in 85ms
+D/dalvikvm(   92): GC freed 222 objects / 16056 bytes in 56ms
+D/sipdroid(  401): ExtendedInviteDialog#0: inside refuse()
+D/sipdroid(  401): ExtendedInviteDialog#0: inside refuse(403,Forbidden)
+D/sipdroid(  401): ExtendedInviteDialog#0: inside respond(403,Forbidden)
+D/sipdroid(  401): ExtendedInviteDialog#0: WARNING: Dialog isn't in "invited" state: cannot respond (403/1/null)
+D/sipdroid(  401): ExtendedInviteDialog#0: inside cancel()
+D/sipdroid(  401): TransactionServer#1: changed transaction state: T_Terminated
+D/sipdroid(  401): ExtendedInviteDialog#0: inside bye()
+D/sipdroid(  401): TransactionClient#4: id: 308116009631@10.0.2.15-1-REGISTER-null-z9hG4bK19576
+D/sipdroid(  401): TransactionClient#4: created
+D/sipdroid(  401): TransactionClient#4: start
+D/sipdroid(  401): TransactionClient#4: changed transaction state: T_Trying
+D/dalvikvm(  401): GC freed 7412 objects / 486304 bytes in 55ms
+D/sipdroid(  401): 17:56:36.612 Mon 21 Feb 2011, 143.54.85.37:5060/udp (610 bytes): received
+D/sipdroid(  401): SIP/2.0 401 Unauthorized
+D/sipdroid(  401): Via: SIP/2.0/UDP 143.54.132.71:53958;rport=59069;branch=z9hG4bK19576
+D/sipdroid(  401): From: <sip:emulador@devbbb-mconf.no-ip.org>;tag=z9hG4bK07469564
+D/sipdroid(  401): To: <sip:emulador@devbbb-mconf.no-ip.org>;tag=7Fj833998ZZgj
+D/sipdroid(  401): Call-ID: 308116009631@10.0.2.15
+D/sipdroid(  401): CSeq: 1 REGISTER
+D/sipdroid(  401): User-Agent: FreeSWITCH-mod_sofia/1.0.head-git-
+D/sipdroid(  401): Allow: INVITE, ACK, BYE, CANCEL, OPTIONS, MESSAGE, UPDATE, INFO, REGISTER, REFER, NOTIFY
+D/sipdroid(  401): Supported: timer, precondition, path, replaces
+D/sipdroid(  401): WWW-Authenticate: Digest realm="devbbb-mconf.no-ip.org", nonce="e2b2a36a-fb29-4f1f-8151-306458cd523b", algorithm=MD5, qop="auth"
+D/sipdroid(  401): Content-Length: 0
+D/sipdroid(  401): 
+D/sipdroid(  401): -----End-of-message-----
+D/sipdroid(  401): 
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:36.618 Mon 21 Feb 2011, 143.54.85.37:5060/udp (610 bytes): SIP/2.0 401 Unauthorized, received
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:36.628 Mon 21 Feb 2011, 143.54.85.37:5060/udp (403 bytes): sent
+D/sipdroid(  401): REGISTER sip:devbbb-mconf.no-ip.org SIP/2.0
+D/sipdroid(  401): Via: SIP/2.0/UDP 10.0.2.15:53958;rport;branch=z9hG4bK19576
+D/sipdroid(  401): Max-Forwards: 70
+D/sipdroid(  401): To: <sip:emulador@devbbb-mconf.no-ip.org>
+D/sipdroid(  401): From: <sip:emulador@devbbb-mconf.no-ip.org>;tag=z9hG4bK07469564
+D/sipdroid(  401): Call-ID: 308116009631@10.0.2.15
+D/sipdroid(  401): CSeq: 1 REGISTER
+D/sipdroid(  401): Contact: <sip:emulador@10.0.2.15:53958;transport=udp>
+D/sipdroid(  401): Expires: 3600
+D/sipdroid(  401): User-Agent: Sipdroid/0.1/sdk
+D/sipdroid(  401): Content-Length: 0
+D/sipdroid(  401): 
+D/sipdroid(  401): -----End-of-message-----
+D/sipdroid(  401): 
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:36.638 Mon 21 Feb 2011, 143.54.85.37:5060/udp (403 bytes): REGISTER sip:devbbb-mconf.no-ip.org SIP/2.0, sent
+D/sipdroid(  401): 
+D/sipdroid(  401): TransactionClient#4: changed transaction state: T_Completed
+I/ActivityManager(   52): Starting activity: Intent { flg=0x10000000 cmp=org.mconf.bbb.android/org.sipdroid.sipua.ui.Activity2 }
+D/LocationManager(  401): Constructor: service = android.location.ILocationManager$Stub$Proxy@44dcc0e8
+D/LocationManager(  401): removeUpdates: intent = PendingIntent{44e126d0: android.os.BinderProxy@44e0d490}
+D/dalvikvm(  401): GC freed 2235 objects / 134104 bytes in 106ms
+I/dalvikvm-heap(  401): Grow heap (frag case) to 3.839MB for 65552-byte allocation
+D/dalvikvm(  401): GC freed 14 objects / 448 bytes in 58ms
+D/sipdroid(  401): TransactionClient#5: id: 308116009631@10.0.2.15-2-REGISTER-null-z9hG4bK15471
+D/sipdroid(  401): TransactionClient#5: created
+D/sipdroid(  401): TransactionClient#5: start
+D/sipdroid(  401): TransactionClient#5: changed transaction state: T_Trying
+D/sipdroid(  401): 17:56:37.214 Mon 21 Feb 2011, 143.54.85.37:5060/udp (668 bytes): sent
+D/sipdroid(  401): REGISTER sip:devbbb-mconf.no-ip.org SIP/2.0
+D/sipdroid(  401): Via: SIP/2.0/UDP 10.0.2.15:53958;rport;branch=z9hG4bK15471
+D/sipdroid(  401): Max-Forwards: 70
+D/sipdroid(  401): To: <sip:emulador@devbbb-mconf.no-ip.org>
+D/sipdroid(  401): From: <sip:emulador@devbbb-mconf.no-ip.org>;tag=z9hG4bK07469564
+D/sipdroid(  401): Call-ID: 308116009631@10.0.2.15
+D/sipdroid(  401): CSeq: 2 REGISTER
+D/sipdroid(  401): Contact: <sip:emulador@10.0.2.15:53958;transport=udp>
+D/sipdroid(  401): Expires: 3600
+D/sipdroid(  401): User-Agent: Sipdroid/0.1/sdk
+D/sipdroid(  401): Authorization: Digest username="emulador", realm="devbbb-mconf.no-ip.org", nonce="e2b2a36a-fb29-4f1f-8151-306458cd523b", uri="sip:devbbb-mconf.no-ip.org", algorithm=MD5, qop=auth, nc=00000001, cnonce="78cd36a50b428ccd", response="540a849ff5657e504abea6c18238bf9a"
+D/sipdroid(  401): Content-Length: 0
+D/sipdroid(  401): 
+D/sipdroid(  401): -----End-of-message-----
+D/sipdroid(  401): 
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:37.222 Mon 21 Feb 2011, 143.54.85.37:5060/udp (668 bytes): REGISTER sip:devbbb-mconf.no-ip.org SIP/2.0, sent
+D/sipdroid(  401): 
+W/ActivityManager(   52): Activity pause timeout for HistoryRecord{44daaa18 org.mconf.bbb.android/org.sipdroid.sipua.ui.Sipdroid}
+D/sipdroid(  401): 17:56:37.254 Mon 21 Feb 2011, 143.54.85.37:5060/udp (477 bytes): received
+D/sipdroid(  401): SIP/2.0 403 Forbidden
+D/sipdroid(  401): Via: SIP/2.0/UDP 143.54.132.71:53958;rport=59069;branch=z9hG4bK15471
+D/sipdroid(  401): From: <sip:emulador@devbbb-mconf.no-ip.org>;tag=z9hG4bK07469564
+D/sipdroid(  401): To: <sip:emulador@devbbb-mconf.no-ip.org>;tag=8rB15ytD68N3D
+D/sipdroid(  401): Call-ID: 308116009631@10.0.2.15
+D/sipdroid(  401): CSeq: 2 REGISTER
+D/sipdroid(  401): User-Agent: FreeSWITCH-mod_sofia/1.0.head-git-
+D/sipdroid(  401): Allow: INVITE, ACK, BYE, CANCEL, OPTIONS, MESSAGE, UPDATE, INFO, REGISTER, REFER, NOTIFY
+D/sipdroid(  401): Supported: timer, precondition, path, replaces
+D/sipdroid(  401): Content-Length: 0
+D/sipdroid(  401): 
+D/sipdroid(  401): -----End-of-message-----
+D/sipdroid(  401): 
+D/sipdroid(  401): ExtendedCall: calling <sip:79816@devbbb-mconf.no-ip.org>
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:37.284 Mon 21 Feb 2011, 143.54.85.37:5060/udp (477 bytes): SIP/2.0 403 Forbidden, received
+D/sipdroid(  401): 
+D/sipdroid(  401): ExtendedInviteDialog#2: changed dialog state: 0
+D/sipdroid(  401): ExtendedInviteDialog#2: inside invite(callee,caller,contact,sdp)
+D/sipdroid(  401): TransactionClient#5: changed transaction state: T_Completed
+I/global  (  401): Default buffer size used in BufferedReader constructor. It would be better to be explicit if an 8k-char buffer is required.
+D/sipdroid(  401): ExtendedInviteDialog#2: inside invite(invite)
+D/sipdroid(  401): ExtendedInviteDialog#2: changed dialog state: 2
+D/sipdroid(  401): ExtendedInviteDialog#2: new dialog id: 517027619196@10.0.2.15-z9hG4bK43781742-null
+D/sipdroid(  401): TransactionClient#6: id: 517027619196@10.0.2.15-1-INVITE-null-z9hG4bK98388
+D/sipdroid(  401): TransactionClient#6: created
+D/sipdroid(  401): TransactionClient#6: start
+D/sipdroid(  401): TransactionClient#6: changed transaction state: T_Trying
+D/sipdroid(  401): 17:56:37.761 Mon 21 Feb 2011, 143.54.85.37:5060/udp (828 bytes): sent
+D/sipdroid(  401): INVITE sip:79816@devbbb-mconf.no-ip.org SIP/2.0
+D/sipdroid(  401): Via: SIP/2.0/UDP 10.0.2.15:53958;rport;branch=z9hG4bK98388
+D/sipdroid(  401): Max-Forwards: 70
+D/sipdroid(  401): To: <sip:79816@devbbb-mconf.no-ip.org>
+D/sipdroid(  401): From: <sip:emulador@devbbb-mconf.no-ip.org>;tag=z9hG4bK43781742
+D/sipdroid(  401): Call-ID: 517027619196@10.0.2.15
+D/sipdroid(  401): CSeq: 1 INVITE
+D/sipdroid(  401): Contact: <sip:emulador@10.0.2.15:53958;transport=udp>
+D/sipdroid(  401): Expires: 3600
+D/sipdroid(  401): User-Agent: Sipdroid/0.1/sdk
+D/sipdroid(  401): Content-Length: 393
+D/sipdroid(  401): Content-Type: application/sdp
+D/sipdroid(  401): 
+D/sipdroid(  401): v=0
+D/sipdroid(  401): o=emulador@devbbb-mconf.no-ip.org 0 0 IN IP4 10.0.2.15
+D/sipdroid(  401): s=Session SIP/SDP
+D/sipdroid(  401): c=IN IP4 10.0.2.15
+D/sipdroid(  401): t=0 0
+D/sipdroid(  401): m=audio 21000 RTP/AVP 9 8 0 97 3 106 101
+D/sipdroid(  401): a=rtpmap:9 G722/8000
+D/sipdroid(  401): a=rtpmap:8 PCMA/8000
+D/sipdroid(  401): a=rtpmap:0 PCMU/8000
+D/sipdroid(  401): a=rtpmap:97 speex/8000
+D/sipdroid(  401): a=rtpmap:3 GSM/8000
+D/sipdroid(  401): a=rtpmap:106 BV16/8000
+D/sipdroid(  401): a=rtpmap:101 telephone-event/8000
+D/sipdroid(  401): a=fmtp:101 0-15
+D/sipdroid(  401): m=video 21070 RTP/AVP 103
+D/sipdroid(  401): a=rtpmap:103 h263-1998/90000
+D/sipdroid(  401): -----End-of-message-----
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:37.768 Mon 21 Feb 2011, 143.54.85.37:5060/udp (313 bytes): received
+D/sipdroid(  401): SIP/2.0 100 Trying
+D/sipdroid(  401): Via: SIP/2.0/UDP 143.54.132.71:53958;rport=59069;branch=z9hG4bK98388
+D/sipdroid(  401): From: <sip:emulador@devbbb-mconf.no-ip.org>;tag=z9hG4bK43781742
+D/sipdroid(  401): To: <sip:79816@devbbb-mconf.no-ip.org>
+D/sipdroid(  401): Call-ID: 517027619196@10.0.2.15
+D/sipdroid(  401): CSeq: 1 INVITE
+D/sipdroid(  401): User-Agent: FreeSWITCH-mod_sofia/1.0.head-git-
+D/sipdroid(  401): Content-Length: 0
+D/sipdroid(  401): 
+D/sipdroid(  401): -----End-of-message-----
+D/sipdroid(  401): 
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:37.773 Mon 21 Feb 2011, 143.54.85.37:5060/udp (313 bytes): SIP/2.0 100 Trying, received
+D/sipdroid(  401): 
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:37.791 Mon 21 Feb 2011, 143.54.85.37:5060/udp (828 bytes): INVITE sip:79816@devbbb-mconf.no-ip.org SIP/2.0, sent
+D/sipdroid(  401): 
+D/sipdroid(  401): TransactionClient#6: changed transaction state: T_Proceeding
+D/sipdroid(  401): ExtendedInviteDialog#2: inside onTransProvisionalResponse(tc,mdg)
+D/dalvikvm(  401): GC freed 6998 objects / 479216 bytes in 54ms
+I/ActivityManager(   52): Starting activity: Intent { flg=0x10000000 cmp=org.mconf.bbb.android/org.sipdroid.sipua.ui.InCallScreen }
+D/sipdroid(  401): 17:56:37.825 Mon 21 Feb 2011, 143.54.85.37:5060/udp (996 bytes): received
+D/sipdroid(  401): SIP/2.0 200 OK
+D/sipdroid(  401): Via: SIP/2.0/UDP 143.54.132.71:53958;rport=59069;branch=z9hG4bK98388
+D/sipdroid(  401): From: <sip:emulador@devbbb-mconf.no-ip.org>;tag=z9hG4bK43781742
+D/sipdroid(  401): To: <sip:79816@devbbb-mconf.no-ip.org>;tag=914S7SBH3HcpS
+D/sipdroid(  401): Call-ID: 517027619196@10.0.2.15
+D/sipdroid(  401): CSeq: 1 INVITE
+D/sipdroid(  401): Contact: <sip:79816@143.54.85.37:5060;transport=udp>
+D/sipdroid(  401): User-Agent: FreeSWITCH-mod_sofia/1.0.head-git-
+D/sipdroid(  401): Accept: application/sdp
+D/sipdroid(  401): Allow: INVITE, ACK, BYE, CANCEL, OPTIONS, MESSAGE, UPDATE, INFO, REGISTER, REFER, NOTIFY
+D/sipdroid(  401): Supported: timer, precondition, path, replaces
+D/sipdroid(  401): Allow-Events: talk, hold, refer
+D/sipdroid(  401): Content-Type: application/sdp
+D/sipdroid(  401): Content-Disposition: session
+D/sipdroid(  401): Content-Length: 269
+D/sipdroid(  401): Remote-Party-ID: "79816" <sip:79816@143.54.85.37>;party=calling;privacy=off;screen=no
+D/sipdroid(  401): 
+D/sipdroid(  401): v=0
+D/sipdroid(  401): o=FreeSWITCH 1298290128 1298290129 IN IP4 143.54.85.37
+D/sipdroid(  401): s=FreeSWITCH
+D/sipdroid(  401): c=IN IP4 143.54.85.37
+D/sipdroid(  401): t=0 0
+D/sipdroid(  401): m=audio 24404 RTP/AVP 8 101
+D/sipdroid(  401): a=rtpmap:8 PCMA/8000
+D/sipdroid(  401): a=rtpmap:101 telephone-event/8000
+D/sipdroid(  401): a=fmtp:101 0-16
+D/sipdroid(  401): a=silenceSupp:off - - - -
+D/sipdroid(  401): a=ptime:20
+D/sipdroid(  401): m=video 0 RTP/AVP 19
+D/sipdroid(  401): -----End-of-message-----
+D/sipdroid(  401): 
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:37.927 Mon 21 Feb 2011, 143.54.85.37:5060/udp (996 bytes): SIP/2.0 200 OK, received
+D/sipdroid(  401): 
+D/sipdroid(  401): TransactionClient#6: changed transaction state: T_Terminated
+D/sipdroid(  401): ExtendedInviteDialog#2: inside onTransSuccessResponse(517027619196@10.0.2.15-1-INVITE-null-z9hG4bK98388,msg)
+D/sipdroid(  401): ExtendedInviteDialog#2: inside onTransSuccessResponse(tc,msg)
+D/sipdroid(  401): ExtendedInviteDialog#2: changed dialog state: 6
+D/sipdroid(  401): ExtendedInviteDialog#2: new dialog id: 517027619196@10.0.2.15-z9hG4bK43781742-914S7SBH3HcpS
+D/sipdroid(  401): AckTransactionClient#7: id: 517027619196@10.0.2.15-1-INVITE-null-z9hG4bK46108
+D/sipdroid(  401): AckTransactionClient#7: created
+D/sipdroid(  401): AckTransactionClient#7: start
+D/sipdroid(  401): 17:56:38.453 Mon 21 Feb 2011, 143.54.85.37:5060/udp (423 bytes): sent
+D/sipdroid(  401): ACK sip:79816@143.54.85.37:5060;transport=udp SIP/2.0
+D/sipdroid(  401): Via: SIP/2.0/UDP 10.0.2.15:53958;rport;branch=z9hG4bK46108
+D/sipdroid(  401): Max-Forwards: 70
+D/sipdroid(  401): To: <sip:79816@devbbb-mconf.no-ip.org>;tag=914S7SBH3HcpS
+D/sipdroid(  401): From: <sip:emulador@devbbb-mconf.no-ip.org>;tag=z9hG4bK43781742
+D/sipdroid(  401): Call-ID: 517027619196@10.0.2.15
+D/sipdroid(  401): CSeq: 1 ACK
+D/sipdroid(  401): Contact: <sip:emulador@10.0.2.15:53958;transport=udp>
+D/sipdroid(  401): Expires: 3600
+D/sipdroid(  401): User-Agent: Sipdroid/0.1/sdk
+D/sipdroid(  401): Content-Length: 0
+D/sipdroid(  401): 
+D/sipdroid(  401): -----End-of-message-----
+D/sipdroid(  401): 
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:38.470 Mon 21 Feb 2011, 143.54.85.37:5060/udp (423 bytes): ACK sip:79816@143.54.85.37:5060;transport=udp SIP/2.0, sent
+D/sipdroid(  401): 
+D/sipdroid(  401): AckTransactionClient#7: changed transaction state: T_Terminated
+I/ActivityManager(   52): Starting activity: Intent { flg=0x10000000 cmp=org.mconf.bbb.android/org.sipdroid.sipua.ui.InCallScreen }
+D/LocationManager(  401): removeUpdates: intent = PendingIntent{44e126d0: android.os.BinderProxy@44e0d490}
+D/qemud   (   35): fdhandler_accept_event: accepting on fd 10
+D/qemud   (   35): created client 0x16068 listening on fd 15
+D/dalvikvm(  401): Trying to load lib /data/data/org.mconf.bbb.android/lib/libOSNetworkSystem.so 0x44dab9c8
+D/qemud   (   35): client_fd_receive: attempting registration for service 'sensors'
+D/qemud   (   35): client_fd_receive:    -> received channel id 9
+D/qemud   (   35): client_registration: registration succeeded for client 9
+D/dalvikvm(  401): Added shared lib /data/data/org.mconf.bbb.android/lib/libOSNetworkSystem.so 0x44dab9c8
+D/dalvikvm(  401): No JNI_OnLoad found in /data/data/org.mconf.bbb.android/lib/libOSNetworkSystem.so 0x44dab9c8
+D/dalvikvm(  401): +++ not scanning '/system/lib/libwebcore.so' for 'oneTimeInitializationImpl' (wrong CL)
+D/dalvikvm(  401): +++ not scanning '/system/lib/libmedia_jni.so' for 'oneTimeInitializationImpl' (wrong CL)
+D/dalvikvm(  401): +++ not scanning '/system/lib/libexif.so' for 'oneTimeInitializationImpl' (wrong CL)
+D/qemud   (   35): fdhandler_event: disconnect on fd 15
+D/SensorManager(  401): found sensor: Goldfish 3-axis Accelerometer, handle=0
+D/dalvikvm(  401): +++ not scanning '/system/lib/libwebcore.so' for 'createDatagramSocketImpl' (wrong CL)
+D/dalvikvm(  401): +++ not scanning '/system/lib/libmedia_jni.so' for 'createDatagramSocketImpl' (wrong CL)
+D/dalvikvm(  401): +++ not scanning '/system/lib/libexif.so' for 'createDatagramSocketImpl' (wrong CL)
+D/dalvikvm(  401): +++ not scanning '/system/lib/libwebcore.so' for 'socketBindImpl2' (wrong CL)
+D/dalvikvm(  401): +++ not scanning '/system/lib/libmedia_jni.so' for 'socketBindImpl2' (wrong CL)
+D/dalvikvm(  401): +++ not scanning '/system/lib/libexif.so' for 'socketBindImpl2' (wrong CL)
+D/dalvikvm(  401): +++ not scanning '/system/lib/libwebcore.so' for 'getSocketFlagsImpl' (wrong CL)
+D/dalvikvm(  401): +++ not scanning '/system/lib/libmedia_jni.so' for 'getSocketFlagsImpl' (wrong CL)
+D/dalvikvm(  401): +++ not scanning '/system/lib/libexif.so' for 'getSocketFlagsImpl' (wrong CL)
+D/dalvikvm(  401): +++ not scanning '/system/lib/libwebcore.so' for 'setSocketOptionImpl' (wrong CL)
+D/dalvikvm(  401): +++ not scanning '/system/lib/libmedia_jni.so' for 'setSocketOptionImpl' (wrong CL)
+D/dalvikvm(  401): +++ not scanning '/system/lib/libexif.so' for 'setSocketOptionImpl' (wrong CL)
+W/BackupManagerService(   52): dataChanged but no participant pkg='com.android.providers.settings' uid=10024
+D/AudioHardware(   31): AudioStreamInGeneric::set(0xae88, 7, 1, 16, 8000)
+D/AudioHardware(   31): AudioStreamInGeneric::read(0x40507040, 320) from fd 7
+D/dalvikvm(  401): +++ not scanning '/system/lib/libwebcore.so' for 'sendDatagramImpl' (wrong CL)
+D/dalvikvm(  401): +++ not scanning '/system/lib/libmedia_jni.so' for 'sendDatagramImpl' (wrong CL)
+D/dalvikvm(  401): +++ not scanning '/system/lib/libexif.so' for 'sendDatagramImpl' (wrong CL)
+D/AudioHardware(   31): AudioStreamInGeneric::read(0x40507180, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0x405072c0, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0x40507400, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0x40507540, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0x40507680, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0x405077c0, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0x40507900, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0x40507a40, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0x40507b80, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0x40507cc0, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0x40507e00, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0x40507f40, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0x40508080, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0x405081c0, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0x40508300, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0x40508440, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0x40508580, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0x405086c0, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/sipdroid(  401): 17:56:38.850 Mon 21 Feb 2011, 143.54.85.37:5060/udp (996 bytes): received
+D/sipdroid(  401): SIP/2.0 200 OK
+D/sipdroid(  401): Via: SIP/2.0/UDP 143.54.132.71:53958;rport=59069;branch=z9hG4bK98388
+D/sipdroid(  401): From: <sip:emulador@devbbb-mconf.no-ip.org>;tag=z9hG4bK43781742
+D/sipdroid(  401): To: <sip:79816@devbbb-mconf.no-ip.org>;tag=914S7SBH3HcpS
+D/sipdroid(  401): Call-ID: 517027619196@10.0.2.15
+D/sipdroid(  401): CSeq: 1 INVITE
+D/sipdroid(  401): Contact: <sip:79816@143.54.85.37:5060;transport=udp>
+D/sipdroid(  401): User-Agent: FreeSWITCH-mod_sofia/1.0.head-git-
+D/sipdroid(  401): Accept: application/sdp
+D/sipdroid(  401): Allow: INVITE, ACK, BYE, CANCEL, OPTIONS, MESSAGE, UPDATE, INFO, REGISTER, REFER, NOTIFY
+D/sipdroid(  401): Supported: timer, precondition, path, replaces
+D/sipdroid(  401): Allow-Events: talk, hold, refer
+D/sipdroid(  401): Content-Type: application/sdp
+D/sipdroid(  401): Content-Disposition: session
+D/sipdroid(  401): Content-Length: 269
+D/sipdroid(  401): Remote-Party-ID: "79816" <sip:79816@143.54.85.37>;party=calling;privacy=off;screen=no
+D/sipdroid(  401): 
+D/sipdroid(  401): v=0
+D/sipdroid(  401): o=FreeSWITCH 1298290128 1298290129 IN IP4 143.54.85.37
+D/sipdroid(  401): s=FreeSWITCH
+D/sipdroid(  401): c=IN IP4 143.54.85.37
+D/sipdroid(  401): t=0 0
+D/sipdroid(  401): m=audio 24404 RTP/AVP 8 101
+D/sipdroid(  401): a=rtpmap:8 PCMA/8000
+D/sipdroid(  401): a=rtpmap:101 telephone-event/8000
+D/sipdroid(  401): a=fmtp:101 0-16
+D/sipdroid(  401): a=silenceSupp:off - - - -
+D/sipdroid(  401): a=ptime:20
+D/sipdroid(  401): m=video 0 RTP/AVP 19
+D/sipdroid(  401): -----End-of-message-----
+D/sipdroid(  401): 
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:38.859 Mon 21 Feb 2011, 143.54.85.37:5060/udp (996 bytes): SIP/2.0 200 OK, received
+W/BackupManagerService(   52): dataChanged but no participant pkg='com.android.providers.settings' uid=10024
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/sipdroid(  401): 
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/dalvikvm(  401): GC freed 5105 objects / 326832 bytes in 82ms
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/dalvikvm(  401): +++ not scanning '/system/lib/libwebcore.so' for 'receiveDatagramImpl' (wrong CL)
+D/dalvikvm(  401): +++ not scanning '/system/lib/libmedia_jni.so' for 'receiveDatagramImpl' (wrong CL)
+D/dalvikvm(  401): +++ not scanning '/system/lib/libexif.so' for 'receiveDatagramImpl' (wrong CL)
+D/PowerManagerService(   52): enableProximityLockLocked
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+W/BackupManagerService(   52): dataChanged but no participant pkg='com.android.providers.settings' uid=10024
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+W/AudioFlinger(   31): write blocked for 138 msecs, 60 delayed writes, thread 0xb388
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/sipdroid(  401): ExtendedInviteDialog#2: Message received: SIP/2.0 200 OK
+W/BackupManagerService(   52): dataChanged but no participant pkg='com.android.providers.settings' uid=10024
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/sipdroid(  401): ExtendedInviteDialog#2: inside onReceivedMessage(sip_provider,message)
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/sipdroid(  401): AckTransactionClient#8: id: 517027619196@10.0.2.15-1-INVITE-null-z9hG4bK46108
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/sipdroid(  401): AckTransactionClient#8: created
+D/sipdroid(  401): AckTransactionClient#8: start
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/sipdroid(  401): 17:56:39.510 Mon 21 Feb 2011, 143.54.85.37:5060/udp (423 bytes): sent
+D/sipdroid(  401): ACK sip:79816@143.54.85.37:5060;transport=udp SIP/2.0
+D/sipdroid(  401): Via: SIP/2.0/UDP 10.0.2.15:53958;rport;branch=z9hG4bK46108
+D/sipdroid(  401): Max-Forwards: 70
+D/sipdroid(  401): To: <sip:79816@devbbb-mconf.no-ip.org>;tag=914S7SBH3HcpS
+D/sipdroid(  401): From: <sip:emulador@devbbb-mconf.no-ip.org>;tag=z9hG4bK43781742
+D/sipdroid(  401): Call-ID: 517027619196@10.0.2.15
+D/sipdroid(  401): CSeq: 1 ACK
+D/sipdroid(  401): Contact: <sip:emulador@10.0.2.15:53958;transport=udp>
+D/sipdroid(  401): Expires: 3600
+D/sipdroid(  401): User-Agent: Sipdroid/0.1/sdk
+D/sipdroid(  401): Content-Length: 0
+D/sipdroid(  401): 
+D/sipdroid(  401): -----End-of-message-----
+D/sipdroid(  401): 
+D/sipdroid(  401): 
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/sipdroid(  401): 17:56:39.543 Mon 21 Feb 2011, 143.54.85.37:5060/udp (423 bytes): ACK sip:79816@143.54.85.37:5060;transport=udp SIP/2.0, sent
+D/sipdroid(  401): 
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/sipdroid(  401): AckTransactionClient#8: changed transaction state: T_Terminated
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/dalvikvm(   92): GC freed 204 objects / 17320 bytes in 168ms
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+I/ActivityManager(   52): Displayed activity org.mconf.bbb.android/org.sipdroid.sipua.ui.InCallScreen: 1910 ms (total 2645 ms)
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+D/PowerManagerService(   52): disableProximityLockLocked
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/PowerManagerService(   52): enableProximityLockLocked
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/AudioHardware(   31): AudioStreamInGeneric::read(0xd750, 320) from fd 7
+W/AudioFlinger(   31): RecordThread: buffer overflow
+D/dalvikvm(  401): +++ not scanning '/system/lib/libwebcore.so' for 'socketCloseImpl' (wrong CL)
+D/dalvikvm(  401): +++ not scanning '/system/lib/libmedia_jni.so' for 'socketCloseImpl' (wrong CL)
+D/dalvikvm(  401): +++ not scanning '/system/lib/libexif.so' for 'socketCloseImpl' (wrong CL)
+D/sipdroid(  401): ExtendedInviteDialog#2: inside refuse()
+D/sipdroid(  401): ExtendedInviteDialog#2: inside refuse(403,Forbidden)
+D/sipdroid(  401): ExtendedInviteDialog#2: inside respond(403,Forbidden)
+D/AudioHardware(   31): AudioStreamInGeneric destructor
+D/sipdroid(  401): ExtendedInviteDialog#2: WARNING: Dialog isn't in "invited" state: cannot respond (403/6/517027619196@10.0.2.15-z9hG4bK43781742-914S7SBH3HcpS)
+D/sipdroid(  401): ExtendedInviteDialog#2: inside cancel()
+D/sipdroid(  401): ExtendedInviteDialog#2: inside bye()
+D/PowerManagerService(   52): disableProximityLockLocked
+W/BackupManagerService(   52): dataChanged but no participant pkg='com.android.providers.settings' uid=10024
+D/sipdroid(  401): ExtendedInviteDialog#2: inside bye(bye)
+D/sipdroid(  401): ExtendedInviteDialog#2: changed dialog state: 7
+D/sipdroid(  401): TransactionClient#9: id: 517027619196@10.0.2.15-2-BYE-null-z9hG4bK46223
+D/sipdroid(  401): TransactionClient#9: created
+D/sipdroid(  401): TransactionClient#9: start
+D/sipdroid(  401): TransactionClient#9: changed transaction state: T_Trying
+D/sipdroid(  401): 17:56:41.387 Mon 21 Feb 2011, 143.54.85.37:5060/udp (353 bytes): sent
+D/sipdroid(  401): BYE sip:79816@143.54.85.37:5060;transport=udp SIP/2.0
+D/sipdroid(  401): Via: SIP/2.0/UDP 10.0.2.15:53958;rport;branch=z9hG4bK46223
+D/sipdroid(  401): Max-Forwards: 70
+D/sipdroid(  401): To: <sip:79816@devbbb-mconf.no-ip.org>;tag=914S7SBH3HcpS
+D/sipdroid(  401): From: <sip:emulador@devbbb-mconf.no-ip.org>;tag=z9hG4bK43781742
+D/sipdroid(  401): Call-ID: 517027619196@10.0.2.15
+D/sipdroid(  401): CSeq: 2 BYE
+D/sipdroid(  401): User-Agent: Sipdroid/0.1/sdk
+D/sipdroid(  401): Content-Length: 0
+D/sipdroid(  401): 
+D/sipdroid(  401): -----End-of-message-----
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:41.394 Mon 21 Feb 2011, 143.54.85.37:5060/udp (462 bytes): received
+D/sipdroid(  401): SIP/2.0 200 OK
+D/sipdroid(  401): Via: SIP/2.0/UDP 143.54.132.71:53958;rport=59069;branch=z9hG4bK46223
+D/sipdroid(  401): From: <sip:emulador@devbbb-mconf.no-ip.org>;tag=z9hG4bK43781742
+D/sipdroid(  401): To: <sip:79816@devbbb-mconf.no-ip.org>;tag=914S7SBH3HcpS
+D/sipdroid(  401): Call-ID: 517027619196@10.0.2.15
+D/sipdroid(  401): CSeq: 2 BYE
+D/sipdroid(  401): User-Agent: FreeSWITCH-mod_sofia/1.0.head-git-
+D/sipdroid(  401): Allow: INVITE, ACK, BYE, CANCEL, OPTIONS, MESSAGE, UPDATE, INFO, REGISTER, REFER, NOTIFY
+D/sipdroid(  401): Supported: timer, precondition, path, replaces
+D/sipdroid(  401): Content-Length: 0
+D/sipdroid(  401): 
+D/sipdroid(  401): -----End-of-message-----
+D/sipdroid(  401): 
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:41.399 Mon 21 Feb 2011, 143.54.85.37:5060/udp (462 bytes): SIP/2.0 200 OK, received
+D/sipdroid(  401): 
+D/sipdroid(  401): 
+D/sipdroid(  401): 17:56:41.409 Mon 21 Feb 2011, 143.54.85.37:5060/udp (353 bytes): BYE sip:79816@143.54.85.37:5060;transport=udp SIP/2.0, sent
+D/sipdroid(  401): TransactionClient#9: changed transaction state: T_Completed
+D/sipdroid(  401): 
+I/ActivityManager(   52): Starting activity: Intent { flg=0x10000000 cmp=org.mconf.bbb.android/org.sipdroid.sipua.ui.InCallScreen }
+D/dalvikvm(  401): threadid=29 wakeup: interrupted
+W/BackupManagerService(   52): dataChanged but no participant pkg='com.android.providers.settings' uid=10024
+D/sipdroid(  401): ExtendedInviteDialog#2: inside onTransSuccessResponse(517027619196@10.0.2.15-2-BYE-null-z9hG4bK46223,msg)
+D/sipdroid(  401): ExtendedInviteDialog#2: inside refuse()
+D/sipdroid(  401): ExtendedInviteDialog#2: inside refuse(403,Forbidden)
+D/sipdroid(  401): ExtendedInviteDialog#2: inside respond(403,Forbidden)
+D/sipdroid(  401): ExtendedInviteDialog#2: WARNING: Dialog isn't in "invited" state: cannot respond (403/7/517027619196@10.0.2.15-z9hG4bK43781742-914S7SBH3HcpS)
+D/sipdroid(  401): ExtendedInviteDialog#2: inside onTransSuccessResponse(tc,msg)
+D/sipdroid(  401): ExtendedInviteDialog#2: inside cancel()
+D/sipdroid(  401): ExtendedInviteDialog#2: inside bye()
+D/sipdroid(  401): ExtendedInviteDialog#3: changed dialog state: 0
+D/sipdroid(  401): ExtendedInviteDialog#3: changed dialog state: 1
+D/sipdroid(  401): ExtendedInviteDialog#2: changed dialog state: 9
+D/sipdroid(  401): TransactionServer#10: id: INVITE
+D/sipdroid(  401): TransactionServer#10: created
+D/sipdroid(  401): TransactionServer#10: start
+D/sipdroid(  401): TransactionServer#10: changed transaction state: T_Waiting
+D/sipdroid(  401): ExtendedInviteDialog#1: inside refuse()
+D/sipdroid(  401): ExtendedInviteDialog#1: inside refuse(403,Forbidden)
+D/sipdroid(  401): ExtendedInviteDialog#1: inside respond(403,Forbidden)
+D/sipdroid(  401): ExtendedInviteDialog#1: WARNING: Dialog isn't in "invited" state: cannot respond (403/1/null)
+D/sipdroid(  401): ExtendedInviteDialog#1: inside cancel()
+D/sipdroid(  401): TransactionServer#2: changed transaction state: T_Terminated
+D/sipdroid(  401): ExtendedInviteDialog#1: inside bye()
+D/sipdroid(  401): ExtendedInviteDialog#4: changed dialog state: 0
+D/sipdroid(  401): ExtendedInviteDialog#4: changed dialog state: 1
+D/sipdroid(  401): TransactionServer#11: id: INVITE
+D/sipdroid(  401): TransactionServer#11: created
+D/sipdroid(  401): TransactionServer#11: start
+D/sipdroid(  401): TransactionServer#11: changed transaction state: T_Waiting
+D/LocationManager(  401): removeUpdates: intent = PendingIntent{44e126d0: android.os.BinderProxy@44e0d490}
+D/sipdroid(  401): TransactionClient#4: Clearing timeout expired
+D/sipdroid(  401): TransactionClient#4: changed transaction state: T_Terminated
+D/sipdroid(  401): TransactionClient#5: Clearing timeout expired
+D/sipdroid(  401): TransactionClient#5: changed transaction state: T_Terminated
+I/ActivityManager(   52): Starting activity: Intent { act=android.intent.action.MAIN cat=[android.intent.category.HOME] cmp=com.android.launcher/.Launcher }
+W/ActivityManager(   52): Duplicate finish request for HistoryRecord{44dca638 org.mconf.bbb.android/org.sipdroid.sipua.ui.InCallScreen}
+D/sipdroid(  401): TransactionClient#9: Clearing timeout expired
+D/sipdroid(  401): TransactionClient#9: changed transaction state: T_Terminated
