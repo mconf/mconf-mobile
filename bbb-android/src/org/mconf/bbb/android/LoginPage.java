@@ -51,6 +51,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 public class LoginPage extends Activity {
 	
 	private static final Logger log = LoggerFactory.getLogger(LoginPage.class);
+	
 	private ArrayAdapter<String> spinnerAdapter;
 	private boolean moderator;
 //	private static final String labelCreateMeeting = "== Create a new meeting ==";
@@ -65,6 +66,10 @@ public class LoginPage extends Activity {
         
         Bundle extras = getIntent().getExtras();
         serverURL=extras.getString("serverURL");
+        
+        if(serverURL.charAt(serverURL.length()-1)=='/')
+             serverURL=serverURL.substring(0, serverURL.length() - 1);
+        
         if (extras == null || extras.getString("username") == null)
         	username = "Android";
         else

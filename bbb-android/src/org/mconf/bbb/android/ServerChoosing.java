@@ -46,6 +46,7 @@ public class ServerChoosing extends Activity  {
 					Intent callLogin = new Intent (getApplicationContext(), LoginPage.class);
 					callLogin.putExtra("serverURL", text.getText().toString());
 					startActivity(callLogin);
+					finish(); 
 				}
 			}
 		});
