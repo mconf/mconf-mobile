@@ -46,6 +46,7 @@ public class BigBlueButtonClient {
 	private static final Logger log = LoggerFactory.getLogger(BigBlueButtonClient.class);
 	
 	private MainRtmpConnection mainConnection;
+	private VideoRtmpConnection videoConnection;
 
 	private JoinService joinService = new JoinService();
 	
@@ -118,6 +119,18 @@ public class BigBlueButtonClient {
 		mainConnection.connect();
 	}
 	
+	public void connectVideo() {
+		ClientOptions opt = new ClientOptions();
+		opt.setClientVersionToUse(Utils.fromHex("00000000"));
+		opt.setHost(joinService.getServerUrl().toLowerCase().replace("http://", ""));
+		opt.setAppName("video/" + joinService.getJoinedMeeting().getConference());
+		opt.setStreamName("320x24045");
+		log.debug(opt.toString());
+		
+		videoConnection = new VideoRtmpConnection(opt, this);
+		videoConnection.connect();
+	}
+	
 	@SuppressWarnings("unused")
 	private void connectSip() {
 		
@@ -165,7 +178,8 @@ public class BigBlueButtonClient {
 		
 		client.getJoinService().join("Demo Meeting", "Eclipse", false);
 		if (client.getJoinService().getJoinedMeeting() != null) {
-			client.connectBigBlueButton();
+//			client.connectBigBlueButton();
+			client.connectVideo();
 			log.info("CONNECTED!");
 		}
 	}

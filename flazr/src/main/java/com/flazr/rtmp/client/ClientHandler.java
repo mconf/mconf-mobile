@@ -70,15 +70,15 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
 	 */
 	private volatile ConcurrentMap<String, ClientSharedObject> sharedObjects = new ConcurrentHashMap<String, ClientSharedObject>();
 
-    private RtmpWriter writer;
+    protected RtmpWriter writer;
 
     private int bytesReadWindow = 2500000;
-    private long bytesRead;
+    protected long bytesRead;
     private long bytesReadLastSent;    
     private int bytesWrittenWindow = 2500000;
     
-    private RtmpPublisher publisher;
-    private int streamId;    
+    protected RtmpPublisher publisher;
+    protected int streamId;    
 
 	/**
 	 * Connect to client shared object.
