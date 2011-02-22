@@ -24,16 +24,13 @@ package org.mconf.bbb.android;
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.android.voip.VoiceModule;
-import org.mconf.bbb.android.voip.VoipEngine;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.users.IParticipant;
-import org.sipdroid.sipua.SipdroidEngine;
 import org.sipdroid.sipua.ui.Receiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -256,6 +253,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		Intent intent= new Intent(FINISH);
 		switch (item.getItemId()) {
 			case MENU_START_VOICE:
+				Receiver.mContext = this;
 				new VoiceModule(bbb.getJoinService().getJoinedMeeting().getFullname(), 
 						bbb.getJoinService().getServerUrl(), 
 						bbb.getJoinService().getJoinedMeeting().getVoicebridge());

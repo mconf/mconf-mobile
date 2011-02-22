@@ -2,7 +2,6 @@ package org.mconf.bbb.android.voip;
 
 import java.util.Vector;
 
-import org.mconf.bbb.android.Client;
 import org.sipdroid.codecs.Codec;
 import org.sipdroid.codecs.Codecs;
 import org.sipdroid.net.KeepAliveSip;
@@ -15,7 +14,6 @@ import org.zoolu.sdp.MediaField;
 import org.zoolu.sdp.SessionDescriptor;
 import org.zoolu.sip.address.NameAddress;
 import org.zoolu.sip.call.Call;
-import org.zoolu.sip.call.CallListenerAdapter;
 import org.zoolu.sip.call.ExtendedCall;
 import org.zoolu.sip.call.ExtendedCallListener;
 import org.zoolu.sip.message.Message;
