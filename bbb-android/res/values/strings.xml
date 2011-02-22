@@ -13,5 +13,6 @@
 	<string name="choose_server">Choose a server to connect:</string>
 	<string name="connect">Connect</string>
 	<string name="type_server">Or type a server URL:</string>
+	<string name="choose_other_server">Back to servers</string>
     
 </resources>

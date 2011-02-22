@@ -71,6 +71,9 @@
         android:layout_alignLeft="@+id/login_edittext_name"
         android:layout_marginTop="50dip"
 	/>
+	<Button android:text="@string/choose_other_server" android:layout_width="wrap_content"
+	android:layout_below="@+id/login_button_join" android:id="@+id/back_to_servers"
+	android:layout_height="wrap_content" android:layout_alignRight="@+id/login_button_join"></Button>
                
 </RelativeLayout>
 

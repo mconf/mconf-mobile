@@ -6,17 +6,23 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class ServerChoosing extends Activity  {
+	private static final int DELETE_SERVER = 0;
 	ListView servers;
 	private ArrayAdapter<String> listViewAdapter;
 	SharedPreferences serverFile;
@@ -29,12 +35,13 @@ public class ServerChoosing extends Activity  {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.server_choosing);
-		listViewAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+		listViewAdapter = new ArrayAdapter<String>(this, R.layout.server);
         servers = (ListView) findViewById(R.id.servers);
         servers.setTextFilterEnabled(true);
         servers.setAdapter(listViewAdapter);
 		setServerFile();
 		getServers();
+		registerForContextMenu(servers);
 		
 		Button connect = (Button) findViewById(R.id.connect);
 		connect.setOnClickListener(new OnClickListener() {
@@ -42,9 +49,14 @@ public class ServerChoosing extends Activity  {
 			public void onClick(View v) {
 				EditText text = (EditText)findViewById(R.id.serverURL);
 				if (text.getText().toString().length() > 0) {
-					addServer(text.getText().toString());
+					
 					Intent callLogin = new Intent (getApplicationContext(), LoginPage.class);
-					callLogin.putExtra("serverURL", text.getText().toString());
+					String serverURL=text.getText().toString();
+					if(serverURL.charAt(serverURL.length()-1)=='/')
+			             serverURL=serverURL.substring(0, serverURL.length() - 1);
+					
+					addServer(serverURL);
+					callLogin.putExtra("serverURL", serverURL);
 					startActivity(callLogin);
 					finish(); 
 				}
@@ -63,6 +75,29 @@ public class ServerChoosing extends Activity  {
 		
 	}
 	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+
+		menu.add(0, DELETE_SERVER, 0, "Delete server");
+
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+		
+		switch (item.getItemId()) {
+			case DELETE_SERVER:
+				System.out.println(servers.getItemAtPosition(info.position).toString());
+				deleteServer(servers.getItemAtPosition(info.position).toString());
+				return true;
+		}
+		return super.onContextItemSelected(item);
+	}
+	
 	public SharedPreferences getServerFile() {
 		return serverFile;
 	}
@@ -73,7 +108,7 @@ public class ServerChoosing extends Activity  {
 		else
 		{
 			SharedPreferences.Editor serverEditor = serverFile.edit();
-			serverEditor.commit();
+			serverEditor.commit(); 
 			this.serverFile = this.getSharedPreferences("storedServers", MODE_PRIVATE);
 		}
 		this.storedServers = (Map<String, String>) serverFile.getAll();
@@ -95,6 +130,30 @@ public class ServerChoosing extends Activity  {
 			serverEditor.putString(newServer, newServer);
 			serverEditor.commit();
 		}
+	}
+	
+	
+	public void deleteServer(final String server)
+	{
+		SharedPreferences.Editor serverEditor = serverFile.edit();
+		if(serverFile.contains(server))
+		{
+			serverEditor.remove(server);
+			serverEditor.commit();
+			System.out.println("deleted");
+			runOnUiThread(new Runnable() {
+
+				@Override  
+				public void run() {
+					listViewAdapter.remove(server);
+					listViewAdapter.notifyDataSetChanged();
+					setServerFile();
+					
+				}
+			}
+			);
+		}
+		
 	}
 
 }

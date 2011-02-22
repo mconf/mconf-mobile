@@ -35,8 +35,10 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.ArrayAdapter;
@@ -62,13 +64,12 @@ public class LoginPage extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.login);
-        
+      
         Bundle extras = getIntent().getExtras();
         serverURL=extras.getString("serverURL");
         
-        if(serverURL.charAt(serverURL.length()-1)=='/')
-             serverURL=serverURL.substring(0, serverURL.length() - 1);
         
         if (extras == null || extras.getString("username") == null)
         	username = "Android";
@@ -174,6 +175,22 @@ public class LoginPage extends Activity {
         	}
         );
 
+        final Button backToServers = (Button) findViewById(R.id.back_to_servers);       
+        backToServers.setOnClickListener( new OnClickListener()
+        {
+        	@Override
+            public void onClick(View viewParam)
+            {
+        		Intent intent = new Intent(getApplicationContext(), ServerChoosing.class);
+        		log.debug("BACK_TO_SERVERS");
+        		startActivity(intent);
+        		finish();
+            }
+        	
+        }
+        );
+        
+        
     	updateRoleOption();
     	RadioGroup role = (RadioGroup) findViewById(R.id.login_role);
     	role.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -260,13 +277,6 @@ public class LoginPage extends Activity {
 		}).start();
     }
     
-//    @Override
-//    public boolean onKeyDown(int keyCode, KeyEvent event) {
-//    	if (keyCode == KeyEvent.KEYCODE_BACK) {
-//    		log.debug("KEYCODE_BACK");
-//    		moveTaskToBack(true);
-//    		return true;
-//    	}    		
-//    	return super.onKeyDown(keyCode, event);
-//    }
+    
+    
 }
