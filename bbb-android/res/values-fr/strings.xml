@@ -27,7 +27,6 @@
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-<string name="app_name">Sipdroid</string>
 <string name="pstn_name">Téléphone</string>
 <string name="sip_name">Sipdroid, si disponible</string>
 

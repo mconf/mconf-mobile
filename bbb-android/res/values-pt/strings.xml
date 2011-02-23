@@ -26,8 +26,6 @@
 -->
 
 <resources>
-
-	<string name="app_name">Sipdroid</string>
 	<string name="pstn_name">Chamada</string>
 	<string name="sip_name">Chamada Sipdroid, quando disponível</string>
 
