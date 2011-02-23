@@ -159,16 +159,11 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			}
 		});
 		
-		bbb.addListener(this);
-	}
-	
-	@Override
-	protected void onStart() {
-		super.onStart();
-		
 		Receiver.mContext = this;
 		voice = new VoiceModule(bbb.getJoinService().getJoinedMeeting().getFullname(), 
 				bbb.getJoinService().getServerUrl());
+		
+		bbb.addListener(this);
 	}
 	
 	@Override
@@ -213,11 +208,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	protected void onDestroy() {
 		log.debug("onDestroy");
 		
-		if (voice.isOnCall())
-			voice.hang();
-		
-		bbb.removeListener(this);
-		bbb.disconnect();
+		quit();
 
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notificationManager.cancelAll();	
@@ -238,6 +229,13 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 //		}
 //		
 //	}
+	
+	private void quit() {
+		if (voice.isOnCall())
+			voice.hang();
+		bbb.removeListener(this);
+		bbb.disconnect();
+	}
 	
 	private void startPrivateChat(Contact contact) {
 
@@ -288,7 +286,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				voice.setSpeaker(voice.getSpeaker() != AudioManager.MODE_NORMAL? AudioManager.MODE_NORMAL: AudioManager.MODE_IN_CALL);
 				break;
 			case MENU_LOGOUT:
-				bbb.disconnect();
+				quit();
 				Intent login = new Intent(this, LoginPage.class);
 				login.putExtra("username", myusername);
 				startActivity(login);
@@ -296,7 +294,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				finish();
 				return true;
 			case MENU_QUIT:
-				bbb.disconnect();
+				quit();
 				sendBroadcast(intent);
 				finish();
 				return true;
