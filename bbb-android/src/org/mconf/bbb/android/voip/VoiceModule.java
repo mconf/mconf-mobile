@@ -11,6 +11,7 @@ import org.sipdroid.net.KeepAliveSip;
 import org.sipdroid.sipua.UserAgent;
 import org.sipdroid.sipua.UserAgentProfile;
 import org.sipdroid.sipua.ui.Receiver;
+import org.sipdroid.sipua.ui.Sipdroid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zoolu.net.IpAddress;
@@ -49,6 +50,8 @@ public class VoiceModule implements ExtendedCallListener {
 
 	public VoiceModule(String username, String url) {
 		SipStack.init();
+		Sipdroid.release = false;
+		Receiver.call_state = UserAgent.UA_STATE_IDLE;
 		
 		SipStack.debug_level = LogLevel.LOWER;
 		SipStack.max_retransmission_timeout = 4000;

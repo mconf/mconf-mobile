@@ -1370,7 +1370,7 @@ public class SipProvider implements Configurable, TransportListener,
 
 	/** Adds a new string to the default Log */
 	private final void printLog(String str, int level) {
-//		if (Sipdroid.release) return;
+		if (Sipdroid.release) return;
 		if (event_log != null) {
 			String provider_id = (host_ipaddr == null) ? Integer
 					.toString(host_port) : host_ipaddr.toString() + ":"

@@ -23,7 +23,6 @@ package org.mconf.bbb.android;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Properties;
 
 import org.mconf.bbb.api.Meeting;
 import org.slf4j.Logger;
@@ -32,8 +31,6 @@ import org.slf4j.LoggerFactory;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.res.AssetManager;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;

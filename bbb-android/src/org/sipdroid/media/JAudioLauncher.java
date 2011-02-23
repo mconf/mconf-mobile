@@ -168,7 +168,7 @@ public class JAudioLauncher implements MediaLauncher
    /** Adds a new string to the default Log */
    private void printLog(String str, int level)
    {
-//	  if (Sipdroid.release) return;
+	  if (Sipdroid.release) return;
 	  if (log!=null) log.println("AudioLauncher: "+str,level+SipStack.LOG_LEVEL_UA);  
       if (level<=LogLevel.HIGH) System.out.println("AudioLauncher: "+str);
    }
@@ -176,7 +176,7 @@ public class JAudioLauncher implements MediaLauncher
    /** Adds the Exception message to the default Log */
    void printException(Exception e,int level)
    { 
-//	  if (Sipdroid.release) return;
+	  if (Sipdroid.release) return;
 	  if (log!=null) log.printException(e,level+SipStack.LOG_LEVEL_UA);
       if (level<=LogLevel.HIGH) e.printStackTrace();
    }

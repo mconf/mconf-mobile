@@ -180,7 +180,7 @@ public class SipdroidEngine implements RegisterAgentListener {
 			return true;
 	}
 
-	protected String getContactURL(String username,SipProvider sip_provider) {
+	private String getContactURL(String username,SipProvider sip_provider) {
 		int i = username.indexOf("@");
 		if (i != -1) {
 			// if the username already contains a @ 
