@@ -93,6 +93,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	protected Button slideHandleButton;
 	
 	protected boolean loggedIn=true;
+
+	private VoiceModule voice;
 	
 //	protected ClientBroadcastReceiver receiver = new ClientBroadcastReceiver();
 
@@ -160,8 +162,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	protected void onStart() {
 		super.onStart();
 		
-//		Receiver.engine(this).registerMore();
-//		Receiver.engine(this).isRegistered();
+		Receiver.mContext = this;
+		voice = new VoiceModule(bbb.getJoinService().getJoinedMeeting().getFullname(), 
+				bbb.getJoinService().getServerUrl());
 	}
 	
 	@Override
@@ -253,10 +256,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		Intent intent= new Intent(FINISH);
 		switch (item.getItemId()) {
 			case MENU_START_VOICE:
-				Receiver.mContext = this;
-				new VoiceModule(bbb.getJoinService().getJoinedMeeting().getFullname(), 
-						bbb.getJoinService().getServerUrl(), 
-						bbb.getJoinService().getJoinedMeeting().getVoicebridge());
+				if (voice.isOnCall())
+					voice.hang();
+				else
+					voice.call(bbb.getJoinService().getJoinedMeeting().getVoicebridge());
 //				if (!Receiver.engine(this).call(bbb.getJoinService().getJoinedMeeting().getVoicebridge(), true))
 //					new AlertDialog.Builder(this)
 //						.setMessage(R.string.notfast)
@@ -264,7 +267,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 //						.setIcon(R.drawable.icon22)
 //						.setCancelable(true)
 //						.show();
-				return true;
+				break;
 			case MENU_LOGOUT:
 				bbb.disconnect();
 				Intent login = new Intent(this, LoginPage.class);

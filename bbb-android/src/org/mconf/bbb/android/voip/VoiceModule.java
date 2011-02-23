@@ -1,25 +1,36 @@
 package org.mconf.bbb.android.voip;
 
+import java.util.Enumeration;
 import java.util.Vector;
 
 import org.sipdroid.codecs.Codec;
 import org.sipdroid.codecs.Codecs;
+import org.sipdroid.media.JAudioLauncher;
+import org.sipdroid.media.MediaLauncher;
+import org.sipdroid.media.RtpStreamReceiver;
 import org.sipdroid.net.KeepAliveSip;
+import org.sipdroid.sipua.UserAgent;
 import org.sipdroid.sipua.UserAgentProfile;
+import org.sipdroid.sipua.ui.Receiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zoolu.net.IpAddress;
 import org.zoolu.sdp.AttributeField;
+import org.zoolu.sdp.ConnectionField;
+import org.zoolu.sdp.MediaDescriptor;
 import org.zoolu.sdp.MediaField;
 import org.zoolu.sdp.SessionDescriptor;
+import org.zoolu.sdp.TimeField;
 import org.zoolu.sip.address.NameAddress;
 import org.zoolu.sip.call.Call;
 import org.zoolu.sip.call.ExtendedCall;
 import org.zoolu.sip.call.ExtendedCallListener;
+import org.zoolu.sip.call.SdpTools;
 import org.zoolu.sip.message.Message;
 import org.zoolu.sip.provider.SipProvider;
 import org.zoolu.sip.provider.SipStack;
 import org.zoolu.tools.LogLevel;
+import org.zoolu.tools.Parser;
 
 import android.os.Build;
 
@@ -29,16 +40,18 @@ public class VoiceModule implements ExtendedCallListener {
 	protected SipProvider sip_provider;
 	protected UserAgentProfile user_profile;
 	protected ExtendedCall call;
-	protected SessionDescriptor sdp;
+	protected SessionDescriptor local_sdp;
 	protected KeepAliveSip keep_alive;
+
+	private MediaLauncher audio_app = null;
 	
-	public VoiceModule(String username, String url, String number) {
+	public VoiceModule(String username, String url) {
 		SipStack.init();
 		
 		SipStack.debug_level = LogLevel.LOWER;
 		SipStack.max_retransmission_timeout = 4000;
 		SipStack.default_transport_protocols = new String[1];
-		SipStack.default_transport_protocols[0] = "tcp";
+		SipStack.default_transport_protocols[0] = "udp";
 		
 		SipStack.ua_info = "BigBlueButton/" + Build.MODEL;
 		SipStack.server_info = SipStack.ua_info;
@@ -56,8 +69,10 @@ public class VoiceModule implements ExtendedCallListener {
 		user_profile.initContactAddress(sip_provider);
 				
 		keep_alive = new KeepAliveSip(sip_provider, 100000);
-		
-		sdp = new SessionDescriptor(user_profile.from_url,
+	}
+	
+	public void call(String number) {
+		local_sdp = new SessionDescriptor(user_profile.from_url,
 				sip_provider.getViaAddress());
 		
 		Vector<String> avpvec = new Vector<String>();
@@ -80,7 +95,7 @@ public class VoiceModule implements ExtendedCallListener {
 				
 		//String attr_param = String.valueOf(avp);
 		
-		sdp.addMedia(new MediaField("audio", user_profile.audio_port, 0, "RTP/AVP", avpvec), afvec);
+		local_sdp.addMedia(new MediaField("audio", user_profile.audio_port, 0, "RTP/AVP", avpvec), afvec);
 		
 		call = new ExtendedCall(sip_provider, 
 				user_profile.from_url, 
@@ -93,10 +108,24 @@ public class VoiceModule implements ExtendedCallListener {
 		target_url = sip_provider.completeNameAddress(target_url).toString();
 		
 		call.call(target_url, 
-				sdp.toString(),
-				"\"urn%3Aurn-7%3A3gpp-service.ims.icsi.mmtel\"");
+				local_sdp.toString(),
+				/*"\"urn%3Aurn-7%3A3gpp-service.ims.icsi.mmtel\""*/ null);
 	}
-
+	
+	public boolean isOnCall() {
+		if (call != null)
+			return call.isOnCall();
+		else
+			return false;
+	}
+	
+	public void hang() {
+		if (call != null && call.isOnCall()) {
+			call.hangup();
+			call = null;
+		}
+	}
+	
 	protected String getContactURL(String username,SipProvider sip_provider) {
 		int i = username.indexOf("@");
 		if (i != -1) {
@@ -141,6 +170,86 @@ public class VoiceModule implements ExtendedCallListener {
 	@Override
 	public void onCallAccepted(Call call, String sdp, Message resp) {
 		log.debug("===========> onCallAccepted");
+
+		SessionDescriptor remote_sdp = new SessionDescriptor(sdp);
+		SessionDescriptor new_sdp = new SessionDescriptor(local_sdp.getOrigin(),
+				local_sdp.getSessionName(),
+				local_sdp.getConnection(),
+				local_sdp.getTime());
+		new_sdp.addMediaDescriptors(local_sdp.getMediaDescriptors());
+		new_sdp = SdpTools.sdpMediaProduct(new_sdp, remote_sdp.getMediaDescriptors());
+		local_sdp = new_sdp;
+		call.setLocalSessionDescriptor(local_sdp.toString());
+
+//		Receiver.stopRingtone();
+		
+//		new_sdp = new SessionDescriptor(local_sdp.getOrigin(),
+//				local_sdp.getSessionName(),
+//				new ConnectionField("IP4", "0.0.0.0"),
+//				new TimeField());
+//		new_sdp.addMediaDescriptors(local_sdp.getMediaDescriptors());
+//		call.modify(null, new_sdp.toString());
+		
+//		call.modify(null, new_sdp.toString());
+		
+//		call.ring(new_sdp.toString());
+		
+//		call.ackWithAnswer(null);
+		
+//		call.ackWithAnswer(local_sdp.toString());
+		
+//		call.ackWithAnswer(sdp);
+		
+//		call.accept(null);
+		
+//		call.accept(local_sdp.toString());
+		
+//		call.accept(sdp);
+		
+		Codecs.Map codecs = Codecs.getCodec(local_sdp);
+		int local_audio_port = 0,
+			local_video_port = 0,
+			dtmf_pt = 0,
+			remote_video_port = 0,
+			remote_audio_port = 0;
+		
+		MediaDescriptor m = local_sdp.getMediaDescriptor("video");
+		if (m != null)
+			local_video_port = m.getMedia().getPort();
+		m = local_sdp.getMediaDescriptor("audio");
+		if (m != null) {
+			local_audio_port = m.getMedia().getPort();
+			if (m.getMedia().getFormatList().contains(String.valueOf(user_profile.dtmf_avp)))
+				dtmf_pt = user_profile.dtmf_avp;
+		}
+		
+		String remote_media_address = (new Parser(remote_sdp.getConnection().toString())).skipString().skipString().getString();
+		for (Enumeration<MediaDescriptor> e = remote_sdp.getMediaDescriptors()
+				.elements(); e.hasMoreElements();) {
+			MediaField media = e.nextElement().getMedia();
+			if (media.getMedia().equals("audio"))
+				remote_audio_port = media.getPort();
+			if (media.getMedia().equals("video"))
+				remote_video_port = media.getPort();
+		}
+		
+		String audio_in = null;
+		if (user_profile.send_tone) {
+			audio_in = JAudioLauncher.TONE;
+		} else if (user_profile.send_file != null) {
+			audio_in = user_profile.send_file;
+		}
+		String audio_out = null;
+		if (user_profile.recv_file != null) {
+			audio_out = user_profile.recv_file;
+		}
+
+		audio_app  = new JAudioLauncher(local_audio_port,
+				remote_media_address, remote_audio_port, 0, audio_in,
+				audio_out, codecs.codec.samp_rate(),
+				user_profile.audio_sample_size,
+				codecs.codec.frame_size(), null, codecs, dtmf_pt);
+		audio_app.startMedia();
 	}
 
 	@Override
@@ -151,6 +260,10 @@ public class VoiceModule implements ExtendedCallListener {
 	@Override
 	public void onCallClosed(Call call, Message resp) {
 		log.debug("===========> onCallClosed");
+		if (audio_app != null) {
+			audio_app.stopMedia();
+			audio_app = null;
+		}
 	}
 
 	@Override

@@ -505,7 +505,7 @@ public class RtpStreamSender extends Thread {
 
 	/** Debug output */
 	private static void println(String str) {
-		if (!Sipdroid.release) System.out.println("RtpStreamSender: " + str);
+		/*if (!Sipdroid.release)*/ System.out.println("RtpStreamSender: " + str);
 	}
 
 	/** Set RTP payload type of outband DTMF packets. **/  
