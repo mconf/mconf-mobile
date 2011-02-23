@@ -35,6 +35,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -64,6 +65,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static final int MENU_LOGOUT = Menu.FIRST + 1;
 	public static final int MENU_RAISE_HAND = Menu.FIRST + 2;
 	public static final int MENU_START_VOICE = Menu.FIRST + 3;
+	public static final int MENU_STOP_VOICE = Menu.FIRST + 4;
+	public static final int MENU_MUTE = Menu.FIRST + 5;
+	public static final int MENU_SPEAKER = Menu.FIRST + 6;
 	
 	public static final int CHAT_NOTIFICATION_ID = 77000;
 	
@@ -209,6 +213,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	protected void onDestroy() {
 		log.debug("onDestroy");
 		
+		if (voice.isOnCall())
+			voice.hang();
+		
 		bbb.removeListener(this);
 		bbb.disconnect();
 
@@ -242,13 +249,24 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	}
 	
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		boolean result = super.onCreateOptionsMenu(menu);
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		menu.clear();
+		if (voice.isOnCall()) {
+			menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, "Mute").setCheckable(true).setChecked(true);
+			menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, "Speaker").setCheckable(true);
+			menu.add(Menu.NONE, MENU_STOP_VOICE, Menu.NONE, "Stop voice").setIcon(android.R.drawable.ic_lock_silent_mode);
+		} else {
+			menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, "Start voice").setIcon(android.R.drawable.ic_lock_silent_mode_off);
+		}
 		menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, "Raise hand").setIcon(android.R.drawable.ic_menu_myplaces);
-		menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, "Start voice").setIcon(android.R.drawable.ic_lock_silent_mode_off);
 		menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, "Logout").setIcon(android.R.drawable.ic_menu_revert);
 		menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, "Quit").setIcon(android.R.drawable.ic_menu_close_clear_cancel);
-		return result;
+		return super.onPrepareOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		return super.onCreateOptionsMenu(menu);
 	}
 	
 	@Override
@@ -256,17 +274,18 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		Intent intent= new Intent(FINISH);
 		switch (item.getItemId()) {
 			case MENU_START_VOICE:
+				if (!voice.isOnCall())
+					voice.call(bbb.getJoinService().getJoinedMeeting().getVoicebridge());
+				break;
+			case MENU_STOP_VOICE:
 				if (voice.isOnCall())
 					voice.hang();
-				else
-					voice.call(bbb.getJoinService().getJoinedMeeting().getVoicebridge());
-//				if (!Receiver.engine(this).call(bbb.getJoinService().getJoinedMeeting().getVoicebridge(), true))
-//					new AlertDialog.Builder(this)
-//						.setMessage(R.string.notfast)
-//						.setTitle(R.string.app_name)
-//						.setIcon(R.drawable.icon22)
-//						.setCancelable(true)
-//						.show();
+				break;
+			case MENU_MUTE:
+				voice.muteCall(!voice.isMuted());
+				break;
+			case MENU_SPEAKER:
+				voice.setSpeaker(voice.getSpeaker() != AudioManager.MODE_NORMAL? AudioManager.MODE_NORMAL: AudioManager.MODE_IN_CALL);
 				break;
 			case MENU_LOGOUT:
 				bbb.disconnect();

@@ -7,7 +7,6 @@ import org.sipdroid.codecs.Codec;
 import org.sipdroid.codecs.Codecs;
 import org.sipdroid.media.JAudioLauncher;
 import org.sipdroid.media.MediaLauncher;
-import org.sipdroid.media.RtpStreamReceiver;
 import org.sipdroid.net.KeepAliveSip;
 import org.sipdroid.sipua.UserAgent;
 import org.sipdroid.sipua.UserAgentProfile;
@@ -16,11 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zoolu.net.IpAddress;
 import org.zoolu.sdp.AttributeField;
-import org.zoolu.sdp.ConnectionField;
 import org.zoolu.sdp.MediaDescriptor;
 import org.zoolu.sdp.MediaField;
 import org.zoolu.sdp.SessionDescriptor;
-import org.zoolu.sdp.TimeField;
 import org.zoolu.sip.address.NameAddress;
 import org.zoolu.sip.call.Call;
 import org.zoolu.sip.call.ExtendedCall;
@@ -32,6 +29,7 @@ import org.zoolu.sip.provider.SipStack;
 import org.zoolu.tools.LogLevel;
 import org.zoolu.tools.Parser;
 
+import android.media.AudioManager;
 import android.os.Build;
 
 public class VoiceModule implements ExtendedCallListener {
@@ -44,7 +42,11 @@ public class VoiceModule implements ExtendedCallListener {
 	protected KeepAliveSip keep_alive;
 
 	private MediaLauncher audio_app = null;
-	
+
+	private int speakerMode;
+
+	private boolean mute;
+
 	public VoiceModule(String username, String url) {
 		SipStack.init();
 		
@@ -171,6 +173,10 @@ public class VoiceModule implements ExtendedCallListener {
 	public void onCallAccepted(Call call, String sdp, Message resp) {
 		log.debug("===========> onCallAccepted");
 
+		Receiver.call_state = UserAgent.UA_STATE_INCALL;
+		mute = false;
+		speakerMode = AudioManager.MODE_IN_CALL;
+		
 		SessionDescriptor remote_sdp = new SessionDescriptor(sdp);
 		SessionDescriptor new_sdp = new SessionDescriptor(local_sdp.getOrigin(),
 				local_sdp.getSessionName(),
@@ -181,31 +187,6 @@ public class VoiceModule implements ExtendedCallListener {
 		local_sdp = new_sdp;
 		call.setLocalSessionDescriptor(local_sdp.toString());
 
-//		Receiver.stopRingtone();
-		
-//		new_sdp = new SessionDescriptor(local_sdp.getOrigin(),
-//				local_sdp.getSessionName(),
-//				new ConnectionField("IP4", "0.0.0.0"),
-//				new TimeField());
-//		new_sdp.addMediaDescriptors(local_sdp.getMediaDescriptors());
-//		call.modify(null, new_sdp.toString());
-		
-//		call.modify(null, new_sdp.toString());
-		
-//		call.ring(new_sdp.toString());
-		
-//		call.ackWithAnswer(null);
-		
-//		call.ackWithAnswer(local_sdp.toString());
-		
-//		call.ackWithAnswer(sdp);
-		
-//		call.accept(null);
-		
-//		call.accept(local_sdp.toString());
-		
-//		call.accept(sdp);
-		
 		Codecs.Map codecs = Codecs.getCodec(local_sdp);
 		int local_audio_port = 0,
 			local_video_port = 0,
@@ -249,7 +230,8 @@ public class VoiceModule implements ExtendedCallListener {
 				audio_out, codecs.codec.samp_rate(),
 				user_profile.audio_sample_size,
 				codecs.codec.frame_size(), null, codecs, dtmf_pt);
-		audio_app.startMedia();
+		audio_app.startMedia();		
+		setSpeaker(speakerMode);
 	}
 
 	@Override
@@ -260,6 +242,9 @@ public class VoiceModule implements ExtendedCallListener {
 	@Override
 	public void onCallClosed(Call call, Message resp) {
 		log.debug("===========> onCallClosed");
+
+		Receiver.call_state = UserAgent.UA_STATE_IDLE;
+		
 		if (audio_app != null) {
 			audio_app.stopMedia();
 			audio_app = null;
@@ -321,6 +306,28 @@ public class VoiceModule implements ExtendedCallListener {
 	@Override
 	public void onCallTimeout(Call call) {
 		log.debug("===========> onCallTimeout");
+	}
+
+	public boolean isMuted() {
+		return mute;
+	}
+	
+	public void muteCall(boolean mute) {
+		if (audio_app != null && mute != this.mute) {
+			this.mute = mute;
+			audio_app.muteMedia();
+		}
+	}
+
+	public int getSpeaker() {
+		return speakerMode;
+	}
+
+	public void setSpeaker(int mode) {
+		if (audio_app != null) {
+			speakerMode = mode;
+			audio_app.speakerMedia(speakerMode);
+		}
 	}
 	
 }

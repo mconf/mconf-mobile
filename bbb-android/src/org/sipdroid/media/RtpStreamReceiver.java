@@ -161,8 +161,8 @@ public class RtpStreamReceiver extends Thread {
 		setMode(speakermode = mode);
 		setCodec();
 		restoreVolume();
-		if (mode == AudioManager.MODE_NORMAL && Thread.currentThread().getName().equals("main"))
-			Toast.makeText(Receiver.mContext, R.string.help_speakerphone, Toast.LENGTH_LONG).show();
+//		if (mode == AudioManager.MODE_NORMAL && Thread.currentThread().getName().equals("main"))
+//			Toast.makeText(Receiver.mContext, R.string.help_speakerphone, Toast.LENGTH_LONG).show();
 		return old;
 	}
 
