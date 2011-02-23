@@ -217,6 +217,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		switch (item.getItemId()) {
 			case KICK_USER:
 				bbb.kickUser(contact.getUserId());
+				Intent kickedUser = new Intent(PrivateChat.KICKED_USER);
+				kickedUser.putExtra("userId", contact.getUserId());
+				sendBroadcast(kickedUser);
 				return true;
 			case MUTE_USER:
 				Toast.makeText(this, "Not implemented feature", Toast.LENGTH_SHORT).show();

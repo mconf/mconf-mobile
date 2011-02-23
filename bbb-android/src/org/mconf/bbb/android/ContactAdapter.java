@@ -148,7 +148,7 @@ public class ContactAdapter extends BaseAdapter {
         setRaiseHandStatus(entry);
         
         int color;
-        System.out.println(entry.getName()+entry.getChatStatus());
+       
         switch (entry.getChatStatus()) {
         	case Contact.CONTACT_ON_PRIVATE_MESSAGE:
         		color = R.color.title_background;

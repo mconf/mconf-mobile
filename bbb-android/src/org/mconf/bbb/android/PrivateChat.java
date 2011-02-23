@@ -166,6 +166,8 @@ public class PrivateChat extends Activity{
 
 	public static final String CHAT_CLOSED = "bbb.android.action.CHAT_CLOSED";
 
+	public static final String KICKED_USER = "bbb.android.action.KICKED_USER";
+
 
 	private GestureDetector gestureDetector;
 	View.OnTouchListener gestureListener;
@@ -185,6 +187,7 @@ public class PrivateChat extends Activity{
 		return false;
 	}
 	
+	
 	BroadcastReceiver finishedReceiver = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
 		{ 
@@ -201,6 +204,17 @@ public class PrivateChat extends Activity{
 		} 
 	};
 		
+	BroadcastReceiver kickedUser = new BroadcastReceiver(){ 
+		public void onReceive(Context context, Intent intent)
+		{ 
+			log.debug("closing a chat");
+			Bundle extras = intent.getExtras();
+			int userId = extras.getInt("userId");
+			if(hasUserOnPrivateChat(userId))
+				removeParticipant(userId);
+			
+		} 
+	};
 
 	
 	private int addView() {
@@ -360,6 +374,7 @@ public class PrivateChat extends Activity{
 		};
 		registerFinishedReceiver();
 		registerMoveToBackReceiver();
+		registerKickedUser();
 	}
 
 	private void registerFinishedReceiver(){ 
@@ -370,6 +385,11 @@ public class PrivateChat extends Activity{
 	private void registerMoveToBackReceiver(){ 
 		IntentFilter filter = new IntentFilter(SEND_TO_BACK); 
 		registerReceiver(moveToBack, filter); 
+	}
+	
+	private void registerKickedUser(){
+		IntentFilter filter = new IntentFilter(KICKED_USER);
+		registerReceiver(kickedUser, filter);
 	}
 	
 	@Override
