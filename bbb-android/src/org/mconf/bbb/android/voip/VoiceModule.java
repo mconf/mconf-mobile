@@ -31,8 +31,11 @@ import org.zoolu.sip.provider.SipStack;
 import org.zoolu.tools.LogLevel;
 import org.zoolu.tools.Parser;
 
+import android.app.Activity;
+import android.content.Context;
 import android.media.AudioManager;
 import android.os.Build;
+import android.widget.Toast;
 
 public class VoiceModule implements ExtendedCallListener {
 	private static final Logger log = LoggerFactory.getLogger(VoiceModule.class);
@@ -49,7 +52,11 @@ public class VoiceModule implements ExtendedCallListener {
 
 	private boolean mute;
 
-	public VoiceModule(String username, String url) {
+	final private Context context;
+
+	public VoiceModule(Context context, String username, String url) {
+		this.context = context;
+		
 		SipStack.init();
 		Sipdroid.release = false;
 		Receiver.call_state = UserAgent.UA_STATE_IDLE;
@@ -78,6 +85,9 @@ public class VoiceModule implements ExtendedCallListener {
 	}
 	
 	public void call(String number) {
+		if (isOnCall())
+			return;
+		
 		local_sdp = new SessionDescriptor(user_profile.from_url,
 				sip_provider.getViaAddress());
 		
@@ -173,8 +183,9 @@ public class VoiceModule implements ExtendedCallListener {
 	@Override
 	public void onCallAccepted(Call call, String sdp, Message resp) {
 		log.debug("===========> onCallAccepted");
-
+		
 		Receiver.call_state = UserAgent.UA_STATE_INCALL;
+		makeToast("Connection established");
 		RtpStreamReceiver.good = RtpStreamReceiver.lost = RtpStreamReceiver.loss = RtpStreamReceiver.late = 0;
 		mute = false;
 		speakerMode = AudioManager.MODE_IN_CALL;
@@ -246,6 +257,7 @@ public class VoiceModule implements ExtendedCallListener {
 		log.debug("===========> onCallClosed");
 
 		Receiver.call_state = UserAgent.UA_STATE_IDLE;
+		makeToast("Connection closed");
 		
 		if (audio_app != null) {
 			audio_app.stopMedia();
@@ -298,6 +310,9 @@ public class VoiceModule implements ExtendedCallListener {
 	@Override
 	public void onCallRefused(Call call, String reason, Message resp) {
 		log.debug("===========> onCallRefused");
+		
+		Receiver.call_state = UserAgent.UA_STATE_IDLE;	
+		makeToast("Connection refused");
 	}
 
 	@Override
@@ -330,6 +345,15 @@ public class VoiceModule implements ExtendedCallListener {
 			speakerMode = mode;
 			audio_app.speakerMedia(speakerMode);
 		}
+	}
+	
+	private void makeToast(final String text) {
+		((Activity) context).runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+			}
+		});
 	}
 	
 }
