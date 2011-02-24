@@ -76,6 +76,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static final int KICK_USER = Menu.FIRST;
 	public static final int MUTE_USER = Menu.FIRST+1;
 	public static final int SET_PRESENTER = Menu.FIRST+2;
+	public static final int SHOW_VIDEO = Menu.FIRST+3;
 
 	
 
@@ -205,6 +206,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			if (!contact.isPresenter())
 				menu.add(0, SET_PRESENTER, 0, "Assign presenter");
 		}
+		if (contact.getUserId() != bbb.getMyUserId()) {
+			menu.add(0, SHOW_VIDEO, 0, "Show video");
+		}
 		
 	}
 	
@@ -223,6 +227,11 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				return true;
 			case SET_PRESENTER:
 				bbb.assignPresenter(contact.getUserId());
+				return true;
+			case SHOW_VIDEO:
+				Client.bbb.connectVideo();
+        		Intent intent = new Intent(getApplicationContext(), ShowVideo.class);
+        		startActivity(intent);
 				return true;
 		}
 		return super.onContextItemSelected(item);

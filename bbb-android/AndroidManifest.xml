@@ -16,6 +16,8 @@
 		android:screenOrientation="portrait" />
 		<activity android:name=".PrivateChat" android:launchMode="singleInstance" android:screenOrientation="portrait">
 		</activity>
+		<activity android:name=".ShowVideo" android:launchMode="singleInstance" android:screenOrientation="portrait">
+		</activity>
 
 	</application>
 	<uses-sdk android:minSdkVersion="4" />

@@ -46,7 +46,7 @@ public class BigBlueButtonClient {
 	private static final Logger log = LoggerFactory.getLogger(BigBlueButtonClient.class);
 	
 	private MainRtmpConnection mainConnection;
-	private VideoRtmpConnection videoConnection;
+	private VideoRtmpConnection videoConnection; //TODO Gian Verify if there is a connection ID on the stream. If not, it may be needed to create a VideoRtmpConnection variable for each connection.
 
 	private JoinService joinService = new JoinService();
 	
@@ -56,6 +56,7 @@ public class BigBlueButtonClient {
 	private ListenersModule listenersModule = null;
 
 	private Set<IBigBlueButtonClientListener> eventListeners = new LinkedHashSet<IBigBlueButtonClientListener>();
+	private Set<IVideoListener> videoListeners = new LinkedHashSet<IVideoListener>();
 
 	public void setMyUserId(int myUserId) {
 		this.myUserId = myUserId;
@@ -99,10 +100,23 @@ public class BigBlueButtonClient {
 	public void removeListener(IBigBlueButtonClientListener listener) {
 		eventListeners.remove(listener);
 	}
-
+	
 	public Set<IBigBlueButtonClientListener> getListeners() {
 		return eventListeners;
 	}
+	
+	public void addListener(IVideoListener listener) {
+		log.debug("JAVA -> addListener certo");
+		videoListeners.add(listener);
+	}
+
+	public void removeListener(IVideoListener listener) {
+		videoListeners.remove(listener);
+	}
+	
+//	public Set<IVideoListener> getListeners() {
+//		return videoListeners;
+//	}	
 
 	public JoinService getJoinService() {
 		return joinService;
@@ -124,7 +138,8 @@ public class BigBlueButtonClient {
 		opt.setClientVersionToUse(Utils.fromHex("00000000"));
 		opt.setHost(joinService.getServerUrl().toLowerCase().replace("http://", ""));
 		opt.setAppName("video/" + joinService.getJoinedMeeting().getConference());
-		opt.setStreamName("320x24045");
+		opt.setStreamName("320x240412"); //TODO Gian Auto detect the stream name
+//		opt.setSaveAs("nomequalquer.flv"); //TODO Gian remove this line
 		log.debug(opt.toString());
 		
 		videoConnection = new VideoRtmpConnection(opt, this);
@@ -191,6 +206,13 @@ public class BigBlueButtonClient {
 			return true;
 		else
 			return false;
+	}
+	
+	public boolean onVideo(/*message*/) {
+		for (IVideoListener l : videoListeners) {
+			l.onVideo(/*message*/);
+		}
+		return true;
 	}
 
 }

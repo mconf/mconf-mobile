@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
@@ -42,10 +43,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.flazr.amf.Amf0Object;
+import com.flazr.io.flv.FlvAtom;
 import com.flazr.io.flv.FlvWriter;
 import com.flazr.rtmp.LoopedReader;
 import com.flazr.rtmp.RtmpDecoder;
 import com.flazr.rtmp.RtmpEncoder;
+import com.flazr.rtmp.RtmpHeader;
 import com.flazr.rtmp.RtmpMessage;
 import com.flazr.rtmp.RtmpPublisher;
 import com.flazr.rtmp.RtmpReader;
@@ -53,10 +56,12 @@ import com.flazr.rtmp.RtmpWriter;
 import com.flazr.rtmp.client.ClientHandshakeHandler;
 import com.flazr.rtmp.client.ClientOptions;
 import com.flazr.rtmp.message.AbstractMessage;
+import com.flazr.rtmp.message.BytesRead;
 import com.flazr.rtmp.message.ChunkSize;
 import com.flazr.rtmp.message.Command;
 import com.flazr.rtmp.message.CommandAmf0;
 import com.flazr.rtmp.message.Control;
+import com.flazr.rtmp.message.Video;
 
 public class VideoRtmpConnection extends RtmpConnection {
 
@@ -130,7 +135,27 @@ public class VideoRtmpConnection extends RtmpConnection {
         final RtmpMessage message = (RtmpMessage) me.getMessage();
         switch(message.getHeader().getMessageType()) {
         	case VIDEO:
-        		log.debug("ACHOU FRAME DE VIDEO");
+//        		Video video = (Video) message;
+//        		log.debug("XXXXX");
+//        		log.debug("<< {}", video);
+//        		log.debug("YYY");
+        		
+////        			writes the video stream to a file 
+//		    		writer.write(message);
+//		            bytesRead += message.getHeader().getSize();
+//		            if((bytesRead - bytesReadLastSent) > bytesReadWindow) {
+//		                log.debug("sending bytes read ack {}", bytesRead);
+//		                bytesReadLastSent = bytesRead;
+//		                channel.write(new BytesRead(bytesRead));
+//		            }
+        		          
+//        		// gets the video data
+//        		final ChannelBuffer in = message.encode();
+//        		byte[] aux = new byte[in.readableBytes()];
+//        		in.readBytes(aux);
+        		context.onVideo(/*message*/);
+        		
+        		        		
         		break;
 //        	case CONTROL:
 //                Control control = (Control) message;
