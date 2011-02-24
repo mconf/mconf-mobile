@@ -363,9 +363,10 @@ public class PrivateChat extends Activity{
 		
 		displayView(getIntent().getExtras());
 		LeftIn = AnimationUtils.loadAnimation(this, R.anim.push_left_in);
-		LeftOut = AnimationUtils.loadAnimation(this, R.anim.push_left_out);
-		RightIn = AnimationUtils.loadAnimation(this, R.anim.slide_right);
-		RightOut=AnimationUtils.loadAnimation(this, R.anim.fade);
+		LeftOut=AnimationUtils.loadAnimation(this, R.anim.push_left_out);
+		RightIn = AnimationUtils.loadAnimation(this, R.anim.push_right_in);
+		RightOut = AnimationUtils.loadAnimation(this, R.anim.push_right_out);
+		
 		gestureDetector = new GestureDetector(new MyGestureDetector());
 		gestureListener = new View.OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event) {
@@ -431,12 +432,12 @@ public class PrivateChat extends Activity{
 						return false;
 					// right to left swipe
 					if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-//						flipper.setInAnimation(LeftIn);
-//						flipper.setOutAnimation(LeftOut);
+						//flipper.setInAnimation(RightIn);
+						//flipper.setOutAnimation(RightOut);
 						flipper.showNext();
 					}  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-//						flipper.setInAnimation(RightIn);
-//						flipper.setOutAnimation(RightOut);
+						//flipper.setInAnimation(LeftIn);
+						//flipper.setOutAnimation(LeftOut);
 						flipper.showPrevious();
 					} else
 						return false;

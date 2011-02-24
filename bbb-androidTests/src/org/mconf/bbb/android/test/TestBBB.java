@@ -17,7 +17,8 @@ import com.jayway.android.robotium.solo.Solo;
 
 public class TestBBB extends ActivityInstrumentationTestCase2<ServerChoosing> {
 
-	
+	public final static String USER = "ale";
+	public final static String SERVER =  "http://devbbb-mconf.no-ip.org/";
 	private Solo solo;
 	
 	public TestBBB() throws ClassNotFoundException {
@@ -43,7 +44,7 @@ public class TestBBB extends ActivityInstrumentationTestCase2<ServerChoosing> {
 	}
 	
 	public void TypeServer() {
-		solo.enterText(0, "http://devbbb-mconf.no-ip.org/");
+		solo.enterText(0,SERVER);
 		solo.clickOnButton("Connect");
 		
 		solo.getCurrentActivity();
@@ -93,22 +94,22 @@ public class TestBBB extends ActivityInstrumentationTestCase2<ServerChoosing> {
 	
 	public void Kick(){
 		
-		solo.clickLongOnText("ale");
+		solo.clickLongOnText(USER);
 		solo.clickOnText("Kick");
-		assertFalse(solo.searchText("ale"));
+		assertFalse(solo.searchText(USER));
 	}
 	
 	public void testPrivateChat()
 	{
 		LoginInDemo();
-		solo.clickOnText("ale");
+		solo.clickOnText(USER);
 		solo.assertCurrentActivity("wrong",PrivateChat.class);
 		solo.enterText(0, "testing privateChat");
 		solo.clickOnButton(0);
 		solo.goBack();
 		solo.clickOnText("Tester");
 		solo.assertCurrentActivity("wrong",Client.class);
-		solo.clickOnText("ale");
+		solo.clickOnText(USER);
 		assertTrue(solo.searchText("testing privateChat"));
 		solo.goBack();
 		Kick();
@@ -116,6 +117,8 @@ public class TestBBB extends ActivityInstrumentationTestCase2<ServerChoosing> {
 		solo.assertCurrentActivity("wrong",PrivateChat.class);
 		
 	}
+	
+	
 	
 
 }
