@@ -23,8 +23,10 @@ package org.mconf.bbb.android;
 
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.IBigBlueButtonClientListener;
+import org.mconf.bbb.android.voip.VoiceModule;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.users.IParticipant;
+import org.sipdroid.sipua.ui.Receiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +38,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -65,6 +68,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static final int MENU_LOGOUT = Menu.FIRST + 1;
 	public static final int MENU_RAISE_HAND = Menu.FIRST + 2;
 	public static final int MENU_START_VOICE = Menu.FIRST + 3;
+	public static final int MENU_STOP_VOICE = Menu.FIRST + 4;
+	public static final int MENU_MUTE = Menu.FIRST + 5;
+	public static final int MENU_SPEAKER = Menu.FIRST + 6;
 	
 	public static final int CHAT_NOTIFICATION_ID = 77000;
 	
@@ -106,6 +112,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	protected Button slideHandleButton;
 	
 	protected boolean loggedIn=true;
+
+	private VoiceModule voice;
 	
 //	protected ClientBroadcastReceiver receiver = new ClientBroadcastReceiver();
 
@@ -168,6 +176,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			}
 		});
 		
+		Receiver.mContext = this;
+		voice = new VoiceModule(this,
+				bbb.getJoinService().getJoinedMeeting().getFullname(), 
+				bbb.getJoinService().getServerUrl());
 		bbb.addListener(this);
 		registerChatClosedReceiver();
 	}
@@ -175,19 +187,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	private void registerChatClosedReceiver(){ 
 		IntentFilter filter = new IntentFilter(PrivateChat.CHAT_CLOSED); 
 		registerReceiver(chatClosed, filter); 
-	}
-	
-	@Override
-	protected void onStart() {
-		super.onStart();
-		
-//		SharedPreferences settings = getSharedPreferences("org.sipdroid.sipua_preferences", MODE_PRIVATE);
-//		Editor editor = settings.edit();
-//		editor.putString("PREF_USERNAME", myusername);
-//		editor.putString("PREF_SERVER", bbb.getJoinService().getServerUrl().replace("http://", ""));
-//		editor.commit();
-//		
-//		Receiver.engine(this).registerMore();
 	}
 	
 	@Override
@@ -235,8 +234,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	protected void onDestroy() {
 		log.debug("onDestroy");
 		
-		bbb.removeListener(this);
-		bbb.disconnect();
+		quit();
 
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notificationManager.cancelAll();	
@@ -257,6 +255,13 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 //		}
 //		
 //	}
+	
+	private void quit() {
+		if (voice.isOnCall())
+			voice.hang();
+		bbb.removeListener(this);
+		bbb.disconnect();
+	}
 	
 	private void startPrivateChat(final Contact contact) {
 
@@ -279,13 +284,30 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	}
 	
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		boolean result = super.onCreateOptionsMenu(menu);
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		menu.clear();
+		if (voice.isOnCall()) {
+			if (voice.isMuted())
+				menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, "Unmute").setIcon(android.R.drawable.ic_lock_silent_mode_off);
+			else
+				menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, "Mute").setIcon(android.R.drawable.ic_lock_silent_mode);
+			if (voice.getSpeaker() == AudioManager.MODE_NORMAL)
+				menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, "Speaker").setIcon(android.R.drawable.button_onoff_indicator_on);
+			else
+				menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, "Speaker").setIcon(android.R.drawable.button_onoff_indicator_off);
+			menu.add(Menu.NONE, MENU_STOP_VOICE, Menu.NONE, "Stop voice").setIcon(android.R.drawable.ic_btn_speak_now);
+		} else {
+			menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, "Start voice").setIcon(android.R.drawable.ic_btn_speak_now);
+		}
 		menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, "Raise hand").setIcon(android.R.drawable.ic_menu_myplaces);
-		menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, "Start voice").setIcon(android.R.drawable.ic_lock_silent_mode_off);
 		menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, "Logout").setIcon(android.R.drawable.ic_menu_revert);
 		menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, "Quit").setIcon(android.R.drawable.ic_menu_close_clear_cancel);
-		return result;
+		return super.onPrepareOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		return super.onCreateOptionsMenu(menu);
 	}
 	
 	@Override
@@ -293,11 +315,19 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		Intent intent= new Intent(FINISH);
 		switch (item.getItemId()) {
 			case MENU_START_VOICE:
-				Toast.makeText(this, "Not implemented feature", Toast.LENGTH_SHORT).show();
-//				Receiver.engine(this).call(bbb.getJoinedMeeting().getVoicebridge(), true);
-				return true;
+				voice.call(bbb.getJoinService().getJoinedMeeting().getVoicebridge());
+				break;
+			case MENU_STOP_VOICE:
+				voice.hang();
+				break;
+			case MENU_MUTE:
+				voice.muteCall(!voice.isMuted());
+				break;
+			case MENU_SPEAKER:
+				voice.setSpeaker(voice.getSpeaker() != AudioManager.MODE_NORMAL? AudioManager.MODE_NORMAL: AudioManager.MODE_IN_CALL);
+				break;
 			case MENU_LOGOUT:
-				bbb.disconnect();
+				quit();
 				Intent login = new Intent(this, LoginPage.class);
 				login.putExtra("username", myusername);
 				startActivity(login);
@@ -305,7 +335,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				finish();
 				return true;
 			case MENU_QUIT:
-				bbb.disconnect();
+				quit();
 				sendBroadcast(intent);
 				finish();
 				return true;
