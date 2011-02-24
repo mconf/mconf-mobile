@@ -285,7 +285,7 @@ public class RtpStreamSender extends Thread {
 		android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
 		mu = p_type.codec.samp_rate()/8000;
 		int min = AudioRecord.getMinBufferSize(p_type.codec.samp_rate(), 
-				AudioFormat.CHANNEL_CONFIGURATION_MONO, 
+				AudioFormat.CHANNEL_IN_MONO,
 				AudioFormat.ENCODING_PCM_16BIT);
 		if (min == 640) {
 			if (frame_size == 960) frame_size = 320;
@@ -300,6 +300,7 @@ public class RtpStreamSender extends Thread {
 		} else {
 			if (frame_size == 960) frame_size = 320;
 			if (frame_size == 1024) frame_size *= 2;
+			min *= 2;
 		}
 		frame_rate = p_type.codec.samp_rate()/frame_size;
 		long frame_period = 1000 / frame_rate;
@@ -337,7 +338,7 @@ public class RtpStreamSender extends Thread {
 					}
 				}
 				changed = false;
-				record = new AudioRecord(MediaRecorder.AudioSource.MIC, p_type.codec.samp_rate(), AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, 
+				record = new AudioRecord(MediaRecorder.AudioSource.MIC, p_type.codec.samp_rate(), AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, 
 							min);
 				if (record.getState() != AudioRecord.STATE_INITIALIZED) {
 					Receiver.engine(Receiver.mContext).rejectcall();

@@ -7,6 +7,7 @@ import org.sipdroid.codecs.Codec;
 import org.sipdroid.codecs.Codecs;
 import org.sipdroid.media.JAudioLauncher;
 import org.sipdroid.media.MediaLauncher;
+import org.sipdroid.media.RtpStreamReceiver;
 import org.sipdroid.net.KeepAliveSip;
 import org.sipdroid.sipua.UserAgent;
 import org.sipdroid.sipua.UserAgentProfile;
@@ -118,14 +119,11 @@ public class VoiceModule implements ExtendedCallListener {
 	}
 	
 	public boolean isOnCall() {
-		if (call != null)
-			return call.isOnCall();
-		else
-			return false;
+		return Receiver.call_state == UserAgent.UA_STATE_INCALL;
 	}
 	
 	public void hang() {
-		if (call != null && call.isOnCall()) {
+		if (call != null && isOnCall()) {
 			call.hangup();
 			call = null;
 		}
@@ -177,6 +175,7 @@ public class VoiceModule implements ExtendedCallListener {
 		log.debug("===========> onCallAccepted");
 
 		Receiver.call_state = UserAgent.UA_STATE_INCALL;
+		RtpStreamReceiver.good = RtpStreamReceiver.lost = RtpStreamReceiver.loss = RtpStreamReceiver.late = 0;
 		mute = false;
 		speakerMode = AudioManager.MODE_IN_CALL;
 		

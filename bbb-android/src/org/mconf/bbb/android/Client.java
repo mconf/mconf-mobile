@@ -160,7 +160,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		});
 		
 		Receiver.mContext = this;
-		voice = new VoiceModule(bbb.getJoinService().getJoinedMeeting().getFullname(), 
+		voice = new VoiceModule(this,
+				bbb.getJoinService().getJoinedMeeting().getFullname(), 
 				bbb.getJoinService().getServerUrl());
 		
 		bbb.addListener(this);
@@ -250,11 +251,17 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
 		if (voice.isOnCall()) {
-			menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, "Mute").setCheckable(true).setChecked(true);
-			menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, "Speaker").setCheckable(true);
-			menu.add(Menu.NONE, MENU_STOP_VOICE, Menu.NONE, "Stop voice").setIcon(android.R.drawable.ic_lock_silent_mode);
+			if (voice.isMuted())
+				menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, "Unmute").setIcon(android.R.drawable.ic_lock_silent_mode_off);
+			else
+				menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, "Mute").setIcon(android.R.drawable.ic_lock_silent_mode);
+			if (voice.getSpeaker() == AudioManager.MODE_NORMAL)
+				menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, "Speaker").setIcon(android.R.drawable.button_onoff_indicator_on);
+			else
+				menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, "Speaker").setIcon(android.R.drawable.button_onoff_indicator_off);
+			menu.add(Menu.NONE, MENU_STOP_VOICE, Menu.NONE, "Stop voice").setIcon(android.R.drawable.ic_btn_speak_now);
 		} else {
-			menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, "Start voice").setIcon(android.R.drawable.ic_lock_silent_mode_off);
+			menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, "Start voice").setIcon(android.R.drawable.ic_btn_speak_now);
 		}
 		menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, "Raise hand").setIcon(android.R.drawable.ic_menu_myplaces);
 		menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, "Logout").setIcon(android.R.drawable.ic_menu_revert);
@@ -272,12 +279,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		Intent intent= new Intent(FINISH);
 		switch (item.getItemId()) {
 			case MENU_START_VOICE:
-				if (!voice.isOnCall())
-					voice.call(bbb.getJoinService().getJoinedMeeting().getVoicebridge());
+				voice.call(bbb.getJoinService().getJoinedMeeting().getVoicebridge());
 				break;
 			case MENU_STOP_VOICE:
-				if (voice.isOnCall())
-					voice.hang();
+				voice.hang();
 				break;
 			case MENU_MUTE:
 				voice.muteCall(!voice.isMuted());
