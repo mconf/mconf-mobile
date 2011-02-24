@@ -191,8 +191,9 @@ public class PrivateChat extends Activity{
 	BroadcastReceiver finishedReceiver = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
 		{ 
-			PrivateChat.this.finish(); // we finish PrivateChat here when receiving the broadcast 
 			removeAllParticipants();
+			PrivateChat.this.finish(); // we finish PrivateChat here when receiving the broadcast 
+
 		} 
 	};
 
@@ -229,9 +230,15 @@ public class PrivateChat extends Activity{
 	
 	private void removeAllParticipants()
 	{
-		for(Object key: participants.keySet())
-			participants.remove(key);
+		for(Iterator<Integer> iter=participants.keySet().iterator(); iter.hasNext();)
+		{
+			Integer key = iter.next();
+			if(participants.containsKey(key))
+				iter.remove();
+		}
+			
 	}
+	
 	
 	private void removeParticipant(Integer key)
 	{

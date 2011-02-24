@@ -50,14 +50,14 @@ public class ServerChoosing extends Activity  {
 				EditText text = (EditText)findViewById(R.id.serverURL);
 				if (text.getText().toString().length() > 0) {
 					
-					Intent callLogin = new Intent (getApplicationContext(), LoginPage.class);
+					Intent callLogin = new Intent (LoginPage.SERVER_CHOSED);
 					String serverURL=text.getText().toString();
 					if(serverURL.charAt(serverURL.length()-1)=='/')
 			             serverURL=serverURL.substring(0, serverURL.length() - 1);
 					
 					addServer(serverURL);
 					callLogin.putExtra("serverURL", serverURL);
-					startActivity(callLogin);
+					sendBroadcast(callLogin);
 					finish(); 
 				}
 			}

@@ -6,7 +6,7 @@
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:background="@color/background" android:layout_height="fill_parent"
 	android:gravity="center_vertical"
-	>
+	android:clickable="true">
 
 	<ImageView 
 		android:id="@+id/login_img_bbb_logo"
@@ -71,9 +71,10 @@
         android:layout_alignLeft="@+id/login_edittext_name"
         android:layout_marginTop="50dip"
 	/>
-	<Button android:text="@string/choose_other_server" android:layout_width="wrap_content"
-	android:layout_below="@+id/login_button_join" android:id="@+id/back_to_servers"
-	android:layout_height="wrap_content" android:layout_alignRight="@+id/login_button_join"></Button>
+	<Button android:text="@string/choose_a_server"
+	android:layout_width="wrap_content" android:layout_below="@+id/login_button_join"
+	android:layout_height="wrap_content" android:layout_alignRight="@+id/login_button_join"
+	android:id="@+id/server" android:maxHeight="40px" android:background="@color/background" ></Button>
                
 </RelativeLayout>
 

@@ -30,7 +30,10 @@ import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -43,18 +46,35 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
 public class LoginPage extends Activity {
 	
 	private static final Logger log = LoggerFactory.getLogger(LoginPage.class);
+
+	public static final String SERVER_CHOSED ="org.mconf.bbb.android.Client.SERVER_CHOSED";
 	
 	private ArrayAdapter<String> spinnerAdapter;
 	private boolean moderator;
 //	private static final String labelCreateMeeting = "== Create a new meeting ==";
 	private String username;
-	private String serverURL;
+	private String serverURL="";
+	BroadcastReceiver serverChosed = new BroadcastReceiver(){ 
+		public void onReceive(Context context, Intent intent)
+		{ 
+			Bundle extras = intent.getExtras();
+		    serverURL=extras.getString("serverURL");
+		    Button serverView = (Button) findViewById(R.id.server);
+		    serverView.setText(serverURL);
+		}
+	};
+	
+	private void registerServerChoosed(){ 
+		IntentFilter filter = new IntentFilter(SERVER_CHOSED); 
+		registerReceiver(serverChosed, filter); 
+	}
 	
     /** Called when the activity is first created. */
     @Override
@@ -64,7 +84,6 @@ public class LoginPage extends Activity {
         setContentView(R.layout.login);
       
         Bundle extras = getIntent().getExtras();
-        serverURL=extras.getString("serverURL");
         
         
         if (extras == null || extras.getString("username") == null)
@@ -171,8 +190,8 @@ public class LoginPage extends Activity {
         	}
         );
 
-        final Button backToServers = (Button) findViewById(R.id.back_to_servers);       
-        backToServers.setOnClickListener( new OnClickListener()
+        final Button server = (Button) findViewById(R.id.server);       
+        server.setOnClickListener( new OnClickListener()
         {
         	@Override
             public void onClick(View viewParam)
@@ -180,8 +199,7 @@ public class LoginPage extends Activity {
         		Intent intent = new Intent(getApplicationContext(), ServerChoosing.class);
         		log.debug("BACK_TO_SERVERS");
         		startActivity(intent);
-        		finish();
-            }
+        	   }
         	
         }
         );
@@ -196,7 +214,9 @@ public class LoginPage extends Activity {
 				updateRoleOption();
 			}
 		});
-        
+    	
+    	registerServerChoosed();
+    	
     }
     
     private void updateRoleOption() {
@@ -272,6 +292,7 @@ public class LoginPage extends Activity {
 			}
 		}).start();
     }
+    
     
     
     
