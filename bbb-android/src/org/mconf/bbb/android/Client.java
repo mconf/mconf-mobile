@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -54,6 +55,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.SlidingDrawer;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -71,6 +73,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static final int MENU_STOP_VOICE = Menu.FIRST + 4;
 	public static final int MENU_MUTE = Menu.FIRST + 5;
 	public static final int MENU_SPEAKER = Menu.FIRST + 6;
+	public static final int MENU_AUDIO_CONFIG = Menu.FIRST + 7;
 	
 	public static final int CHAT_NOTIFICATION_ID = 77000;
 	
@@ -297,6 +300,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		} else {
 			menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, R.string.start_voice).setIcon(android.R.drawable.ic_btn_speak_now);
 		}
+		menu.add(Menu.NONE, MENU_AUDIO_CONFIG, Menu.NONE, R.string.audio_config).setIcon(android.R.drawable.ic_menu_preferences);
 		menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.raise_hand).setIcon(android.R.drawable.ic_menu_myplaces);
 		menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, R.string.logout).setIcon(android.R.drawable.ic_menu_revert);
 		menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
@@ -350,6 +354,25 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 					bbb.raiseHand(true);
 				return true;
 				
+			case MENU_AUDIO_CONFIG:
+				Dialog dialog = new Dialog(this);
+				dialog.setContentView(R.layout.audio_config);
+				dialog.setTitle(R.string.audio_config);
+				dialog.setCancelable(true);
+				
+				AudioManager manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+				
+				final SeekBar mic_volume = (SeekBar) findViewById(R.id.mic_volume);
+				mic_volume.setMax(manager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL));
+				mic_volume.setProgress(manager.getStreamVolume(AudioManager.STREAM_VOICE_CALL));
+				
+				final SeekBar mic_gain = (SeekBar) findViewById(R.id.mic_gain);
+				final SeekBar speaker_volume = (SeekBar) findViewById(R.id.speaker_volume);
+				final SeekBar speaker_gain = (SeekBar) findViewById(R.id.speaker_gain);
+				
+				dialog.show();				
+				
+				return true;
 			default:			
 				return super.onOptionsItemSelected(item);
 		}

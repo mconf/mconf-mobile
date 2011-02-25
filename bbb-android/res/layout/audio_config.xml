@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_height="fill_parent" android:layout_width="fill_parent" android:paddingBottom="15dip">
+  <!--ScrollView android:layout_width="wrap_content" android:layout_height="fill_parent">
+  	<RelativeLayout android:layout_height="fill_parent" android:layout_width="fill_parent" android:layout_gravity="center_horizontal"-->
+	    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/textView1" android:layout_alignParentTop="true" android:text="Mic volume"></TextView>
+	    <SeekBar android:id="@+id/mic_volume" android:layout_height="wrap_content" android:layout_below="@+id/textView1" android:layout_width="fill_parent" android:layout_centerHorizontal="true" android:padding="20dip"></SeekBar>
+	    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@+id/mic_volume" android:id="@+id/textView2" android:text="Mic gain"></TextView>
+	    <SeekBar android:layout_width="fill_parent" android:id="@+id/mic_gain" android:layout_height="wrap_content" android:layout_below="@+id/textView2" android:padding="20dip"></SeekBar>
+    <!--/RelativeLayout>
+  </ScrollView-->
+	    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@+id/mic_gain" android:id="@+id/textView3" android:layout_alignLeft="@+id/mic_gain" android:text="Speaker volume"></TextView>
+	    <SeekBar android:layout_width="fill_parent" android:id="@+id/speaker_volume" android:layout_height="wrap_content" android:layout_below="@+id/textView3" android:layout_alignLeft="@+id/textView3" android:padding="20dip"></SeekBar>
+	    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@+id/speaker_volume" android:id="@+id/textView4" android:layout_alignLeft="@+id/speaker_volume" android:text="Speaker gain"></TextView>
+	    <SeekBar android:layout_width="fill_parent" android:id="@+id/speaker_gain" android:layout_height="wrap_content" android:layout_below="@+id/textView4" android:layout_alignLeft="@+id/textView4" android:padding="20dip"></SeekBar>
+  
+</RelativeLayout>

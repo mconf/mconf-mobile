@@ -40,6 +40,7 @@
 	<string name="connection_established">Connection established</string>
 	<string name="connection_closed">Connection closed</string>
 	<string name="connection_refused">Connection refused</string>
+	<string name="audio_config">Audio configuration</string>
 
 <!--
  * Copyright (C) 2009 The Sipdroid Open Source Project
