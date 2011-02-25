@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-	<string name="hello">Hello World, BBBandroid!</string>
 	<string name="app_name">BigBlueButton</string>
-	<string name="login_welcome">Welcome to MConf</string>
 	<string name="login_name">Name:</string>
 	<string name="login_button_join">Join</string>
+	<string name="login_empty_name">Empty username</string>
+	<string name="login_select_meeting">Please select a meeting</string>
+	<string name="login_cant_join">Can\'t join the meeting</string>
+	<string name="login_updating">Updating meeting list</string>
+	<string name="login_cant_contact_server">Can\'t contact the server. Try it later</string>
+	<string name="wait">Please wait</string>
+	<string name="welcome">Welcome</string>
+	<string name="cancel">Cancel</string>
+	<string name="you">you</string>
 	<string name="send_message">Send</string>
 	<string name="cancel_button">Cancel</string>
 	<string name="list_participants">List of participants</string>

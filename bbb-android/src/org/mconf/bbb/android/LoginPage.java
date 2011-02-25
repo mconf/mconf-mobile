@@ -32,6 +32,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -46,7 +47,6 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
@@ -71,11 +71,6 @@ public class LoginPage extends Activity {
 		}
 	};
 	
-	private void registerServerChoosed(){ 
-		IntentFilter filter = new IntentFilter(SERVER_CHOSED); 
-		registerReceiver(serverChosed, filter); 
-	}
-	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,7 +79,6 @@ public class LoginPage extends Activity {
         setContentView(R.layout.login);
       
         Bundle extras = getIntent().getExtras();
-        
         
         if (extras == null || extras.getString("username") == null)
         	username = "Android";
@@ -165,21 +159,20 @@ public class LoginPage extends Activity {
                 	String username = usernameEditText.getText().toString();
                 	                	 
                 	if (username.length() < 1) {
-                		Toast.makeText(getApplicationContext(),"Empty username", Toast.LENGTH_SHORT).show();  
+                		Toast.makeText(getApplicationContext(), R.string.login_empty_name, Toast.LENGTH_SHORT).show();  
                         return;
                 	}
                 	
                 	if (spinner.getSelectedItemPosition() == Spinner.INVALID_POSITION) {
-                		Toast.makeText(getApplicationContext(),"Please select a meeting", Toast.LENGTH_SHORT).show();
+                		Toast.makeText(getApplicationContext(), R.string.login_select_meeting, Toast.LENGTH_SHORT).show();
                 		return;
                 	}
                 	
                		Client.bbb.getJoinService().join((String) spinner.getSelectedItem(), username, moderator);
                		if (Client.bbb.getJoinService().getJoinedMeeting() == null) {
-	                	Toast.makeText(getApplicationContext(), "Can't join the meeting", Toast.LENGTH_SHORT).show();
+	                	Toast.makeText(getApplicationContext(), R.string.login_cant_join, Toast.LENGTH_SHORT).show();
 	                	return;
-	                } else
-	                	Client.bbb.connectBigBlueButton();
+	                }
 	                
 	                Intent myIntent = new Intent(getApplicationContext(), Client.class);
 	                myIntent.putExtra("username", username);
@@ -199,7 +192,7 @@ public class LoginPage extends Activity {
         		Intent intent = new Intent(getApplicationContext(), ServerChoosing.class);
         		log.debug("BACK_TO_SERVERS");
         		startActivity(intent);
-        	   }
+        	}
         	
         }
         );
@@ -215,8 +208,14 @@ public class LoginPage extends Activity {
 			}
 		});
     	
-    	registerServerChoosed();
-    	
+		IntentFilter filter = new IntentFilter(SERVER_CHOSED); 
+		registerReceiver(serverChosed, filter); 
+    }
+    
+    @Override
+    protected void onDestroy() {
+    	unregisterReceiver(serverChosed);
+    	super.onDestroy();
     }
     
     private void updateRoleOption() {
@@ -228,9 +227,11 @@ public class LoginPage extends Activity {
     }
     
     private void updateMeetingsList() {
-		final ProgressDialog progressDialog = ProgressDialog.show(this, "Updating meeting list", "Please wait", true);
-		
-		new Thread(new Runnable() {
+    	final ProgressDialog progressDialog = new ProgressDialog(this);
+    	progressDialog.setTitle(R.string.wait);
+    	progressDialog.setMessage(getResources().getString(R.string.login_updating));
+
+    	final Thread updateThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
 //		        Resources resources = getApplicationContext().getResources();
@@ -256,13 +257,15 @@ public class LoginPage extends Activity {
 		        	runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							Toast.makeText(getApplicationContext(), "Can't contact the server. Try it later", Toast.LENGTH_SHORT).show();
+							Toast.makeText(getApplicationContext(), R.string.login_cant_contact_server, Toast.LENGTH_SHORT).show();
 						}
 					});
 					log.error("Can't contact the server. Try it later");
 		        	return;
 		        }
 		        
+		        if (Thread.interrupted())
+		        	return;
 
 				final List<Meeting> meetings = Client.bbb.getJoinService().getMeetings();
 
@@ -290,7 +293,18 @@ public class LoginPage extends Activity {
 					}
 				});
 			}
-		}).start();
+		});
+		
+    	progressDialog.setButton(ProgressDialog.BUTTON_POSITIVE, getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				updateThread.interrupt();
+				progressDialog.dismiss();
+			}
+		});
+    	
+    	progressDialog.show();
+    	updateThread.start();		
     }
     
     

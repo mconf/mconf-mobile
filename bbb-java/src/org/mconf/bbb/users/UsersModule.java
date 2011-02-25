@@ -215,10 +215,10 @@ public class UsersModule extends Module implements ISharedObjectListener {
 	public void assignPresenter(int userId) {
 		for (Participant p : participants.values()) {
 			if (p.isPresenter()) {
-				if (p.getUserid() == userId)
+				if (p.getUserId() == userId)
 					return;
 				else
-					setPresenter(p.getUserid(), false);
+					setPresenter(p.getUserId(), false);
 			}
 		}
 		

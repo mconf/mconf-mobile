@@ -40,6 +40,7 @@ import android.widget.TextView;
 
 
 public class ContactAdapter extends BaseAdapter {
+	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger(ContactAdapter.class);
 	private Context context;
 	View view;
@@ -130,9 +131,15 @@ public class ContactAdapter extends BaseAdapter {
         }
         view = convertView;
         
+        String name = entry.getName();
         TextView contactName = (TextView) convertView.findViewById(R.id.contact_name);
-        contactName.setText(entry.getName());
-        contactName.setTag(entry.getName());
+        if (entry.getUserId() == Client.bbb.getMyUserId()) {
+        	name += " (" + context.getResources().getString(R.string.you) + ")";
+        	contactName.setTextAppearance(context, R.style.MyNameStyle);
+        } else
+        	contactName.setTextAppearance(context, R.style.ParticipantNameStyle);
+        contactName.setText(name);
+        contactName.setTag(name);
 
        
         ImageView moderator = (ImageView) convertView.findViewById(R.id.moderator);

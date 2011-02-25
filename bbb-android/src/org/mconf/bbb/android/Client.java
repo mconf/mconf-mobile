@@ -138,7 +138,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		
 		Bundle extras = getIntent().getExtras();
 		myusername = extras.getString("username");
-		Toast.makeText(getApplicationContext(),"Be welcome, " + myusername, Toast.LENGTH_SHORT).show(); 
+		Toast.makeText(getApplicationContext(),getResources().getString(R.string.welcome) + ", " + myusername, Toast.LENGTH_SHORT).show(); 
 
 		chatAdapter = new ChatAdapter(this);
 		final ListView chatListView = (ListView)findViewById(R.id.messages);
@@ -181,10 +181,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				bbb.getJoinService().getJoinedMeeting().getFullname(), 
 				bbb.getJoinService().getServerUrl());
 		bbb.addListener(this);
-		registerChatClosedReceiver();
-	}
-	
-	private void registerChatClosedReceiver(){ 
+    	bbb.connectBigBlueButton();
+
+
 		IntentFilter filter = new IntentFilter(PrivateChat.CHAT_CLOSED); 
 		registerReceiver(chatClosed, filter); 
 	}
@@ -239,7 +238,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notificationManager.cancelAll();	
 
-//		unregisterReceiver(receiver);
+		unregisterReceiver(chatClosed);
 
 		super.onDestroy();
 	}
@@ -273,8 +272,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				contactAdapter.notifyDataSetChanged();
 			}
 			
-		}
-		);
+		});
 		
 		Intent intent = new Intent(getApplicationContext(), PrivateChat.class);
 		intent.putExtra("username", contact.getName());
@@ -316,16 +314,20 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		switch (item.getItemId()) {
 			case MENU_START_VOICE:
 				voice.call(bbb.getJoinService().getJoinedMeeting().getVoicebridge());
-				break;
+				return true;
+				
 			case MENU_STOP_VOICE:
 				voice.hang();
-				break;
+				return true;
+				
 			case MENU_MUTE:
 				voice.muteCall(!voice.isMuted());
-				break;
+				return true;
+				
 			case MENU_SPEAKER:
 				voice.setSpeaker(voice.getSpeaker() != AudioManager.MODE_NORMAL? AudioManager.MODE_NORMAL: AudioManager.MODE_IN_CALL);
-				break;
+				return true;
+				
 			case MENU_LOGOUT:
 				quit();
 				Intent login = new Intent(this, LoginPage.class);
@@ -334,6 +336,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				sendBroadcast(intent);
 				finish();
 				return true;
+				
 			case MENU_QUIT:
 				quit();
 				sendBroadcast(intent);
@@ -346,9 +349,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				else
 					bbb.raiseHand(true);
 				return true;
+				
+			default:			
+				return super.onOptionsItemSelected(item);
 		}
-
-		return super.onOptionsItemSelected(item);
 	}
 	
     @Override

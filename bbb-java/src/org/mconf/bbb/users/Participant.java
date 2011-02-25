@@ -159,14 +159,6 @@ public class Participant implements IParticipant {
 		status.setRaiseHand(raiseHand);
 	}
 
-	public int getUserid() {
-		return userid;
-	}
-
-	public void setUserid(int userid) {
-		this.userid = userid;
-	}
-
 	public boolean isListener() {
 		return listener;
 	}
