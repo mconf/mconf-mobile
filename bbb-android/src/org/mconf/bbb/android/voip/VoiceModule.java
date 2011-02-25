@@ -3,6 +3,7 @@ package org.mconf.bbb.android.voip;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import org.mconf.bbb.android.R;
 import org.sipdroid.codecs.Codec;
 import org.sipdroid.codecs.Codecs;
 import org.sipdroid.media.JAudioLauncher;
@@ -185,7 +186,7 @@ public class VoiceModule implements ExtendedCallListener {
 		log.debug("===========> onCallAccepted");
 		
 		Receiver.call_state = UserAgent.UA_STATE_INCALL;
-		makeToast("Connection established");
+		makeToast(R.string.connection_established);
 		RtpStreamReceiver.good = RtpStreamReceiver.lost = RtpStreamReceiver.loss = RtpStreamReceiver.late = 0;
 		mute = false;
 		speakerMode = AudioManager.MODE_IN_CALL;
@@ -257,7 +258,7 @@ public class VoiceModule implements ExtendedCallListener {
 		log.debug("===========> onCallClosed");
 
 		Receiver.call_state = UserAgent.UA_STATE_IDLE;
-		makeToast("Connection closed");
+		makeToast(R.string.connection_closed);
 		
 		if (audio_app != null) {
 			audio_app.stopMedia();
@@ -312,7 +313,7 @@ public class VoiceModule implements ExtendedCallListener {
 		log.debug("===========> onCallRefused");
 		
 		Receiver.call_state = UserAgent.UA_STATE_IDLE;	
-		makeToast("Connection refused");
+		makeToast(R.string.connection_refused);
 	}
 
 	@Override
@@ -347,11 +348,11 @@ public class VoiceModule implements ExtendedCallListener {
 		}
 	}
 	
-	private void makeToast(final String text) {
+	private void makeToast(final int resId) {
 		((Activity) context).runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+				Toast.makeText(context, resId, Toast.LENGTH_SHORT).show();
 			}
 		});
 	}

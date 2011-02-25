@@ -341,7 +341,7 @@ public class PrivateChat extends Activity{
 		String username = extras.getString("username");
 		boolean notified = extras.getBoolean("notified");
 		
-		setTitle("Private chat with " + username);		
+		setTitle(getResources().getString(R.string.private_chat_title) + username);		
 
 		RemoteParticipant p = participants.get(userId);
 		
@@ -450,7 +450,7 @@ public class PrivateChat extends Activity{
 						return false;
 					
 					int viewId = flipper.getDisplayedChild();
-					setTitle("Private chat with " +getParticipantByViewId(viewId).getUsername());
+					setTitle(getResources().getString(R.string.private_chat_title) + getParticipantByViewId(viewId).getUsername());
 					
 					ListView chatListView = (ListView) flipper.getChildAt(viewId).findViewById(R.id.messages);
 					chatListView.setSelection(chatListView.getCount());
@@ -485,7 +485,7 @@ public class PrivateChat extends Activity{
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
-		menu.add(0, MENU_CLOSE, 0, "Close Chat").setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+		menu.add(0, MENU_CLOSE, 0, R.string.close_chat).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 		return result;
 	}
 
@@ -503,7 +503,7 @@ public class PrivateChat extends Activity{
 					flipper.showPrevious();
 					removeParticipant(getParticipantKeyByViewId(viewID));
 					viewID=flipper.getDisplayedChild();
-					setTitle("Private chat with "+getParticipantByViewId(viewID).getUsername());
+					setTitle(getResources().getString(R.string.private_chat_title) + getParticipantByViewId(viewID).getUsername());
 				}
 				else
 				{

@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-	<string name="hello">Hello World, BBBandroid!</string>
 	<string name="app_name">BigBlueButton</string>
-	<string name="login_welcome">Welcome to MConf</string>
 	<string name="login_name">Name:</string>
 	<string name="login_button_join">Join</string>
+	<string name="login_empty_name">Empty username</string>
+	<string name="login_select_meeting">Please select a meeting</string>
+	<string name="login_cant_join">Can\'t join the meeting</string>
+	<string name="login_updating">Updating meeting list</string>
+	<string name="login_cant_contact_server">Can\'t contact the server. Try it later</string>
+	<string name="wait">Please wait</string>
+	<string name="welcome">Welcome</string>
+	<string name="cancel">Cancel</string>
+	<string name="you">you</string>
 	<string name="send_message">Send</string>
 	<string name="cancel_button">Cancel</string>
 	<string name="list_participants">List of participants</string>
@@ -15,6 +22,24 @@
 	<string name="connect">Connect</string>
 	<string name="type_server">Or type a server URL:</string>
 	<string name="choose_a_server">Choose a server</string>
+	<string name="kick">Kick</string>
+	<string name="mute">Mute</string>
+	<string name="unmute">Unmute</string>
+	<string name="assign_presenter">Assign presenter</string>
+	<string name="not_implemented">Not implemented feature</string>
+	<string name="speaker">Speaker</string>
+	<string name="start_voice">Start voice</string>
+	<string name="stop_voice">Stop voice</string>
+	<string name="quit">Quit</string>
+	<string name="logout">Logout</string>
+	<string name="raise_hand">Raise hand</string>
+	<string name="private_chat_notification">New private chat message from&#160;</string>
+	<string name="public_chat_notification">New public chat message from&#160;</string>
+	<string name="private_chat_title">Private chat with&#160;</string>
+	<string name="close_chat">Close chat</string>
+	<string name="connection_established">Connection established</string>
+	<string name="connection_closed">Connection closed</string>
+	<string name="connection_refused">Connection refused</string>
 
 <!--
  * Copyright (C) 2009 The Sipdroid Open Source Project
@@ -318,5 +343,6 @@
 
 <string name="help_speakerphone">Press and hold volume buttons to force talk</string>
 <string name="menu_create">New PBX linked to my Google Voice</string>
+
 
 </resources>
