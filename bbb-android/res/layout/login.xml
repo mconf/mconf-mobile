@@ -57,8 +57,8 @@
     />
 
     <RadioGroup android:layout_width="wrap_content" android:layout_below="@+id/login_spinner" android:layout_height="wrap_content" android:layout_alignLeft="@+id/login_spinner" android:id="@+id/login_role" android:orientation="horizontal">
-        <RadioButton android:layout_width="wrap_content" android:id="@+id/login_role_moderator" android:layout_height="wrap_content" android:text="Moderator" android:textColor="#000000"/>
-        <RadioButton android:layout_width="wrap_content" android:id="@+id/login_role_viewer" android:layout_height="wrap_content" android:text="Viewer" android:checked="true" android:textColor="#000000"/>
+        <RadioButton android:layout_width="wrap_content" android:id="@+id/login_role_moderator" android:layout_height="wrap_content" android:textColor="#000000" android:text="@string/moderator"/>
+        <RadioButton android:layout_width="wrap_content" android:id="@+id/login_role_viewer" android:layout_height="wrap_content" android:checked="true" android:textColor="#000000" android:text="@string/viewer"/>
     </RadioGroup>
 
 	<Button

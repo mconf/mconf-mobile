@@ -1,4 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+	<string name="app_name">BigBlueButton</string>
+	<string name="login_name">Nome:</string>
+	<string name="login_button_join">Entrar</string>
+	<string name="login_empty_name">Nome em branco</string>
+	<string name="login_select_meeting">Por favor, selecione uma sala</string>
+	<string name="login_cant_join">Não foi possível entrar na sala</string>
+	<string name="login_updating">Atualizando lista de salas</string>
+	<string name="login_cant_contact_server">Não foi possível conectar ao servidor. Tente novamente mais tarde</string>
+	<string name="wait">Por favor, aguarde</string>
+	<string name="welcome">Seja bem-vindo</string>
+	<string name="cancel">Cancelar</string>
+	<string name="you">você</string>
+	<string name="send_message">Enviar</string>
+	<string name="list_participants">Lista de participantes</string>
+	<string name="public_chat">Bate-papo público</string>
+	<string name="meeting">Sala:</string>
+	<string name="choose_server">Escolha um servidor para conectar:</string>
+	<string name="connect">Conectar</string>
+	<string name="type_server">Ou digite o endereço do servidor:</string>
+	<string name="choose_a_server">Escolha um servidor</string>
+	<string name="kick">Expulsar</string>
+	<string name="mute">Sem som</string>
+	<string name="unmute">Com som</string>
+	<string name="assign_presenter">Tornar apresentador</string>
+	<string name="not_implemented">Funcionalidade não implementada</string>
+	<string name="speaker">Speaker</string>
+	<string name="start_voice">Iniciar voz</string>
+	<string name="stop_voice">Parar voz</string>
+	<string name="quit">Sair</string>
+	<string name="logout">Fechar sala</string>
+	<string name="raise_hand">Levantar a mão</string>
+	<string name="private_chat_notification">Nova mensagem privada de&#160;</string>
+	<string name="public_chat_notification">Nova mensagem pública de&#160;</string>
+	<string name="private_chat_title">Bate-papo privado com&#160;</string>
+	<string name="close_chat">Fechar bate-papo</string>
+	<string name="connection_established">Conexão estabelecida</string>
+	<string name="connection_closed">Conexão fechada</string>
+	<string name="connection_refused">Conexão rejeitada</string>
+	<string name="about">
+BBB-Android é uma implementação em Android do cliente BigBlueButton.
+\n
+\nFoi desenvolvido pelo Laboratório do PRAV como parte do projeto GT-Mconf (http://inf.ufrgs.br/prav/gtmconf).
+\n
+\nO código fonte está licenciado sob a GNU General Public License (GPL) e está disponível em https://github.com/mconf.
+\n
+\nA implementação de áudio é baseada no Sipdroid, um cliente SIP de código aberto para Android (http://sipdroid.org).
+\n
+\nUtiliza a biblioteca Flazr, uma implementação em Java de protocolos de streaming multimídia (http://flazr.com).
+\n
+\nUtiliza a biblioteca BBB-Java, uma API em Java para interação com o servidor BigBlueButton.
+	</string>
+	<string name="moderator">Moderador</string>
+	<string name="viewer">Participante</string>
+
 <!--
  * Copyright (C) 2009 The Sipdroid Open Source Project
  *
@@ -25,11 +81,11 @@
 /////////////////////////////////////////////////////////////////////
 -->
 
-<resources>
+<!-- resources-->
 	<string name="pstn_name">Chamada</string>
 	<string name="sip_name">Chamada Sipdroid, quando disponível</string>
 
-	<string name="about">Sipdroid é um cliente SIP open-source para o Android
+	<!-- string name="about">Sipdroid é um cliente SIP open-source para o Android
  \n
  \nVeja http://sipdroid.org para mais informações
  \n
@@ -43,7 +99,7 @@
  \n
  \nEste programa é livre, você pode redistribuí-lo e/ou modificá-lo sob os termos da GNU General Public License conforme publicada pela Free Software Foundation, versão 3 da Licença, ou (na sua opção) qualquer versão posterior.
  \n
- \nEste programa é distribuído na esperança de que será útil, mas SEM QUALQUER GARANTIA, mesmo sem a garantia implícita de COMERCIABILIDADE ou ADEQUAÇÃO A UM DETERMINADO PROPÓSITO. Veja a GNU General Public License para mais detalhes (http://www.gnu.org/licenses).</string>
+ \nEste programa é distribuído na esperança de que será útil, mas SEM QUALQUER GARANTIA, mesmo sem a garantia implícita de COMERCIABILIDADE ou ADEQUAÇÃO A UM DETERMINADO PROPÓSITO. Veja a GNU General Public License para mais detalhes (http://www.gnu.org/licenses).</string-->
 
 	<string name="reg">Registrando...</string>
 	<string name="regok">Registrado</string>

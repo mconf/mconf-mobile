@@ -29,7 +29,7 @@ public class AboutDialog extends AlertDialog {
 		
 		setView(screen);
 		setTitle(R.string.menu_about);
-		setIcon(R.drawable.icon_bbb);
+		setIcon(R.drawable.hurricane_transparent);
 		setCancelable(true);
 		setButton(BUTTON_POSITIVE, "Close", new OnClickListener() {
 			

@@ -14,7 +14,6 @@
 	<string name="cancel">Cancel</string>
 	<string name="you">you</string>
 	<string name="send_message">Send</string>
-	<string name="cancel_button">Cancel</string>
 	<string name="list_participants">List of participants</string>
 	<string name="public_chat">Public chat</string>
 	<string name="meeting">Meeting:</string>
@@ -40,7 +39,6 @@
 	<string name="connection_established">Connection established</string>
 	<string name="connection_closed">Connection closed</string>
 	<string name="connection_refused">Connection refused</string>
-
 	<string name="about">
 BBB-Android is an Android implementation of the BigBlueButton client.
 \n
@@ -53,8 +51,9 @@ BBB-Android is an Android implementation of the BigBlueButton client.
 \nIt uses Flazr, a Java implementation of multimedia streaming protocols (http://flazr.com).
 \n
 \nIt uses BBB-Java, a client-side Java API for BigBlueButton.
-	
 	</string>
+	<string name="moderator">Moderator</string>
+	<string name="viewer">Viewer</string>
 
 <!--
  * Copyright (C) 2009 The Sipdroid Open Source Project
