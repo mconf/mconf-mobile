@@ -40,7 +40,7 @@
 	<string name="connection_closed">Conexão fechada</string>
 	<string name="connection_refused">Conexão rejeitada</string>
 	<string name="about">
-BBB-Android é uma implementação em Android do cliente BigBlueButton.
+BBB-Android é uma implementação do cliente BigBlueButton para Android.
 \n
 \nFoi desenvolvido pelo Laboratório do PRAV como parte do projeto GT-Mconf (http://inf.ufrgs.br/prav/gtmconf).
 \n

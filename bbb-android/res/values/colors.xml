@@ -10,6 +10,7 @@
 <color name="chat_user">#000000</color>
 <color name="chat_message">#000000</color>
 <color name="chat_time">#afbac0</color>
+<color name="text_link">#000000</color>
 <!--/resources-->
 
 <!-- 
