@@ -22,7 +22,6 @@
 package org.mconf.bbb.android;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -230,52 +229,35 @@ public class PrivateChat extends Activity{
 	
 	private void removeAllParticipants()
 	{
-		for(Iterator<Integer> iter=participants.keySet().iterator(); iter.hasNext();)
-		{
-			Integer key = iter.next();
-			if(participants.containsKey(key))
-				iter.remove();
-		}
-			
+		for (int key : participants.keySet())
+			removeParticipant(key);
 	}
 	
 	
 	private void removeParticipant(Integer key)
 	{
-		participants.remove(key);
+		RemoteParticipant p = participants.get(key);
+		if (p != null) {
+			Client.bbb.removeListener(p);
+			participants.remove(key);
+		}
 	}
 
-	private Integer getParticipantKeyByViewId(int viewID)
+	private Integer getParticipantKeyByViewId(int viewId)
 	{
-		Iterator<Integer> it = participants.keySet().iterator();
-
-		while (it.hasNext()) {
-
-			Integer key = it.next();
-			RemoteParticipant part = participants.get(key);
-
-			if (part.getViewId() == viewID)
-				return key;
+		for (RemoteParticipant p : participants.values()) {
+			if (p.getViewId() == viewId)
+				return p.getUserId();
 		}
-
 		return null;
 	}
 	
 	private RemoteParticipant getParticipantByViewId(int viewId) {
-
-		Iterator<RemoteParticipant> it = participants.values().iterator();
-
-		while (it.hasNext()) {
-
-			RemoteParticipant part = it.next();
-
-
-			if (part.getViewId() == viewId)
-				return part;
-		}
-
-		return null;
-
+		Integer key = getParticipantKeyByViewId(viewId);
+		if (key != null)
+			return participants.get(key);
+		else
+			return null;
 	}
 
 	private RemoteParticipant createParticipant(int userId, String username, boolean notified) {
@@ -405,6 +387,7 @@ public class PrivateChat extends Activity{
 		super.onDestroy(); 
 		unregisterReceiver(finishedReceiver);
 		unregisterReceiver(moveToBack);
+		unregisterReceiver(kickedUser);
 	}
 	
 	
