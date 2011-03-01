@@ -26,9 +26,7 @@ import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.android.voip.VoiceModule;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.users.IParticipant;
-import org.sipdroid.media.RtpStreamSender;
 import org.sipdroid.sipua.ui.Receiver;
-import org.sipdroid.sipua.ui.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,12 +39,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences.Editor;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -59,13 +55,10 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SeekBar;
 import android.widget.SlidingDrawer;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.SlidingDrawer.OnDrawerOpenListener;
 
 
@@ -371,14 +364,21 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-    	if (keyCode == KeyEvent.KEYCODE_BACK) {
-    		Intent intent = new Intent(SEND_TO_BACK);
-    		sendBroadcast(intent);
-    		log.debug("KEYCODE_BACK");
-    		moveTaskToBack(true);
-    		return true;
+    	switch (keyCode) {
+    		case KeyEvent.KEYCODE_BACK:
+	    		Intent intent = new Intent(SEND_TO_BACK);
+	    		sendBroadcast(intent);
+	    		log.debug("KEYCODE_BACK");
+	    		moveTaskToBack(true);
+	    		return true;
+    		case KeyEvent.KEYCODE_VOLUME_DOWN:
+    		case KeyEvent.KEYCODE_VOLUME_UP:
+				Dialog dialog = new AudioControlDialog(this);
+				dialog.show();
+				return true;
+    		default:
+    	    	return super.onKeyDown(keyCode, event);
     	}    		
-    	return super.onKeyDown(keyCode, event);
     }
 
 	@Override

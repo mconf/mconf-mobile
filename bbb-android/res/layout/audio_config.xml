@@ -6,13 +6,14 @@
   	<RelativeLayout android:layout_height="fill_parent" android:layout_width="fill_parent" android:layout_gravity="center_horizontal"-->
 	    <!-- TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/label_mic_volume" android:layout_alignParentTop="true" android:text="Mic volume"></TextView>
 	    <SeekBar android:id="@+id/mic_volume" android:layout_height="wrap_content" android:layout_below="@+id/label_mic_volume" android:layout_width="fill_parent" android:layout_centerHorizontal="true" android:padding="20dip"></SeekBar-->
-	    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@+id/mic_volume" android:id="@+id/label_mic_gain" android:text="Mic gain" android:paddingLeft="5dip"/>
+	    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@+id/mic_volume" android:id="@+id/label_mic_gain" android:paddingLeft="5dip" android:text="@string/mic_gain"/>
 	    <SeekBar android:layout_width="fill_parent" android:id="@+id/mic_gain" android:layout_height="wrap_content" android:layout_below="@+id/label_mic_gain" android:padding="20dip" />
     <!--/RelativeLayout>
   </ScrollView-->
-	    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@+id/mic_gain" android:id="@+id/label_speaker_volume" android:layout_alignLeft="@+id/mic_gain" android:text="Speaker volume" android:paddingLeft="5dip"/>
+	    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@+id/mic_gain" android:id="@+id/label_earphone_volume" android:layout_alignLeft="@+id/mic_gain" android:paddingLeft="5dip" android:text="@string/earphone_volume"></TextView>
+	    <SeekBar android:layout_width="fill_parent" android:id="@+id/earphone_volume" android:layout_height="wrap_content" android:layout_below="@+id/label_earphone_volume" android:layout_alignLeft="@+id/label_earphone_volume" android:padding="20dip"></SeekBar>
+	    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@+id/earphone_volume" android:id="@+id/label_speaker_volume" android:layout_alignLeft="@+id/earphone_volume" android:paddingLeft="5dip" android:text="@string/speaker_volume"/>
 	    <SeekBar android:layout_width="fill_parent" android:id="@+id/speaker_volume" android:layout_height="wrap_content" android:layout_below="@+id/label_speaker_volume" android:layout_alignLeft="@+id/label_speaker_volume" android:padding="20dip" />
-	    <!-- TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@+id/speaker_volume" android:id="@+id/label_speaker_gain" android:layout_alignLeft="@+id/speaker_volume" android:text="Speaker gain"></TextView>
-	    <SeekBar android:layout_width="fill_parent" android:id="@+id/speaker_gain" android:layout_height="wrap_content" android:layout_below="@+id/label_speaker_gain" android:layout_alignLeft="@+id/label_speaker_gain" android:padding="20dip"></SeekBar-->
+	    <Button android:layout_height="wrap_content" android:layout_below="@+id/speaker_volume" android:layout_width="wrap_content" android:layout_centerHorizontal="true" android:id="@+id/audio_control_close" android:text="@string/close" android:paddingLeft="30dip" android:paddingRight="30dip"></Button>
   
 </RelativeLayout>

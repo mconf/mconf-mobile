@@ -12,9 +12,9 @@
 	<string name="wait">Please wait</string>
 	<string name="welcome">Welcome</string>
 	<string name="cancel">Cancel</string>
+	<string name="close">Close</string>
 	<string name="you">you</string>
 	<string name="send_message">Send</string>
-	<string name="cancel_button">Cancel</string>
 	<string name="list_participants">List of participants</string>
 	<string name="public_chat">Public chat</string>
 	<string name="meeting">Meeting:</string>
@@ -43,6 +43,7 @@
 	<string name="audio_config">Audio configuration</string>
 	<string name="speaker_volume">Speaker volume</string>
 	<string name="earphone_volume">Earphone volume</string>
+	<string name="mic_gain">Mic gain</string>
 
 <!--
  * Copyright (C) 2009 The Sipdroid Open Source Project
