@@ -189,6 +189,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		registerReceiver(chatClosed, filter); 
 	}
 	
+
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {

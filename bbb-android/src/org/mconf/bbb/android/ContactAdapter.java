@@ -27,6 +27,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.mconf.bbb.users.IParticipant;
+import org.mconf.bbb.users.Participant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,8 @@ import android.widget.TextView;
 public class ContactAdapter extends BaseAdapter {
 	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger(ContactAdapter.class);
+	private static final int POSITION_LISTENERS = 5;
+	private static final String HEADER_LISTENERS = "Listeners";
 	private Context context;
 	View view;
 
@@ -61,7 +64,21 @@ public class ContactAdapter extends BaseAdapter {
     	if (contact != null)
     		listContact.remove(contact);
     }
-    
+ 
+    public void addListenersList(IParticipant part)
+    {
+    	Contact contact = new Contact(part);
+    	
+    	if(!listContact.get(POSITION_LISTENERS).getName().equals(HEADER_LISTENERS))
+    	{
+    		IParticipant listenersHeader = new Participant();
+    		listenersHeader.setName(HEADER_LISTENERS);
+    		Contact listenHeader = new Contact(listenersHeader);
+    		listContact.add(POSITION_LISTENERS, listenHeader);
+    	}
+    	listContact.add(contact);
+    			
+    }//needs better implementation
     
     public void setPresenterStatus(Contact changedStatus)
     {
@@ -153,7 +170,15 @@ public class ContactAdapter extends BaseAdapter {
         setPresenterStatus(entry);
         setStreamStatus(entry);
         setRaiseHandStatus(entry);
-        
+       /* 
+        if(Client.bbb.getListenersModule()!=null)
+        	if(Client.bbb.getListenersModule().userIsListener(entry.getUserId()))
+        	{
+        		System.out.println(entry.getName()+" talking");
+        		addListenersList(entry);
+        	} 
+        	needs to work on it
+        	*/
         int color;
        
         switch (entry.getChatStatus()) {

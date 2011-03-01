@@ -53,7 +53,15 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 		voiceSO.addSharedObjectListener(this);
 		voiceSO.connect(channel);
 	}
-
+	
+	public boolean userIsListener(int userId)
+	{
+		if(listeners.containsKey(userId))
+			return true;
+		else
+			return false;
+	}
+	
 	@Override
 	public void onSharedObjectClear(ISharedObjectBase so) {
 		log.debug("onSharedObjectClear");
