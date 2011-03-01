@@ -74,7 +74,8 @@
 	<Button android:text="@string/choose_a_server"
 	android:layout_width="wrap_content" android:layout_below="@+id/login_button_join"
 	android:layout_height="wrap_content" android:layout_alignRight="@+id/login_button_join"
-	android:id="@+id/server" android:maxHeight="40px" android:background="@color/background" ></Button>
+	android:id="@+id/server" android:maxHeight="40px" android:background="@null"
+	android:layout_marginTop="30dip" ></Button>
                
 </RelativeLayout>
 

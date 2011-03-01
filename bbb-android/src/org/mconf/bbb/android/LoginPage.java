@@ -23,6 +23,7 @@ package org.mconf.bbb.android;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import org.mconf.bbb.api.Meeting;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -55,11 +57,15 @@ public class LoginPage extends Activity {
 	private static final Logger log = LoggerFactory.getLogger(LoginPage.class);
 
 	public static final String SERVER_CHOSED ="org.mconf.bbb.android.Client.SERVER_CHOSED";
+	public static final String CHOOSE_SERVER="Choose a Server";
+	
+	SharedPreferences preferencesFile;
+	Map<String,String> storedPreferences;
 	
 	private ArrayAdapter<String> spinnerAdapter;
 	private boolean moderator;
 //	private static final String labelCreateMeeting = "== Create a new meeting ==";
-	private String username;
+	private String username="Android";
 	private String serverURL="";
 	BroadcastReceiver serverChosed = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
@@ -77,16 +83,18 @@ public class LoginPage extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.login);
-      
-        Bundle extras = getIntent().getExtras();
         
-        if (extras == null || extras.getString("username") == null)
-        	username = "Android";
-        else
-        	username = extras.getString("username");
+        setPreferencesFile();
+        setUserPreferences();
         
         final EditText editName = (EditText) findViewById(R.id.login_edittext_name);
         editName.setText(username);
+        Button serverView = (Button) findViewById(R.id.server);
+        if(serverURL.length()>3)
+        	serverView.setText(serverURL);
+        else
+        	serverView.setText(CHOOSE_SERVER);
+         
         
         final Spinner spinner = (Spinner) findViewById(R.id.login_spinner);
         spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
@@ -174,6 +182,8 @@ public class LoginPage extends Activity {
 	                	return;
 	                }
 	                
+               		updatePreferences(username, serverURL);
+               		
 	                Intent myIntent = new Intent(getApplicationContext(), Client.class);
 	                myIntent.putExtra("username", username);
 	                startActivity(myIntent);
@@ -308,6 +318,44 @@ public class LoginPage extends Activity {
     }
     
     
+    public SharedPreferences getPreferencesFile() {
+		return preferencesFile;
+	}
     
+    public void setUserPreferences(){
+    	if(!storedPreferences.isEmpty())
+    	{
+    		this.username = this.storedPreferences.get("username");
+    		this.serverURL = this.storedPreferences.get("serverURL");
+    	}
+    }
+
+	public void setPreferencesFile() {
+		if(this.getSharedPreferences("storedPreferences", MODE_PRIVATE)!=null)
+			this.preferencesFile = this.getSharedPreferences("storedPreferences", MODE_PRIVATE);
+		else
+		{
+			SharedPreferences.Editor serverEditor = preferencesFile.edit();
+			serverEditor.commit(); 
+			this.preferencesFile = this.getSharedPreferences("storedPreferences", MODE_PRIVATE);
+		}
+		this.storedPreferences = (Map<String, String>) preferencesFile.getAll();
+	}
     
+    public void updatePreferences(String username, String serverURL)
+    {
+    	SharedPreferences.Editor preferenceEditor = preferencesFile.edit();
+		if(!preferencesFile.getString("username", "").equals(username))
+		{
+			preferenceEditor.remove("username");
+			preferenceEditor.putString("username", username);
+			
+		}
+		if(!preferencesFile.getString("serverURL", "").equals(serverURL))
+		{
+			preferenceEditor.remove("serverURL");
+			preferenceEditor.putString("serverURL", serverURL);
+		}
+		preferenceEditor.commit();
+    }
 }

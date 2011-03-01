@@ -26,9 +26,12 @@ public class Listener {
 		muted = (Boolean) attributes.get("muted");					
 		locked = (Boolean) attributes.get("locked");
 	}
+	
+	
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
+	
 	public int getUserId() {
 		return userId;
 	}
