@@ -26,7 +26,9 @@ import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.android.voip.VoiceModule;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.users.IParticipant;
+import org.sipdroid.media.RtpStreamSender;
 import org.sipdroid.sipua.ui.Receiver;
+import org.sipdroid.sipua.ui.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,10 +41,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences.Editor;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -57,9 +61,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.SlidingDrawer;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.SlidingDrawer.OnDrawerOpenListener;
 
 
@@ -297,10 +303,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			else
 				menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, R.string.speaker).setIcon(android.R.drawable.button_onoff_indicator_off);
 			menu.add(Menu.NONE, MENU_STOP_VOICE, Menu.NONE, R.string.stop_voice).setIcon(android.R.drawable.ic_btn_speak_now);
+			menu.add(Menu.NONE, MENU_AUDIO_CONFIG, Menu.NONE, R.string.audio_config).setIcon(android.R.drawable.ic_menu_preferences);
 		} else {
 			menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, R.string.start_voice).setIcon(android.R.drawable.ic_btn_speak_now);
 		}
-		menu.add(Menu.NONE, MENU_AUDIO_CONFIG, Menu.NONE, R.string.audio_config).setIcon(android.R.drawable.ic_menu_preferences);
 		menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.raise_hand).setIcon(android.R.drawable.ic_menu_myplaces);
 		menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, R.string.logout).setIcon(android.R.drawable.ic_menu_revert);
 		menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
@@ -355,23 +361,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				return true;
 				
 			case MENU_AUDIO_CONFIG:
-				Dialog dialog = new Dialog(this);
-				dialog.setContentView(R.layout.audio_config);
-				dialog.setTitle(R.string.audio_config);
-				dialog.setCancelable(true);
-				
-				AudioManager manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-				
-				final SeekBar mic_volume = (SeekBar) findViewById(R.id.mic_volume);
-				mic_volume.setMax(manager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL));
-				mic_volume.setProgress(manager.getStreamVolume(AudioManager.STREAM_VOICE_CALL));
-				
-				final SeekBar mic_gain = (SeekBar) findViewById(R.id.mic_gain);
-				final SeekBar speaker_volume = (SeekBar) findViewById(R.id.speaker_volume);
-				final SeekBar speaker_gain = (SeekBar) findViewById(R.id.speaker_gain);
-				
-				dialog.show();				
-				
+				Dialog dialog = new AudioControlDialog(this);
+				dialog.show();
 				return true;
 			default:			
 				return super.onOptionsItemSelected(item);
