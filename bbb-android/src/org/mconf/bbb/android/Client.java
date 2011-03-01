@@ -71,6 +71,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static final int MENU_STOP_VOICE = Menu.FIRST + 4;
 	public static final int MENU_MUTE = Menu.FIRST + 5;
 	public static final int MENU_SPEAKER = Menu.FIRST + 6;
+	public static final int MENU_ABOUT = Menu.FIRST + 7;
 	
 	public static final int CHAT_NOTIFICATION_ID = 77000;
 	
@@ -300,12 +301,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.raise_hand).setIcon(android.R.drawable.ic_menu_myplaces);
 		menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, R.string.logout).setIcon(android.R.drawable.ic_menu_revert);
 		menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+		menu.add(Menu.NONE, MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
 		return super.onPrepareOptionsMenu(menu);
-	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		return super.onCreateOptionsMenu(menu);
 	}
 	
 	@Override
@@ -350,6 +347,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 					bbb.raiseHand(true);
 				return true;
 				
+			case MENU_ABOUT:
+				new AboutDialog(this).show();
+				return true;
 			default:			
 				return super.onOptionsItemSelected(item);
 		}

@@ -41,6 +41,21 @@
 	<string name="connection_closed">Connection closed</string>
 	<string name="connection_refused">Connection refused</string>
 
+	<string name="about">
+BBB-Android is an Android implementation of the BigBlueButton client.
+\n
+\nIt was developed by PRAV Labs as part of the GT-Mconf project (http://inf.ufrgs.br/prav/gtmconf).
+\n
+\nThe source code is licensed under the GNU General Public License (GPL) and it is available at https://github.com/mconf.
+\n
+\nThe audio implementation is based on Sipdroid, an open-source SIP client for Android (http://sipdroid.org).
+\n
+\nIt uses Flazr, a Java implementation of multimedia streaming protocols (http://flazr.com).
+\n
+\nIt uses BBB-Java, a client-side Java API for BigBlueButton.
+	
+	</string>
+
 <!--
  * Copyright (C) 2009 The Sipdroid Open Source Project
  *
@@ -73,7 +88,7 @@
 <string name="pstn_name">Phone Call</string>
 <string name="sip_name">Sipdroid Call, when available</string>
 
-<string name="about">Sipdroid is an open-source SIP client for Android
+<!-- string name="about">Sipdroid is an open-source SIP client for Android
 \n
 \nSee http://sipdroid.org for more info
 \n
@@ -87,7 +102,7 @@
 \n
 \nThis program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 \n
-\nThis program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details (http://www.gnu.org/licenses).</string>
+\nThis program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details (http://www.gnu.org/licenses).</string-->
 
 <string name="reg">Registering...</string>
 <string name="regpref">Preferred</string>

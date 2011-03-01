@@ -36,6 +36,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -307,7 +309,22 @@ public class LoginPage extends Activity {
     	updateThread.start();		
     }
     
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(Menu.NONE, Client.MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
+    	return super.onCreateOptionsMenu(menu);
+    }
     
-    
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case Client.MENU_ABOUT:
+				new AboutDialog(this).show();
+				return true;
+			default:			
+				return super.onOptionsItemSelected(item);
+		}
+    }    
     
 }
