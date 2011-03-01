@@ -1,8 +1,30 @@
+/*
+ * GT-Mconf: Multiconference system for interoperable web and mobile
+ * http://www.inf.ufrgs.br/prav/gtmconf
+ * PRAV Labs - UFRGS
+ * 
+ * This file is part of Mconf-Mobile.
+ *
+ * Mconf-Mobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Mconf-Mobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Mconf-Mobile.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.mconf.bbb.android;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
@@ -23,7 +45,7 @@ public class AboutDialog extends AlertDialog {
 		message.setLinksClickable(true);
 		message.setTextAppearance(context, android.R.style.TextAppearance_Medium);
 		message.setPadding(10, 0, 10, 0);
-		message.setLinkTextColor(R.color.text_link);
+		message.setLinkTextColor(Color.YELLOW);
 		
 		final ScrollView screen = new ScrollView(context);
 		screen.addView(message);
@@ -32,7 +54,7 @@ public class AboutDialog extends AlertDialog {
 		setTitle(R.string.menu_about);
 		setIcon(R.drawable.hurricane_transparent);
 		setCancelable(true);
-		setButton(BUTTON_POSITIVE, "Close", new OnClickListener() {
+		setButton(BUTTON_POSITIVE, context.getText(R.string.close), new OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {

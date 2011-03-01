@@ -54,6 +54,7 @@ BBB-Android é uma implementação do cliente BigBlueButton para Android.
 	</string>
 	<string name="moderator">Moderador</string>
 	<string name="viewer">Participante</string>
+	<string name="close">Fechar</string>
 
 <!--
  * Copyright (C) 2009 The Sipdroid Open Source Project
