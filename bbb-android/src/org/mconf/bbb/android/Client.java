@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -71,7 +72,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static final int MENU_STOP_VOICE = Menu.FIRST + 4;
 	public static final int MENU_MUTE = Menu.FIRST + 5;
 	public static final int MENU_SPEAKER = Menu.FIRST + 6;
-	public static final int MENU_ABOUT = Menu.FIRST + 7;
+	public static final int MENU_AUDIO_CONFIG = Menu.FIRST + 7;
+	public static final int MENU_ABOUT = Menu.FIRST + 8;
 	
 	public static final int CHAT_NOTIFICATION_ID = 77000;
 	
@@ -189,7 +191,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		registerReceiver(chatClosed, filter); 
 	}
 	
-
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
@@ -295,6 +296,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, R.string.speaker).setIcon(android.R.drawable.button_onoff_indicator_on);
 			else
 				menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, R.string.speaker).setIcon(android.R.drawable.button_onoff_indicator_off);
+			menu.add(Menu.NONE, MENU_AUDIO_CONFIG, Menu.NONE, R.string.audio_config).setIcon(android.R.drawable.ic_menu_preferences);
 			menu.add(Menu.NONE, MENU_STOP_VOICE, Menu.NONE, R.string.stop_voice).setIcon(android.R.drawable.ic_btn_speak_now);
 		} else {
 			menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, R.string.start_voice).setIcon(android.R.drawable.ic_btn_speak_now);
@@ -350,6 +352,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				
 			case MENU_ABOUT:
 				new AboutDialog(this).show();
+                return true;
+
+			case MENU_AUDIO_CONFIG:
+				new AudioControlDialog(this).show();
 				return true;
 			default:			
 				return super.onOptionsItemSelected(item);
@@ -358,14 +364,21 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-    	if (keyCode == KeyEvent.KEYCODE_BACK) {
-    		Intent intent = new Intent(SEND_TO_BACK);
-    		sendBroadcast(intent);
-    		log.debug("KEYCODE_BACK");
-    		moveTaskToBack(true);
-    		return true;
+    	switch (keyCode) {
+    		case KeyEvent.KEYCODE_BACK:
+	    		Intent intent = new Intent(SEND_TO_BACK);
+	    		sendBroadcast(intent);
+	    		log.debug("KEYCODE_BACK");
+	    		moveTaskToBack(true);
+	    		return true;
+//    		case KeyEvent.KEYCODE_VOLUME_DOWN:
+//    		case KeyEvent.KEYCODE_VOLUME_UP:
+//				Dialog dialog = new AudioControlDialog(this);
+//				dialog.show();
+//				return true;
+    		default:
+    	    	return super.onKeyDown(keyCode, event);
     	}    		
-    	return super.onKeyDown(keyCode, event);
     }
 
 	@Override
