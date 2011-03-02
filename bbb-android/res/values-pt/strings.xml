@@ -29,7 +29,7 @@
 	<string name="pstn_name">Chamada</string>
 	<string name="sip_name">Chamada Sipdroid, quando disponível</string>
 
-	<string name="about">Sipdroid é um cliente SIP open-source para o Android
+	<!-- string name="about">Sipdroid é um cliente SIP open-source para o Android
  \n
  \nVeja http://sipdroid.org para mais informações
  \n
@@ -43,7 +43,7 @@
  \n
  \nEste programa é livre, você pode redistribuí-lo e/ou modificá-lo sob os termos da GNU General Public License conforme publicada pela Free Software Foundation, versão 3 da Licença, ou (na sua opção) qualquer versão posterior.
  \n
- \nEste programa é distribuído na esperança de que será útil, mas SEM QUALQUER GARANTIA, mesmo sem a garantia implícita de COMERCIABILIDADE ou ADEQUAÇÃO A UM DETERMINADO PROPÓSITO. Veja a GNU General Public License para mais detalhes (http://www.gnu.org/licenses).</string>
+ \nEste programa é distribuído na esperança de que será útil, mas SEM QUALQUER GARANTIA, mesmo sem a garantia implícita de COMERCIABILIDADE ou ADEQUAÇÃO A UM DETERMINADO PROPÓSITO. Veja a GNU General Public License para mais detalhes (http://www.gnu.org/licenses).</string-->
 
 	<string name="reg">Registando...</string>
 	<string name="regok">Registado</string>

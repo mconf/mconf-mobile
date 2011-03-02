@@ -29,7 +29,7 @@
 <string name="pstn_name">Telefono</string>
 <string name="sip_name">Sipdroid, quando disponibile</string>
 
-<string name="about">Sipdroid è un client SIP open-source per Android
+<!-- string name="about">Sipdroid è un client SIP open-source per Android
 \n
 \nVisita http://sipdroid.org per maggiori informazioni
 \n
@@ -43,7 +43,7 @@
 \n
 \nQuesto è un software gratuito; puoi ridistribuirlo e/o modificarlo sotto i termini della licenza GNU General Public License come pubblicato dalla Free Software Foundation; sia la versione 3 della Licenza, o (a tua scelta) una versione successiva.
 \n
-\nQuesto programma viene distribuito nella speranza che sia utile, ma SENZA ALCUNA GARANZIA; anche senza la garanzia implicita di COMMERCIABILITA\' o ADEGUATEZZA AD UN PARTICOLARE SCOPO. Vedi la licenza GNU General Public License per maggiori informazioni (http://www.gnu.org/licenses).</string>
+\nQuesto programma viene distribuito nella speranza che sia utile, ma SENZA ALCUNA GARANZIA; anche senza la garanzia implicita di COMMERCIABILITA\' o ADEGUATEZZA AD UN PARTICOLARE SCOPO. Vedi la licenza GNU General Public License per maggiori informazioni (http://www.gnu.org/licenses).</string-->
 
 <string name="reg">Registrazione...</string>
 <string name="regok">Registrato</string>

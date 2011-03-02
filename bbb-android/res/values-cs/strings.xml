@@ -31,7 +31,7 @@
 <string name="pstn_name">Telefon</string>
 <string name="sip_name">Sipdroid, když je k dispozici</string>
 
-<string name="about">Sipdroid je open-source SIP klient pro Android
+<!-- string name="about">Sipdroid je open-source SIP klient pro Android
 \n
 \nPro více informací navštivte http://sipdroid.org
 \n
@@ -45,7 +45,7 @@
 \n
 \nTento program je free software, můžete jej redistribuovat a/nebo modifikovat za podmínek stanovených v GNU General Public License zveřejněnou nadací Free Software Foundation, buďto ve verzi 3 nebo (podle vaší volby) jakékoliv její pozdější verze.
 \n
-\nTento program je šířen v naději, že bude užitečný, ale BEZ JAKÉKOLIV ZÁRUKY, neposkytuje ani odvozené záruky PRODEJNOSTI anebo VHODNOSTI PRO DANÝ ÚČEL. Podrobnější informace naleznete v GNU General Public License (http://www.gnu.org/licenses).</string>
+\nTento program je šířen v naději, že bude užitečný, ale BEZ JAKÉKOLIV ZÁRUKY, neposkytuje ani odvozené záruky PRODEJNOSTI anebo VHODNOSTI PRO DANÝ ÚČEL. Podrobnější informace naleznete v GNU General Public License (http://www.gnu.org/licenses).</string-->
 
 <string name="reg">Registrace...</string>
 <string name="regok">Registrován</string>

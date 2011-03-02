@@ -29,7 +29,7 @@
 <string name="pstn_name">Sieć komórkowa</string>
 <string name="sip_name">Przez Sipdroid, jeśli dostępne</string>
 
-<string name="about">Sipdroid jest otwartoźródłowym klientem SIP na platformę Android
+<!-- string name="about">Sipdroid jest otwartoźródłowym klientem SIP na platformę Android
 \n
 \nWięcej informacji na http://sipdroid.org
 \n
@@ -47,7 +47,7 @@
 
 
 \n
-\nTen program jest rozpowszechniany w nadziei, że będzie użyteczny ale BEZ ŻADNEJ GWARANCJI, nawet wynikającej z gwaracji HANDLOWEJ lub PRZYDATNOŚCI DO KONKRETNEGO UŻYTKU. Więcej informacji w treści licencji GNU General Public License (http://www.gnu.org/licenses/licenses.pl.html).</string>
+\nTen program jest rozpowszechniany w nadziei, że będzie użyteczny ale BEZ ŻADNEJ GWARANCJI, nawet wynikającej z gwaracji HANDLOWEJ lub PRZYDATNOŚCI DO KONKRETNEGO UŻYTKU. Więcej informacji w treści licencji GNU General Public License (http://www.gnu.org/licenses/licenses.pl.html).</string-->
 
 <string name="reg">Rejestrowanie...</string>
 <string name="regok">Zarejestrowany</string>

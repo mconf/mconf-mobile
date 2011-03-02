@@ -29,7 +29,7 @@
 <string name="pstn_name">Телефон</string>
 <string name="sip_name">Sipdroid, когда доступно</string>
 
-<string name="about">Sipdroid — свободный SIP-клиент для Android
+<!-- string name="about">Sipdroid — свободный SIP-клиент для Android
 \n
 \nСмотрите дополнительную информацию на http://sipdroid.org
 \n
@@ -43,7 +43,7 @@
 \n
 \nThis program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 \n
-\nThis program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details (http://www.gnu.org/licenses).</string>
+\nThis program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details (http://www.gnu.org/licenses).</string-->
 
 <string name="reg">Регистрация…</string>
 <string name="regok">Зарегистрирован</string>

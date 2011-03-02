@@ -30,7 +30,7 @@
 <string name="pstn_name">Telefonsamtal</string>
 <string name="sip_name">Sipdroidsamtal, om möjligt</string>
 
-<string name="about">Sipdroid är en open-source SIP klient för Android
+<!-- string name="about">Sipdroid är en open-source SIP klient för Android
 \n
 \nSe http://sipdroid.org för mer info
 \n
@@ -44,7 +44,7 @@
 \n
 \nDetta program är fri mjukvara; det är tillåtet att distribuera det och/eller modifiera det under villkoren i GNU General Public License som puliserats av Free Software Foundation; antingen version 3 av Licensen, eller (om så önskas) någon senare version.
 \n
-\nDetta program distribueras med hopp om att det ska vara användbart, men UTAN GARANTIER; utan någon garanti om ANVÄNDBARHET eller LÄMPLIGHET FÖR NÅGOT SPECIFIKT ANVÄNDNINGSOMRÅDE. Se GNU General Public License för ytterligare detaljer (http://www.gnu.org/licenses).</string>
+\nDetta program distribueras med hopp om att det ska vara användbart, men UTAN GARANTIER; utan någon garanti om ANVÄNDBARHET eller LÄMPLIGHET FÖR NÅGOT SPECIFIKT ANVÄNDNINGSOMRÅDE. Se GNU General Public License för ytterligare detaljer (http://www.gnu.org/licenses).</string-->
 
 <string name="reg">Registrering...</string>
 <string name="regok">Registrerad</string>
