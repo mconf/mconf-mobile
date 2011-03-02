@@ -295,8 +295,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, R.string.speaker).setIcon(android.R.drawable.button_onoff_indicator_on);
 			else
 				menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, R.string.speaker).setIcon(android.R.drawable.button_onoff_indicator_off);
-			menu.add(Menu.NONE, MENU_STOP_VOICE, Menu.NONE, R.string.stop_voice).setIcon(android.R.drawable.ic_btn_speak_now);
 			menu.add(Menu.NONE, MENU_AUDIO_CONFIG, Menu.NONE, R.string.audio_config).setIcon(android.R.drawable.ic_menu_preferences);
+			menu.add(Menu.NONE, MENU_STOP_VOICE, Menu.NONE, R.string.stop_voice).setIcon(android.R.drawable.ic_btn_speak_now);
 		} else {
 			menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, R.string.start_voice).setIcon(android.R.drawable.ic_btn_speak_now);
 		}
@@ -371,11 +371,11 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	    		log.debug("KEYCODE_BACK");
 	    		moveTaskToBack(true);
 	    		return true;
-    		case KeyEvent.KEYCODE_VOLUME_DOWN:
-    		case KeyEvent.KEYCODE_VOLUME_UP:
-				Dialog dialog = new AudioControlDialog(this);
-				dialog.show();
-				return true;
+//    		case KeyEvent.KEYCODE_VOLUME_DOWN:
+//    		case KeyEvent.KEYCODE_VOLUME_UP:
+//				Dialog dialog = new AudioControlDialog(this);
+//				dialog.show();
+//				return true;
     		default:
     	    	return super.onKeyDown(keyCode, event);
     	}    		
