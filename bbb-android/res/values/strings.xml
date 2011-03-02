@@ -15,6 +15,7 @@
 	<string name="you">you</string>
 	<string name="send_message">Send</string>
 	<string name="list_participants">List of participants</string>
+	<string name="list_listeners">List of listeners</string>
 	<string name="public_chat">Public chat</string>
 	<string name="meeting">Meeting:</string>
 	<string name="choose_server">Choose a server to connect:</string>

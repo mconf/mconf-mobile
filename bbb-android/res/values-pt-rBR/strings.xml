@@ -15,6 +15,7 @@
 	<string name="you">você</string>
 	<string name="send_message">Enviar</string>
 	<string name="list_participants">Lista de participantes</string>
+	<string name="list_listeners">Lista de ouvintes</string>
 	<string name="public_chat">Bate-papo público</string>
 	<string name="meeting">Sala:</string>
 	<string name="choose_server">Escolha um servidor para conectar:</string>

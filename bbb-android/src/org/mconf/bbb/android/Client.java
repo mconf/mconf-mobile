@@ -109,6 +109,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static BigBlueButtonClient bbb = new BigBlueButtonClient();
 	protected ContactAdapter contactAdapter;
 	protected ChatAdapter chatAdapter;
+	protected ListenerAdapter listenerAdapter;
 
 	protected String myusername;
 	protected SlidingDrawer slidingDrawer;
@@ -147,11 +148,15 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		final ListView chatListView = (ListView)findViewById(R.id.messages);
 		chatListView.setAdapter(chatAdapter);
 
-		final ListView contactListView = (ListView)findViewById(R.id.list);
+		final ListView contactListView = (ListView)findViewById(R.id.contacts_list);
 		contactAdapter = new ContactAdapter(this);
 		contactListView.setAdapter(contactAdapter);
 		registerForContextMenu(contactListView);
 		
+		final ListView listenerListView = (ListView)findViewById(R.id.listeners_list);
+		listenerAdapter = new ListenerAdapter(this);
+		listenerListView.setAdapter(listenerAdapter);
+		registerForContextMenu(listenerListView);
 		
 		Button send = (Button)findViewById(R.id.sendMessage);
 		send.setOnClickListener( new OnClickListener() {

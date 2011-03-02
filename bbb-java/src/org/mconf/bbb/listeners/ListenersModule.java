@@ -54,14 +54,6 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 		voiceSO.connect(channel);
 	}
 	
-	public boolean userIsListener(int userId)
-	{
-		if(listeners.containsKey(userId))
-			return true;
-		else
-			return false;
-	}
-	
 	@Override
 	public void onSharedObjectClear(ISharedObjectBase so) {
 		log.debug("onSharedObjectClear");
@@ -184,21 +176,21 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 			listeners.put(listener.getUserId(), listener);
 		} else if (method.equals("userTalk")) {
 			//	meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userTalk, [5.0, true]) }
-			Listener listener = listeners.get(params.get(0));
+			IListener listener = listeners.get(params.get(0));
 			if (listener != null)
 				listener.setTalking((Boolean) params.get(1));
 			else
 				log.error("Can't find the listener");
 		} else if (method.equals("userLockedMute")) {
 			// meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userLockedMute, [4.0, true]) }
-			Listener listener = listeners.get(params.get(0));
+			IListener listener = listeners.get(params.get(0));
 			if (listener != null)
 				listener.setLocked((Boolean) params.get(1));
 			else
 				log.error("Can't find the listener");
 		} else if (method.equals("userMute")) {
 			// meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userMute, [4.0, true]) }
-			Listener listener = listeners.get(params.get(0));
+			IListener listener = listeners.get(params.get(0));
 			if (listener != null)
 				listener.setMuted((Boolean) params.get(1));
 			else
@@ -206,7 +198,7 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 		} else if (method.equals("userLeft")) {
 			// meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userLeft, [2.0]) }
 			int userId = ((Double) params.get(0)).intValue();
-			Listener listener = listeners.get(userId);
+			IListener listener = listeners.get(userId);
 			if (listener != null)
 				listeners.remove(userId);
 			else

@@ -1,50 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
-	android:background="@color/background"
-	>
+	android:background="@color/background">
 
-	<TextView android:layout_height="wrap_content"
-		android:layout_width="fill_parent" android:id="@+id/label_participants"
-		android:layout_alignParentTop="true"
-		android:textAppearance="@style/TitleStyle"
-		android:text="@string/list_participants"
-		android:gravity="center"
-		android:background="@color/title_background_onfocus"
-		android:minHeight="42dp"/>
+	<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="fill_parent" android:layout_height="fill_parent"
+		android:background="@color/background">
 
-	<LinearLayout android:id="@+id/separator1" xmlns:android="http://schemas.android.com/apk/res/android"
-		android:layout_width="fill_parent" android:layout_height="2dp"
-		android:background="@color/title_background"
-		android:layout_below="@+id/label_participants"/>
-	
-	<ListView android:id="@+id/list" android:layout_width="wrap_content"
-		android:layout_height="fill_parent" android:divider="@color/title_background_onfocus"
-		android:dividerHeight="2dp" android:layout_below="@+id/separator1"
-		android:layout_marginBottom="42dp" />
+		<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="fill_parent" android:layout_height="fill_parent"
+			android:background="@color/background">
 
+
+			<TextView android:layout_height="wrap_content"
+				android:layout_width="fill_parent" android:id="@+id/label_participants"
+				android:layout_alignParentTop="true" android:textAppearance="@style/TitleStyle"
+				android:text="@string/list_participants" android:gravity="center"
+				android:background="@color/title_background_onfocus"
+				android:minHeight="42dp" />
+
+			<LinearLayout android:id="@+id/separator1"
+				xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="fill_parent" android:layout_height="2dp"
+				android:background="@color/title_background" android:layout_below="@+id/label_participants" />
+
+			<ListView android:id="@+id/contacts_list"
+				android:layout_width="wrap_content" android:layout_height="fill_parent"
+				android:divider="@color/title_background_onfocus"
+				android:dividerHeight="2dp" android:layout_below="@+id/separator1"
+				android:layout_marginBottom="42dp" />
+
+
+			<TextView android:layout_height="wrap_content"
+				android:layout_width="fill_parent" android:id="@+id/label_listeners"
+				android:layout_below="@+id/contacts_list" android:textAppearance="@style/TitleStyle"
+				android:text="@string/list_listeners" android:gravity="center"
+				android:background="@color/title_background_onfocus"
+				android:minHeight="42dp" />
+
+			<LinearLayout android:id="@+id/separator2"
+				xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="fill_parent" android:layout_height="2dp"
+				android:background="@color/title_background" android:layout_below="@+id/label_listeners" />
+
+			<ListView android:id="@+id/listeners_list"
+				android:layout_width="wrap_content" android:layout_height="fill_parent"
+				android:divider="@color/title_background_onfocus"
+				android:dividerHeight="2dp" android:layout_below="@+id/separator2"
+				android:layout_marginBottom="42dp" />
+
+		</RelativeLayout>
+	</ScrollView>
 	<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="wrap_content" android:layout_height="fill_parent"
-		android:id="@+id/frameLayout"
-		android:layout_alignParentBottom="true"
+		android:id="@+id/frameLayout" android:layout_alignParentBottom="true"
 		android:layout_below="@+id/separator1">
 
 		<SlidingDrawer android:layout_height="fill_parent"
-			android:handle="@+id/handle" android:content="@+id/chat"
-			android:id="@+id/slide" android:orientation="vertical"
-			android:layout_width="fill_parent">
+			android:handle="@+id/handle" android:content="@+id/chat" android:id="@+id/slide"
+			android:orientation="vertical" android:layout_width="fill_parent">
 
 			<Button android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:id="@id/handle"
-				android:textAppearance="@style/TitleStyle"
-				android:text="@string/public_chat"
+				android:textAppearance="@style/TitleStyle" android:text="@string/public_chat"
 				android:background="@color/title_background_onfocus"
-				android:minHeight="42dp"		
-				android:gravity="center"/>
+				android:minHeight="42dp" android:gravity="center" />
 
 			<!-- http://developer.android.com/resources/articles/layout-tricks-reuse.html -->
-			<include layout="@layout/chat"/>
-		</SlidingDrawer>	
+			<include layout="@layout/chat" />
+		</SlidingDrawer>
 	</FrameLayout>
+
 </RelativeLayout>
+

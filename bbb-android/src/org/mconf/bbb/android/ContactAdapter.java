@@ -65,20 +65,6 @@ public class ContactAdapter extends BaseAdapter {
     		listContact.remove(contact);
     }
  
-    public void addListenersList(IParticipant part)
-    {
-    	Contact contact = new Contact(part);
-    	
-    	if(!listContact.get(POSITION_LISTENERS).getName().equals(HEADER_LISTENERS))
-    	{
-    		IParticipant listenersHeader = new Participant();
-    		listenersHeader.setName(HEADER_LISTENERS);
-    		Contact listenHeader = new Contact(listenersHeader);
-    		listContact.add(POSITION_LISTENERS, listenHeader);
-    	}
-    	listContact.add(contact);
-    			
-    }//needs better implementation
     
     public void setPresenterStatus(Contact changedStatus)
     {
@@ -170,15 +156,8 @@ public class ContactAdapter extends BaseAdapter {
         setPresenterStatus(entry);
         setStreamStatus(entry);
         setRaiseHandStatus(entry);
-       /* 
-        if(Client.bbb.getListenersModule()!=null)
-        	if(Client.bbb.getListenersModule().userIsListener(entry.getUserId()))
-        	{
-        		System.out.println(entry.getName()+" talking");
-        		addListenersList(entry);
-        	} 
-        	needs to work on it
-        	*/
+        
+        	
         int color;
        
         switch (entry.getChatStatus()) {

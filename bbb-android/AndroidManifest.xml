@@ -14,7 +14,7 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name=".ServerChoosing" android:launchMode="singleInstance" android:screenOrientation="portrait" />
+		<activity android:name=".ServerChoosing"  android:screenOrientation="portrait" />
 		<activity android:name=".Client" android:launchMode="singleTask" android:alwaysRetainTaskState="true" android:screenOrientation="portrait" />
 		<activity android:name=".PrivateChat" android:launchMode="singleInstance" android:screenOrientation="portrait">
 		</activity>

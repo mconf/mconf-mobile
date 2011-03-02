@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/RelativeLayout01"
+	android:layout_width="fill_parent" android:layout_height="wrap_content"
+	android:minHeight="42dp" android:background="@color/background"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:gravity="center">
+	<TextView android:id="@+id/listener_name"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:layout_centerHorizontal="true"
+		android:textAppearance="@style/ParticipantNameStyle"
+		android:layout_marginLeft="5dp" android:layout_centerVertical="true"
+		android:text="Test test" android:lines="1" android:scrollHorizontally="true" />
+</RelativeLayout>
+
