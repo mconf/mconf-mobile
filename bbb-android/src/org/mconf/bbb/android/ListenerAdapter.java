@@ -35,7 +35,7 @@ public class ListenerAdapter extends BaseAdapter {
     		listListener.remove(contact);
     }
     
-    public int getCount() {
+    public int getCount() { 
         return listListener.size();
     }
 

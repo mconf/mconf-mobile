@@ -25,6 +25,7 @@ import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.android.voip.VoiceModule;
 import org.mconf.bbb.chat.ChatMessage;
+import org.mconf.bbb.listeners.IListener;
 import org.mconf.bbb.users.IParticipant;
 import org.sipdroid.sipua.ui.Receiver;
 import org.slf4j.Logger;
@@ -588,5 +589,27 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		contactAdapter.notifyDataSetChanged();
 	}
 
+	@Override
+	public void onListenerJoined(final IListener p) {
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				listenerAdapter.addSection(p);
+				listenerAdapter.notifyDataSetChanged();
+			}
+		});		
+	}
+	@Override
+	public void onListenerLeft(final IListener p) {
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				listenerAdapter.removeSection(p);
+				listenerAdapter.notifyDataSetChanged();		
+			}
+		});
+	}
 
 }

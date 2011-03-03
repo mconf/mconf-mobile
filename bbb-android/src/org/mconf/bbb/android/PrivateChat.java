@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.chat.ChatMessage;
+import org.mconf.bbb.listeners.IListener;
 import org.mconf.bbb.users.IParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,6 +142,18 @@ public class PrivateChat extends Activity{
 		
 		@Override
 		public void onPublicChatMessage(ChatMessage message, IParticipant source) {}
+
+		@Override
+		public void onListenerJoined(IListener p) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onListenerLeft(IListener p) {
+			// TODO Auto-generated method stub
+			
+		}
 
 		
 

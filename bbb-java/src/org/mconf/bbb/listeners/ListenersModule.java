@@ -26,8 +26,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.jboss.netty.channel.Channel;
+import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.MainRtmpConnection;
 import org.mconf.bbb.Module;
+import org.mconf.bbb.users.Participant;
 import org.red5.server.api.IAttributeStore;
 import org.red5.server.api.so.IClientSharedObject;
 import org.red5.server.api.so.ISharedObjectBase;
@@ -111,6 +113,7 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 					Listener listener = new Listener((Map<String, Object>) entry.getValue());
 					log.debug("new listener: " + listener.toString());
 					listeners.put(userId, listener);
+					onListenerJoined(listener);
 				}
 			}
 			return true;
@@ -174,6 +177,7 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 			//	meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userJoin, [5.0, Felipe, Felipe, false, false, false]) }
 			Listener listener = new Listener(params);
 			listeners.put(listener.getUserId(), listener);
+			onListenerJoined(listener);
 		} else if (method.equals("userTalk")) {
 			//	meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userTalk, [5.0, true]) }
 			IListener listener = listeners.get(params.get(0));
@@ -199,6 +203,9 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 			// meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userLeft, [2.0]) }
 			int userId = ((Double) params.get(0)).intValue();
 			IListener listener = listeners.get(userId);
+			for (IBigBlueButtonClientListener l : handler.getContext().getListeners()) {
+				l.onListenerLeft(listener);
+			}
 			if (listener != null)
 				listeners.remove(userId);
 			else
@@ -247,6 +254,14 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 
 	public Map<Integer, Listener> getListeners() {
 		return listeners;
+	}
+	
+	public void onListenerJoined(Listener p) {
+		for (IBigBlueButtonClientListener l : handler.getContext().getListeners()) {
+			l.onListenerJoined(p);
+		}				
+		log.info("new participant: {}", p.toString());
+		listeners.put(p.getUserId(), p);			
 	}
 
 }
