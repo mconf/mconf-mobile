@@ -49,6 +49,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
@@ -72,7 +73,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static final int MENU_RAISE_HAND = Menu.FIRST + 2;
 	public static final int MENU_START_VOICE = Menu.FIRST + 3;
 	public static final int MENU_STOP_VOICE = Menu.FIRST + 4;
-	public static final int MENU_MUTE = Menu.FIRST + 5;
+	public static final int MENU_MUTE = Menu.FIRST + 5; 
 	public static final int MENU_SPEAKER = Menu.FIRST + 6;
 	public static final int MENU_AUDIO_CONFIG = Menu.FIRST + 7;
 	public static final int MENU_ABOUT = Menu.FIRST + 8;
@@ -124,6 +125,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 	private VoiceModule voice;
 
+
+
 	//	protected ClientBroadcastReceiver receiver = new ClientBroadcastReceiver();
 
 	@Override
@@ -134,49 +137,49 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		setContentView(R.layout.contacts_list);   
 		slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
 		slideHandleButton = (Button) findViewById(R.id.handle);
-		
+
 		//listenersDrawer = (SlidingDrawer) findViewById(R.id.slideListeners);
 		//listenersHandleButton = (Button) findViewById(R.id.handle2);
 
-		
+
 		slidingDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
 
 			@Override
 			public void onDrawerOpened() {
-				
-				
+
+
 				NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 				notificationManager.cancel(CHAT_NOTIFICATION_ID);
 				openedDrawer();
 			}
 		});
 
-		
-	//	listenersDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
+
+		//	listenersDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
 		//	@Override
 		//	public void onDrawerOpened() {
 
-				
+
 		//	}
-	//	});
+		//	});
 
 		slidingDrawer.setOnDrawerCloseListener(new OnDrawerCloseListener() {
 
 			@Override
 			public void onDrawerClosed() {
-				
-				
+
+
 			}
 		});
 
-	//	listenersDrawer.setOnDrawerCloseListener(new OnDrawerCloseListener() {
+		//	listenersDrawer.setOnDrawerCloseListener(new OnDrawerCloseListener() {
 
-	//		@Override
-	//		public void onDrawerClosed() {
-	//			
-				
-	//		}
-	//n  	});
+		//		@Override
+		//		public void onDrawerClosed() {
+		//			
+
+		//		}
+		//n  	});
 
 		Bundle extras = getIntent().getExtras();
 		myusername = extras.getString("username");
@@ -186,17 +189,19 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		final ListView chatListView = (ListView)findViewById(R.id.messages);
 		chatListView.setAdapter(chatAdapter);
 
-		final CustomListview contactListView = (CustomListview)findViewById(R.id.contacts_list); //class cast exception
+		final CustomListview  contactListView = (CustomListview)findViewById(R.id.contacts_list); //class cast exception
 		contactAdapter = new ContactAdapter(this);
 		contactListView.setAdapter(contactAdapter);
 		registerForContextMenu(contactListView);
+
 
 		final CustomListview listenerListView = (CustomListview)findViewById(R.id.listeners_list);
 		listenerAdapter = new ListenerAdapter(this);
 		listenerListView.setAdapter(listenerAdapter);
 		registerForContextMenu(listenerListView);
 
-		
+
+
 
 		Button send = (Button)findViewById(R.id.sendMessage);
 		send.setOnClickListener( new OnClickListener() {
@@ -448,7 +453,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			public void run() {
 				contactAdapter.addSection(p);
 				contactAdapter.sort();
+
 				contactAdapter.notifyDataSetChanged();
+
 			}
 		});		
 	}
@@ -460,7 +467,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			public void run() {
 				contactAdapter.removeSection(p);
 				contactAdapter.sort();
-				contactAdapter.notifyDataSetChanged();		
+
+				contactAdapter.notifyDataSetChanged();
+
 			}
 		});
 	}
@@ -635,6 +644,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			@Override
 			public void run() {
 				listenerAdapter.addSection(p);
+
 				listenerAdapter.notifyDataSetChanged();
 			}
 		});		
@@ -646,9 +656,12 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			@Override
 			public void run() {
 				listenerAdapter.removeSection(p);
+
 				listenerAdapter.notifyDataSetChanged();		
 			}
 		});
 	}
 
 }
+
+

@@ -32,7 +32,7 @@
 					android:divider="@color/title_background_onfocus"
 					android:dividerHeight="2dp" android:layout_below="@+id/separator1"
 					android:layout_marginBottom="42dp" android:layout_width="fill_parent"
-					android:layout_height="wrap_content" android:isScrollContainer="false" />
+					android:layout_height="390sp" android:isScrollContainer="false" />
 
 
 
@@ -59,7 +59,7 @@
 					android:background="@color/title_background" android:layout_below="@+id/label_listeners" />
 
 				<view class="org.mconf.bbb.android.CustomListview" android:id="@+id/listeners_list"
-					android:layout_width="fill_parent" android:layout_height="wrap_content"
+					android:layout_width="fill_parent" android:layout_height="455sp"
 					android:divider="@color/title_background_onfocus"
 					android:dividerHeight="2dp" android:layout_below="@+id/separator2"
 					android:layout_marginBottom="42dp" />
@@ -70,7 +70,7 @@
 	<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:id="@+id/frame2" android:layout_alignParentBottom="true">
-		<SlidingDrawer android:layout_height="220sp"
+		<SlidingDrawer android:layout_height="fill_parent"
 			android:handle="@+id/handle" android:content="@+id/chat" android:id="@+id/slide"
 			android:orientation="vertical" android:layout_width="fill_parent">
 
