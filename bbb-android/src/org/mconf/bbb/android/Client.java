@@ -57,6 +57,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.SlidingDrawer;
 import android.widget.SlidingDrawer.OnDrawerCloseListener;
 import android.widget.Toast;
@@ -138,8 +139,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
 		slideHandleButton = (Button) findViewById(R.id.handle);
 
-		//listenersDrawer = (SlidingDrawer) findViewById(R.id.slideListeners);
-		//listenersHandleButton = (Button) findViewById(R.id.handle2);
+		ScrollView sView = (ScrollView)findViewById(R.id.Scroll);
+		// Hide the Scollbar
+		sView.setVerticalScrollBarEnabled(false);
+		
 
 
 		slidingDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
@@ -661,6 +664,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			}
 		});
 	}
+	
+	
 
 }
 
