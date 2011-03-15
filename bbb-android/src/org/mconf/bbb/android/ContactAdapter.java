@@ -48,145 +48,151 @@ public class ContactAdapter extends BaseAdapter {
 	private Context context;
 	View view;
 
-    private List<IParticipant> listContact = new ArrayList<IParticipant>();
 
-    public ContactAdapter(Context context) {
-        this.context = context;
-    }
-    
-    public void addSection(IParticipant participant) {
-    	Contact contact = new Contact(participant);
-    	listContact.add(contact);
-    }
-    
-    public void removeSection(IParticipant participant){
-    	Contact contact = getUserById(participant.getUserId());
-    	if (contact != null)
-    		listContact.remove(contact);
-    }
- 
-    
-    public void setPresenterStatus(Contact changedStatus)
-    {
-    	ImageView presenter = (ImageView) view.findViewById(R.id.presenter);
-    	if(changedStatus.isPresenter())
-    	{
-    		presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.presenter_big));
-    		presenter.setVisibility(ImageView.VISIBLE);
-    	}
-    	else
-    		presenter.setVisibility(ImageView.INVISIBLE);
+	private List<IParticipant> listContact = new ArrayList<IParticipant>();
 
-    }
+	public ContactAdapter(Context context) {
+		this.context = context;
+	}
 
-    public void setStreamStatus( Contact changedStatus)
-    {
-    	ImageView stream = (ImageView) view.findViewById(R.id.stream);
-        if(changedStatus.hasStream())
-        {
-        	stream.setImageDrawable(this.context.getResources().getDrawable(R.drawable.webcam_big));
-        	stream.setVisibility(ImageView.VISIBLE);
-        }
-        else
-        	stream.setVisibility(ImageView.INVISIBLE);
-    }
-       
-    public void setRaiseHandStatus(Contact changedStatus)
-    {
-    	ImageView raiseHand = (ImageView) view.findViewById(R.id.raise_hand);
-    	if(changedStatus.isRaiseHand())
-    	{
-    		raiseHand.setImageDrawable(this.context.getResources().getDrawable(R.drawable.raisehand_big));
-    		raiseHand.setVisibility(ImageView.VISIBLE);
-    	}
-    	else
-    		raiseHand.setVisibility(ImageView.INVISIBLE);
+	public void addSection(IParticipant participant) {
+		Contact contact = new Contact(participant);
+		listContact.add(contact);
+	}
 
-    }
-    
-    public int getCount() {
-        return listContact.size();
-    }
+	public void removeSection(IParticipant participant){
+		Contact contact = getUserById(participant.getUserId());
+		if (contact != null)
+			listContact.remove(contact);
+	}
 
-    public Object getItem(int position) {
-        return listContact.get(position);
-    }
 
-    public long getItemId(int position) {
-        return listContact.get(position).getUserId();
-    }
-    
-    public Contact getUserById(int id) {
-    	for (IParticipant contact : listContact) {
-    		if (contact.getUserId() == id)
-    			return (Contact) contact;
-    	}
-    	return null;
-    }
+	public void setPresenterStatus(Contact changedStatus)
+	{
+		ImageView presenter = (ImageView) view.findViewById(R.id.presenter);
+		if(changedStatus.isPresenter())
+		{
+			presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.presenter_big));
+			presenter.setVisibility(ImageView.VISIBLE);
+		}
+		else
+			presenter.setVisibility(ImageView.INVISIBLE);
 
-    public View getView(int position, View convertView, ViewGroup viewGroup) {
-        Contact entry = (Contact) listContact.get(position);
-        
-        if (convertView == null) {
-            LayoutInflater inflater = (LayoutInflater) context
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.contact, null);
-        }
-        view = convertView;
-        
-        String name = entry.getName();
-        TextView contactName = (TextView) convertView.findViewById(R.id.contact_name);
-        if (entry.getUserId() == Client.bbb.getMyUserId()) {
-        	name += " (" + context.getResources().getString(R.string.you) + ")";
-        	contactName.setTextAppearance(context, R.style.MyNameStyle);
-        } else
-        	contactName.setTextAppearance(context, R.style.ParticipantNameStyle);
-        contactName.setText(name);
-        contactName.setTag(name);
+	}
 
-       
-        ImageView moderator = (ImageView) convertView.findViewById(R.id.moderator);
-        if(entry.isModerator()) {
-           	moderator.setImageDrawable(this.context.getResources().getDrawable(R.drawable.administrator_big));
-           	moderator.setVisibility(ImageView.VISIBLE);
-        }
-        else
-        	moderator.setVisibility(ImageView.INVISIBLE);
-        
-        setPresenterStatus(entry);
-        setStreamStatus(entry);
-        setRaiseHandStatus(entry);
-        
-        	
-        int color;
-       
-        switch (entry.getChatStatus()) {
-        	case Contact.CONTACT_ON_PRIVATE_MESSAGE:
-        		color = R.color.title_background;
-        		break;
-        	case Contact.CONTACT_ON_PUBLIC_MESSAGE:
-        		color = android.R.color.white;
-        		break;
-    		default:
-    				color = R.color.background;
-        }
-        
-        convertView.setBackgroundResource(color);
+	public void setStreamStatus( Contact changedStatus)
+	{
+		ImageView stream = (ImageView) view.findViewById(R.id.stream);
+		if(changedStatus.hasStream())
+		{
+			stream.setImageDrawable(this.context.getResources().getDrawable(R.drawable.webcam_big));
+			stream.setVisibility(ImageView.VISIBLE);
+		}
+		else
+			stream.setVisibility(ImageView.INVISIBLE);
+	}
 
-        return convertView;
-    }
+	public void setRaiseHandStatus(Contact changedStatus)
+	{
+		ImageView raiseHand = (ImageView) view.findViewById(R.id.raise_hand);
+		if(changedStatus.isRaiseHand())
+		{
+			raiseHand.setImageDrawable(this.context.getResources().getDrawable(R.drawable.raisehand_big));
+			raiseHand.setVisibility(ImageView.VISIBLE);
+		}
+		else
+			raiseHand.setVisibility(ImageView.INVISIBLE);
+
+	}
+
+
+
+	public int getCount() {
+		return listContact.size();
+	}
+
+	public Object getItem(int position) {
+		return listContact.get(position);
+	}
+
+	public long getItemId(int position) {
+		return listContact.get(position).getUserId();
+	}
+
+	public Contact getUserById(int id) {
+		for (IParticipant contact : listContact) {
+			if (contact.getUserId() == id)
+				return (Contact) contact;
+		}
+		return null;
+	}
+
+	public View getView(int position, View convertView, ViewGroup viewGroup) {
+		Contact entry = (Contact) listContact.get(position);
+
+		if (convertView == null) {
+			LayoutInflater inflater = (LayoutInflater) context
+			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			convertView = inflater.inflate(R.layout.contact, null);
+		}
+		view = convertView;
+
+
+		String name = entry.getName();
+		TextView contactName = (TextView) convertView.findViewById(R.id.contact_name);
+		if (entry.getUserId() == Client.bbb.getMyUserId()) {
+			name += " (" + context.getResources().getString(R.string.you) + ")";
+			contactName.setTextAppearance(context, R.style.MyNameStyle);
+		} else
+			contactName.setTextAppearance(context, R.style.ParticipantNameStyle);
+		contactName.setText(name);
+		contactName.setTag(name);
+
+
+		ImageView moderator = (ImageView) convertView.findViewById(R.id.moderator);
+		if(entry.isModerator()) {
+			moderator.setImageDrawable(this.context.getResources().getDrawable(R.drawable.administrator_big));
+			moderator.setVisibility(ImageView.VISIBLE);
+		}
+		else
+			moderator.setVisibility(ImageView.INVISIBLE);
+
+		setPresenterStatus(entry);
+		setStreamStatus(entry);
+		setRaiseHandStatus(entry);
+
+
+		int color;
+
+		switch (entry.getChatStatus()) {
+		case Contact.CONTACT_ON_PRIVATE_MESSAGE:
+			color = R.color.title_background;
+			break;
+		case Contact.CONTACT_ON_PUBLIC_MESSAGE:
+			color = android.R.color.white;
+			break;
+		default:
+			color = R.color.background;
+		}
+
+		convertView.setBackgroundResource(color);
+
+
+		return convertView;
+
+	}
 
 	public void setChatStatus(int userId, int chatStatus) {
 		if(getUserById(userId)!=null)
 			getUserById(userId).setChatStatus(chatStatus);
 	}
-	
+
 	public int getChatStatus(int position)
 	{
 		int userId = listContact.get(position).getUserId();
 		return getUserById(userId).getChatStatus();
 	}
-	
+
 	public int getUserId (int position)
 	{
 		return listContact.get(position).getUserId();
@@ -199,26 +205,26 @@ public class ContactAdapter extends BaseAdapter {
 			public int compare(IParticipant object1, IParticipant object2) {
 				Contact p1 = (Contact) object1;
 				Contact p2 = (Contact) object2;
-				
+
 				if (p1.getChatStatus() != Contact.CONTACT_NORMAL && p2.getChatStatus() == Contact.CONTACT_NORMAL)
 					return -1;
 				if (p2.getChatStatus() != Contact.CONTACT_NORMAL && p1.getChatStatus() == Contact.CONTACT_NORMAL)
 					return 1;				
-				
+
 				if (p1.isModerator() && !p2.isModerator())
 					return -1;
 				if (p2.isModerator() && !p1.isModerator())
 					return 1;
-				
+
 				if (p1.isPresenter() && !p2.isPresenter())
 					return -1;
 				if (p2.isPresenter() && !p1.isPresenter())
 					return 1;
-				
+
 				return p1.getName().compareToIgnoreCase(p2.getName());
 			}
 		}); 
-		
+
 	}
 
 }

@@ -49,6 +49,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -57,6 +58,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.SlidingDrawer;
 import android.widget.SlidingDrawer.OnDrawerCloseListener;
@@ -89,6 +91,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static final int KICK_USER = Menu.FIRST;
 	public static final int MUTE_USER = Menu.FIRST+1;
 	public static final int SET_PRESENTER = Menu.FIRST+2;
+	
+	public static final int ROW_HEIGHT = 42;
 
 
 
@@ -103,6 +107,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				contactAdapter.setChatStatus(userId, Contact.CONTACT_NORMAL);
 
 			contactAdapter.notifyDataSetChanged();
+
 		} 
 	};
 
@@ -121,11 +126,14 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 	protected SlidingDrawer listenersDrawer;
 	protected Button listenersHandleButton;
+	
 
 	protected boolean loggedIn=true;
 
 	private VoiceModule voice;
 
+	private CustomListview contactListView;
+	CustomListview listenerListView;
 
 
 	//	protected ClientBroadcastReceiver receiver = new ClientBroadcastReceiver();
@@ -142,7 +150,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		ScrollView sView = (ScrollView)findViewById(R.id.Scroll);
 		// Hide the Scollbar
 		sView.setVerticalScrollBarEnabled(false);
-		
+
 
 
 		slidingDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
@@ -192,13 +200,14 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		final ListView chatListView = (ListView)findViewById(R.id.messages);
 		chatListView.setAdapter(chatAdapter);
 
-		final CustomListview  contactListView = (CustomListview)findViewById(R.id.contacts_list); //class cast exception
+		contactListView = (CustomListview)findViewById(R.id.contacts_list); //class cast exception
 		contactAdapter = new ContactAdapter(this);
 		contactListView.setAdapter(contactAdapter);
 		registerForContextMenu(contactListView);
 
 
-		final CustomListview listenerListView = (CustomListview)findViewById(R.id.listeners_list);
+
+		listenerListView = (CustomListview)findViewById(R.id.listeners_list);
 		listenerAdapter = new ListenerAdapter(this);
 		listenerListView.setAdapter(listenerAdapter);
 		registerForContextMenu(listenerListView);
@@ -458,6 +467,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				contactAdapter.sort();
 
 				contactAdapter.notifyDataSetChanged();
+				
+				setListHeight(contactListView);
+
 
 			}
 		});		
@@ -472,6 +484,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				contactAdapter.sort();
 
 				contactAdapter.notifyDataSetChanged();
+				setListHeight(contactListView);
 
 			}
 		});
@@ -649,6 +662,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				listenerAdapter.addSection(p);
 
 				listenerAdapter.notifyDataSetChanged();
+				setListHeight(listenerListView);
 			}
 		});		
 	}
@@ -661,11 +675,25 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				listenerAdapter.removeSection(p);
 
 				listenerAdapter.notifyDataSetChanged();		
+				setListHeight(listenerListView);
 			}
 		});
 	}
+
+
+	public void setListHeight(CustomListview listView) {
+
+		int totalHeight = 0;
+		int rowHeight = ROW_HEIGHT;
+		totalHeight= listView.getCount()*rowHeight;
+		ViewGroup.LayoutParams params = listView.getLayoutParams();
+		params.height = totalHeight + (listView.getDividerHeight() * (listView.getCount() - 1));
+		listView.setLayoutParams(params);
+		listView.requestLayout();
+	} 
 	
 	
+
 
 }
 

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout android:id="@+id/RelativeLayout01"
+<RelativeLayout android:id="@+id/ContactLayout"
 	android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="42dp"
 	android:background="@color/background" xmlns:android="http://schemas.android.com/apk/res/android"
-	android:gravity="center">
+	android:gravity="center" >
 
 	<ImageView android:id="@+id/moderator" 
 		android:layout_width="wrap_content"
