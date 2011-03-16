@@ -40,10 +40,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -51,6 +53,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
@@ -134,6 +137,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 	private CustomListview contactListView;
 	CustomListview listenerListView;
+	
+	
 
 
 	//	protected ClientBroadcastReceiver receiver = new ClientBroadcastReceiver();
@@ -147,9 +152,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
 		slideHandleButton = (Button) findViewById(R.id.handle);
 
-		ScrollView sView = (ScrollView)findViewById(R.id.Scroll);
+		ScrollView scrollView = (ScrollView)findViewById(R.id.Scroll);
 		// Hide the Scollbar
-		sView.setVerticalScrollBarEnabled(false);
+		scrollView.setVerticalScrollBarEnabled(false);
 
 
 
@@ -684,11 +689,12 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public void setListHeight(CustomListview listView) {
 
 		int totalHeight = 0;
-		int rowHeight = ROW_HEIGHT;
-		totalHeight= listView.getCount()*rowHeight;
+		Resources r = getResources();
+		int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, ROW_HEIGHT, r.getDisplayMetrics());
+		totalHeight= listView.getCount()*(px+1);
 		ViewGroup.LayoutParams params = listView.getLayoutParams();
 		params.height = totalHeight + (listView.getDividerHeight() * (listView.getCount() - 1));
-		listView.setLayoutParams(params);
+		listView.setLayoutParams(params); 
 		listView.requestLayout();
 	} 
 	

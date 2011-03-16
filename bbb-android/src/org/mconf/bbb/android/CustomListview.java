@@ -3,7 +3,9 @@ package org.mconf.bbb.android;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.ScrollView;
 
 public class CustomListview extends ListView{
 
@@ -13,11 +15,9 @@ public class CustomListview extends ListView{
 	}
 
 	@Override
-	public boolean dispatchTouchEvent(MotionEvent ev)
+	public boolean dispatchTouchEvent(final MotionEvent ev)
 	{
-
-
-
+		
 		ev.setAction(MotionEvent.ACTION_CANCEL);
 		super.dispatchTouchEvent(ev);
 		return true;

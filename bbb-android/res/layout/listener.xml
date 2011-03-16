@@ -12,3 +12,4 @@
 		android:text="Test test" android:lines="1" android:scrollHorizontally="true" />
 </RelativeLayout>
 
+ 
