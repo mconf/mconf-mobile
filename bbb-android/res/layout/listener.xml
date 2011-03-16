@@ -3,13 +3,25 @@
 	android:layout_width="fill_parent" android:layout_height="wrap_content"
 	android:minHeight="42dp" android:background="@color/background"
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:gravity="center">
+	>
+	<ImageView android:id="@+id/muted" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:minHeight="24dp"
+		android:minWidth="24dp" android:layout_marginLeft="5dp"
+		android:layout_alignParentLeft="true" />
+
 	<TextView android:id="@+id/listener_name"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
-		android:layout_centerHorizontal="true"
 		android:textAppearance="@style/ParticipantNameStyle"
-		android:layout_marginLeft="5dp" android:layout_centerVertical="true"
+		android:layout_marginLeft="5dp" android:layout_toRightOf="@+id/muted"
 		android:text="Test test" android:lines="1" android:scrollHorizontally="true" />
+	<ImageView android:layout_height="wrap_content" android:src="@drawable/sound"
+		android:layout_marginLeft="5dp" android:id="@+id/talking"
+		android:layout_width="wrap_content" android:minWidth="24dp"
+		android:minHeight="24dp" android:layout_toRightOf="@+id/listener_name" />
+	<ImageButton android:id="@+id/kick" android:layout_width="wrap_content"
+		android:layout_height="24dp" android:minHeight="24dp"
+		android:minWidth="24dp" android:layout_marginLeft="5dp" android:src="@drawable/cancel"
+		android:layout_alignParentRight="true"/>
 </RelativeLayout>
 
  
