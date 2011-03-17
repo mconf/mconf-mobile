@@ -171,13 +171,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		});
 
 
-		//	listenersDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
-		//	@Override
-		//	public void onDrawerOpened() {
-
-
-		//	}
-		//	});
+	
 
 		slidingDrawer.setOnDrawerCloseListener(new OnDrawerCloseListener() {
 
@@ -188,14 +182,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			}
 		});
 
-		//	listenersDrawer.setOnDrawerCloseListener(new OnDrawerCloseListener() {
-
-		//		@Override
-		//		public void onDrawerClosed() {
-		//			
-
-		//		}
-		//n  	});
+		
 
 		Bundle extras = getIntent().getExtras();
 		myusername = extras.getString("username");
@@ -205,7 +192,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		final ListView chatListView = (ListView)findViewById(R.id.messages);
 		chatListView.setAdapter(chatAdapter);
 
-		contactListView = (CustomListview)findViewById(R.id.contacts_list); //class cast exception
+		contactListView = (CustomListview)findViewById(R.id.contacts_list); 
 		contactAdapter = new ContactAdapter(this);
 		contactListView.setAdapter(contactAdapter);
 		registerForContextMenu(contactListView);
@@ -232,6 +219,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				chatListView.setSelection(chatListView.getCount());
 			}
 		});
+		
 
 		contactListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -243,6 +231,17 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				//se o ID da pessoa clicada for diferente do meu ID
 				if (contact.getUserId() != bbb.getMyUserId())
 					startPrivateChat(contact);
+			}
+		});
+		
+		listenerListView.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+
+				final ListenerContact listener = (ListenerContact) listenerAdapter.getItem(position); 
+
+				//needs implementation
 			}
 		});
 
@@ -681,6 +680,32 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 				listenerAdapter.notifyDataSetChanged();		
 				setListHeight(listenerListView);
+			}
+		});
+	}
+	
+	@Override
+	public void onListenerStatusChangeIsTalking(final IListener p) {
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				listenerAdapter.getUserById(p.getUserId()).setTalking(p.isTalking());
+				listenerAdapter.notifyDataSetChanged();
+			}
+		});
+	}
+	
+	@Override
+	public void onListenerStatusChangeIsMuted(final IListener p) {
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				if(p==null)
+					System.out.println("HELLO");
+				listenerAdapter.getUserById(p.getUserId()).setMuted(p.isMuted());
+				listenerAdapter.notifyDataSetChanged();
 			}
 		});
 	}

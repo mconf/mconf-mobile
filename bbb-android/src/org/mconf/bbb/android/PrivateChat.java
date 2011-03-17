@@ -155,6 +155,18 @@ public class PrivateChat extends Activity{
 			
 		}
 
+		@Override
+		public void onListenerStatusChangeIsMuted(IListener p) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onListenerStatusChangeIsTalking(IListener p) {
+			// TODO Auto-generated method stub
+			
+		}
+
 		
 
 		

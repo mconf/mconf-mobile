@@ -17,12 +17,18 @@ public class CustomListview extends ListView{
 	@Override
 	public boolean dispatchTouchEvent(final MotionEvent ev)
 	{
-		
-		ev.setAction(MotionEvent.ACTION_CANCEL);
+		if(ev.getAction()==MotionEvent.ACTION_MOVE)
+		{
+			System.out.println("cancelled");
+			ev.setAction(MotionEvent.ACTION_CANCEL);
+		}
 		super.dispatchTouchEvent(ev);
 		return true;
 
 	}
+	
+	
+	
 
 
 }

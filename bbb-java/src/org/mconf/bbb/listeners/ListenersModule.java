@@ -181,8 +181,15 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 		} else if (method.equals("userTalk")) {
 			//	meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userTalk, [5.0, true]) }
 			IListener listener = listeners.get(params.get(0));
+			
 			if (listener != null)
+			{
 				listener.setTalking((Boolean) params.get(1));
+				for (IBigBlueButtonClientListener l : handler.getContext().getListeners()) {
+					l.onListenerStatusChangeIsTalking(listener);
+				}
+			}
+						
 			else
 				log.error("Can't find the listener");
 		} else if (method.equals("userLockedMute")) {
@@ -195,8 +202,15 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 		} else if (method.equals("userMute")) {
 			// meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userMute, [4.0, true]) }
 			IListener listener = listeners.get(params.get(0));
+			
 			if (listener != null)
+			{
 				listener.setMuted((Boolean) params.get(1));
+				for (IBigBlueButtonClientListener l : handler.getContext().getListeners()) {
+					l.onListenerStatusChangeIsMuted(listener);
+				}
+			}
+				
 			else
 				log.error("Can't find the listener");			
 		} else if (method.equals("userLeft")) {
@@ -262,6 +276,11 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 		}				
 		log.info("new participant: {}", p.toString());
 		listeners.put(p.getUserId(), p);			
+	}
+	
+	public void onListenerStatusChanged (Listener p, String key, Object value)
+	{
+		
 	}
 
 }
