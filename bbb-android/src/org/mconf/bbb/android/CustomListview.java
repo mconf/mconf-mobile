@@ -13,11 +13,12 @@ public class CustomListview extends ListView{
 		super(context,attrs);
 		// TODO Auto-generated constructor stub
 	}
-
+	
 	@Override
 	public boolean dispatchTouchEvent(final MotionEvent ev)
 	{
-		if(ev.getAction()==MotionEvent.ACTION_MOVE)
+		
+		if(ev.getAction()==MotionEvent.ACTION_POINTER_DOWN || ev.getAction()==MotionEvent.ACTION_POINTER_UP  )
 		{
 			System.out.println("cancelled");
 			ev.setAction(MotionEvent.ACTION_CANCEL);

@@ -32,12 +32,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
@@ -240,8 +242,24 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 					int position, long id) {
 
 				final ListenerContact listener = (ListenerContact) listenerAdapter.getItem(position); 
+				final CharSequence[] items ={"Mute User", "Kick User"};
+				if(listener.isMuted())
+					items[0]="Unmute User";
 
-				//needs implementation
+				AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+				builder.setItems(items, new DialogInterface.OnClickListener() {
+				    public void onClick(DialogInterface dialog, int item) {
+				        switch(item){
+				        	case 0: //listener.setMuted(true);
+				        			System.out.println("muteUser - needs implementation");
+				        			break;
+				        	case 1: bbb.kickListener(listener.getUserId());
+				        }
+				    }
+				});
+				AlertDialog alert = builder.create();
+				
+				
 			}
 		});
 

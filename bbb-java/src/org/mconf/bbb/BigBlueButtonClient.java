@@ -158,6 +158,10 @@ public class BigBlueButtonClient {
 	public void kickUser(int userId) {
 		getUsersModule().kickUser(userId);
 	}
+	
+	public void kickListener(int listenerId) {
+		getListenersModule().kickUser(listenerId);
+	}
 
 	public static void main(String[] args) {
 		BigBlueButtonClient client = new BigBlueButtonClient();

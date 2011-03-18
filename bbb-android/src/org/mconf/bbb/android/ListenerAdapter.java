@@ -41,12 +41,12 @@ public class ListenerAdapter extends BaseAdapter {
 		ImageView muted = (ImageView) view.findViewById(R.id.muted);
 		if(changedStatus.isMuted())
 		{
-			muted.setImageDrawable(this.context.getResources().getDrawable(R.drawable.sound_none));
+			muted.setImageDrawable(this.context.getResources().getDrawable(R.drawable.sound_mute_big));
 			muted.setVisibility(ImageView.VISIBLE);
 		}
 		else
 			{
-			muted.setImageDrawable(this.context.getResources().getDrawable(R.drawable.sound));
+			muted.setImageDrawable(this.context.getResources().getDrawable(R.drawable.sound_none_big));
 			muted.setVisibility(ImageView.VISIBLE);
 			}
 
@@ -57,7 +57,7 @@ public class ListenerAdapter extends BaseAdapter {
 		ImageView talking = (ImageView) view.findViewById(R.id.talking);
 		if(changedStatus.isTalking())
 		{
-			talking.setImageDrawable(this.context.getResources().getDrawable(R.drawable.sound));
+			talking.setImageDrawable(this.context.getResources().getDrawable(R.drawable.sound_big));
 			talking.setVisibility(ImageView.VISIBLE);
 		}
 		else
@@ -66,7 +66,7 @@ public class ListenerAdapter extends BaseAdapter {
     
     public int getCount() { 
         return listListener.size();
-    }
+    } 
 
     public Object getItem(int position) {
         return listListener.get(position);
@@ -75,9 +75,9 @@ public class ListenerAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return listListener.get(position).getUserId();
     }
-    
-    public ListenerContact getUserById(int id) {
-    	for (IListener listener : listListener) {
+     
+    public ListenerContact getUserById(int id) { 
+    	for (IListener listener : listListener) { 
     		if (listener.getUserId() == id)
     			return (ListenerContact) listener;
     	}
