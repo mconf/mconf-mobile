@@ -160,7 +160,11 @@ public class BigBlueButtonClient {
 	}
 	
 	public void kickListener(int listenerId) {
-		getListenersModule().kickUser(listenerId);
+		getListenersModule().doEjectUser(listenerId);
+	}
+	
+	public void muteUnmuteListener(int listenerId, boolean value){
+		getListenersModule().doMuteUnmuteUser(listenerId,value);
 	}
 
 	public static void main(String[] args) {

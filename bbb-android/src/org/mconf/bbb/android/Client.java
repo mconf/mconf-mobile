@@ -26,6 +26,7 @@ import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.android.voip.VoiceModule;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.listeners.IListener;
+import org.mconf.bbb.listeners.Listener;
 import org.mconf.bbb.users.IParticipant;
 import org.sipdroid.sipua.ui.Receiver;
 import org.slf4j.Logger;
@@ -94,10 +95,12 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	private static final String SEND_TO_BACK = "bbb.android.action.SEND_TO_BACK";
 
 	public static final int KICK_USER = Menu.FIRST;
-	public static final int MUTE_USER = Menu.FIRST+1;
 	public static final int SET_PRESENTER = Menu.FIRST+2;
-	
+
 	public static final int ROW_HEIGHT = 42;
+
+	private static final int KICK_LISTENER = Menu.FIRST+3;
+	private static final int MUTE_LISTENER = Menu.FIRST+1;
 
 
 
@@ -131,7 +134,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 	protected SlidingDrawer listenersDrawer;
 	protected Button listenersHandleButton;
-	
+
 
 	protected boolean loggedIn=true;
 
@@ -139,8 +142,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 	private CustomListview contactListView;
 	CustomListview listenerListView;
-	
-	
+
+
 
 
 	//	protected ClientBroadcastReceiver receiver = new ClientBroadcastReceiver();
@@ -173,7 +176,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		});
 
 
-	
+
 
 		slidingDrawer.setOnDrawerCloseListener(new OnDrawerCloseListener() {
 
@@ -184,7 +187,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			}
 		});
 
-		
+
 
 		Bundle extras = getIntent().getExtras();
 		myusername = extras.getString("username");
@@ -221,7 +224,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				chatListView.setSelection(chatListView.getCount());
 			}
 		});
-		
+
 
 		contactListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -235,12 +238,12 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 					startPrivateChat(contact);
 			}
 		});
-		
-		listenerListView.setOnItemClickListener(new OnItemClickListener() {
+
+		/*listenerListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-
+				System.out.println("clicked");
 				final ListenerContact listener = (ListenerContact) listenerAdapter.getItem(position); 
 				final CharSequence[] items ={"Mute User", "Kick User"};
 				if(listener.isMuted())
@@ -248,21 +251,21 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 				AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
 				builder.setItems(items, new DialogInterface.OnClickListener() {
-				    public void onClick(DialogInterface dialog, int item) {
-				        switch(item){
-				        	case 0: //listener.setMuted(true);
-				        			System.out.println("muteUser - needs implementation");
-				        			break;
-				        	case 1: bbb.kickListener(listener.getUserId());
-				        }
-				    }
+					public void onClick(DialogInterface dialog, int item) {
+						switch(item){
+						case 0: //listener.setMuted(true);
+							System.out.println("muteUser - needs implementation");
+							break;
+						case 1: bbb.kickListener(listener.getUserId());
+						}
+					}
 				});
 				AlertDialog alert = builder.create();
-				
-				
+
+
 			}
 		});
-
+		 */
 		Receiver.mContext = this;
 		voice = new VoiceModule(this,
 				bbb.getJoinService().getJoinedMeeting().getFullname(), 
@@ -280,15 +283,28 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-		final Contact contact = (Contact) contactAdapter.getItem(info.position);
-		if (bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator()) {
-			if (contact.getUserId() != bbb.getMyUserId()) {
-				menu.add(0, KICK_USER, 0, R.string.kick);
-				menu.add(0, MUTE_USER, 0, R.string.mute);
-			}
+		if(v.getId()==R.id.contacts_list)
+		{
+			final Contact contact = (Contact) contactAdapter.getItem(info.position);
+			if (bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator()) {
+				if (contact.getUserId() != bbb.getMyUserId()) {
+					menu.add(0, KICK_USER, 0, R.string.kick);
+				}
 
-			if (!contact.isPresenter())
-				menu.add(0, SET_PRESENTER, 0, R.string.assign_presenter);
+				if (!contact.isPresenter())
+					menu.add(0, SET_PRESENTER, 0, R.string.assign_presenter);
+			}
+		}
+		else
+		{
+			final Listener listener = (Listener) listenerAdapter.getItem(info.position);
+			menu.add(0, KICK_LISTENER, 0, R.string.kick);
+			int muted;
+			if(listener.isMuted())
+				muted=R.string.unmute;
+			else
+				muted = R.string.mute;
+			menu.add(0, MUTE_LISTENER, 0, muted);
 		}
 
 	}
@@ -297,8 +313,18 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-		final Contact contact = (Contact) contactAdapter.getItem(info.position);
-		log.debug("clicked on participant " + contact.toString());
+		Contact contact = null;
+		Listener listener = null;
+		if(item.getItemId()==KICK_USER||item.getItemId()==SET_PRESENTER)
+		{
+			contact= (Contact) contactAdapter.getItem(info.position);
+			log.debug("clicked on participant " + contact.toString());
+		}
+		else
+		{
+			listener=(Listener) listenerAdapter.getItem(info.position);
+			log.debug("clicked on listener " + listener.toString());
+		}
 		switch (item.getItemId()) {
 		case KICK_USER:
 			bbb.kickUser(contact.getUserId());
@@ -306,11 +332,14 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			kickedUser.putExtra("userId", contact.getUserId());
 			sendBroadcast(kickedUser);
 			return true;
-		case MUTE_USER:
-			Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
-			return true;
 		case SET_PRESENTER:
 			bbb.assignPresenter(contact.getUserId());
+			return true;
+		case MUTE_LISTENER:
+			bbb.muteUnmuteListener(listener.getUserId(), !listener.isMuted());
+			return true;
+		case KICK_LISTENER: 
+			bbb.kickListener(listener.getUserId());
 			return true;
 		}
 		return super.onContextItemSelected(item);
@@ -489,7 +518,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				contactAdapter.sort();
 
 				contactAdapter.notifyDataSetChanged();
-				
+
 				setListHeight(contactListView);
 
 
@@ -701,7 +730,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			}
 		});
 	}
-	
+
 	@Override
 	public void onListenerStatusChangeIsTalking(final IListener p) {
 		runOnUiThread(new Runnable() {
@@ -713,7 +742,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			}
 		});
 	}
-	
+
 	@Override
 	public void onListenerStatusChangeIsMuted(final IListener p) {
 		runOnUiThread(new Runnable() {
@@ -740,8 +769,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		listView.setLayoutParams(params); 
 		listView.requestLayout();
 	} 
-	
-	
+
+
 
 
 }

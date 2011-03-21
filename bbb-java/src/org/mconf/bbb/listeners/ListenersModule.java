@@ -286,9 +286,6 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 		
 	}
 
-	public void kickUser(int listenerId) {
-		// TODO Auto-generated method stub
-		System.out.println("Kick user - needs implementation");
-	}
+	
 
 }
