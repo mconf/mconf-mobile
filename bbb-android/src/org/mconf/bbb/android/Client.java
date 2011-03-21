@@ -171,6 +171,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 				NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 				notificationManager.cancel(CHAT_NOTIFICATION_ID);
+				Button handler = (Button)findViewById(R.id.handle);
+				handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.normal_handler));
 				openedDrawer();
 			}
 		});
@@ -570,11 +572,13 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			{
 				slidingDrawer.open();
 				openedDrawer();
+				Button handler = (Button)findViewById(R.id.handle);
+				handler.setBackgroundDrawable(this.getApplicationContext().getResources().getDrawable(R.drawable.normal_handler));
 			}
 
 		}
 	}
-
+ 
 	public void showNotification(final ChatMessage message, IParticipant source, final boolean privateChat) {
 		// remember that source could be null! that happens when a user send a message and log out - the list of participants don't have the entry anymore
 
@@ -633,11 +637,16 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			public void run() {
 				chatAdapter.add(message);
 				chatAdapter.notifyDataSetChanged();
+				if (!slidingDrawer.isShown() || !slidingDrawer.isOpened())
+				{
+					showNotification(message, source, false);
+					Button handler = (Button)findViewById(R.id.handle);
+					handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.new_message)); 
+				}
 			}
 		});
 
-		if (!slidingDrawer.isShown() || !slidingDrawer.isOpened())
-			showNotification(message, source, false);
+		
 	}
 
 	@Override
@@ -749,8 +758,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 			@Override
 			public void run() {
-				if(p==null)
-					System.out.println("HELLO");
 				listenerAdapter.getUserById(p.getUserId()).setMuted(p.isMuted());
 				listenerAdapter.notifyDataSetChanged();
 			}

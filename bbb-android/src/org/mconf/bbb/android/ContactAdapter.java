@@ -168,9 +168,6 @@ public class ContactAdapter extends BaseAdapter {
 		case Contact.CONTACT_ON_PRIVATE_MESSAGE:
 			color = R.color.title_background;
 			break;
-		case Contact.CONTACT_ON_PUBLIC_MESSAGE:
-			color = android.R.color.white;
-			break;
 		default:
 			color = R.color.background;
 		}
