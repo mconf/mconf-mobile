@@ -26,6 +26,7 @@ import java.util.concurrent.Executor;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import com.flazr.amf.Amf0Object;
 import com.flazr.io.flv.FlvAtom;
 import com.flazr.io.flv.FlvWriter;
+import com.flazr.io.flv.H263Packet;
 import com.flazr.rtmp.LoopedReader;
 import com.flazr.rtmp.RtmpDecoder;
 import com.flazr.rtmp.RtmpEncoder;
@@ -153,9 +155,25 @@ public class VideoRtmpConnection extends RtmpConnection {
 //        		final ChannelBuffer in = message.encode();
 //        		byte[] aux = new byte[in.readableBytes()];
 //        		in.readBytes(aux);
-        		context.onVideo(/*message*/);
+//        		context.onVideo(aux);
         		
-        		        		
+        		// gets the video data using h263 packet class
+//        		final ChannelBuffer in = message.encode();
+//        		H263Packet packet;
+//        		packet = new H263Packet(in, 0);
+//        		log.debug("width = {}", packet.getWidth());
+//        		log.debug("heigth = {}", packet.getHeight());   		
+//        		byte[] aux = new byte[in.readableBytes()];
+//        		in.readBytes(aux);
+//        		context.onVideo(aux);
+        	
+//context.onVideo(message.encode().toByteBuffer());
+
+//		            byte aux[] = new byte[1];
+//        		    context.onVideo(aux);
+        		
+       		context.onVideo(message, channel);
+        		    
         		break;
 //        	case CONTROL:
 //                Control control = (Control) message;

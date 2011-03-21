@@ -21,9 +21,16 @@
 
 package org.mconf.bbb;
 
+import java.nio.ByteBuffer;
+
+import org.jboss.netty.channel.Channel;
+
+import com.flazr.rtmp.RtmpMessage;
+
+
 
 public interface IVideoListener {
 
-	public void onVideo(/*message*/);
+	public void onVideo(final RtmpMessage message, Channel channel);
 	
 }

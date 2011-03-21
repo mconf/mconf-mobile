@@ -21,6 +21,7 @@
 
 package org.mconf.bbb;
 
+import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.mconf.bbb.users.UsersModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.flazr.rtmp.RtmpMessage;
 import com.flazr.rtmp.client.ClientOptions;
 import com.flazr.rtmp.message.Command;
 import com.flazr.util.Utils;
@@ -138,8 +140,8 @@ public class BigBlueButtonClient {
 		opt.setClientVersionToUse(Utils.fromHex("00000000"));
 		opt.setHost(joinService.getServerUrl().toLowerCase().replace("http://", ""));
 		opt.setAppName("video/" + joinService.getJoinedMeeting().getConference());
-		opt.setStreamName("320x240412"); //TODO Gian Auto detect the stream name
-//		opt.setSaveAs("nomequalquer.flv"); //TODO Gian remove this line
+		opt.setStreamName("160x12016"); //TODO Gian Auto detect the stream name
+		//opt.setSaveAs("mconfonlydata.flv"); //TODO Gian remove this line
 		log.debug(opt.toString());
 		
 		videoConnection = new VideoRtmpConnection(opt, this);
@@ -208,10 +210,14 @@ public class BigBlueButtonClient {
 			return false;
 	}
 	
-	public boolean onVideo(/*message*/) {
+	public boolean onVideo(final RtmpMessage message, Channel channel) {
+		log.debug("1");
 		for (IVideoListener l : videoListeners) {
-			l.onVideo(/*message*/);
+			log.debug("1.1");
+			l.onVideo(message, channel);
+			log.debug("1.2");
 		}
+		log.debug("2");
 		return true;
 	}
 
