@@ -28,12 +28,20 @@ import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Display;
 import android.view.KeyEvent;
+import android.view.WindowManager;
 
 
 
 public class ShowVideo extends Activity implements IVideoListener {
 	private static final Logger log = LoggerFactory.getLogger(ShowVideo.class);
+	private GLSurfaceView_mconf mGLView = null;
+	private DisplayMetrics metrics = null;
+	private int width=0,height=0;
+	private boolean DEBUG = true;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -41,6 +49,25 @@ public class ShowVideo extends Activity implements IVideoListener {
 		log.debug("onCreate");
 		
 		Client.bbb.addListener(this);
+		
+		//gets the screen resolution and adjusts the screen accordingly
+		metrics = new DisplayMetrics();
+        Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+        display.getMetrics(metrics);        
+        width = metrics.widthPixels;
+        height = metrics.heightPixels;        
+        changeOrientation(width,height);        
+        if(DEBUG){
+        	log.debug("ShowVideo class", String.format("Screen resolution: %d X %d\n",width, height));
+        }
+		
+        //prepares the surface to render the video
+		if(mGLView==null){
+			mGLView = new GLSurfaceView_mconf(this,width,height);
+		} else {
+			Log.v("ShowVideo Class", String.format("Error: mGLView should be null but isnt!\n"));
+		} 
+		setContentView(mGLView);
 	}
 	
 	@Override
@@ -85,4 +112,5 @@ public class ShowVideo extends Activity implements IVideoListener {
 		
 	}
 
+	native void changeOrientation(int w,int h);//TODO Gian implement this function
 }

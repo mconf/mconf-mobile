@@ -149,12 +149,12 @@ public class VideoRtmpConnection extends RtmpConnection {
 //		                channel.write(new BytesRead(bytesRead));
 //		            }
         		          
-//        		// gets the video data
+//        		// puts the video data from the message into the aux array and sends it to android ShowVideo.java
+        		//TODO Gian see if there isnt a faster way to put the data into the byte array
 //        		final ChannelBuffer in = message.encode();
 //        		byte[] aux = new byte[in.readableBytes()];
 //        		in.readBytes(aux);
-        		context.onVideo(/*message*/);
-        		
+        		context.onVideo(/*message*/);        		
         		        		
         		break;
 //        	case CONTROL:
