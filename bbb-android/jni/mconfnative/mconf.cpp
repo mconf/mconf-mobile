@@ -56,7 +56,7 @@ jint Java_org_mconf_bbb_android_Renderermconf_nativeRender(JNIEnv *env, jobject 
 	frames_video = queue_create(); //queue that will receive the encoded frames from bbb
 	DecodeVideo *video_dec;
 	video_dec = new DecodeVideo();
-	video_dec->open(COMMON_CODEC_NONE);
+	video_dec->open(COMMON_CODEC_VIDEO_H263);
 	video_dec->start(frames_video, frames);
 	if(DEBUG){
 		__android_log_print(ANDROID_LOG_DEBUG,  "mconf.cpp", "Decode started!\n");

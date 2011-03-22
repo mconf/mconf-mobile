@@ -15,6 +15,7 @@
 #define COMMON_CODEC_VIDEO_MPEG4            11       ///< Codec de vídeo: MPEG-4
 #define COMMON_CODEC_VIDEO_H264             12       ///< Codec de vídeo: H.264
 #define COMMON_CODEC_VIDEO_DV25             13       ///< Codec de vídeo: DV25
+#define COMMON_CODEC_VIDEO_H263             14       ///< Codec de vídeo: H263
 #define COMMON_CODEC_AUDIO_MP2              20       ///< Codec de áudio: MP2
 #define COMMON_CODEC_AUDIO_AAC              21       ///< Codec de áudio: AAC
 
