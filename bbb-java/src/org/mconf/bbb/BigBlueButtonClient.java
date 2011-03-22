@@ -138,7 +138,7 @@ public class BigBlueButtonClient {
 		opt.setClientVersionToUse(Utils.fromHex("00000000"));
 		opt.setHost(joinService.getServerUrl().toLowerCase().replace("http://", ""));
 		opt.setAppName("video/" + joinService.getJoinedMeeting().getConference());
-		opt.setStreamName("320x240412"); //TODO Gian Auto detect the stream name
+		opt.setStreamName("160x120438"); //TODO Gian Auto detect the stream name
 //		opt.setSaveAs("nomequalquer.flv"); //TODO Gian remove this line
 		log.debug(opt.toString());
 		
@@ -208,9 +208,9 @@ public class BigBlueButtonClient {
 			return false;
 	}
 	
-	public boolean onVideo(/*message*/) {
+	public boolean onVideo(byte[] aux) {
 		for (IVideoListener l : videoListeners) {
-			l.onVideo(/*message*/);
+			l.onVideo(aux);
 		}
 		return true;
 	}

@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/queueTest.dir/gtest_main.cpp.o CMakeFiles/queueTest.dir/gtest_QueueDiscard.cpp.o  -o queueTest -rdynamic ../libqueue.a ../../sockets/libsockets.a ../../common/libcommon.a ../../thread/libthread.a -lrt -lpthread -lgtest 

@@ -1,0 +1,27 @@
+#include <windows.h>
+#include <winver.h>
+#include "..\..\deps\prav\include\queue_version.h"
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION  SW_VERSION_MAJOR,SW_VERSION_COMPAT,SW_VERSION_MINOR,SW_VERSION_REV
+ PRODUCTVERSION SW_VERSION_MAJOR,SW_VERSION_COMPAT,SW_VERSION_MINOR
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+
+BEGIN
+   BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName", "PRAV (Projetos em Áudio e Vídeo) - \
+                                  UFRGS (Universidade Federal do Rio Grande do Sul) - \
+                                  Porto Alegre - RS - Brasil"
+            VALUE "FileVersion", SW_VERSION_STR_4
+            VALUE "ProductVersion", SW_VERSION_STR_3
+        END
+	END
+END
+

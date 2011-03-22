@@ -1,0 +1,6 @@
+/home/andre/workspace/eadcel_2536/jni/iva/common/CMakeFiles/common.dir
+/home/andre/workspace/eadcel_2536/jni/iva/common/test/CMakeFiles/commonTest.dir
+/home/andre/workspace/eadcel_2536/jni/iva/sockets/CMakeFiles/sockets.dir
+/home/andre/workspace/eadcel_2536/jni/iva/sockets/test/CMakeFiles/socketsTest.dir
+/home/andre/workspace/eadcel_2536/jni/iva/thread/CMakeFiles/thread.dir
+/home/andre/workspace/eadcel_2536/jni/iva/thread/test/CMakeFiles/threadTest.dir

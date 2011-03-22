@@ -24,6 +24,6 @@ package org.mconf.bbb;
 
 public interface IVideoListener {
 
-	public void onVideo(/*message*/);
+	public void onVideo(byte[] aux);
 	
 }

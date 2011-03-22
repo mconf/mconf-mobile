@@ -1,0 +1,2 @@
+/usr/bin/ar cr libqueue.a  CMakeFiles/queue.dir/queue.cpp.o CMakeFiles/queue.dir/QueueBuffer.cpp.o CMakeFiles/queue.dir/QueueDiscard.cpp.o CMakeFiles/queue.dir/QueueDiscardPolicy.cpp.o CMakeFiles/queue.dir/QueueExtraData.cpp.o CMakeFiles/queue.dir/QueueExtraDataAudio.cpp.o CMakeFiles/queue.dir/QueueExtraDataVideo.cpp.o
+/usr/bin/ranlib libqueue.a

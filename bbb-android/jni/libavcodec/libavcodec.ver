@@ -1,0 +1,3 @@
+LIBAVCODEC_52 {
+        global: *;
+};

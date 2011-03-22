@@ -41,7 +41,7 @@ public class ShowVideo extends Activity implements IVideoListener {
 	private GLSurfaceView_mconf mGLView = null;
 	private DisplayMetrics metrics = null;
 	private int width=0,height=0;
-	private boolean DEBUG = true;
+	private static boolean DEBUG = true;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -77,6 +77,13 @@ public class ShowVideo extends Activity implements IVideoListener {
 	}
 	
 	@Override
+	protected void onStop() {
+		super.onStop();
+	
+		stopThreads();//stops the C++ code, otherwise it will keep running
+	}	
+	
+	@Override
 	protected void onDestroy() {
 		//TODO Gian implement the onDestroy for ShowVideo.java
 		log.debug("onDestroy");
@@ -107,10 +114,31 @@ public class ShowVideo extends Activity implements IVideoListener {
 
 	
 	@Override
-	public void onVideo() {
-		// TODO Auto-generated method stub
-		
+	public void onVideo(byte[] data) {
+		//insert encoded data into the queue		
+		enqueueEncoded(data);
+		log.debug("new frame");
 	}
+	
+	 static {
+    	System.loadLibrary("avutil");
+    	System.loadLibrary("swscale");
+        System.loadLibrary("avcodec");
+        System.loadLibrary("avformat");
+        System.loadLibrary("thread");
+    	System.loadLibrary("common");
+    	System.loadLibrary("sockets");
+    	System.loadLibrary("queue");
+    	System.loadLibrary("net");
+    	System.loadLibrary("decode");
+    	System.loadLibrary("mconfnative");  
+        
+    	if(DEBUG){
+    		Log.v("Java ShowVideo class", String.format("native libraries loaded\n"));
+    	}
+    }
 
-	native void changeOrientation(int w,int h);//TODO Gian implement this function
+	native void changeOrientation(int w,int h);
+	native void stopThreads();
+	native void enqueueEncoded(byte[] Data);
 }

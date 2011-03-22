@@ -168,7 +168,7 @@ public class GLSurfaceView_FFMPEG extends SurfaceView implements SurfaceHolder.C
     /**
      * Install a custom EGLConfigChooser.
      * <p>If this method is
-     * called, it must be called before {@link #setRenderer(Renderer_mconf)}
+     * called, it must be called before {@link #setRenderer(Renderermconf)}
      * is called.
      * <p>
      * If no setEGLConfigChooser method is called, then by default the
@@ -190,7 +190,7 @@ public class GLSurfaceView_FFMPEG extends SurfaceView implements SurfaceHolder.C
      * as close to 16-bit RGB as possible, with or without an optional depth
      * buffer as close to 16-bits as possible.
      * <p>If this method is
-     * called, it must be called before {@link #setRenderer(Renderer_mconf)}
+     * called, it must be called before {@link #setRenderer(Renderermconf)}
      * is called.
      * <p>
       * If no setEGLConfigChooser method is called, then by default the
@@ -209,7 +209,7 @@ public class GLSurfaceView_FFMPEG extends SurfaceView implements SurfaceHolder.C
      * with at least the specified component sizes, and as close
      * to the specified component sizes as possible.
      * <p>If this method is
-     * called, it must be called before {@link #setRenderer(Renderer_mconf)}
+     * called, it must be called before {@link #setRenderer(Renderermconf)}
      * is called.
      * <p>
      * If no setEGLConfigChooser method is called, then by default the
@@ -233,7 +233,7 @@ public class GLSurfaceView_FFMPEG extends SurfaceView implements SurfaceHolder.C
      * Using RENDERMODE_WHEN_DIRTY can improve battery life and overall system performance
      * by allowing the GPU and CPU to idle when the view does not need to be updated.
      * <p>
-     * This method can only be called after {@link #setRenderer(Renderer_mconf)}
+     * This method can only be called after {@link #setRenderer(Renderermconf)}
      *
      * @param renderMode one of the RENDERMODE_X constants
      * @see #RENDERMODE_CONTINUOUSLY
@@ -321,7 +321,7 @@ public class GLSurfaceView_FFMPEG extends SurfaceView implements SurfaceHolder.C
 
     /**
      * Queue a runnable to be run on the GL rendering thread. This can be used
-     * to communicate with the Renderer_mconf on the rendering thread.
+     * to communicate with the Renderermconf on the rendering thread.
      * Must not be called before a renderer has been set.
      * @param r the runnable to be run on the GL rendering thread.
      */
@@ -401,7 +401,7 @@ public class GLSurfaceView_FFMPEG extends SurfaceView implements SurfaceHolder.C
      * is a convenient place to do this.
      *
      *
-     * @see #setRenderer(Renderer_mconf)
+     * @see #setRenderer(Renderermconf)
      */
     public static interface SwapBuffersCallback {
         public boolean SwapBuffers();
@@ -765,7 +765,7 @@ public class GLSurfaceView_FFMPEG extends SurfaceView implements SurfaceHolder.C
 
     /**
      * A generic GL Thread. Takes care of initializing EGL and GL. Delegates
-     * to a Renderer_mconf instance to do the actual drawing. Can be configured to
+     * to a Renderermconf instance to do the actual drawing. Can be configured to
      * render continuously or on request.
      *
      */
