@@ -26,30 +26,38 @@ import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.android.voip.VoiceModule;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.listeners.IListener;
+import org.mconf.bbb.listeners.Listener;
 import org.mconf.bbb.users.IParticipant;
 import org.sipdroid.sipua.ui.Receiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.TypedValue;
 import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
@@ -57,6 +65,8 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.SlidingDrawer;
 import android.widget.SlidingDrawer.OnDrawerCloseListener;
 import android.widget.Toast;
@@ -86,8 +96,12 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	private static final String SEND_TO_BACK = "bbb.android.action.SEND_TO_BACK";
 
 	public static final int KICK_USER = Menu.FIRST;
-	public static final int MUTE_USER = Menu.FIRST+1;
 	public static final int SET_PRESENTER = Menu.FIRST+2;
+
+	public static final int ROW_HEIGHT = 42;
+
+	private static final int KICK_LISTENER = Menu.FIRST+3;
+	private static final int MUTE_LISTENER = Menu.FIRST+1;
 
 
 
@@ -102,6 +116,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				contactAdapter.setChatStatus(userId, Contact.CONTACT_NORMAL);
 
 			contactAdapter.notifyDataSetChanged();
+
 		} 
 	};
 
@@ -121,9 +136,14 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	protected SlidingDrawer listenersDrawer;
 	protected Button listenersHandleButton;
 
+
 	protected boolean loggedIn=true;
 
 	private VoiceModule voice;
+
+	private CustomListview contactListView;
+	CustomListview listenerListView;
+
 
 
 
@@ -138,8 +158,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
 		slideHandleButton = (Button) findViewById(R.id.handle);
 
-		//listenersDrawer = (SlidingDrawer) findViewById(R.id.slideListeners);
-		//listenersHandleButton = (Button) findViewById(R.id.handle2);
+		ScrollView scrollView = (ScrollView)findViewById(R.id.Scroll);
+		// Hide the Scollbar
+		scrollView.setVerticalScrollBarEnabled(false);
+
 
 
 		slidingDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
@@ -150,18 +172,15 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 				NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 				notificationManager.cancel(CHAT_NOTIFICATION_ID);
-				openedDrawer();
+				Button handler = (Button)findViewById(R.id.handle);
+				handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.normal_handler));
+				handler.setGravity(Gravity.CENTER);
+				openedDrawer(); 
 			}
 		});
 
 
-		//	listenersDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
-		//	@Override
-		//	public void onDrawerOpened() {
 
-
-		//	}
-		//	});
 
 		slidingDrawer.setOnDrawerCloseListener(new OnDrawerCloseListener() {
 
@@ -172,14 +191,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			}
 		});
 
-		//	listenersDrawer.setOnDrawerCloseListener(new OnDrawerCloseListener() {
 
-		//		@Override
-		//		public void onDrawerClosed() {
-		//			
-
-		//		}
-		//n  	});
 
 		Bundle extras = getIntent().getExtras();
 		myusername = extras.getString("username");
@@ -189,13 +201,14 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		final ListView chatListView = (ListView)findViewById(R.id.messages);
 		chatListView.setAdapter(chatAdapter);
 
-		final CustomListview  contactListView = (CustomListview)findViewById(R.id.contacts_list); //class cast exception
+		contactListView = (CustomListview)findViewById(R.id.contacts_list); 
 		contactAdapter = new ContactAdapter(this);
 		contactListView.setAdapter(contactAdapter);
 		registerForContextMenu(contactListView);
 
 
-		final CustomListview listenerListView = (CustomListview)findViewById(R.id.listeners_list);
+
+		listenerListView = (CustomListview)findViewById(R.id.listeners_list);
 		listenerAdapter = new ListenerAdapter(this);
 		listenerListView.setAdapter(listenerAdapter);
 		registerForContextMenu(listenerListView);
@@ -216,6 +229,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			}
 		});
 
+
 		contactListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
@@ -229,6 +243,33 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			}
 		});
 
+		/*listenerListView.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				System.out.println("clicked");
+				final ListenerContact listener = (ListenerContact) listenerAdapter.getItem(position); 
+				final CharSequence[] items ={"Mute User", "Kick User"};
+				if(listener.isMuted())
+					items[0]="Unmute User";
+
+				AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+				builder.setItems(items, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int item) {
+						switch(item){
+						case 0: //listener.setMuted(true);
+							System.out.println("muteUser - needs implementation");
+							break;
+						case 1: bbb.kickListener(listener.getUserId());
+						}
+					}
+				});
+				AlertDialog alert = builder.create();
+
+
+			}
+		});
+		 */
 		Receiver.mContext = this;
 		voice = new VoiceModule(this,
 				bbb.getJoinService().getJoinedMeeting().getFullname(), 
@@ -246,15 +287,30 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-		final Contact contact = (Contact) contactAdapter.getItem(info.position);
 		if (bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator()) {
-			if (contact.getUserId() != bbb.getMyUserId()) {
-				menu.add(0, KICK_USER, 0, R.string.kick);
-				menu.add(0, MUTE_USER, 0, R.string.mute);
-			}
+			if(v.getId()==R.id.contacts_list)
+			{
+				final Contact contact = (Contact) contactAdapter.getItem(info.position);
 
-			if (!contact.isPresenter())
-				menu.add(0, SET_PRESENTER, 0, R.string.assign_presenter);
+				if (contact.getUserId() != bbb.getMyUserId()) {
+					menu.add(0, KICK_USER, 0, R.string.kick);
+				}
+
+				if (!contact.isPresenter())
+					menu.add(0, SET_PRESENTER, 0, R.string.assign_presenter);
+
+			}
+			else
+			{
+				final Listener listener = (Listener) listenerAdapter.getItem(info.position);
+				menu.add(0, KICK_LISTENER, 0, R.string.kick);
+				int muted;
+				if(listener.isMuted())
+					muted=R.string.unmute;
+				else
+					muted = R.string.mute;
+				menu.add(0, MUTE_LISTENER, 0, muted);
+			}
 		}
 
 	}
@@ -263,8 +319,18 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-		final Contact contact = (Contact) contactAdapter.getItem(info.position);
-		log.debug("clicked on participant " + contact.toString());
+		Contact contact = null;
+		Listener listener = null;
+		if(item.getItemId()==KICK_USER||item.getItemId()==SET_PRESENTER)
+		{
+			contact= (Contact) contactAdapter.getItem(info.position);
+			log.debug("clicked on participant " + contact.toString());
+		}
+		else
+		{
+			listener=(Listener) listenerAdapter.getItem(info.position);
+			log.debug("clicked on listener " + listener.toString());
+		}
 		switch (item.getItemId()) {
 		case KICK_USER:
 			bbb.kickUser(contact.getUserId());
@@ -272,11 +338,14 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			kickedUser.putExtra("userId", contact.getUserId());
 			sendBroadcast(kickedUser);
 			return true;
-		case MUTE_USER:
-			Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
-			return true;
 		case SET_PRESENTER:
 			bbb.assignPresenter(contact.getUserId());
+			return true;
+		case MUTE_LISTENER:
+			bbb.muteUnmuteListener(listener.getUserId(), !listener.isMuted());
+			return true;
+		case KICK_LISTENER: 
+			bbb.kickListener(listener.getUserId());
 			return true;
 		}
 		return super.onContextItemSelected(item);
@@ -456,6 +525,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 				contactAdapter.notifyDataSetChanged();
 
+				setListHeight(contactListView);
+
+
 			}
 		});		
 	}
@@ -469,6 +541,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				contactAdapter.sort();
 
 				contactAdapter.notifyDataSetChanged();
+				setListHeight(contactListView);
 
 			}
 		});
@@ -503,6 +576,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			{
 				slidingDrawer.open();
 				openedDrawer();
+				Button handler = (Button)findViewById(R.id.handle);
+				handler.setBackgroundDrawable(this.getApplicationContext().getResources().getDrawable(R.drawable.normal_handler));
 			}
 
 		}
@@ -566,11 +641,16 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			public void run() {
 				chatAdapter.add(message);
 				chatAdapter.notifyDataSetChanged();
+				if (!slidingDrawer.isShown() || !slidingDrawer.isOpened())
+				{
+					showNotification(message, source, false);
+					Button handler = (Button)findViewById(R.id.handle);
+					handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.new_message)); 
+				}
 			}
 		});
 
-		if (!slidingDrawer.isShown() || !slidingDrawer.isOpened())
-			showNotification(message, source, false);
+
 	}
 
 	@Override
@@ -646,6 +726,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				listenerAdapter.addSection(p);
 
 				listenerAdapter.notifyDataSetChanged();
+				setListHeight(listenerListView);
 			}
 		});		
 	}
@@ -658,9 +739,50 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				listenerAdapter.removeSection(p);
 
 				listenerAdapter.notifyDataSetChanged();		
+				setListHeight(listenerListView);
 			}
 		});
 	}
+
+	@Override
+	public void onListenerStatusChangeIsTalking(final IListener p) {
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				listenerAdapter.getUserById(p.getUserId()).setTalking(p.isTalking());
+				listenerAdapter.notifyDataSetChanged();
+			}
+		});
+	}
+
+	@Override
+	public void onListenerStatusChangeIsMuted(final IListener p) {
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				listenerAdapter.getUserById(p.getUserId()).setMuted(p.isMuted());
+				listenerAdapter.notifyDataSetChanged();
+			}
+		});
+	}
+
+
+	public void setListHeight(CustomListview listView) {
+
+		int totalHeight = 0;
+		Resources r = getResources();
+		int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, ROW_HEIGHT, r.getDisplayMetrics());
+		totalHeight= listView.getCount()*(px+1);
+		ViewGroup.LayoutParams params = listView.getLayoutParams();
+		params.height = totalHeight + (listView.getDividerHeight() * (listView.getCount() - 1));
+		listView.setLayoutParams(params); 
+		listView.requestLayout();
+	} 
+
+
+
 
 }
 

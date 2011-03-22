@@ -42,5 +42,7 @@ public interface IBigBlueButtonClientListener {
 	
 	void onListenerJoined(IListener p);
 	void onListenerLeft(IListener p);
+	void onListenerStatusChangeIsMuted(IListener p);
+	void onListenerStatusChangeIsTalking(IListener p);
 	
 }

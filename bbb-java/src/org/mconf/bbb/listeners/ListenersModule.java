@@ -24,6 +24,7 @@ package org.mconf.bbb.listeners;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.jboss.netty.channel.Channel;
 import org.mconf.bbb.IBigBlueButtonClientListener;
@@ -173,35 +174,51 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 	@Override
 	public void onSharedObjectSend(ISharedObjectBase so, String method,
 			List<?> params) {
+		int userId = ((Double) params.get(0)).intValue();
 		if (method.equals("userJoin")) {
 			//	meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userJoin, [5.0, Felipe, Felipe, false, false, false]) }
 			Listener listener = new Listener(params);
 			listeners.put(listener.getUserId(), listener);
+			
 			onListenerJoined(listener);
 		} else if (method.equals("userTalk")) {
 			//	meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userTalk, [5.0, true]) }
-			IListener listener = listeners.get(params.get(0));
+			IListener listener = listeners.get(userId);
+			
 			if (listener != null)
+			{
 				listener.setTalking((Boolean) params.get(1));
+				for (IBigBlueButtonClientListener l : handler.getContext().getListeners()) {
+					l.onListenerStatusChangeIsTalking(listener);
+				}
+			}
+						
 			else
 				log.error("Can't find the listener");
 		} else if (method.equals("userLockedMute")) {
 			// meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userLockedMute, [4.0, true]) }
-			IListener listener = listeners.get(params.get(0));
+			IListener listener = listeners.get(userId);
 			if (listener != null)
 				listener.setLocked((Boolean) params.get(1));
 			else
 				log.error("Can't find the listener");
 		} else if (method.equals("userMute")) {
 			// meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userMute, [4.0, true]) }
-			IListener listener = listeners.get(params.get(0));
+			IListener listener = listeners.get(userId);
+			System.out.println(userId+"  HELLO");
 			if (listener != null)
+			{
 				listener.setMuted((Boolean) params.get(1));
+				for (IBigBlueButtonClientListener l : handler.getContext().getListeners()) {
+					l.onListenerStatusChangeIsMuted(listener);
+				}
+			}
+				
 			else
 				log.error("Can't find the listener");			
 		} else if (method.equals("userLeft")) {
 			// meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userLeft, [2.0]) }
-			int userId = ((Double) params.get(0)).intValue();
+			
 			IListener listener = listeners.get(userId);
 			for (IBigBlueButtonClientListener l : handler.getContext().getListeners()) {
 				l.onListenerLeft(listener);
@@ -263,5 +280,12 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 		log.info("new participant: {}", p.toString());
 		listeners.put(p.getUserId(), p);			
 	}
+	
+	public void onListenerStatusChanged (Listener p, String key, Object value)
+	{
+		
+	}
+
+	
 
 }
