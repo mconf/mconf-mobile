@@ -102,8 +102,6 @@ public class ListenerAdapter extends BaseAdapter {
         setMutedStatus(entry);
         setTalkingStatus(entry);
 
-        if(entry.isTalking())
-        	convertView.setBackgroundResource(android.R.color.darker_gray);
        
         return convertView;
     }

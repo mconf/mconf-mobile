@@ -50,6 +50,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.TypedValue;
 import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -173,7 +174,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				notificationManager.cancel(CHAT_NOTIFICATION_ID);
 				Button handler = (Button)findViewById(R.id.handle);
 				handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.normal_handler));
-				openedDrawer();
+				handler.setGravity(Gravity.CENTER);
+				openedDrawer(); 
 			}
 		});
 
@@ -285,28 +287,30 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-		if(v.getId()==R.id.contacts_list)
-		{
-			final Contact contact = (Contact) contactAdapter.getItem(info.position);
-			if (bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator()) {
+		if (bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator()) {
+			if(v.getId()==R.id.contacts_list)
+			{
+				final Contact contact = (Contact) contactAdapter.getItem(info.position);
+
 				if (contact.getUserId() != bbb.getMyUserId()) {
 					menu.add(0, KICK_USER, 0, R.string.kick);
 				}
 
 				if (!contact.isPresenter())
 					menu.add(0, SET_PRESENTER, 0, R.string.assign_presenter);
+
 			}
-		}
-		else
-		{
-			final Listener listener = (Listener) listenerAdapter.getItem(info.position);
-			menu.add(0, KICK_LISTENER, 0, R.string.kick);
-			int muted;
-			if(listener.isMuted())
-				muted=R.string.unmute;
 			else
-				muted = R.string.mute;
-			menu.add(0, MUTE_LISTENER, 0, muted);
+			{
+				final Listener listener = (Listener) listenerAdapter.getItem(info.position);
+				menu.add(0, KICK_LISTENER, 0, R.string.kick);
+				int muted;
+				if(listener.isMuted())
+					muted=R.string.unmute;
+				else
+					muted = R.string.mute;
+				menu.add(0, MUTE_LISTENER, 0, muted);
+			}
 		}
 
 	}
@@ -578,7 +582,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 		}
 	}
- 
+
 	public void showNotification(final ChatMessage message, IParticipant source, final boolean privateChat) {
 		// remember that source could be null! that happens when a user send a message and log out - the list of participants don't have the entry anymore
 
@@ -646,7 +650,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			}
 		});
 
-		
+
 	}
 
 	@Override

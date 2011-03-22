@@ -80,8 +80,10 @@
 			<Button android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:id="@id/handle"
 				android:textAppearance="@style/TitleStyle" android:text="@string/public_chat"
-				android:background="@drawable/normal_handler"
-				android:minHeight="42dp" android:gravity="center" />
+				android:background="@drawable/normal_handler" android:gravity="center"
+				android:minHeight="42dp" 
+				android:padding="0dip" 
+				 />
 
 			<!-- http://developer.android.com/resources/articles/layout-tricks-reuse.html -->
 			<include layout="@layout/chat" />
