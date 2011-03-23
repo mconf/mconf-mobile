@@ -127,9 +127,7 @@ public class ShowVideo extends Activity implements IVideoListener {
         System.loadLibrary("avformat");
         System.loadLibrary("thread");
     	System.loadLibrary("common");
-    	System.loadLibrary("sockets");
     	System.loadLibrary("queue");
-    	System.loadLibrary("net");
     	System.loadLibrary("decode");
     	System.loadLibrary("mconfnative");  
         

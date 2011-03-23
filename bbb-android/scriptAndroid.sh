@@ -15,9 +15,7 @@ ARMEABI="libs/armeabi"
 LIBSIVA="libsIVA"
 LIBCOMMON="libsIVA/libcommon.so"
 LIBTHREAD="libsIVA/libthread.so"
-LIBSOCKETS="libsIVA/libsockets.so"
 LIBQUEUE="libsIVA/libqueue.so"
-LIBNET="libsIVA/libnet.so"
 LIBDECODE="libsIVA/libdecode.so"
 
 #options to the ndkbuild comand
@@ -74,20 +72,10 @@ if [ -e $LIBTHREAD ]; then
 else 
 	echo "WARNING: $LIBTHREAD not found"
 fi
-if [ -e $LIBSOCKETS ]; then
-	echo "OK: $LIBSOCKETS found"
-else 
-	echo "WARNING: $LIBSOCKETS not found"
-fi
 if [ -e $LIBQUEUE ]; then
 	echo "OK: $LIBQUEUE found"
 else 
 	echo "WARNING: $LIBQUEUE not found"
-fi
-if [ -e $LIBNET ]; then
-	echo "OK: $LIBNET found"
-else 
-	echo "WARNING: $LIBNET not found"
 fi
 if [ -e $LIBDECODE ]; then
 	echo "OK: $LIBDECODE found"
@@ -106,12 +94,8 @@ echo cp $LIBCOMMON $ARMEABI
 cp $LIBCOMMON $ARMEABI
 echo cp $LIBTHREAD $ARMEABI
 cp $LIBTHREAD $ARMEABI
-echo cp $LIBSOCKETS $ARMEABI
-cp $LIBSOCKETS $ARMEABI
 echo cp $LIBQUEUE $ARMEABI
 cp $LIBQUEUE $ARMEABI
-echo cp $LIBNET $ARMEABI
-cp $LIBNET $ARMEABI
 echo cp $LIBDECODE $ARMEABI
 cp $LIBDECODE $ARMEABI
 	
