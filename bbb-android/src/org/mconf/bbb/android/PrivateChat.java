@@ -22,6 +22,7 @@
 package org.mconf.bbb.android;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -57,7 +58,7 @@ import android.widget.ViewFlipper;
 
 public class PrivateChat extends Activity{
 
-	
+
 
 	private class RemoteParticipant implements IBigBlueButtonClientListener {
 		private int userId;
@@ -65,7 +66,7 @@ public class PrivateChat extends Activity{
 		private String username;
 		private ChatAdapter chatAdapter;
 		private boolean notified =false;
-		
+
 
 		public void setNotified(boolean notified) {
 			this.notified = notified;
@@ -74,7 +75,7 @@ public class PrivateChat extends Activity{
 		public boolean isNotified() {
 			return notified;
 		}
-		
+
 		public int getUserId() {
 			return userId;
 		}
@@ -87,7 +88,7 @@ public class PrivateChat extends Activity{
 		public void setViewId(int viewId) {
 			this.viewId = viewId;
 		}
-		
+
 		public String getUsername() {
 			return username;
 		}
@@ -137,39 +138,39 @@ public class PrivateChat extends Activity{
 					cancelNotification(userId);
 			}
 		}
-		
-		
-		
+
+
+
 		@Override
 		public void onPublicChatMessage(ChatMessage message, IParticipant source) {}
 
 		@Override
 		public void onListenerJoined(IListener p) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void onListenerLeft(IListener p) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void onListenerStatusChangeIsMuted(IListener p) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void onListenerStatusChangeIsTalking(IListener p) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
-		
 
-		
+
+
 	}
 
 	private static final Logger log = LoggerFactory.getLogger(PrivateChat.class);
@@ -200,7 +201,7 @@ public class PrivateChat extends Activity{
 	private Animation RightIn;
 	private Animation RightOut;
 	private ViewFlipper flipper;
-	
+
 	public static boolean hasUserOnPrivateChat(int userId)
 	{
 		for(RemoteParticipant part:participants.values())
@@ -210,8 +211,8 @@ public class PrivateChat extends Activity{
 		}
 		return false;
 	}
-	
-	
+
+
 	BroadcastReceiver finishedReceiver = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
 		{ 
@@ -228,7 +229,7 @@ public class PrivateChat extends Activity{
 			PrivateChat.this.moveTaskToBack(true); 
 		} 
 	};
-		
+
 	BroadcastReceiver kickedUser = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
 		{ 
@@ -237,11 +238,11 @@ public class PrivateChat extends Activity{
 			int userId = extras.getInt("userId");
 			if(hasUserOnPrivateChat(userId))
 				removeParticipant(userId);
-			
+
 		} 
 	};
 
-	
+
 	private int addView() {
 		int index = flipper.getChildCount();
 		flipper.addView(getView(), index);
@@ -251,14 +252,26 @@ public class PrivateChat extends Activity{
 	private View getView() {
 		return getLayoutInflater().inflate(R.layout.chat, null);        
 	}
-	
+
 	private void removeAllParticipants()
+
 	{
-		for (int key : participants.keySet())
-			removeParticipant(key);
+
+		for(Iterator<Integer> iter=participants.keySet().iterator(); iter.hasNext();)
+
+		{
+
+			Integer key = iter.next();
+
+			if(participants.containsKey(key))
+
+				iter.remove();
+
+		}
+
 	}
-	
-	
+
+
 	private void removeParticipant(Integer key)
 	{
 		RemoteParticipant p = participants.get(key);
@@ -276,7 +289,7 @@ public class PrivateChat extends Activity{
 		}
 		return null;
 	}
-	
+
 	private RemoteParticipant getParticipantByViewId(int viewId) {
 		Integer key = getParticipantKeyByViewId(viewId);
 		if (key != null)
@@ -287,7 +300,7 @@ public class PrivateChat extends Activity{
 
 	private RemoteParticipant createParticipant(int userId, String username, boolean notified) {
 		log.debug("creating a new remote participant");
-		
+
 		final RemoteParticipant p = new RemoteParticipant();
 		p.setUserId(userId);
 		p.setUsername(username);
@@ -298,23 +311,23 @@ public class PrivateChat extends Activity{
 			p.setNotified(true);
 		else
 			p.setNotified(false);
-		
+
 		if(p.isNotified()) //se há uma notificação
 		{
 			List<ChatMessage> messages = Client.bbb.getChatModule().getPrivateChatMessage().get(userId);
 			if (messages != null)
 			{
-				
+
 				for (ChatMessage message : messages) {
 					if(message.getUserId()!=Client.bbb.getMyUserId())
 						p.onPrivateChatMessage(message);
 				}
-				
-						
+
+
 			}
 		}
-		
-		
+
+
 		final ListView chatListView = (ListView) flipper.getChildAt(p.getViewId()).findViewById(R.id.messages);
 		chatListView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
@@ -347,19 +360,19 @@ public class PrivateChat extends Activity{
 		int userId = extras.getInt("userId");
 		String username = extras.getString("username");
 		boolean notified = extras.getBoolean("notified");
-		
+
 		setTitle(getResources().getString(R.string.private_chat_title) + username);		
 
 		RemoteParticipant p = participants.get(userId);
-		
-		
+
+
 		if (p == null)
 			p = createParticipant(userId, username, notified);
-	
+
 		log.debug("displaying view of userId=" + userId + " and username=" + username);
 
 		flipper.setDisplayedChild(p.getViewId());
-		
+
 		cancelNotification(userId);
 		p.setNotified(false);
 	}
@@ -374,13 +387,13 @@ public class PrivateChat extends Activity{
 
 		flipper = (ViewFlipper) findViewById(R.id.manyPages); 
 
-		
+
 		displayView(getIntent().getExtras());
 		LeftIn = AnimationUtils.loadAnimation(this, R.anim.push_left_in);
 		LeftOut=AnimationUtils.loadAnimation(this, R.anim.push_left_out);
 		RightIn = AnimationUtils.loadAnimation(this, R.anim.push_right_in);
 		RightOut = AnimationUtils.loadAnimation(this, R.anim.push_right_out);
-		
+
 		gestureDetector = new GestureDetector(new MyGestureDetector());
 		gestureListener = new View.OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event) {
@@ -396,17 +409,17 @@ public class PrivateChat extends Activity{
 		IntentFilter filter = new IntentFilter(FINISH); 
 		registerReceiver(finishedReceiver, filter); 
 	}
-	
+
 	private void registerMoveToBackReceiver(){ 
 		IntentFilter filter = new IntentFilter(SEND_TO_BACK); 
 		registerReceiver(moveToBack, filter); 
 	}
-	
+
 	private void registerKickedUser(){
 		IntentFilter filter = new IntentFilter(KICKED_USER);
 		registerReceiver(kickedUser, filter);
 	}
-	
+
 	@Override
 	public void onDestroy() { 
 		super.onDestroy(); 
@@ -414,26 +427,26 @@ public class PrivateChat extends Activity{
 		unregisterReceiver(moveToBack);
 		unregisterReceiver(kickedUser);
 	}
-	
-	
-	
+
+
+
 	private void cancelNotification(int userId) {
 		log.debug("cancelling notification from " + userId);
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notificationManager.cancel(Client.CHAT_NOTIFICATION_ID + userId);
-		
+
 	}
 
 	@Override
 	public void onNewIntent(Intent intent) {
-		
+
 
 		super.onNewIntent(intent);
-		
+
 		log.debug("ON NEW INTENT");
-		
+
 		displayView(intent.getExtras());
-		
+
 	}
 
 
@@ -456,13 +469,13 @@ public class PrivateChat extends Activity{
 						flipper.showPrevious();
 					} else
 						return false;
-					
+
 					int viewId = flipper.getDisplayedChild();
 					setTitle(getResources().getString(R.string.private_chat_title) + getParticipantByViewId(viewId).getUsername());
-					
+
 					ListView chatListView = (ListView) flipper.getChildAt(viewId).findViewById(R.id.messages);
 					chatListView.setSelection(chatListView.getCount());
-					
+
 					return true;
 				} catch (Exception e) {
 					// nothing
@@ -475,21 +488,21 @@ public class PrivateChat extends Activity{
 	public boolean onTouchEvent(MotionEvent event) {
 		return gestureDetector.onTouchEvent(event);
 	}
-	
-	   
-	@Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-    	if (keyCode == KeyEvent.KEYCODE_BACK) {
-    		
-    		Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
 
-        	startActivity(bringBackClient);
-        	return true;
-    	}
-    	
-    	return super.onKeyDown(keyCode, event);
-    }
-	
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+
+			Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
+
+			startActivity(bringBackClient);
+			return true;
+		}
+
+		return super.onKeyDown(keyCode, event);
+	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
@@ -499,35 +512,35 @@ public class PrivateChat extends Activity{
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		
+
 		switch (item.getItemId()) {
-			case MENU_CLOSE:
-				int viewID =flipper.getDisplayedChild();
-				Intent chatClosed = new Intent(CHAT_CLOSED);
-				chatClosed.putExtra("userId", getParticipantByViewId(viewID).getUserId());
-				sendBroadcast(chatClosed);
-				if(participants.size()>1)
-				{
-					flipper.showPrevious();
-					removeParticipant(getParticipantKeyByViewId(viewID));
-					viewID=flipper.getDisplayedChild();
-					setTitle(getResources().getString(R.string.private_chat_title) + getParticipantByViewId(viewID).getUsername());
-				}
-				else
-				{
+		case MENU_CLOSE:
+			int viewID =flipper.getDisplayedChild();
+			Intent chatClosed = new Intent(CHAT_CLOSED);
+			chatClosed.putExtra("userId", getParticipantByViewId(viewID).getUserId());
+			sendBroadcast(chatClosed);
+			if(participants.size()>1)
+			{
+				flipper.showPrevious();
+				removeParticipant(getParticipantKeyByViewId(viewID));
+				viewID=flipper.getDisplayedChild();
+				setTitle(getResources().getString(R.string.private_chat_title) + getParticipantByViewId(viewID).getUsername());
+			}
+			else
+			{
 
-		        	removeParticipant(getParticipantKeyByViewId(viewID));
-		        	finish();
+				removeParticipant(getParticipantKeyByViewId(viewID));
+				finish();
 
-				}
-				
-				return true;
+			}
+
+			return true;
 		}
-		
+
 		return super.onOptionsItemSelected(item);
 	}
 
-	
+
 }
 
 
