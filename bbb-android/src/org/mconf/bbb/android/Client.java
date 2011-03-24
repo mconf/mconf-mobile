@@ -43,6 +43,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -102,7 +103,18 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 	private static final int KICK_LISTENER = Menu.FIRST+3;
 	private static final int MUTE_LISTENER = Menu.FIRST+1;
+	
+	private static boolean firstTime=true;
 
+
+
+	public boolean isFirstTime() {
+		return firstTime;
+	}
+
+	public void setFirstTime(boolean firstTime) {
+		firstTime = firstTime;
+	}
 
 
 	BroadcastReceiver chatClosed = new BroadcastReceiver(){ 
@@ -153,10 +165,30 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		log.debug("onCreate");
+		int orientation = getResources().getConfiguration().orientation;
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.contacts_list);   
+		if(orientation==Configuration.ORIENTATION_PORTRAIT)
+			setContentView(R.layout.contacts_list);   
+		else 
+		{
+			setContentView(R.layout.contacts_list_landscape);  
+			int width = getResources().getDisplayMetrics().widthPixels;
+			LayoutParams params = findViewById(R.id.frame3).getLayoutParams();
+			params.width=(width/2)-1;
+			findViewById(R.id.frame3).setLayoutParams(params);
+			params = findViewById(R.id.frame4).getLayoutParams();
+			params.width=(width/2)-1;
+			findViewById(R.id.frame4).setLayoutParams(params);
+			
+		}
+			
 		slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
 		slideHandleButton = (Button) findViewById(R.id.handle);
+		if(orientation==Configuration.ORIENTATION_LANDSCAPE)
+		{
+			slidingDrawer.open();
+			slidingDrawer.lock();
+		}
 
 		ScrollView scrollView = (ScrollView)findViewById(R.id.Scroll);
 		// Hide the Scollbar
@@ -173,7 +205,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 				notificationManager.cancel(CHAT_NOTIFICATION_ID);
 				Button handler = (Button)findViewById(R.id.handle);
-				handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.normal_handler));
+				handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background));
 				handler.setGravity(Gravity.CENTER);
 				openedDrawer(); 
 			}
@@ -192,11 +224,14 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		});
 
 
-
-		Bundle extras = getIntent().getExtras();
-		myusername = extras.getString("username");
-		Toast.makeText(getApplicationContext(),getResources().getString(R.string.welcome) + ", " + myusername, Toast.LENGTH_SHORT).show(); 
-
+		if(isFirstTime())
+		{
+			Bundle extras = getIntent().getExtras();
+			myusername = extras.getString("username");
+			Toast.makeText(getApplicationContext(),getResources().getString(R.string.welcome) + ", " + myusername, Toast.LENGTH_SHORT).show(); 
+			setFirstTime(false);
+		}
+		setFirstTime(false);
 		chatAdapter = new ChatAdapter(this);
 		final ListView chatListView = (ListView)findViewById(R.id.messages);
 		chatListView.setAdapter(chatAdapter);
@@ -222,9 +257,11 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			public void onClick(View viewParam) {
 				EditText chatMessageEdit = (EditText) findViewById(R.id.chatMessage);
 				String chatMessage = chatMessageEdit.getText().toString();
-				bbb.sendPublicChatMessage(chatMessage);
-				chatMessageEdit.setText("");
-				// it's not working correctly
+				if(chatMessage.length()>1)
+				{
+					bbb.sendPublicChatMessage(chatMessage);
+					chatMessageEdit.setText("");
+				}
 				chatListView.setSelection(chatListView.getCount());
 			}
 		});
@@ -243,33 +280,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			}
 		});
 
-		/*listenerListView.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				System.out.println("clicked");
-				final ListenerContact listener = (ListenerContact) listenerAdapter.getItem(position); 
-				final CharSequence[] items ={"Mute User", "Kick User"};
-				if(listener.isMuted())
-					items[0]="Unmute User";
-
-				AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-				builder.setItems(items, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int item) {
-						switch(item){
-						case 0: //listener.setMuted(true);
-							System.out.println("muteUser - needs implementation");
-							break;
-						case 1: bbb.kickListener(listener.getUserId());
-						}
-					}
-				});
-				AlertDialog alert = builder.create();
-
-
-			}
-		});
-		 */
+	
 		Receiver.mContext = this;
 		voice = new VoiceModule(this,
 				bbb.getJoinService().getJoinedMeeting().getFullname(), 
@@ -577,7 +588,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				slidingDrawer.open();
 				openedDrawer();
 				Button handler = (Button)findViewById(R.id.handle);
-				handler.setBackgroundDrawable(this.getApplicationContext().getResources().getDrawable(R.drawable.normal_handler));
+				handler.setBackgroundDrawable(this.getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background));
 			}
 
 		}
@@ -645,7 +656,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				{
 					showNotification(message, source, false);
 					Button handler = (Button)findViewById(R.id.handle);
-					handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.new_message)); 
+					handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background_new_message)); 
 				}
 			}
 		});
@@ -780,6 +791,15 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		listView.setLayoutParams(params); 
 		listView.requestLayout();
 	} 
+
+	/*@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+	  super.onConfigurationChanged(newConfig);
+	  if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE)
+		  setContentView(R.layout.contacts_list_landscape);
+	  else
+		  setContentView(R.layout.contacts_list);
+	}*/
 
 
 

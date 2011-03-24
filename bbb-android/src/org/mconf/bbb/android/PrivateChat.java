@@ -265,7 +265,7 @@ public class PrivateChat extends Activity{
 
 			if(participants.containsKey(key))
 
-				iter.remove();
+				iter.remove(); 
 
 		}
 
