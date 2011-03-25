@@ -43,12 +43,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.Gravity;
@@ -62,6 +64,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -103,7 +106,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 	private static final int KICK_LISTENER = Menu.FIRST+3;
 	private static final int MUTE_LISTENER = Menu.FIRST+1;
-	
+
 	private static boolean firstTime=true;
 
 
@@ -112,8 +115,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		return firstTime;
 	}
 
-	public void setFirstTime(boolean firstTime) {
-		firstTime = firstTime;
+	public void setFirstTime(boolean _firstTime) {
+		firstTime = _firstTime;
 	}
 
 
@@ -167,21 +170,34 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		log.debug("onCreate");
 		int orientation = getResources().getConfiguration().orientation;
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		int width = getResources().getDisplayMetrics().widthPixels;
+		System.out.println(width);
 		if(orientation==Configuration.ORIENTATION_PORTRAIT)
-			setContentView(R.layout.contacts_list);   
-		else 
+			setContentView(R.layout.contacts_list);
+		else
 		{
-			setContentView(R.layout.contacts_list_landscape);  
-			int width = getResources().getDisplayMetrics().widthPixels;
-			LayoutParams params = findViewById(R.id.frame3).getLayoutParams();
-			params.width=(width/2)-1;
-			findViewById(R.id.frame3).setLayoutParams(params);
-			params = findViewById(R.id.frame4).getLayoutParams();
-			params.width=(width/2)-1;
-			findViewById(R.id.frame4).setLayoutParams(params);
-			
+			if(width > 1000)
+			{
+				log.debug("large screen");
+				setContentView(R.layout.contacts_list_landscape);  
+
+				LayoutParams params = findViewById(R.id.frame3).getLayoutParams();
+				params.width=(width/2)-1;
+				findViewById(R.id.frame3).setLayoutParams(params); 
+				params = findViewById(R.id.frame4).getLayoutParams();
+				params.width=(width/2)-1; 
+				findViewById(R.id.frame4).setLayoutParams(params);
+			}
+			else{
+				log.debug("small screen");
+				setContentView(R.layout.contacts_list);  
+				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+				orientation=Configuration.ORIENTATION_PORTRAIT;
+			}
 		}
-			
+
+
+
 		slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
 		slideHandleButton = (Button) findViewById(R.id.handle);
 		if(orientation==Configuration.ORIENTATION_LANDSCAPE)
@@ -280,7 +296,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			}
 		});
 
-	
+
 		Receiver.mContext = this;
 		voice = new VoiceModule(this,
 				bbb.getJoinService().getJoinedMeeting().getFullname(), 
