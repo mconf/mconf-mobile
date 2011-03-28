@@ -61,8 +61,8 @@ LOCAL_MODULE    := common
 LOCAL_SHARED_LIBRARIES := thread
  
 LOCAL_LDLIBS += -llog \
-				$(LOCAL_PATH)/../libsFFMPEG/libavcodec.so \
-				$(LOCAL_PATH)/../libsFFMPEG/libavutil.so
+				$(LOCAL_PATH)/../obj/local/armeabi/libavcodec.so \
+				$(LOCAL_PATH)/../obj/local/armeabi/libavutil.so
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/iva/thread \
 					$(LOCAL_PATH)/iva/common
@@ -124,9 +124,9 @@ LOCAL_MODULE    := decode
 LOCAL_SHARED_LIBRARIES := thread common queue 
 
 LOCAL_LDLIBS += -llog \
-				$(LOCAL_PATH)/../libsFFMPEG/libavcodec.so \
-				$(LOCAL_PATH)/../libsFFMPEG/libavutil.so \
-				$(LOCAL_PATH)/../libsFFMPEG/libswscale.so
+				$(LOCAL_PATH)/../obj/local/armeabi/libavcodec.so \
+				$(LOCAL_PATH)/../obj/local/armeabi/libavutil.so \
+				$(LOCAL_PATH)/../obj/local/armeabi/libswscale.so
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/iva/thread \
 					$(LOCAL_PATH)/iva/common \
