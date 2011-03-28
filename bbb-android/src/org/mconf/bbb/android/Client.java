@@ -33,14 +33,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
@@ -58,18 +55,17 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.SlidingDrawer;
 import android.widget.SlidingDrawer.OnDrawerCloseListener;
@@ -107,18 +103,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	private static final int KICK_LISTENER = Menu.FIRST+3;
 	private static final int MUTE_LISTENER = Menu.FIRST+1;
 
-	private static boolean firstTime=true;
 
-
-
-	public boolean isFirstTime() {
-		return firstTime;
-	}
-
-	public void setFirstTime(boolean _firstTime) {
-		firstTime = _firstTime;
-	}
-
+	private static int lastReadNum=-1; 
+	private int addedMessages=0;
 
 	BroadcastReceiver chatClosed = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
@@ -158,6 +145,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 	private CustomListview contactListView;
 	CustomListview listenerListView;
+	ListView chatListView;
 
 
 
@@ -172,8 +160,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		int width = getResources().getDisplayMetrics().widthPixels;
 		System.out.println(width);
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		if(orientation==Configuration.ORIENTATION_PORTRAIT)
 			setContentView(R.layout.contacts_list);
+
 		else
 		{
 			if(width > 1000)
@@ -204,52 +194,20 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		{
 			slidingDrawer.open();
 			slidingDrawer.lock();
+			NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+			notificationManager.cancel(CHAT_NOTIFICATION_ID);
 		}
-
-		ScrollView scrollView = (ScrollView)findViewById(R.id.Scroll);
-		// Hide the Scollbar
-		scrollView.setVerticalScrollBarEnabled(false);
-
-
-
-		slidingDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
-
-			@Override
-			public void onDrawerOpened() {
-
-
-				NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-				notificationManager.cancel(CHAT_NOTIFICATION_ID);
-				Button handler = (Button)findViewById(R.id.handle);
-				handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background));
-				handler.setGravity(Gravity.CENTER);
-				openedDrawer(); 
-			}
-		});
+		
 
 
 
 
-		slidingDrawer.setOnDrawerCloseListener(new OnDrawerCloseListener() {
+		Bundle extras = getIntent().getExtras();
+		myusername = extras.getString("username");
+		Toast.makeText(getApplicationContext(),getResources().getString(R.string.welcome) + ", " + myusername, Toast.LENGTH_SHORT).show(); 
 
-			@Override
-			public void onDrawerClosed() {
-
-
-			}
-		});
-
-
-		if(isFirstTime())
-		{
-			Bundle extras = getIntent().getExtras();
-			myusername = extras.getString("username");
-			Toast.makeText(getApplicationContext(),getResources().getString(R.string.welcome) + ", " + myusername, Toast.LENGTH_SHORT).show(); 
-			setFirstTime(false);
-		}
-		setFirstTime(false);
 		chatAdapter = new ChatAdapter(this);
-		final ListView chatListView = (ListView)findViewById(R.id.messages);
+		chatListView = (ListView)findViewById(R.id.messages);
 		chatListView.setAdapter(chatAdapter);
 
 		contactListView = (CustomListview)findViewById(R.id.contacts_list); 
@@ -266,35 +224,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 
 
+		initializeListeners();
 
-		Button send = (Button)findViewById(R.id.sendMessage);
-		send.setOnClickListener( new OnClickListener() {
-			@Override
-			public void onClick(View viewParam) {
-				EditText chatMessageEdit = (EditText) findViewById(R.id.chatMessage);
-				String chatMessage = chatMessageEdit.getText().toString();
-				if(chatMessage.length()>1)
-				{
-					bbb.sendPublicChatMessage(chatMessage);
-					chatMessageEdit.setText("");
-				}
-				chatListView.setSelection(chatListView.getCount());
-			}
-		});
-
-
-		contactListView.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-
-				final Contact contact = (Contact) contactAdapter.getItem(position); 
-
-				//se o ID da pessoa clicada for diferente do meu ID
-				if (contact.getUserId() != bbb.getMyUserId())
-					startPrivateChat(contact);
-			}
-		});
 
 
 		Receiver.mContext = this;
@@ -305,8 +236,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		bbb.connectBigBlueButton();
 
 
-		IntentFilter filter = new IntentFilter(PrivateChat.CHAT_CLOSED); 
-		registerReceiver(chatClosed, filter); 
+
 	}
 
 	@Override
@@ -479,12 +409,14 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			Intent login = new Intent(this, LoginPage.class);
 			login.putExtra("username", myusername);
 			startActivity(login);
+			lastReadNum=-1;
 			sendBroadcast(intent);
 			finish();
 			return true;
 
 		case MENU_QUIT:
 			quit();
+			lastReadNum=-1;
 			sendBroadcast(intent);
 			finish();
 			return true;
@@ -666,13 +598,24 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 			@Override
 			public void run() {
+
+
 				chatAdapter.add(message);
 				chatAdapter.notifyDataSetChanged();
-				if (!slidingDrawer.isShown() || !slidingDrawer.isOpened())
+
+				addedMessages++;
+				if(addedMessages>lastReadNum )
 				{
-					showNotification(message, source, false);
-					Button handler = (Button)findViewById(R.id.handle);
-					handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background_new_message)); 
+					if (!slidingDrawer.isShown() || !slidingDrawer.isOpened())
+					{
+						showNotification(message, source, false);
+						Button handler = (Button)findViewById(R.id.handle);
+						handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background_new_message)); 
+
+					}
+					else
+						lastReadNum = chatAdapter.getCount();
+
 				}
 			}
 		});
@@ -806,17 +749,145 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		params.height = totalHeight + (listView.getDividerHeight() * (listView.getCount() - 1));
 		listView.setLayoutParams(params); 
 		listView.requestLayout();
+
 	} 
 
-	/*@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-	  super.onConfigurationChanged(newConfig);
-	  if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE)
-		  setContentView(R.layout.contacts_list_landscape);
-	  else
-		  setContentView(R.layout.contacts_list);
-	}*/
+	@Override
+	public void onConfigurationChanged(final Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		runOnUiThread(new Runnable() {
 
+			@Override
+			public void run() {
+				int width = getResources().getDisplayMetrics().widthPixels;
+				if(newConfig.orientation==Configuration.ORIENTATION_PORTRAIT)
+					setContentView(R.layout.contacts_list);
+
+				else
+				{
+					if(width > 1000)
+					{
+						log.debug("large screen");
+						setContentView(R.layout.contacts_list_landscape);  
+
+						LayoutParams params = findViewById(R.id.frame3).getLayoutParams();
+						params.width=(width/2)-1;
+						findViewById(R.id.frame3).setLayoutParams(params); 
+						params = findViewById(R.id.frame4).getLayoutParams();
+						params.width=(width/2)-1; 
+						findViewById(R.id.frame4).setLayoutParams(params);
+					}
+					else{
+						log.debug("small screen");
+						setContentView(R.layout.contacts_list);  
+						setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+					}
+				}
+
+				slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
+				if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE)
+				{
+					slidingDrawer.open();
+					slidingDrawer.lock();
+					NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+					notificationManager.cancel(CHAT_NOTIFICATION_ID);
+				}
+
+
+
+
+				chatListView = (ListView)findViewById(R.id.messages);
+				chatListView.setAdapter(chatAdapter);
+
+				contactListView = (CustomListview)findViewById(R.id.contacts_list); 
+				contactListView.setAdapter(contactAdapter);
+				registerForContextMenu(contactListView);
+
+
+				listenerListView = (CustomListview)findViewById(R.id.listeners_list);
+				listenerListView.setAdapter(listenerAdapter);
+				registerForContextMenu(listenerListView);
+
+				initializeListeners();
+
+				setListHeight(listenerListView);
+				setListHeight(contactListView);
+
+
+			}
+		});
+	}
+
+	public void initializeListeners()
+	{
+
+		ScrollView scrollView = (ScrollView)findViewById(R.id.Scroll);
+		// Hide the Scollbar
+		scrollView.setVerticalScrollBarEnabled(false);
+
+
+
+		slidingDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
+
+			@Override
+			public void onDrawerOpened() {
+
+
+				NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+				notificationManager.cancel(CHAT_NOTIFICATION_ID);
+				Button handler = (Button)findViewById(R.id.handle);
+				handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background));
+				handler.setGravity(Gravity.CENTER);
+				lastReadNum = chatAdapter.getCount();
+				openedDrawer(); 
+			}
+		});
+
+
+
+
+		slidingDrawer.setOnDrawerCloseListener(new OnDrawerCloseListener() {
+
+			@Override
+			public void onDrawerClosed() {
+
+
+			}
+		});
+
+		Button send = (Button)findViewById(R.id.sendMessage);
+		send.setOnClickListener( new OnClickListener() {
+			@Override
+			public void onClick(View viewParam) {
+				EditText chatMessageEdit = (EditText) findViewById(R.id.chatMessage);
+				String chatMessage = chatMessageEdit.getText().toString();
+				if(chatMessage.length()>1)
+				{
+					bbb.sendPublicChatMessage(chatMessage);
+					chatMessageEdit.setText("");
+				}
+				chatListView.setSelection(chatListView.getCount());
+			}
+		});
+
+
+		contactListView.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+
+				final Contact contact = (Contact) contactAdapter.getItem(position); 
+
+				//se o ID da pessoa clicada for diferente do meu ID
+				if (contact.getUserId() != bbb.getMyUserId())
+					startPrivateChat(contact);
+			}
+		});
+
+		IntentFilter filter = new IntentFilter(PrivateChat.CHAT_CLOSED); 
+		registerReceiver(chatClosed, filter); 
+	}
 
 
 

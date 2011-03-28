@@ -34,36 +34,48 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 public class ChatAdapter extends BaseAdapter {
-	
+
 	private List<ChatMessage> list = new ArrayList<ChatMessage>();
 	private Context context;
-	
+
 	public ChatAdapter(Context context) {
 		this.context = context;
 	}
-	
+
+	public String getLastMessage()
+	{
+		String lastMessage;
+		if(getItem(getCount()-1)!=null)
+		{
+			ChatMessage chatMessage = (ChatMessage) getItem(getCount()-1);
+			lastMessage = chatMessage.getMessage();
+			return lastMessage;
+		}
+		else return null;
+	}
+
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-        ChatMessage entry = (ChatMessage) getItem(position);
-        
-        if (convertView == null) {
-            LayoutInflater inflater = (LayoutInflater) context
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.chat_message, null);
-        }
+		ChatMessage entry = (ChatMessage) getItem(position);
 
-        TextView chat_user = (TextView) convertView.findViewById(R.id.chat_user);
-    	chat_user.setText(entry.getUsername() + ":");
-        if (position > 0 && entry.getUserId() == list.get(position-1).getUserId()) {
-        	chat_user.setMaxLines(0);
-        } else {
-        	chat_user.setMaxLines(200);
-        }
-        ((TextView) convertView.findViewById(R.id.chat_message)).setText(entry.getMessage());
-        ((TextView) convertView.findViewById(R.id.chat_time)).setText(entry.getTime());
+		if (convertView == null) {
+			LayoutInflater inflater = (LayoutInflater) context
+			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			convertView = inflater.inflate(R.layout.chat_message, null);
+		}
 
-        return convertView;
-    }
+		TextView chat_user = (TextView) convertView.findViewById(R.id.chat_user);
+		chat_user.setText(entry.getUsername() + ":");
+		if (position > 0 && entry.getUserId() == list.get(position-1).getUserId()) {
+			chat_user.setMaxLines(0);
+		} else {
+			chat_user.setMaxLines(200);
+		}
+		((TextView) convertView.findViewById(R.id.chat_message)).setText(entry.getMessage());
+		((TextView) convertView.findViewById(R.id.chat_time)).setText(entry.getTime());
+
+		return convertView;
+	}
 
 	public boolean hasUser(int userId)
 	{
@@ -74,7 +86,7 @@ public class ChatAdapter extends BaseAdapter {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public int getCount() {
 		return list.size();
@@ -89,11 +101,11 @@ public class ChatAdapter extends BaseAdapter {
 	public long getItemId(int position) {
 		return position;
 	}
-	
+
 	public void add(ChatMessage message) {
 		list.add(message);
 	}
-	
+
 	public void remove(ChatMessage message) {
 		list.remove(message);
 	}
