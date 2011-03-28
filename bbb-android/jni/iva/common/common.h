@@ -41,15 +41,6 @@
 #include <Thread.h>
 #include <stdint.h>
 
-#ifdef ANDROID
-
-#undef printf
-#include <android/log.h>
-#define printf(...) __android_log_print(ANDROID_LOG_INFO,"YYY",__VA_ARGS__)
-
-
-#endif
-
 // "compatibility" só é válido no Windows pois em breve será removido
 // desenvolvimento no linux não deve usá-lo!
 #ifdef _MSC_VER
