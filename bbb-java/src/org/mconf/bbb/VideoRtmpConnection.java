@@ -61,7 +61,9 @@ import com.flazr.rtmp.message.ChunkSize;
 import com.flazr.rtmp.message.Command;
 import com.flazr.rtmp.message.CommandAmf0;
 import com.flazr.rtmp.message.Control;
+import com.flazr.rtmp.message.SetPeerBw;
 import com.flazr.rtmp.message.Video;
+import com.flazr.rtmp.message.WindowAckSize;
 
 public class VideoRtmpConnection extends RtmpConnection {
 
@@ -142,32 +144,38 @@ public class VideoRtmpConnection extends RtmpConnection {
         		
 ////        			writes the video stream to a file 
 //		    		writer.write(message);
-//		            bytesRead += message.getHeader().getSize();
-//		            if((bytesRead - bytesReadLastSent) > bytesReadWindow) {
-//		                log.debug("sending bytes read ack {}", bytesRead);
-//		                bytesReadLastSent = bytesRead;
-//		                channel.write(new BytesRead(bytesRead));
-//		            }
-        		          
 //        		// puts the video data from the message into the aux array and sends it to android ShowVideo.java
         		//TODO Gian see if there isnt a faster way to put the data into the byte array
-        		final ChannelBuffer in = message.encode();
-        		byte[] aux = new byte[in.readableBytes()];
-        		in.readBytes(aux);
-        		context.onVideo(aux);        		
+//        		final ChannelBuffer in = message.encode();
+//        		byte[] aux = new byte[in.readableBytes()];
+//        		in.readBytes(aux);
+//        		context.onVideo(aux);
+        		
+        		Video video = (Video) message;
+        		byte[] buffer = video.getData();
+        		log.debug("received {} bytes, buffersize={}, last three bytes=" + (int) buffer[buffer.length-1] + " " + (int) buffer[buffer.length-2] + " " + (int) buffer[buffer.length-3],video.getHeader().getSize(), buffer.length);
+        		context.onVideo(buffer);
+        		
+	            bytesRead += message.getHeader().getSize();
+	            if((bytesRead - bytesReadLastSent) > bytesReadWindow) {
+	                log.debug("sending bytes read ack {}", bytesRead);
+	                bytesReadLastSent = bytesRead;
+	                channel.write(new BytesRead(bytesRead));
+	            }
+    		          
         		        		
         		break;
-//        	case CONTROL:
-//                Control control = (Control) message;
-//                switch(control.getType()) {
-//                    case PING_REQUEST:
-//                        final int time = control.getTime();
-//                        Control pong = Control.pingResponse(time);
-//                        channel.write(pong);
-//                        break;
-//                }
-//        		break;
-//        	
+        	case CONTROL:
+                Control control = (Control) message;
+                switch(control.getType()) {
+                    case PING_REQUEST:
+                        final int time = control.getTime();
+                        Control pong = Control.pingResponse(time);
+                        channel.write(pong);
+                        break;
+                }
+        		break;
+        	
 	        case COMMAND_AMF0:
 	        case COMMAND_AMF3:
 	            Command command = (Command) message;                
@@ -185,31 +193,31 @@ public class VideoRtmpConnection extends RtmpConnection {
                     } else if(resultFor.equals("createStream")) {
                         streamId = ((Double) command.getArg(0)).intValue();
                         log.debug("streamId to use: {}", streamId);
-                        if(options.getPublishType() != null) { // TODO append, record                            
-                            RtmpReader reader;
-                            if(options.getFileToPublish() != null) {
-                                reader = RtmpPublisher.getReader(options.getFileToPublish());
-                            } else {
-                                reader = options.getReaderToPublish();
-                            }
-                            if(options.getLoop() > 1) {
-                                reader = new LoopedReader(reader, options.getLoop());
-                            }
-                            publisher = new RtmpPublisher(reader, streamId, options.getBuffer(), false, false) {
-                                @Override protected RtmpMessage[] getStopMessages(long timePosition) {
-                                    return new RtmpMessage[]{Command.unpublish(streamId)};
-                                }
-                            };                            
-                            channel.write(Command.publish(streamId, options));
-                            return;
-                        } else {
-                            writer = options.getWriterToSave();
-                            if(writer == null) {
-                                writer = new FlvWriter(options.getStart(), options.getSaveAs());
-                            }
+//                        if(options.getPublishType() != null) { // TODO append, record                            
+//                            RtmpReader reader;
+//                            if(options.getFileToPublish() != null) {
+//                                reader = RtmpPublisher.getReader(options.getFileToPublish());
+//                            } else {
+//                                reader = options.getReaderToPublish();
+//                            }
+//                            if(options.getLoop() > 1) {
+//                                reader = new LoopedReader(reader, options.getLoop());
+//                            }
+//                            publisher = new RtmpPublisher(reader, streamId, options.getBuffer(), false, false) {
+//                                @Override protected RtmpMessage[] getStopMessages(long timePosition) {
+//                                    return new RtmpMessage[]{Command.unpublish(streamId)};
+//                                }
+//                            };                            
+//                            channel.write(Command.publish(streamId, options));
+//                            return;
+//                        } else {
+//                            writer = options.getWriterToSave();
+//                            if(writer == null) {
+//                                writer = new FlvWriter(options.getStart(), options.getSaveAs());
+//                            }
                             channel.write(Command.play(streamId, options));
                             channel.write(Control.setBuffer(streamId, 0));
-                        }
+//                        }
                     } else {
                         log.warn("un-handled server result for: {}", resultFor);
                     }
@@ -270,6 +278,21 @@ public class VideoRtmpConnection extends RtmpConnection {
 //	        case SHARED_OBJECT_AMF3:
 //	        	onSharedObject(channel, (SharedObjectMessage) message);
 //	        	break;
+            case BYTES_READ:
+                log.info("ack from server: {}", message);
+                break;
+            case WINDOW_ACK_SIZE:
+                WindowAckSize was = (WindowAckSize) message;                
+                if(was.getValue() != bytesReadWindow) {
+                    channel.write(SetPeerBw.dynamic(bytesReadWindow));
+                }                
+                break;
+            case SET_PEER_BW:
+                SetPeerBw spb = (SetPeerBw) message;                
+                if(spb.getValue() != bytesWrittenWindow) {
+                    channel.write(new WindowAckSize(bytesWrittenWindow));
+                }
+                break;
     		default:
     			log.info("ignoring rtmp message: {}", message);
 	        	break;

@@ -116,8 +116,8 @@ public class ShowVideo extends Activity implements IVideoListener {
 	@Override
 	public void onVideo(byte[] data) {
 		//insert encoded data into the queue		
-		enqueueEncoded(data);
-		log.debug("new frame");
+		enqueueEncoded(data,data.length);
+//		log.debug("new frame");
 	}
 	
 	 static {
@@ -138,5 +138,5 @@ public class ShowVideo extends Activity implements IVideoListener {
 
 	native void changeOrientation(int w,int h);
 	native void stopThreads();
-	native void enqueueEncoded(byte[] Data);
+	native void enqueueEncoded(byte[] Data, int length);
 }

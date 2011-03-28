@@ -92,35 +92,6 @@ LOCAL_SRC_FILES :=  iva/common/AVConfigs.cpp \
 include $(BUILD_SHARED_LIBRARY)
 #end of common module
 
-#sockets module
-#include $(CLEAR_VARS)
-#
-#LOCAL_MODULE    := sockets
-#
-#LOCAL_SHARED_LIBRARIES := thread common
-#
-#LOCAL_LDLIBS += -llog
-#
-#LOCAL_C_INCLUDES := $(LOCAL_PATH)/iva/thread \
-#					$(LOCAL_PATH)/iva/common \
-#					$(LOCAL_PATH)/iva/sockets
-#
-#LOCAL_SRC_FILES :=  iva/sockets/Igmp.cpp \
-#					iva/sockets/IgmpSender.cpp \
-#					iva/sockets/NetworkInformation_linux.cpp \
-#					iva/sockets/NetworkInformation.cpp \
-#					iva/sockets/Socket.cpp \
-#					iva/sockets/SocketCtx.cpp \
-#					iva/sockets/SocketRaw.cpp \
-#					iva/sockets/SocketException.cpp \
-#					iva/sockets/SocketTCP.cpp \
-#					iva/sockets/SocketUDP.cpp \
-#					iva/sockets/SocketWrapper.cpp
-#					#iva/sockets/IgmpPcap.cpp
-#			   
-#include $(BUILD_SHARED_LIBRARY)
-#end of sockets module
-
 #queue module
 include $(CLEAR_VARS)
 
@@ -144,39 +115,6 @@ LOCAL_SRC_FILES :=	iva/queue/queue.cpp \
 								   
 include $(BUILD_SHARED_LIBRARY)
 #end of queue module
-
-#net module
-#include $(CLEAR_VARS)
-#
-#LOCAL_MODULE    := net
-#
-#LOCAL_SHARED_LIBRARIES := thread common sockets queue
-#
-#LOCAL_LDLIBS += -llog
-#
-#LOCAL_C_INCLUDES := $(LOCAL_PATH)/iva/thread \
-#					$(LOCAL_PATH)/iva/common \
-#					$(LOCAL_PATH)/iva/sockets \
-#					$(LOCAL_PATH)/iva/queue \
-#					$(LOCAL_PATH)/iva/net
-#
-#LOCAL_SRC_FILES :=	iva/net/NetHeader.cpp \
-#					iva/net/NetHeaderAttr.cpp \
-#					iva/net/NetHeaderAudio.cpp \
-#					iva/net/NetHeaderVideo.cpp \
-#					iva/net/NetPacket.cpp \
-#					iva/net/NetQueue.cpp \
-#					iva/net/NetQueueItem.cpp \
-#					iva/net/NetRecv.cpp \
-#					iva/net/NetRecvValidator.cpp \
-#					iva/net/NetRedir.cpp \
-#					iva/net/NetRedirItem.cpp \
-#					iva/net/NetSend.cpp \
-#					iva/net/NetStatistics.cpp \
-#					iva/net/NetStorage.cpp	
-#												   
-#include $(BUILD_SHARED_LIBRARY)
-#end of net module
 
 #modulo decode
 include $(CLEAR_VARS)

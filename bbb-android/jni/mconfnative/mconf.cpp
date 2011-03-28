@@ -140,7 +140,7 @@ jint Java_org_mconf_bbb_android_Renderermconf_nativeRender(JNIEnv *env, jobject 
 	return 1;
 }
 
-void Java_org_mconf_bbb_android_ShowVideo_enqueueEncoded(JNIEnv *env,jobject obj,jbyteArray Data)
+void Java_org_mconf_bbb_android_ShowVideo_enqueueEncoded(JNIEnv *env,jobject obj,jbyteArray Data, jint length)
 {
 	DataC = env->GetByteArrayElements(Data, 0);
 
@@ -149,12 +149,12 @@ void Java_org_mconf_bbb_android_ShowVideo_enqueueEncoded(JNIEnv *env,jobject obj
 	uint32_t time = ts.getTime();
 
 	//if(queue_length(frames_video) < 5){
-		if(queue_enqueue(frames_video, (uint8_t*)DataC, sizeof(DataC), time, extraDataIn) != E_OK){
+		if(queue_enqueue(frames_video, (uint8_t*)DataC, length, time, extraDataIn) != E_OK){
 			__android_log_print(ANDROID_LOG_DEBUG, "mconf.cpp","error on enqueue. Timestamp = %d", time);
 		}
 	//}
 
-	__android_log_print(ANDROID_LOG_DEBUG, "mconf.cpp","new frame");
+//	__android_log_print(ANDROID_LOG_DEBUG, "mconf.cpp","new frame");
 	env->ReleaseByteArrayElements(Data, DataC, JNI_ABORT);
 }
 
