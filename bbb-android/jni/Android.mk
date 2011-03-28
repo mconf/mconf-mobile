@@ -210,7 +210,6 @@ LOCAL_CFLAGS := -DHAVE_AV_CONFIG_H
 LOCAL_SHARED_LIBRARIES := avutil
 LOCAL_LDFLAGS := 
 LOCAL_SRC_FILES := \
-libavdevice/alldevices.c \
 libswscale/options.c \
 libswscale/rgb2rgb.c \
 libswscale/swscale.c \
