@@ -136,46 +136,36 @@ public class VideoRtmpConnection extends RtmpConnection {
         final Channel channel = me.getChannel();
         final RtmpMessage message = (RtmpMessage) me.getMessage();
         switch(message.getHeader().getMessageType()) {
+	    	case CONTROL:
+	            Control control = (Control) message;
+	            switch(control.getType()) {
+	                case PING_REQUEST:
+	                    final int time = control.getTime();
+	                    Control pong = Control.pingResponse(time);
+	                    channel.write(pong);
+	                    break;
+	                case STREAM_BEGIN:
+	                    if(streamId !=0) {
+	                        channel.write(Control.setBuffer(streamId, options.getBuffer()));
+	                    }
+	                    break;
+	            }
+	    		break;
+	    	
         	case VIDEO:
-//        		Video video = (Video) message;
-//        		log.debug("XXXXX");
-//        		log.debug("<< {}", video);
-//        		log.debug("YYY");
-        		
-////        			writes the video stream to a file 
-//		    		writer.write(message);
-//        		// puts the video data from the message into the aux array and sends it to android ShowVideo.java
-        		//TODO Gian see if there isnt a faster way to put the data into the byte array
-//        		final ChannelBuffer in = message.encode();
-//        		byte[] aux = new byte[in.readableBytes()];
-//        		in.readBytes(aux);
-//        		context.onVideo(aux);
-        		
-        		Video video = (Video) message;
-        		byte[] buffer = video.getData();
-        		log.debug("received {} bytes, buffersize={}, last three bytes=" + (int) buffer[buffer.length-1] + " " + (int) buffer[buffer.length-2] + " " + (int) buffer[buffer.length-3],video.getHeader().getSize(), buffer.length);
-        		context.onVideo(buffer);
-        		
 	            bytesRead += message.getHeader().getSize();
 	            if((bytesRead - bytesReadLastSent) > bytesReadWindow) {
 	                log.debug("sending bytes read ack {}", bytesRead);
 	                bytesReadLastSent = bytesRead;
 	                channel.write(new BytesRead(bytesRead));
 	            }
-    		          
+        		          
+        		Video video = (Video) message;
+        		System.out.println(video.getWidth() + " " + video.getHeight());
+
+        		context.onVideo(video.getBody());        		
         		        		
         		break;
-        	case CONTROL:
-                Control control = (Control) message;
-                switch(control.getType()) {
-                    case PING_REQUEST:
-                        final int time = control.getTime();
-                        Control pong = Control.pingResponse(time);
-                        channel.write(pong);
-                        break;
-                }
-        		break;
-        	
 	        case COMMAND_AMF0:
 	        case COMMAND_AMF3:
 	            Command command = (Command) message;                
@@ -193,31 +183,8 @@ public class VideoRtmpConnection extends RtmpConnection {
                     } else if(resultFor.equals("createStream")) {
                         streamId = ((Double) command.getArg(0)).intValue();
                         log.debug("streamId to use: {}", streamId);
-//                        if(options.getPublishType() != null) { // TODO append, record                            
-//                            RtmpReader reader;
-//                            if(options.getFileToPublish() != null) {
-//                                reader = RtmpPublisher.getReader(options.getFileToPublish());
-//                            } else {
-//                                reader = options.getReaderToPublish();
-//                            }
-//                            if(options.getLoop() > 1) {
-//                                reader = new LoopedReader(reader, options.getLoop());
-//                            }
-//                            publisher = new RtmpPublisher(reader, streamId, options.getBuffer(), false, false) {
-//                                @Override protected RtmpMessage[] getStopMessages(long timePosition) {
-//                                    return new RtmpMessage[]{Command.unpublish(streamId)};
-//                                }
-//                            };                            
-//                            channel.write(Command.publish(streamId, options));
-//                            return;
-//                        } else {
-//                            writer = options.getWriterToSave();
-//                            if(writer == null) {
-//                                writer = new FlvWriter(options.getStart(), options.getSaveAs());
-//                            }
-                            channel.write(Command.play(streamId, options));
-                            channel.write(Control.setBuffer(streamId, 0));
-//                        }
+                        channel.write(Command.play(streamId, options));
+                        channel.write(Control.setBuffer(streamId, 0));
                     } else {
                         log.warn("un-handled server result for: {}", resultFor);
                     }
@@ -231,18 +198,6 @@ public class VideoRtmpConnection extends RtmpConnection {
                             || code.equals("NetStream.Play.StreamNotFound")) {
                         log.info("disconnecting, code: {}, bytes read: {}", code, bytesRead);
                         channel.close();
-                        return;
-                    }
-                    if(code.equals("NetStream.Publish.Start")
-                            && publisher != null && !publisher.isStarted()) {
-                            publisher.start(channel, options.getStart(),
-                                    options.getLength(), new ChunkSize(4096));
-                        return;
-                    }
-                    if (publisher != null && code.equals("NetStream.Unpublish.Success")) {
-                        log.info("unpublish success, closing channel");
-                        ChannelFuture future = channel.write(Command.closeStream(streamId));
-                        future.addListener(ChannelFutureListener.CLOSE);
                         return;
                     }
                 } else if(name.equals("close")) {
