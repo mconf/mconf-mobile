@@ -16,14 +16,14 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/iva/thread \
 									   
 LOCAL_LDLIBS += -llog \
 				-lGLESv1_CM \
-				$(LOCAL_PATH)/../libsFFMPEG/libavcodec.so \
-				$(LOCAL_PATH)/../libsFFMPEG/libavformat.so \
-				$(LOCAL_PATH)/../libsFFMPEG/libavutil.so \
-				$(LOCAL_PATH)/../libsFFMPEG/libswscale.so \
-				$(LOCAL_PATH)/../libsIVA/libthread.so \
-				$(LOCAL_PATH)/../libsIVA/libcommon.so \
-				$(LOCAL_PATH)/../libsIVA/libqueue.so \
-				$(LOCAL_PATH)/../libsIVA/libdecode.so
+				$(LOCAL_PATH)/../obj/local/armeabi/libavcodec.so \
+				$(LOCAL_PATH)/../obj/local/armeabi/libavformat.so \
+				$(LOCAL_PATH)/../obj/local/armeabi/libavutil.so \
+				$(LOCAL_PATH)/../obj/local/armeabi/libswscale.so \
+				$(LOCAL_PATH)/../obj/local/armeabi/libthread.so \
+				$(LOCAL_PATH)/../obj/local/armeabi/libcommon.so \
+				$(LOCAL_PATH)/../obj/local/armeabi/libqueue.so \
+				$(LOCAL_PATH)/../obj/local/armeabi/libdecode.so
 							   
 include $(BUILD_SHARED_LIBRARY)
 #mconfnative module END
