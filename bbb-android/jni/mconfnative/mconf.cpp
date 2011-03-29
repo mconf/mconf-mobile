@@ -14,6 +14,7 @@ extern "C"{
 /* flag to close this native thread */
 bool flagReceive = true;
 
+DecodeVideo *video_dec;
 queue_t *frames_video; //encoded frames queue
 queue_t *frames; //decoded frames queue
 QueueExtraData * extraData;
@@ -35,6 +36,16 @@ jint Java_org_mconf_bbb_android_Renderermconf_nativeVideoInitJavaCallbacks(JNIEn
 	JavaRenderer = thiz;
 	JavaRendererClass = JavaEnv->GetObjectClass(thiz);
 	JavaSwapBuffers = JavaEnv->GetMethodID(JavaRendererClass, "swapBuffers", "()I");
+
+	frames = queue_create(); //queue that will receive the decoded frames from ffmpeg
+	frames_video = queue_create(); //queue that will receive the encoded frames from bbb
+
+	video_dec = new DecodeVideo();
+	int ret = video_dec->open(CODEC_ID_H263);
+	if (ret != E_OK) {
+		__android_log_print(ANDROID_LOG_DEBUG,  "mconf.cpp", "Codec não aberto, erro %d\n", ret);	
+	}
+
 	return 1;
 }
 
@@ -49,14 +60,8 @@ jint Java_org_mconf_bbb_android_Renderermconf_nativeRender(JNIEnv *env, jobject 
 	wmax = width;
 	hmax = height;
 
-	frames = queue_create(); //queue that will receive the decoded frames from ffmpeg
 	_consumer = queue_registerConsumer(frames);
 
-	//video
-	frames_video = queue_create(); //queue that will receive the encoded frames from bbb
-	DecodeVideo *video_dec;
-	video_dec = new DecodeVideo();
-	video_dec->open(COMMON_CODEC_VIDEO_H263);
 	video_dec->start(frames_video, frames);
 	if(DEBUG){
 		__android_log_print(ANDROID_LOG_DEBUG,  "mconf.cpp", "Decode started!\n");
@@ -101,9 +106,7 @@ jint Java_org_mconf_bbb_android_Renderermconf_nativeRender(JNIEnv *env, jobject 
 		initGL(w,h);
 		Size = avpicture_get_size(PIX_FMT_RGB565LE, wp2, hp2);
 		outbuffer = (uint8_t *) malloc(Size);
-		for(int i = 0; i < Size; i++){
-			outbuffer[i] = 0;
-		}
+		memset(outbuffer, '\0', Size);
 		aplly_first_texture(outbuffer, wp2, hp2);
 		free(outbuffer);
 		found_frame = 1;
@@ -154,7 +157,6 @@ void Java_org_mconf_bbb_android_ShowVideo_enqueueEncoded(JNIEnv *env,jobject obj
 		}
 	//}
 
-//	__android_log_print(ANDROID_LOG_DEBUG, "mconf.cpp","new frame");
 	env->ReleaseByteArrayElements(Data, DataC, JNI_ABORT);
 }
 
