@@ -75,7 +75,6 @@ int Decode::_Open(int codecId)
     _codecId = codecId;
 
     // prepara o contexto e seta os parâmetros nele
-	printf("ANTES PrepareContext\n");   
 	err = _PrepareContext();
 	/*_codecCtxMutex.lock();
 
@@ -89,8 +88,6 @@ int Decode::_Open(int codecId)
 
 	    _codecCtxMutex.unlock();
 	*/
-
-	printf("DEPOIS PrepareContext\n");
 
 	err = E_OK;
 	if (err != E_OK) {

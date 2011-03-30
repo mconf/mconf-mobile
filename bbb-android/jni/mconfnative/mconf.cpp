@@ -41,9 +41,9 @@ jint Java_org_mconf_bbb_android_Renderermconf_nativeVideoInitJavaCallbacks(JNIEn
 	frames_video = queue_create(); //queue that will receive the encoded frames from bbb
 
 	video_dec = new DecodeVideo();
-	int ret = video_dec->open(CODEC_ID_H263);
+	int ret = video_dec->open(COMMON_CODEC_VIDEO_H263);
 	if (ret != E_OK) {
-		__android_log_print(ANDROID_LOG_DEBUG,  "mconf.cpp", "Codec não aberto, erro %d\n", ret);	
+		__android_log_print(ANDROID_LOG_DEBUG,  "mconf.cpp", "error on opening the codec, error %d\n", ret);
 	}
 
 	return 1;
