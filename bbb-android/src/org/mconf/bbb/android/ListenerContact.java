@@ -5,7 +5,7 @@ import org.mconf.bbb.listeners.Listener;
 
 public class ListenerContact extends Listener{
 
-	
+//class to put listeners on the listeners list	
 	public ListenerContact (IListener listener)
 	{
 		this.setCidName(listener.getCidName());

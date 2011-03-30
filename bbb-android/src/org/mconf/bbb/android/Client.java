@@ -87,26 +87,25 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static final int MENU_SPEAKER = Menu.FIRST + 6;
 	public static final int MENU_AUDIO_CONFIG = Menu.FIRST + 7;
 	public static final int MENU_ABOUT = Menu.FIRST + 8;
+	
+	public static final int KICK_USER = Menu.FIRST;
+	private static final int MUTE_LISTENER = Menu.FIRST+1;
+	public static final int SET_PRESENTER = Menu.FIRST+2;
+	private static final int KICK_LISTENER = Menu.FIRST+3;
 
+	
 	public static final int CHAT_NOTIFICATION_ID = 77000;
 
 	public static final String ACTION_OPEN_SLIDER = "org.mconf.bbb.android.Client.OPEN_SLIDER";
 	private static final String FINISH = "bbb.android.action.FINISH";
-
 	private static final String SEND_TO_BACK = "bbb.android.action.SEND_TO_BACK";
-
-	public static final int KICK_USER = Menu.FIRST;
-	public static final int SET_PRESENTER = Menu.FIRST+2;
 
 	public static final int ROW_HEIGHT = 42;
 
-	private static final int KICK_LISTENER = Menu.FIRST+3;
-	private static final int MUTE_LISTENER = Menu.FIRST+1;
+	
 
 
-	private static int lastReadNum=-1; 
-	private int addedMessages=0;
-
+	//change the contact status qhen the private chat is closed
 	BroadcastReceiver chatClosed = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
 		{ 
@@ -123,54 +122,43 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	};
 
 
-
-
-
+	//BBB elements
 	public static BigBlueButtonClient bbb = new BigBlueButtonClient();
+	private VoiceModule voice;
+	
+	//UI elements
 	protected ContactAdapter contactAdapter;
 	protected ChatAdapter chatAdapter;
 	protected ListenerAdapter listenerAdapter;
-
-	protected String myusername;
-	protected SlidingDrawer slidingDrawer;
-	protected Button slideHandleButton;
-
-	protected SlidingDrawer listenersDrawer;
-	protected Button listenersHandleButton;
-
-
-	protected boolean loggedIn=true;
-
-	private VoiceModule voice;
-
 	private CustomListview contactListView;
 	CustomListview listenerListView;
 	ListView chatListView;
+	protected SlidingDrawer slidingDrawer;
+	
+	
+	protected String myusername;
+	private static int lastReadNum=-1; 
+	private int addedMessages=0;
 
-
-
-
-	//	protected ClientBroadcastReceiver receiver = new ClientBroadcastReceiver();
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		log.debug("onCreate");
-		int orientation = getResources().getConfiguration().orientation;
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		int width = getResources().getDisplayMetrics().widthPixels;
-		System.out.println(width);
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+		int orientation = getResources().getConfiguration().orientation;
 		if(orientation==Configuration.ORIENTATION_PORTRAIT)
 			setContentView(R.layout.contacts_list);
 
 		else
 		{
+			//landscape version layout only avaible for large screen devices
 			if(width > 1000)
 			{
-				log.debug("large screen");
 				setContentView(R.layout.contacts_list_landscape);  
-
+				//layout arrangements
 				LayoutParams params = findViewById(R.id.frame3).getLayoutParams();
 				params.width=(width/2)-1;
 				findViewById(R.id.frame3).setLayoutParams(params); 
@@ -179,7 +167,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				findViewById(R.id.frame4).setLayoutParams(params);
 			}
 			else{
-				log.debug("small screen");
 				setContentView(R.layout.contacts_list);  
 				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 				orientation=Configuration.ORIENTATION_PORTRAIT;
@@ -189,9 +176,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 
 		slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
-		slideHandleButton = (Button) findViewById(R.id.handle);
 		if(orientation==Configuration.ORIENTATION_LANDSCAPE)
 		{
+			//set the chat to be always opened when on landscape layout
 			slidingDrawer.open();
 			slidingDrawer.lock();
 			NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -206,6 +193,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		myusername = extras.getString("username");
 		Toast.makeText(getApplicationContext(),getResources().getString(R.string.welcome) + ", " + myusername, Toast.LENGTH_SHORT).show(); 
 
+		
+		//UI elements registration and setting of adapters
 		chatAdapter = new ChatAdapter(this);
 		chatListView = (ListView)findViewById(R.id.messages);
 		chatListView.setAdapter(chatAdapter);
@@ -215,35 +204,30 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		contactListView.setAdapter(contactAdapter);
 		registerForContextMenu(contactListView);
 
-
-
 		listenerListView = (CustomListview)findViewById(R.id.listeners_list);
 		listenerAdapter = new ListenerAdapter(this);
 		listenerListView.setAdapter(listenerAdapter);
 		registerForContextMenu(listenerListView);
 
-
-
+		//initialize onClickListeners, onOpenedDrawerListeners, etc
 		initializeListeners();
 
-
-
+		//voice connection
 		Receiver.mContext = this;
 		voice = new VoiceModule(this,
 				bbb.getJoinService().getJoinedMeeting().getFullname(), 
 				bbb.getJoinService().getServerUrl());
 		bbb.addListener(this);
 		bbb.connectBigBlueButton();
-
-
-
 	}
 
+	//create context menu for the listeners and contacts list
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+		//only opens the context if the user is moderator
 		if (bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator()) {
 			if(v.getId()==R.id.contacts_list)
 			{
@@ -291,6 +275,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		switch (item.getItemId()) {
 		case KICK_USER:
 			bbb.kickUser(contact.getUserId());
+			//closes private chat with the user if he is kicked
 			Intent kickedUser = new Intent(PrivateChat.KICKED_USER);
 			kickedUser.putExtra("userId", contact.getUserId());
 			sendBroadcast(kickedUser);
@@ -322,17 +307,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		super.onDestroy();
 	}
 
-	//	private class ClientBroadcastReceiver extends BroadcastReceiver {
-	//
-	//		@Override
-	//		public void onReceive(Context context, Intent intent) {
-	//			if (intent.getAction().equals(ACTION_OPEN_SLIDER)) {
-	//				if (!slidingDrawer.isOpened())
-	//					slidingDrawer.open();
-	//			}
-	//		}
-	//		
-	//	}
 
 	private void quit() {
 		if (voice.isOnCall())
@@ -481,9 +455,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			public void run() {
 				contactAdapter.addSection(p);
 				contactAdapter.sort();
-
 				contactAdapter.notifyDataSetChanged();
-
+				//calculates the size of the contacts list
 				setListHeight(contactListView);
 
 
@@ -498,7 +471,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			public void run() {
 				contactAdapter.removeSection(p);
 				contactAdapter.sort();
-
 				contactAdapter.notifyDataSetChanged();
 				setListHeight(contactListView);
 
@@ -550,7 +522,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			@Override
 			public void run() {
 				// change the background color of the message source
-
 				contactAdapter.setChatStatus(message.getUserId(), privateChat? Contact.CONTACT_ON_PRIVATE_MESSAGE: Contact.CONTACT_ON_PUBLIC_MESSAGE);
 				contactAdapter.sort();
 				contactAdapter.notifyDataSetChanged();
@@ -558,7 +529,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		});		
 
 		String contentTitle = getResources().getString(privateChat? R.string.private_chat_notification: R.string.public_chat_notification) + message.getUsername();
-
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		Notification notification = new Notification(R.drawable.icon_bbb, contentTitle, System.currentTimeMillis());
 
@@ -603,6 +573,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				chatAdapter.add(message);
 				chatAdapter.notifyDataSetChanged();
 
+				//doesn't notify again for already read messages
 				addedMessages++;
 				if(addedMessages>lastReadNum )
 				{
@@ -660,15 +631,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		});
 	}
 
-	public boolean isLoggedIn()
-	{
-		return loggedIn;
-	}
 
-	public void setLoggedIn(boolean state)
-	{
-		loggedIn=state;
-	}
 
 	public void openedDrawer()
 	{
@@ -694,7 +657,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			@Override
 			public void run() {
 				listenerAdapter.addSection(p);
-
 				listenerAdapter.notifyDataSetChanged();
 				setListHeight(listenerListView);
 			}
@@ -707,7 +669,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			@Override
 			public void run() {
 				listenerAdapter.removeSection(p);
-
 				listenerAdapter.notifyDataSetChanged();		
 				setListHeight(listenerListView);
 			}
@@ -738,7 +699,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		});
 	}
 
-
+//calculates the size of the contacts and listeners lists
 	public void setListHeight(CustomListview listView) {
 
 		int totalHeight = 0;
@@ -752,6 +713,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 	} 
 
+	//detects when the device is rotated
 	@Override
 	public void onConfigurationChanged(final Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
@@ -765,11 +727,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 				else
 				{
+					//landscape layout only works on large screen devices
 					if(width > 1000)
 					{
-						log.debug("large screen");
 						setContentView(R.layout.contacts_list_landscape);  
-
 						LayoutParams params = findViewById(R.id.frame3).getLayoutParams();
 						params.width=(width/2)-1;
 						findViewById(R.id.frame3).setLayoutParams(params); 
@@ -778,13 +739,13 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 						findViewById(R.id.frame4).setLayoutParams(params);
 					}
 					else{
-						log.debug("small screen");
 						setContentView(R.layout.contacts_list);  
 						setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 					}
 				}
 
+				//locks opened the chat when on landscape layout
 				slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
 				if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE)
 				{
@@ -796,7 +757,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 
 
-
+				//registration and setting of adapters of the UI elements
 				chatListView = (ListView)findViewById(R.id.messages);
 				chatListView.setAdapter(chatAdapter);
 
@@ -810,7 +771,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				registerForContextMenu(listenerListView);
 
 				initializeListeners();
-
+				
+				//calculates the height os both lists
 				setListHeight(listenerListView);
 				setListHeight(contactListView);
 
@@ -825,18 +787,17 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		ScrollView scrollView = (ScrollView)findViewById(R.id.Scroll);
 		// Hide the Scollbar
 		scrollView.setVerticalScrollBarEnabled(false);
-
-
-
+		
 		slidingDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
 
 			@Override
 			public void onDrawerOpened() {
 
-
+				//when the drawer is opened, the public chat notifications are off
 				NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 				notificationManager.cancel(CHAT_NOTIFICATION_ID);
 				Button handler = (Button)findViewById(R.id.handle);
+				//and the "message received" icon is off too
 				handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background));
 				handler.setGravity(Gravity.CENTER);
 				lastReadNum = chatAdapter.getCount();
@@ -879,7 +840,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 				final Contact contact = (Contact) contactAdapter.getItem(position); 
 
-				//se o ID da pessoa clicada for diferente do meu ID
+				//if the clicked person's ID is different from mine
 				if (contact.getUserId() != bbb.getMyUserId())
 					startPrivateChat(contact);
 			}

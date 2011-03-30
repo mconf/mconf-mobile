@@ -53,7 +53,7 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
-
+//page where the user chooses the room, the name, and connects to a conference
 public class LoginPage extends Activity {
 	
 	private static final Logger log = LoggerFactory.getLogger(LoginPage.class);
@@ -85,7 +85,7 @@ public class LoginPage extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.login);
-        
+        //get Username and server if already saved on the preferences file
         setPreferencesFile();
         setUserPreferences();
         
@@ -194,7 +194,7 @@ public class LoginPage extends Activity {
                 }
         	}
         );
-
+//button to change the server
         final Button server = (Button) findViewById(R.id.server);       
         server.setOnClickListener( new OnClickListener()
         {
@@ -245,25 +245,7 @@ public class LoginPage extends Activity {
 
     	final Thread updateThread = new Thread(new Runnable() {
 			@Override
-			public void run() {
-//		        Resources resources = getApplicationContext().getResources();
-//		        AssetManager assetManager = resources.getAssets();
-//
-//				Properties p = new Properties();
-//				try {
-//					p.load(assetManager.open("bigbluebutton.properties"));
-//				} catch (Exception e) {
-//		        	progressDialog.dismiss();
-//		        	runOnUiThread(new Runnable() {
-//						@Override
-//						public void run() {
-//							Toast.makeText(getApplicationContext(), "Can't find the properties file", Toast.LENGTH_SHORT).show();							
-//						}
-//					});
-//					log.error("Can't find the properties file");
-//					return;
-//				}
-//					        
+			public void run() {			        
 		        if (!Client.bbb.getJoinService().load(serverURL)) {
 		        	progressDialog.dismiss();
 		        	runOnUiThread(new Runnable() {
@@ -349,6 +331,7 @@ public class LoginPage extends Activity {
     	}
     }
 
+	@SuppressWarnings("unchecked")
 	public void setPreferencesFile() {
 		if(this.getSharedPreferences("storedPreferences", MODE_PRIVATE)!=null)
 			this.preferencesFile = this.getSharedPreferences("storedPreferences", MODE_PRIVATE);

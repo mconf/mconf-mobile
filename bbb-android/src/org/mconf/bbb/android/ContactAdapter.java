@@ -27,7 +27,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.mconf.bbb.users.IParticipant;
-import org.mconf.bbb.users.Participant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,14 +40,13 @@ import android.widget.TextView;
 
 
 public class ContactAdapter extends BaseAdapter {
+	//adapter on the contacts list
 	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger(ContactAdapter.class);
-	private static final int POSITION_LISTENERS = 5;
-	private static final String HEADER_LISTENERS = "Listeners";
 	private Context context;
 	View view;
 
-
+	//list of contacts on the meeting
 	private List<IParticipant> listContact = new ArrayList<IParticipant>();
 
 	public ContactAdapter(Context context) {
@@ -140,6 +138,7 @@ public class ContactAdapter extends BaseAdapter {
 
 		String name = entry.getName();
 		TextView contactName = (TextView) convertView.findViewById(R.id.contact_name);
+		//indicates who you are on the list
 		if (entry.getUserId() == Client.bbb.getMyUserId()) {
 			name += " (" + context.getResources().getString(R.string.you) + ")";
 			contactName.setTextAppearance(context, R.style.MyNameStyle);
@@ -148,7 +147,7 @@ public class ContactAdapter extends BaseAdapter {
 		contactName.setText(name);
 		contactName.setTag(name);
 
-
+		//puts the correct images of moderator, presenter, etc
 		ImageView moderator = (ImageView) convertView.findViewById(R.id.moderator);
 		if(entry.isModerator()) {
 			moderator.setImageDrawable(this.context.getResources().getDrawable(R.drawable.administrator_big));
@@ -163,7 +162,7 @@ public class ContactAdapter extends BaseAdapter {
 
 
 		int color;
-
+		//change the background of people on the private chat
 		switch (entry.getChatStatus()) {
 		case Contact.CONTACT_ON_PRIVATE_MESSAGE:
 			color = R.color.title_background;

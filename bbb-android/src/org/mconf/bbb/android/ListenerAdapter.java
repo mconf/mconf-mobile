@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.mconf.bbb.listeners.IListener;
 import org.mconf.bbb.listeners.Listener;
-import org.mconf.bbb.users.IParticipant;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -19,6 +18,7 @@ public class ListenerAdapter extends BaseAdapter {
 	private Context context;
 	View view;
 	
+	//list of the listeners on the meeting
 	private List<IListener> listListener = new ArrayList<IListener>();
 	
 	public ListenerAdapter(Context context) {
@@ -36,6 +36,7 @@ public class ListenerAdapter extends BaseAdapter {
     		listListener.remove(contact);
     }
     
+    //set the correct images on each listener
     public void setMutedStatus(Listener changedStatus)
 	{
 		ImageView muted = (ImageView) view.findViewById(R.id.muted);

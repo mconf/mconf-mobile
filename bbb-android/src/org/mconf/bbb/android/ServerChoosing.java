@@ -17,10 +17,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
-
+//class where the user chooses the server where he wants to connect
 public class ServerChoosing extends Activity  {
 	private static final int DELETE_SERVER = 0;
 	ListView servers;
@@ -43,6 +42,7 @@ public class ServerChoosing extends Activity  {
 		getServers();
 		registerForContextMenu(servers);
 		
+		//select server on click
 		Button connect = (Button) findViewById(R.id.connect);
 		connect.setOnClickListener(new OnClickListener() {
 			@Override
@@ -83,7 +83,7 @@ public class ServerChoosing extends Activity  {
 		menu.add(0, DELETE_SERVER, 0, "Delete server");
 
 	}
-	
+	//delete server on long press
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
@@ -101,7 +101,8 @@ public class ServerChoosing extends Activity  {
 	public SharedPreferences getServerFile() {
 		return serverFile;
 	}
-
+	//the servers are stored on a SharedPreferences file, private to the program
+	@SuppressWarnings("unchecked")
 	public void setServerFile() {
 		if(this.getSharedPreferences("storedServers", MODE_PRIVATE)!=null)
 			this.serverFile = this.getSharedPreferences("storedServers", MODE_PRIVATE);

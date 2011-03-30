@@ -8,7 +8,7 @@ import android.widget.ListView;
 import android.widget.ScrollView;
 
 public class CustomListview extends ListView{
-
+//creates a list view with scrolling disabled
 	public CustomListview(Context context, AttributeSet attrs) {
 		super(context,attrs);
 		// TODO Auto-generated constructor stub
