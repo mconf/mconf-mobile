@@ -151,11 +151,11 @@ void Java_org_mconf_bbb_android_ShowVideo_enqueueEncoded(JNIEnv *env,jobject obj
 	ts.setTimestamp();
 	uint32_t time = ts.getTime();
 
-	//if(queue_length(frames_video) < 5){
+	if(queue_length(frames_video) < 5){
 		if(queue_enqueue(frames_video, (uint8_t*)&DataC[1], length-1, time, extraDataIn) != E_OK){
 			__android_log_print(ANDROID_LOG_DEBUG, "mconf.cpp","error on enqueue. Timestamp = %d", time);
 		}
-	//}
+	}
 
 	env->ReleaseByteArrayElements(Data, DataC, JNI_ABORT);
 }
