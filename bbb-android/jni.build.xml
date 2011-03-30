@@ -43,6 +43,11 @@
 		<antcall target="install"/>
 	</target>
 	
+	<target name="avcodec" depends="init">
+		<build target="avcodec"/>
+		<antcall target="install"/>
+	</target>
+	
 	<target name="install">
 		<copy toDir="libs/armeabi/" preservelastmodified="true">
 			<fileset dir="obj/local/armeabi/" includes="*.so"/>

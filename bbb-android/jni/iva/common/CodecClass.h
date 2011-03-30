@@ -16,7 +16,7 @@ public:
             case COMMON_CODEC_VIDEO_MPEG4:
                 return CODEC_ID_MPEG4;
             case COMMON_CODEC_VIDEO_H263:
-                return CODEC_ID_H263;
+                return CODEC_ID_FLV1;
             case COMMON_CODEC_VIDEO_H264:
                 return CODEC_ID_H264;
             case COMMON_CODEC_AUDIO_MP2:
