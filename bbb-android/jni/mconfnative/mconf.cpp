@@ -57,8 +57,8 @@ jint Java_org_mconf_bbb_android_Renderermconf_nativeRender(JNIEnv *env, jobject 
 	}
 	flagReceive = true;
 
-	wmax = width;
-	hmax = height;
+	wmax = width; //maximum width possible
+	hmax = height; //maximum heigth possible
 
 	_consumer = queue_registerConsumer(frames);
 
@@ -66,16 +66,11 @@ jint Java_org_mconf_bbb_android_Renderermconf_nativeRender(JNIEnv *env, jobject 
 	if(DEBUG){
 		__android_log_print(ANDROID_LOG_DEBUG,  "mconf.cpp", "Decode started!\n");
 	}
-	/* found_frame:
-	 * 0: no decoded frame was found yet
-	 * 1: a decoded video frame was already found and the video rendering was already initialized
-	 */
-	int found_frame = 0;
 
 	int wp2, hp2, Size;
 	uint8_t *aux;
 
-	w=0;h=0,dw=0,dh=0;
+	w=0;h=0,dw=0,dh=0; //w,h are the real video resolution
 
 	/* first loop (rendering not initialized yet):
 	 * wait until the first decoded frame is found,
@@ -109,7 +104,6 @@ jint Java_org_mconf_bbb_android_Renderermconf_nativeRender(JNIEnv *env, jobject 
 		memset(outbuffer, '\0', Size);
 		aplly_first_texture(outbuffer, wp2, hp2);
 		free(outbuffer);
-		found_frame = 1;
 
 		queue_free(_consumer);
 		aux = NULL;
