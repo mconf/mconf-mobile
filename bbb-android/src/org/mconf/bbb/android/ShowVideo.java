@@ -48,8 +48,6 @@ public class ShowVideo extends Activity implements IVideoListener {
 		super.onCreate(savedInstanceState);
 		log.debug("onCreate");
 		
-		Client.bbb.addListener(this);
-		
 		//gets the screen resolution and adjusts the screen accordingly
 		metrics = new DisplayMetrics();
         Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
@@ -68,6 +66,8 @@ public class ShowVideo extends Activity implements IVideoListener {
 			Log.v("ShowVideo Class", String.format("Error: mGLView should be null but isnt!\n"));
 		} 
 		setContentView(mGLView);
+		
+		Client.bbb.addListener(this);
 	}
 	
 	@Override

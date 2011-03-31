@@ -40,15 +40,16 @@ LOCAL_LDLIBS += -llog
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/iva/thread \
 					$(LOCAL_PATH)/iva/common
 
-LOCAL_SRC_FILES :=  iva/thread/Mutex.cpp \
-					iva/thread/Interval.cpp \
-					iva/thread/Seconds.cpp \
-					iva/thread/ConditionVariable.cpp \
-					iva/thread/Interval_linux.cpp \
-					iva/thread/Microseconds.cpp \
-					iva/thread/Milliseconds.cpp \
-					iva/thread/Thread.cpp \
-					iva/thread/Timer.cpp
+LOCAL_SRC_FILES :=  \
+                    iva/thread/ConditionVariable.cpp \
+                    iva/thread/Interval.cpp \
+                    iva/thread/Interval_linux.cpp \
+                    iva/thread/Microseconds.cpp \
+                    iva/thread/Milliseconds.cpp \
+                    iva/thread/Mutex.cpp \
+                    iva/thread/Seconds.cpp \
+                    iva/thread/Thread.cpp \
+                    iva/thread/Timer.cpp
 			   
 include $(BUILD_SHARED_LIBRARY)
 #end of thread module
@@ -67,27 +68,30 @@ LOCAL_LDLIBS += -llog \
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/iva/thread \
 					$(LOCAL_PATH)/iva/common
 
-LOCAL_SRC_FILES :=  iva/common/AVConfigs.cpp \
-					iva/common/Directory_linux.cpp \
-					iva/common/Directory.cpp \
-					iva/common/ErrorController.cpp \
-					iva/common/ErrorData.cpp \
-					iva/common/ErrorStack.cpp \
-					iva/common/ErrorVector.cpp \
-					iva/common/Folders.cpp \
-					iva/common/IPV4.cpp \
-					iva/common/IvaOutBuffer.cpp \
-					iva/common/IvaOutController.cpp \
-					iva/common/IvaOutLogFile.cpp \
-					iva/common/IvaOutStream.cpp \
-					iva/common/IvaPixFmt_linux.cpp \
-					iva/common/IvaPixFmt.cpp \
-					iva/common/IvaString.cpp \
-					iva/common/IvaTime.cpp \
-					iva/common/IvaVideoFrame.cpp \
-					iva/common/Location.cpp \
-					iva/common/LogData.cpp \
-					iva/common/SysInfo_linux.cpp
+LOCAL_SRC_FILES :=  \
+                    iva/common/AVConfigs.cpp \
+                    iva/common/CommonColor.cpp \
+                    iva/common/CommonRect.cpp \
+                    iva/common/Directory.cpp \
+                    iva/common/Directory_linux.cpp \
+                    iva/common/ErrorController.cpp \
+                    iva/common/ErrorData.cpp \
+                    iva/common/ErrorStack.cpp \
+                    iva/common/ErrorVector.cpp \
+                    iva/common/Folders.cpp \
+                    iva/common/IPV4.cpp \
+                    iva/common/IvaOutBuffer.cpp \
+                    iva/common/IvaOutController.cpp \
+                    iva/common/IvaOutLogFile.cpp \
+                    iva/common/IvaOutStream.cpp \
+                    iva/common/IvaPixFmt.cpp \
+                    iva/common/IvaPixFmt_linux.cpp \
+                    iva/common/IvaString.cpp \
+                    iva/common/IvaTime.cpp \
+                    iva/common/IvaVideoFrame.cpp \
+                    iva/common/Location.cpp \
+                    iva/common/LogData.cpp \
+                    iva/common/SysInfo_linux.cpp
 
 include $(BUILD_SHARED_LIBRARY)
 #end of common module
@@ -159,11 +163,11 @@ include $(BUILD_SHARED_LIBRARY)
 
 #avutil module
 include $(CLEAR_VARS)
-LOCAL_MODULE    := avutil
+LOCAL_MODULE := avutil
 LOCAL_ARM_MODE := arm
 LOCAL_CFLAGS := -DHAVE_AV_CONFIG_H
-LOCAL_SRC_FILES :=   \
-libavutil/adler32.c   \
+LOCAL_SRC_FILES := \
+libavutil/adler32.c \
 libavutil/aes.c \
 libavutil/avstring.c \
 libavutil/base64.c \
@@ -178,21 +182,20 @@ libavutil/log.c \
 libavutil/lzo.c \
 libavutil/mathematics.c \
 libavutil/md5.c \
+libavutil/mem.c \
 libavutil/pixdesc.c \
 libavutil/random_seed.c \
 libavutil/rational.c \
 libavutil/rc4.c \
 libavutil/sha.c \
 libavutil/tree.c \
-libavutil/utils.c \
-libavutil/mem.c
-
+libavutil/utils.c
 include $(BUILD_SHARED_LIBRARY)
 #end of avutil module
 
 #avformat module
 include $(CLEAR_VARS)
-LOCAL_MODULE    := avformat
+LOCAL_MODULE := avformat
 LOCAL_ARM_MODE := arm
 LOCAL_CFLAGS := -DHAVE_AV_CONFIG_H
 LOCAL_SRC_FILES := \
@@ -212,8 +215,8 @@ libavformat/assdec.c \
 libavformat/au.c \
 libavformat/avi.c \
 libavformat/avidec.c \
-libavformat/avio.c \
 libavformat/aviobuf.c \
+libavformat/avio.c \
 libavformat/avlanguage.c \
 libavformat/avs.c \
 libavformat/bethsoftvid.c \
@@ -256,8 +259,8 @@ libavformat/mm.c \
 libavformat/mmf.c \
 libavformat/mov.c \
 libavformat/mp3.c \
-libavformat/mpc.c \
 libavformat/mpc8.c \
+libavformat/mpc.c \
 libavformat/mpeg.c \
 libavformat/mpegts.c \
 libavformat/msnwc_tcp.c \
@@ -320,13 +323,12 @@ libavformat/yuv4mpeg.c \
 
 LOCAL_SHARED_LIBRARIES := avutil avcodec
 LOCAL_LDFLAGS := -L$(SYSROOT)/usr/lib -lz
-
 include $(BUILD_SHARED_LIBRARY)
 #end of avformat module
 
 #avcodec module
 include $(CLEAR_VARS)
-LOCAL_MODULE    := avcodec
+LOCAL_MODULE := avcodec
 LOCAL_ARM_MODE := arm
 LOCAL_CFLAGS := -DHAVE_AV_CONFIG_H
 LOCAL_SRC_FILES := \
@@ -341,10 +343,10 @@ libavcodec/aacsbr.c \
 libavcodec/aactab.c \
 libavcodec/aandcttab.c \
 libavcodec/aasc.c \
-libavcodec/ac3.c \
 libavcodec/ac3_parser.c \
-libavcodec/ac3dec.c \
+libavcodec/ac3.c \
 libavcodec/ac3dec_data.c \
+libavcodec/ac3dec.c \
 libavcodec/ac3tab.c \
 libavcodec/acelp_filters.c \
 libavcodec/acelp_pitch_delay.c \
@@ -365,8 +367,8 @@ libavcodec/arm/h264dsp_init_arm.c \
 libavcodec/arm/h264pred_init_arm.c \
 libavcodec/arm/jrevdct_arm.S \
 libavcodec/arm/mpegvideo_arm.c \
-libavcodec/arm/mpegvideo_armv5te.c \
 libavcodec/arm/mpegvideo_armv5te_s.S \
+libavcodec/arm/mpegvideo_armv5te.c \
 libavcodec/arm/simple_idct_arm.S \
 libavcodec/arm/simple_idct_armv5te.S \
 libavcodec/asv1.c \
@@ -384,13 +386,13 @@ libavcodec/bgmc.c \
 libavcodec/bink.c \
 libavcodec/binkaudio.c \
 libavcodec/binkidct.c \
-libavcodec/bitstream.c \
 libavcodec/bitstream_filter.c \
+libavcodec/bitstream.c \
 libavcodec/bmp.c \
 libavcodec/c93.c \
 libavcodec/cabac.c \
-libavcodec/cavs.c \
 libavcodec/cavs_parser.c \
+libavcodec/cavs.c \
 libavcodec/cavsdec.c \
 libavcodec/cavsdsp.c \
 libavcodec/cdgraphics.c \
@@ -402,11 +404,11 @@ libavcodec/cljr.c \
 libavcodec/cook.c \
 libavcodec/cscd.c \
 libavcodec/cyuv.c \
-libavcodec/dca.c \
 libavcodec/dca_parser.c \
+libavcodec/dca.c \
 libavcodec/dct.c \
-libavcodec/dirac.c \
 libavcodec/dirac_parser.c \
+libavcodec/dirac.c \
 libavcodec/dnxhd_parser.c \
 libavcodec/dnxhddata.c \
 libavcodec/dnxhddec.c \
@@ -423,8 +425,8 @@ libavcodec/dvdsub_parser.c \
 libavcodec/dvdsubdec.c \
 libavcodec/dwt.c \
 libavcodec/dxa.c \
-libavcodec/eac3dec.c \
 libavcodec/eac3dec_data.c \
+libavcodec/eac3dec.c \
 libavcodec/eacmv.c \
 libavcodec/eaidct.c \
 libavcodec/eamad.c \
@@ -451,13 +453,12 @@ libavcodec/frwu.c \
 libavcodec/g726.c \
 libavcodec/gifdec.c \
 libavcodec/golomb.c \
-libavcodec/h261.c \
 libavcodec/h261_parser.c \
+libavcodec/h261.c \
 libavcodec/h261dec.c \
-libavcodec/h263.c \
 libavcodec/h263_parser.c \
+libavcodec/h263.c \
 libavcodec/h263dec.c \
-libavcodec/h264.c \
 libavcodec/h264_cabac.c \
 libavcodec/h264_cavlc.c \
 libavcodec/h264_direct.c \
@@ -467,6 +468,7 @@ libavcodec/h264_parser.c \
 libavcodec/h264_ps.c \
 libavcodec/h264_refs.c \
 libavcodec/h264_sei.c \
+libavcodec/h264.c \
 libavcodec/h264dsp.c \
 libavcodec/h264idct.c \
 libavcodec/h264pred.c \
@@ -503,13 +505,13 @@ libavcodec/mace.c \
 libavcodec/mdct.c \
 libavcodec/mdec.c \
 libavcodec/mimic.c \
-libavcodec/mjpeg.c \
 libavcodec/mjpeg_parser.c \
+libavcodec/mjpeg.c \
 libavcodec/mjpega_dump_header_bsf.c \
 libavcodec/mjpegbdec.c \
 libavcodec/mjpegdec.c \
-libavcodec/mlp.c \
 libavcodec/mlp_parser.c \
+libavcodec/mlp.c \
 libavcodec/mlpdec.c \
 libavcodec/mlpdsp.c \
 libavcodec/mmvideo.c \
@@ -524,19 +526,19 @@ libavcodec/mpc8.c \
 libavcodec/mpeg12.c \
 libavcodec/mpeg12data.c \
 libavcodec/mpeg4audio.c \
-libavcodec/mpeg4video.c \
 libavcodec/mpeg4video_parser.c \
+libavcodec/mpeg4video.c \
 libavcodec/mpeg4videodec.c \
 libavcodec/mpeg4videoenc.c \
-libavcodec/mpegaudio.c \
 libavcodec/mpegaudio_parser.c \
-libavcodec/mpegaudioenc.c \
+libavcodec/mpegaudio.c \
 libavcodec/mpegaudiodata.c \
 libavcodec/mpegaudiodec.c \
 libavcodec/mpegaudiodecheader.c \
-libavcodec/mpegvideo.c \
+libavcodec/mpegaudioenc.c \
 libavcodec/mpegvideo_enc.c \
 libavcodec/mpegvideo_parser.c \
+libavcodec/mpegvideo.c \
 libavcodec/msmpeg4.c \
 libavcodec/msmpeg4data.c \
 libavcodec/msrle.c \
@@ -555,8 +557,8 @@ libavcodec/pcx.c \
 libavcodec/pgssubdec.c \
 libavcodec/png.c \
 libavcodec/pngdec.c \
-libavcodec/pnm.c \
 libavcodec/pnm_parser.c \
+libavcodec/pnm.c \
 libavcodec/pnmdec.c \
 libavcodec/ptx.c \
 libavcodec/qcelpdec.c \
@@ -618,19 +620,19 @@ libavcodec/utils.c \
 libavcodec/v210dec.c \
 libavcodec/v210x.c \
 libavcodec/vb.c \
-libavcodec/vc1.c \
 libavcodec/vc1_parser.c \
+libavcodec/vc1.c \
 libavcodec/vc1data.c \
 libavcodec/vc1dec.c \
 libavcodec/vc1dsp.c \
 libavcodec/vcr1.c \
 libavcodec/vmdav.c \
 libavcodec/vmnc.c \
-libavcodec/vorbis.c \
 libavcodec/vorbis_data.c \
 libavcodec/vorbis_dec.c \
-libavcodec/vp3.c \
+libavcodec/vorbis.c \
 libavcodec/vp3_parser.c \
+libavcodec/vp3.c \
 libavcodec/vp3dsp.c \
 libavcodec/vp5.c \
 libavcodec/vp56.c \
@@ -651,8 +653,7 @@ libavcodec/xan.c \
 libavcodec/xiph.c \
 libavcodec/xl.c \
 libavcodec/xsubdec.c \
-libavcodec/zmbv.c \
-
+libavcodec/zmbv.c
 LOCAL_SHARED_LIBRARIES := avutil
 LOCAL_LDFLAGS := -L$(SYSROOT)/usr/lib -lz -lm
 include $(BUILD_SHARED_LIBRARY)

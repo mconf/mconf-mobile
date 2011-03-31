@@ -138,8 +138,7 @@ public class BigBlueButtonClient {
 		opt.setClientVersionToUse(Utils.fromHex("00000000"));
 		opt.setHost(joinService.getServerUrl().toLowerCase().replace("http://", ""));
 		opt.setAppName("video/" + joinService.getJoinedMeeting().getConference());
-		opt.setStreamName("160x120502"); //TODO Gian Auto detect the stream name
-//		opt.setSaveAs("nomequalquer.flv"); //TODO Gian remove this line
+		opt.setStreamName("160x120147"); //TODO Gian Auto detect the stream name
 		log.debug(opt.toString());
 		
 		videoConnection = new VideoRtmpConnection(opt, this);

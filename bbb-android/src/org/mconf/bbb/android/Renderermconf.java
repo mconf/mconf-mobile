@@ -22,11 +22,7 @@ class Renderermconf extends GLSurfaceView_FFMPEG.Renderer {
 		super();
 		width = w;
 		heigth = h;
-	}
-	
-	private void initVideoJava(){
 		nativeVideoInitJavaCallbacks();
-		//mBench = new Benchmarks();		
 	}
 	
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -37,8 +33,7 @@ class Renderermconf extends GLSurfaceView_FFMPEG.Renderer {
         //nativeResize(w, h);
     }
     
-    public void onDrawFrame(GL10 gl) {
-    	initVideoJava();
+    public void onDrawFrame(GL10 gl) {    	
     	nativeRender(width,heigth);
     	if(DEBUG){
     		log.debug("Java Renderermconf class", String.format("Video rendering was stoped\n"));

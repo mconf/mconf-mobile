@@ -41,9 +41,9 @@ jint Java_org_mconf_bbb_android_Renderermconf_nativeVideoInitJavaCallbacks(JNIEn
 	frames_video = queue_create(); //queue that will receive the encoded frames from bbb
 
 	video_dec = new DecodeVideo();
-	int ret = video_dec->open(CODEC_ID_H263);
+	int ret = video_dec->open(COMMON_CODEC_VIDEO_FLV);
 	if (ret != E_OK) {
-		__android_log_print(ANDROID_LOG_DEBUG,  "mconf.cpp", "Codec não aberto, erro %d\n", ret);	
+		__android_log_print(ANDROID_LOG_DEBUG,  "mconf.cpp", "error on opening the codec, error %d\n", ret);
 	}
 
 	return 1;
@@ -57,8 +57,8 @@ jint Java_org_mconf_bbb_android_Renderermconf_nativeRender(JNIEnv *env, jobject 
 	}
 	flagReceive = true;
 
-	wmax = width;
-	hmax = height;
+	wmax = width; //maximum width possible
+	hmax = height; //maximum heigth possible
 
 	_consumer = queue_registerConsumer(frames);
 
@@ -66,16 +66,11 @@ jint Java_org_mconf_bbb_android_Renderermconf_nativeRender(JNIEnv *env, jobject 
 	if(DEBUG){
 		__android_log_print(ANDROID_LOG_DEBUG,  "mconf.cpp", "Decode started!\n");
 	}
-	/* found_frame:
-	 * 0: no decoded frame was found yet
-	 * 1: a decoded video frame was already found and the video rendering was already initialized
-	 */
-	int found_frame = 0;
 
 	int wp2, hp2, Size;
 	uint8_t *aux;
 
-	w=0;h=0,dw=0,dh=0;
+	w=0;h=0,dw=0,dh=0; //w,h are the real video resolution
 
 	/* first loop (rendering not initialized yet):
 	 * wait until the first decoded frame is found,
@@ -109,7 +104,6 @@ jint Java_org_mconf_bbb_android_Renderermconf_nativeRender(JNIEnv *env, jobject 
 		memset(outbuffer, '\0', Size);
 		aplly_first_texture(outbuffer, wp2, hp2);
 		free(outbuffer);
-		found_frame = 1;
 
 		queue_free(_consumer);
 		aux = NULL;
@@ -151,11 +145,9 @@ void Java_org_mconf_bbb_android_ShowVideo_enqueueEncoded(JNIEnv *env,jobject obj
 	ts.setTimestamp();
 	uint32_t time = ts.getTime();
 
-	//if(queue_length(frames_video) < 5){
-		if(queue_enqueue(frames_video, (uint8_t*)DataC, length, time, extraDataIn) != E_OK){
-			__android_log_print(ANDROID_LOG_DEBUG, "mconf.cpp","error on enqueue. Timestamp = %d", time);
-		}
-	//}
+    if(queue_enqueue(frames_video, (uint8_t*)&DataC[1], length-1, time, extraDataIn) != E_OK){
+        __android_log_print(ANDROID_LOG_DEBUG, "mconf.cpp","error on enqueue. Timestamp = %d", time);
+    }
 
 	env->ReleaseByteArrayElements(Data, DataC, JNI_ABORT);
 }

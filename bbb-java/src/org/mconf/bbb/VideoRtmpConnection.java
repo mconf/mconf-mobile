@@ -161,7 +161,7 @@ public class VideoRtmpConnection extends RtmpConnection {
 	            }
         		          
         		Video video = (Video) message;
-        		System.out.println(video.getWidth() + " " + video.getHeight());
+        		//System.out.println(video.getWidth() + " " + video.getHeight());
 
         		context.onVideo(video.getBody());        		
         		        		
