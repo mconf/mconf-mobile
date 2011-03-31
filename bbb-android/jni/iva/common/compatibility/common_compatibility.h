@@ -252,7 +252,7 @@ int WSAGetLastError();
 #endif
 
 
-int common_openSaveDialog(std::string * filename, std::list<std::pair<std::string,std::string> > filter,
+int common_openSaveDialog(std::string * filename, std::list<std::pair<std::string,std::string>> filter,
                           std::string extension);
 int common_openFolderDialog(std::string * path);
 

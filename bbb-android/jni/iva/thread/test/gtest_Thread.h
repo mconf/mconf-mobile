@@ -1,4 +1,5 @@
 #include <Thread.h>
+#include "gtest_main.h"
 #include <gtest/gtest.h>
 #include <iostream>
 #include <errno.h>

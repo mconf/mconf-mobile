@@ -1,23 +1,34 @@
 #include "gtest_Timer.h"
 #include <Milliseconds.h>
-
-#ifdef _MSC_VER
 #include <winsock2.h>
-#endif
+
 
 void TimerTest::timerCallback()
 {
-    // calcula tempo que passou desde a Ãºltima chamada ao timeout
+    // calcula tempo que passou desde a última chamada ao timeout
     Milliseconds diff;
     diff -= _lastTimeout;
+    // guarda o tempo aqui no início mesmo pois o timer já desconta o
+    // tempo de execução desta função!
     _lastTimeout.setTimestamp();
 
-    // dÃ¡ um limite mÃ¡ximo de 2ms de erro para cima ou para baixo
-    cout << "Timeout " << _timeouts << ", diff " << diff.getTime() << endl;
+    // dá um limite máximo de 2ms de erro para cima ou para baixo
+    cout << "Iteracao ";
+    cout << setw(3) << setiosflags(ios::right) << _timeouts << ":";
+
+    cout << " diferenca = ";
+    cout << setw(4) << setiosflags(ios::right) << diff.getTime() << " |";
+    cout << " esperado = ";
+    cout << setw(4) << setiosflags(ios::right) << _interval << " |";
+    cout << " erro = ";
+    cout << setw(4) << setiosflags(ios::right) << (diff.getTime() - _interval);
+    cout << endl;
+
     EXPECT_TRUE((diff.getTime() <= _interval + 2) &&
         (diff.getTime() >= _interval - 2))
-        << "DiferenÃ§a: " << diff.getTime()
-        << ", Intervalo " << _interval;
+        << "Diferença: " << diff.getTime()
+        << ", Esperado " << _interval;
+
     _timeouts++;
 }
 
@@ -25,7 +36,7 @@ TEST_F(TimerTest, CreateAndDestroy)
 {
     Timer<TimerTest> * t = new Timer<TimerTest>(this, &TimerTest::timerCallback);
     delete t;
-}
+} 
 
 TEST_F(TimerTest, RunAndStop)
 {

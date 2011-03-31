@@ -3,6 +3,8 @@
 int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+    if (RUN_ALL_TESTS() != 0)
+        system("pause");
+    return 0;
 }
 

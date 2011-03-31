@@ -24,7 +24,8 @@ TEST_F(MicrosecondsTest, CreateMicrosecondsAndSleep) {
 
   Microseconds diffti = now2 - now;
   
-  EXPECT_TRUE(diffti.getTime() >= 999000);
+  EXPECT_GE(diffti.getTime(), 1000000 * (1-SLEEP_ERROR));
+  EXPECT_LE(diffti.getTime(), 1000000 * (1+SLEEP_ERROR));
   cout << diffti.getTime() << endl;
 
 }

@@ -1,4 +1,5 @@
 #include <Timer.h>
+#include "gtest_main.h"
 #include <gtest/gtest.h>
 #include <iostream>
 #include <errno.h>
@@ -13,9 +14,6 @@ namespace {
         Milliseconds _lastTimeout;
 
         TimerTest() {};
-        //virtual ~TimerTest() {};
-        //virtual void SetUp() {};
-        //virtual void TearDown() {};
 
     public:
         void timerCallback();
@@ -26,9 +24,6 @@ namespace {
     {
     protected:
         TimerBaseTest() {};
-        //virtual ~TimerTest() {};
-        //virtual void SetUp() {};
-        //virtual void TearDown() {};
 
     public:
         void * timerCallback(void * param);
@@ -63,19 +58,31 @@ namespace {
     protected:
         virtual void timeout()
         {
-            // calcula tempo que passou desde a Ãºltima chamada ao timeout
+            // calcula tempo que passou desde a última chamada ao timeout
             Milliseconds diff;
             diff -= _lastTimeout;
+            // guarda o tempo aqui no início mesmo pois o timer já desconta o
+            // tempo de execução desta função!
             _lastTimeout.setTimestamp();
 
-            // dÃ¡ um limite mÃ¡ximo de 2ms de erro para cima ou para baixo
-            cout << "Timeout " << _timeouts << ", diff " << diff.getTime() << endl;
+            // dá um limite máximo de 2ms de erro para cima ou para baixo
+            cout << "Iteracao ";
+            cout << setw(3) << setiosflags(ios::right) << _timeouts << ":";
+
+            cout << " diferenca = ";
+            cout << setw(4) << setiosflags(ios::right) << diff.getTime() << " |";
+            cout << " esperado = ";
+            cout << setw(4) << setiosflags(ios::right) << getInterval().getTime() << " |";
+            cout << " erro = ";
+            cout << setw(4) << setiosflags(ios::right) << (diff.getTime() - getInterval().getTime());
+            cout << endl;
+
             EXPECT_TRUE((diff.getTime() <= getInterval().getTime() + 2) &&
                         (diff.getTime() >= getInterval().getTime() - 2))
-                        << "DiferenÃ§a: " << diff.getTime()
-                        << ", Intervalo " << getInterval().getTime();
-
+                << "Diferença: " << diff.getTime()
+                << ", Esperado " << getInterval().getTime();
             _timeouts++;
+
         };
 
     };

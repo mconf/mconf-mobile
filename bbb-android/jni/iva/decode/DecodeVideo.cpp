@@ -7,14 +7,14 @@ extern "C" {
 
 #include <CommonLeaksCpp.h>
 
-#ifdef ANDROID
-SwsContext * scaleCtx = NULL;
-#endif
-
 DecodeVideo::DecodeVideo() : Decode(),
     _lastPixFmt(), _needFrameI(false),
     _lastVideoId(QueueExtraDataVideo::VIDEO_ID_NONE),
+#ifdef ANDROID
+    _defaultPixFmt(IvaPixFmt::FMT_RGB565)
+#else
     _defaultPixFmt(IvaPixFmt::FMT_YUV420P)
+#endif
 {
     _tempFrame = avcodec_alloc_frame();
 }
@@ -154,23 +154,11 @@ int DecodeVideo::decode(uint8_t * input, unsigned int size, unsigned int timesta
     // coloca os dados na queue
     // obs: só coloca se pegou um frame inteiro
     extraNew =_UpdateExtraData((QueueExtraDataVideo *)extraData);
-	#ifdef ANDROID    
-	if(queue_length(outQueue) < 5){
-	if (queue_enqueue(outQueue, outbuf, outbufSize, timestamp, &extraNew) != E_OK) {
+    if (queue_enqueue(outQueue, outbuf, outbufSize, timestamp, &extraNew) != E_OK) {
         queue_dealloc(outbuf);
         NEW_ERROR(E_DECODE_ENQUEUE, "");
         return -1;
     }
-    } else {
-    	queue_dealloc(outbuf);
-    }
-	#else
-	if (queue_enqueue(outQueue, outbuf, outbufSize, timestamp, &extraNew) != E_OK) {
-        queue_dealloc(outbuf);
-        NEW_ERROR(E_DECODE_ENQUEUE, "");
-        return -1;
-    }
-	#endif
 
     return usedTotal;
 }
@@ -191,27 +179,6 @@ void DecodeVideo::_Deinterlace(AVFrame * inFrame, AVFrame * outFrame)
     }
 }
 
-#ifdef ANDROID
-int DecodeVideo::_PrepareFrame(AVFrame * inFrame, uint8_t ** buffer)
-{
-	
-    uint8_t *outbuf;
-    int outbufSize;
-    AVFrame * frameTmp2 = avcodec_alloc_frame();
-
-    // novo buffer da queue para os dados finais
-    outbufSize = avpicture_get_size(PIX_FMT_RGB565LE, _codecCtx->width, _codecCtx->height);
-    outbuf = (uint8_t *) queue_malloc(outbufSize);
-    avpicture_fill((AVPicture *)frameTmp2, outbuf, PIX_FMT_RGB565LE, _codecCtx->width, _codecCtx->height);
-   _ConvertPixFmt(inFrame, frameTmp2);
-
-    av_free(frameTmp2);
-
-    *buffer = outbuf;
-
-    return outbufSize;
-}
-#else
 int DecodeVideo::_PrepareFrame(AVFrame * inFrame, uint8_t ** buffer)
 {
     uint8_t *outbuf, *outbuf2;
@@ -251,29 +218,7 @@ int DecodeVideo::_PrepareFrame(AVFrame * inFrame, uint8_t ** buffer)
     *buffer = outbuf;
     return outbufSize;
 }
-#endif
 
-#ifdef ANDROID
-void DecodeVideo::_ConvertPixFmt(AVFrame * inFrame, AVFrame * outFrame)
-{
-
-    // usa o swscale para mudar o pix_fmt
-	if(!scaleCtx){
-		scaleCtx = sws_getContext(
-				_codecCtx->width, _codecCtx->height, _codecCtx->pix_fmt,
-				_codecCtx->width, _codecCtx->height, PIX_FMT_RGB565LE,
-				SWS_POINT, NULL, NULL, NULL);
-		if(!scaleCtx){
-			printf("DecodeVideo::_ConvertPixFmtERRO\n");		 
-			
-		}
-	}
-
-    sws_scale(scaleCtx, inFrame->data,
-			  inFrame->linesize, 0, _codecCtx->height,
-              outFrame->data, outFrame->linesize);
-}
-#else
 void DecodeVideo::_ConvertPixFmt(AVFrame * inFrame, AVFrame * outFrame)
 {
     // usa o swscale para mudar o pix_fmt
@@ -286,7 +231,6 @@ void DecodeVideo::_ConvertPixFmt(AVFrame * inFrame, AVFrame * outFrame)
               outFrame->data, outFrame->linesize);
     sws_freeContext(scaleCtx);
 }
-#endif
 
 QueueExtraDataVideo DecodeVideo::_UpdateExtraData(QueueExtraDataVideo * extra)
 {

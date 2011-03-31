@@ -2,84 +2,41 @@
 #include <Microseconds.h>
 
 SecondsTest::SecondsTest()
-{   
-};
+{
+}
 
 SecondsTest::~SecondsTest() 
 {
-};
+}
 
 void SecondsTest::SetUp() 
 {
-};
+}
 
 void SecondsTest::TearDown() 
 {
-};
-
-TEST_F(SecondsTest, CreateSecondsAndSleep) {
-
-  Seconds now;
-  Seconds(1).sleep();
-  Seconds now2;
-
-  Microseconds diffti = now2 - now;
-  
-  EXPECT_TRUE(diffti.getTime() >= 999000);
-  cout << diffti.getTime() << endl;
-
 }
 
-TEST_F(SecondsTest, CreateSecondsAndSleep2) {
+void SecondsTest::_CreateSecondsAndSleep()
+{
+    Seconds now;
+    Seconds(1).sleep();
+    Seconds now2;
 
-  Seconds now;
-  Seconds(1).sleep();
-  Seconds now2;
+    Microseconds diffti = now2 - now;
 
-  Microseconds diffti = now2 - now;
-  
-  EXPECT_TRUE(diffti.getTime() >= 999000);
-  cout << diffti.getTime() << endl;
-
+    EXPECT_GE(diffti.getTime(), 1000000 * (1-SLEEP_ERROR));
+    EXPECT_LE(diffti.getTime(), 1000000 * (1+SLEEP_ERROR));
+    cout << diffti.getTime() << endl;
 }
 
-TEST_F(SecondsTest, CreateSecondsAndSleep3) {
-
-  Seconds now;
-  Seconds(1).sleep();
-  Seconds now2;
-
-  Microseconds diffti = now2 - now;
-  
-  EXPECT_TRUE(diffti.getTime() >= 999000);
-  cout << diffti.getTime() << endl;
-
-}
-
-TEST_F(SecondsTest, CreateSecondsAndSleep4) {
-
-  Seconds now;
-  Seconds(1).sleep();
-  Seconds now2;
-
-  Microseconds diffti = now2 - now;
-  
-  EXPECT_TRUE(diffti.getTime() >= 999000);
-  cout << diffti.getTime() << endl;
-
-}
-
-TEST_F(SecondsTest, CreateSecondsAndSleep5) {
-
-  Seconds now;
-  Seconds(1).sleep();
-  Seconds now2;
-
-  Microseconds diffti = now2 - now;
-  
-  EXPECT_TRUE(diffti.getTime() >= 999000);
-  cout << diffti.getTime() << endl;
-
+TEST_F(SecondsTest, CreateSecondsAndSleep)
+{
+    _CreateSecondsAndSleep();
+    _CreateSecondsAndSleep();
+    _CreateSecondsAndSleep();
+    _CreateSecondsAndSleep();
+    _CreateSecondsAndSleep();
 }
 
 TEST_F(SecondsTest, Comparison)

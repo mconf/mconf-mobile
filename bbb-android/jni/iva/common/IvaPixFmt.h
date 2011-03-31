@@ -44,6 +44,7 @@ public:
         FMT_YUV411P,   ///< planar YUV 4:1:1, 12bpp, (1 Cr & Cb sample per 4x1 Y samples)
         FMT_RGB555,
         FMT_DVSD,      ///< DV25
+        FMT_RGB565,    ///< utilizado na aplicação Android
         FMT_COUNT      ///< para fazer laços com o enum
     };
     static const IvaPixFmtVector Items;     ///< Lista estática com os objetos dos formatos suportados

@@ -1,29 +1,20 @@
+project(common)
+cmake_minimum_required(VERSION 2.8)
+include(../../build/ant/cmake.properties)
+if(WIN32)
+    include(../../build/ant/cmake.macros)
+    add_files_to_project("compatibility")
+    ADD_CUSTOM_COMMAND(
+        TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND ../../build/ant/cmake.copytodeps.bat ARGS compatibility
+    )
+elseif(UNIX)
+    ADD_CUSTOM_COMMAND(
+        TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND sh ARGS ../../build/ant/cmake.copytodeps.sh ./compatibility/
+    )
+endif()
 
-ADD_LIBRARY(common STATIC 
-AVConfigs.cpp
-Directory_linux.cpp
-Directory.cpp
-ErrorController.cpp
-ErrorData.cpp
-ErrorStack.cpp
-ErrorVector.cpp
-Folders.cpp
-IPV4.cpp
-IvaOutBuffer.cpp
-IvaOutController.cpp
-IvaOutLogFile.cpp
-IvaOutStream.cpp
-IvaPixFmt.cpp
-IvaPixFmt_linux.cpp
-IvaString.cpp
-IvaTime.cpp
-IvaVideoFrame.cpp
-Location.cpp
-LogData.cpp
-#Statistics.cpp
-SysInfo_linux.cpp
-)
-INCLUDE_DIRECTORIES(${EadCel_SOURCE_DIR} ${EadCel_SOURCE_DIR}/common ${EadCel_SOURCE_DIR}/thread)
-TARGET_LINK_LIBRARIES(common)
 
-ADD_SUBDIRECTORY(test)

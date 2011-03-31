@@ -26,7 +26,8 @@ TEST_F(MillisecondsTest, CreateMillisecondsAndSleep) {
   //cout << now2.getTime() << "," << now.getTime() << endl;
   Microseconds diffti = now2 - now;
   
-  EXPECT_TRUE(diffti.getTime() >= 19000);
+  EXPECT_GE(diffti.getTime(), 20000 * (1-SLEEP_ERROR));
+  EXPECT_LE(diffti.getTime(), 20000 * (1+SLEEP_ERROR));
   cout << diffti.getTime() << endl;
 
 }
@@ -39,9 +40,10 @@ TEST_F(MillisecondsTest, AssigningAndSleep) {
     Milliseconds now2;
 
     Microseconds diffti = now2 - now1;
-  
-    EXPECT_TRUE(diffti.getTime() >= 29000);
-    
+
+    EXPECT_GE(diffti.getTime(), 30000 * (1-SLEEP_ERROR));
+    EXPECT_LE(diffti.getTime(), 30000 * (1+SLEEP_ERROR));
+
     cout << diffti.getTime() << endl;
 }
 

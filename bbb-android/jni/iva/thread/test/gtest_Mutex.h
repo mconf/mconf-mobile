@@ -1,6 +1,7 @@
 #include <Mutex.h>
 #include <Thread.h>
 #include <Milliseconds.h>
+#include "gtest_main.h"
 #include <gtest/gtest.h>
 #include <iostream>
 #include <errno.h>

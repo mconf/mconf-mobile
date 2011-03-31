@@ -83,28 +83,11 @@ int DecodeAudio::decode(uint8_t * input, unsigned int size, unsigned int timesta
     // coloca os dados na queue
     // obs: só coloca se pegou um frame inteiro
     extraNew =_UpdateExtraData((QueueExtraDataAudio *)extraData);
-
-	#ifdef ANDROID
-    if(queue_length(outQueue) < 5){
-	if (queue_enqueue(outQueue, decodedBuffer, outbufSize, timestamp, &extraNew) != E_OK) {
+    if (queue_enqueue(outQueue, decodedBuffer, outbufSize, timestamp, &extraNew) != E_OK) {
         queue_dealloc(decodedBuffer);
         NEW_ERROR(E_DECODE_ENQUEUE, "");
         return -1;
     }
-    } else {
-    	queue_dealloc(decodedBuffer);
-    }
-
-	#else
-	if (queue_enqueue(outQueue, decodedBuffer, outbufSize, timestamp, &extraNew) != E_OK) {
-	        queue_dealloc(decodedBuffer);
-	        NEW_ERROR(E_DECODE_ENQUEUE, "");
-	        return -1;
-	    }
-	#endif
-
-
-
     return usedTotal;
 }
 

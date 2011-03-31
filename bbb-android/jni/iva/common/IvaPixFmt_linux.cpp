@@ -30,6 +30,9 @@ IvaPixFmtVector::IvaPixFmtVector() :
     push_back(IvaPixFmtItem(IvaPixFmt::FMT_DVSD,
                             PIX_FMT_YUV411P,
                             "DVSD"));
+    push_back(IvaPixFmtItem(IvaPixFmt::FMT_RGB565,
+                            PIX_FMT_RGB565LE,
+                            "RGB565"));    
 }
 
 IvaPixFmtItem::IvaPixFmtItem(enum IvaPixFmt::PixFmt value, enum PixelFormat ffmpeg,

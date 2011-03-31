@@ -45,6 +45,7 @@ int Decode::_PrepareCodec(int codecId)
 {
     _codec = avcodec_find_decoder(CodecClass::ffmpegCodecId(codecId));
     if (!_codec) {
+        NEW_ERROR(E_DECODE_CODEC_NOT_FOUND, "Na chamada avcodec_find_decoder");
         return E_DECODE_CODEC_NOT_FOUND;
     }
     return E_OK;
@@ -57,6 +58,7 @@ int Decode::_BindCodecToContext()
     int err = avcodec_open(_codecCtx, _codec); // associa o codec no contexto
     if (err < 0) {
         _codecCtxMutex.unlock();
+        NEW_ERROR(E_DECODE_CODEC_ERROR, "Na chamada avcodec_open");
         return E_DECODE_CODEC_ERROR;
     }
     if (_codec->capabilities & CODEC_CAP_TRUNCATED) {
@@ -75,25 +77,8 @@ int Decode::_Open(int codecId)
     _codecId = codecId;
 
     // prepara o contexto e seta os parâmetros nele
-	printf("ANTES PrepareContext\n");   
-	err = _PrepareContext();
-	/*_codecCtxMutex.lock();
-
-	    _codecCtx = avcodec_alloc_context();
-	    if (!_codecCtx) {
-	        _codecCtxMutex.unlock();
-	        NEW_ERROR(E_COMMON_MEMORY_ERROR, "Na chamada avcodec_alloc_context");
-	        return E_COMMON_MEMORY_ERROR;
-	    }
-	    _codecCtx->extradata_size = 0;
-
-	    _codecCtxMutex.unlock();
-	*/
-
-	printf("DEPOIS PrepareContext\n");
-
-	err = E_OK;
-	if (err != E_OK) {
+    err = _PrepareContext();
+    if (err != E_OK) {
         return err;
     }
 

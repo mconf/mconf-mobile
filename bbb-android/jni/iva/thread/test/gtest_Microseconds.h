@@ -2,6 +2,7 @@
 #define _GTEST_MICROSSECOND_H_
 
 #include <Microseconds.h>
+#include "gtest_main.h"
 #include <gtest/gtest.h>
 #include <iostream>
 #include <errno.h>
