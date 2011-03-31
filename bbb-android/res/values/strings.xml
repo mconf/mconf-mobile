@@ -40,6 +40,8 @@
 	<string name="connection_established">Connection established</string>
 	<string name="connection_closed">Connection closed</string>
 	<string name="connection_refused">Connection refused</string>
+	<string name="no_options">No options avaiable</string>
+	<string name="not_moderator">You don\'t have enough permission</string>
 	<string name="about">
 BBB-Android is an Android implementation of the BigBlueButton client.
 \n

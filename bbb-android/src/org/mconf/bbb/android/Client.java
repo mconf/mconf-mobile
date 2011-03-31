@@ -220,7 +220,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		bbb.addListener(this);
 		bbb.connectBigBlueButton();
 	}
-
+ 
 	//create context menu for the listeners and contacts list
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
@@ -236,6 +236,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				if (contact.getUserId() != bbb.getMyUserId()) {
 					menu.add(0, KICK_USER, 0, R.string.kick);
 				}
+				else
+					Toast.makeText(getApplicationContext(),getResources().getString(R.string.no_options), Toast.LENGTH_SHORT).show(); 
 
 				if (!contact.isPresenter())
 					menu.add(0, SET_PRESENTER, 0, R.string.assign_presenter);
@@ -253,6 +255,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				menu.add(0, MUTE_LISTENER, 0, muted);
 			}
 		}
+		else
+			Toast.makeText(getApplicationContext(),getResources().getString(R.string.not_moderator), Toast.LENGTH_SHORT).show(); 
 
 	}
 
@@ -829,7 +833,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 					chatMessageEdit.setText("");
 				}
 				chatListView.setSelection(chatListView.getCount());
-			}
+			} 
 		});
 
 
