@@ -1,2 +1,8 @@
 .metadata/
+.directory
 *~
+*.sln
+*.vcproj
+*.bak
+*.bat
+*.am
