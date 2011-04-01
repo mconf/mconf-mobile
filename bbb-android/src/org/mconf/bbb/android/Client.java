@@ -504,7 +504,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				slidingDrawer.open();
 				openedDrawer();
 				Button handler = (Button)findViewById(R.id.handle);
-				handler.setBackgroundDrawable(this.getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background));
+				handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background));
+//				handler.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.title_background_onfocus));
 			}
 
 		}
@@ -571,14 +572,11 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 				//doesn't notify again for already read messages
 				addedMessages++;
-				if(addedMessages>lastReadNum )
-				{
-					if (!slidingDrawer.isShown() || !slidingDrawer.isOpened())
-					{
+				if(addedMessages>lastReadNum ) {
+					if (!slidingDrawer.isShown() || !slidingDrawer.isOpened()) {
 						showNotification(message, source, false);
 						Button handler = (Button)findViewById(R.id.handle);
-						handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background_new_message)); 
-
+						handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background_new_message));
 					}
 					else
 						lastReadNum = chatAdapter.getCount();
@@ -795,6 +793,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				Button handler = (Button)findViewById(R.id.handle);
 				//and the "message received" icon is off too
 				handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background));
+//				handler.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.title_background_onfocus));
 				handler.setGravity(Gravity.CENTER);
 				lastReadNum = chatAdapter.getCount();
 				openedDrawer(); 
