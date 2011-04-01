@@ -34,6 +34,7 @@
 	<string name="quit">Sair</string>
 	<string name="logout">Fechar sala</string>
 	<string name="raise_hand">Levantar a mão</string>
+	<string name="lower_hand">Baixar a mão</string>
 	<string name="private_chat_notification">Nova mensagem privada de&#160;</string>
 	<string name="public_chat_notification">Nova mensagem pública de&#160;</string>
 	<string name="private_chat_title">Bate-papo privado com&#160;</string>
