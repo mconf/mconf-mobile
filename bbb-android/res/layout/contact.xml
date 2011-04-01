@@ -43,7 +43,7 @@
 
 
 	<ImageView android:id="@+id/raise_hand" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:src="@drawable/raisehand_big"
+		android:layout_height="wrap_content" android:src="@drawable/raisehand"
 		android:minWidth="24dp" android:minHeight="24dp"
 		android:layout_alignParentRight="true"
 		android:layout_marginRight="5dp"
