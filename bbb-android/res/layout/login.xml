@@ -6,7 +6,7 @@
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:background="@color/background" android:layout_height="fill_parent"
 	android:gravity="center_vertical"
-	>
+	android:clickable="true">
 
 	<ImageView 
 		android:id="@+id/login_img_bbb_logo"
@@ -57,8 +57,8 @@
     />
 
     <RadioGroup android:layout_width="wrap_content" android:layout_below="@+id/login_spinner" android:layout_height="wrap_content" android:layout_alignLeft="@+id/login_spinner" android:id="@+id/login_role" android:orientation="horizontal">
-        <RadioButton android:layout_width="wrap_content" android:id="@+id/login_role_moderator" android:layout_height="wrap_content" android:text="Moderator" android:textColor="#000000"/>
-        <RadioButton android:layout_width="wrap_content" android:id="@+id/login_role_viewer" android:layout_height="wrap_content" android:text="Viewer" android:checked="true" android:textColor="#000000"/>
+        <RadioButton android:layout_width="wrap_content" android:id="@+id/login_role_moderator" android:layout_height="wrap_content" android:textColor="#000000" android:text="@string/moderator"/>
+        <RadioButton android:layout_width="wrap_content" android:id="@+id/login_role_viewer" android:layout_height="wrap_content" android:checked="true" android:textColor="#000000" android:text="@string/viewer"/>
     </RadioGroup>
 
 	<Button
@@ -71,6 +71,11 @@
         android:layout_alignLeft="@+id/login_edittext_name"
         android:layout_marginTop="50dip"
 	/>
+	<Button android:text="@string/choose_a_server"
+	android:layout_width="wrap_content" android:layout_below="@+id/login_button_join"
+	android:layout_height="wrap_content" android:layout_alignRight="@+id/login_button_join"
+	android:id="@+id/server" android:maxHeight="40px" android:background="@null"
+	android:layout_marginTop="30dip" ></Button>
                
 </RelativeLayout>
 

@@ -3,17 +3,19 @@
 	package="org.mconf.bbb.android" android:versionCode="1"
 	android:versionName="0.1">
 	<uses-permission android:name="android.permission.INTERNET" />
-	<!-- application android:icon="@drawable/icon_bbb" android:theme="@android:style/Theme.NoTitleBar" -->
-	<application android:icon="@drawable/icon_bbb" android:name=".BigBlueButton">
-		<activity android:name=".ServerChoosing" android:label="@string/app_name" android:screenOrientation="portrait">
+	<uses-permission android:name="android.permission.WAKE_LOCK" />
+	<uses-permission android:name="android.permission.WRITE_SETTINGS" /> <!-- used on RtpStreamReceiver to disable wi-fi sleep -->
+	<uses-permission android:name="android.permission.RECORD_AUDIO" />
+	<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+	<application android:name=".BigBlueButton" android:label="@string/app_name" android:icon="@drawable/icon_bbb">
+		<activity android:name=".LoginPage" android:label="@string/app_name" android:screenOrientation="portrait">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name=".LoginPage" android:launchMode="singleInstance" android:screenOrientation="portrait"></activity>
-		<activity android:name=".Client" android:launchMode="singleTask" android:alwaysRetainTaskState="true"
-		android:screenOrientation="portrait" />
+		<activity android:name=".ServerChoosing"  android:screenOrientation="portrait" />
+		<activity android:name=".Client" android:launchMode="singleTask" android:alwaysRetainTaskState="true"  android:configChanges="orientation"/>
 		<activity android:name=".PrivateChat" android:launchMode="singleInstance" android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".ShowVideo" android:launchMode="singleInstance" android:screenOrientation="portrait">

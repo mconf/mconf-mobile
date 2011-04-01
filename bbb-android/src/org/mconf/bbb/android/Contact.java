@@ -23,7 +23,7 @@ package org.mconf.bbb.android;
 
 import org.mconf.bbb.users.IParticipant;
 import org.mconf.bbb.users.Participant;
-
+//class to put contacts on the contacts list
 public class Contact extends Participant {
 	
 	public static final int CONTACT_NORMAL = 0;

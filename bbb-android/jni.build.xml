@@ -7,7 +7,7 @@
 	<property name="echo" value="/bin/echo"/>
 
 	<target name="init">
-		<copy toDir="obj/local/armeabi/" preservelastmodified="true">
+		<copy toDir="obj/local/armeabi/" preservelastmodified="true" failonerror="false">
 			<fileset dir="libs/armeabi/" includes="*.so"/>
 		</copy>
 	</target>
@@ -21,8 +21,11 @@
 	<macrodef name="build">
 		<attribute name="target"/>
 		<sequential>
-			<exec executable="${echo}" output="jni/Application.mk">
-				<arg value="APP_MODULES := @{target}"/>
+			<exec executable="${echo}" output="jni/Application.mk" >
+                <arg value="-e" />
+                <arg value="APP_MODULES := @{target}\n" />
+                <arg value="APP_OPTIM := release\n" />
+                <arg value="APP_CFLAGS := -O3" />
 			</exec>
 			<exec executable="${ndk.build}"/>
 		</sequential>
@@ -38,16 +41,21 @@
 		<antcall target="install"/>
 	</target>
 	
-	<target name="iva" depends="init">
-		<build target="thread common queue decode"/>
-		<antcall target="install"/>
-	</target>
-	
+    <target name="iva" depends="init">
+        <build target="thread common queue decode"/>
+        <antcall target="install"/>
+    </target>
+    
+    <target name="sipdroid" depends="init">
+        <build target="OSNetworkSystem speex_jni bv16_jni silkcommon silk8_jni silk16_jni silk24_jni g722_jni gsm_jni"/>
+        <antcall target="install"/>
+    </target>
+    
 	<target name="install">
 		<copy toDir="libs/armeabi/" preservelastmodified="true">
 			<fileset dir="obj/local/armeabi/" includes="*.so"/>
 		</copy>
 	</target>
 	
-	<target name="all" depends="ffmpeg,iva,mconfnative"/>
+	<target name="all" depends="ffmpeg,iva,mconfnative,sipdroid"/>
 </project>

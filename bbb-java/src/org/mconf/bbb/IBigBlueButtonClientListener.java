@@ -22,6 +22,7 @@
 package org.mconf.bbb;
 
 import org.mconf.bbb.chat.ChatMessage;
+import org.mconf.bbb.listeners.IListener;
 import org.mconf.bbb.users.IParticipant;
 
 public interface IBigBlueButtonClientListener {
@@ -37,5 +38,11 @@ public interface IBigBlueButtonClientListener {
 	public void onParticipantStatusChangePresenter(IParticipant p);
 	public void onParticipantStatusChangeHasStream(IParticipant p);
 	public void onParticipantStatusChangeRaiseHand(IParticipant p);
+	
+	
+	void onListenerJoined(IListener p);
+	void onListenerLeft(IListener p);
+	void onListenerStatusChangeIsMuted(IListener p);
+	void onListenerStatusChangeIsTalking(IListener p);
 	
 }
