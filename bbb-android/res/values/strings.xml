@@ -22,6 +22,7 @@
 	<string name="connect">Connect</string>
 	<string name="type_server">Or type a server URL:</string>
 	<string name="choose_a_server">Choose a server</string>
+	<string name="delete_server">Delete server</string>
 	<string name="kick">Kick</string>
 	<string name="mute">Mute</string>
 	<string name="unmute">Unmute</string>

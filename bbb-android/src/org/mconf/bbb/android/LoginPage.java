@@ -60,7 +60,6 @@ public class LoginPage extends Activity {
 	private static final Logger log = LoggerFactory.getLogger(LoginPage.class);
 
 	public static final String SERVER_CHOSED ="org.mconf.bbb.android.Client.SERVER_CHOSED";
-	public static final String CHOOSE_SERVER="Choose a Server";
 
 	SharedPreferences preferencesFile;
 	Map<String,String> storedPreferences;
@@ -98,7 +97,7 @@ public class LoginPage extends Activity {
 		if(serverURL.length()>3)
 			serverView.setText(serverURL);
 		else
-			serverView.setText(CHOOSE_SERVER);
+			serverView.setText(R.string.choose_a_server);
 
 
 		final Spinner spinner = (Spinner) findViewById(R.id.login_spinner);

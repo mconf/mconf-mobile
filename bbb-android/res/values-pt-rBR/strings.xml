@@ -22,6 +22,7 @@
 	<string name="connect">Conectar</string>
 	<string name="type_server">Ou digite o endereço do servidor:</string>
 	<string name="choose_a_server">Escolha um servidor</string>
+	<string name="delete_server">Apagar servidor</string>
 	<string name="kick">Expulsar</string>
 	<string name="mute">Sem som</string>
 	<string name="unmute">Com som</string>
@@ -40,6 +41,8 @@
 	<string name="connection_established">Conexão estabelecida</string>
 	<string name="connection_closed">Conexão fechada</string>
 	<string name="connection_refused">Conexão rejeitada</string>
+	<string name="no_options">Nenhuma opção disponível</string>
+	<string name="not_moderator">Sem permissão para executar essa operação</string>
 	<string name="about">
 BBB-Android é uma implementação do cliente BigBlueButton para Android.
 \n

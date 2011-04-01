@@ -227,37 +227,29 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-		//only opens the context if the user is moderator
-		if (bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator()) {
-			if(v.getId()==R.id.contacts_list)
-			{
-				final Contact contact = (Contact) contactAdapter.getItem(info.position);
+		
+		boolean moderator = bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator();
+		
+		if(v.getId()==R.id.contacts_list) {
+			final Contact contact = (Contact) contactAdapter.getItem(info.position);
 
-				if (contact.getUserId() != bbb.getMyUserId()) {
+			if (moderator) {
+				if (contact.getUserId() != bbb.getMyUserId())
 					menu.add(0, KICK_USER, 0, R.string.kick);
-				}
-				else
-					Toast.makeText(getApplicationContext(),getResources().getString(R.string.no_options), Toast.LENGTH_SHORT).show(); 
-
 				if (!contact.isPresenter())
 					menu.add(0, SET_PRESENTER, 0, R.string.assign_presenter);
-
 			}
-			else
-			{
-				final Listener listener = (Listener) listenerAdapter.getItem(info.position);
+		} else {
+			final Listener listener = (Listener) listenerAdapter.getItem(info.position);
+			
+			if (moderator) {
 				menu.add(0, KICK_LISTENER, 0, R.string.kick);
-				int muted;
-				if(listener.isMuted())
-					muted=R.string.unmute;
-				else
-					muted = R.string.mute;
-				menu.add(0, MUTE_LISTENER, 0, muted);
+				menu.add(0, MUTE_LISTENER, 0, listener.isMuted()? R.string.unmute: R.string.mute);
 			}
-		}
-		else
-			Toast.makeText(getApplicationContext(),getResources().getString(R.string.not_moderator), Toast.LENGTH_SHORT).show(); 
-
+		}		
+		
+		if (menu.size() == 0)
+			Toast.makeText(getApplicationContext(),getResources().getString(R.string.no_options), Toast.LENGTH_SHORT).show(); 
 	}
 
 	@Override

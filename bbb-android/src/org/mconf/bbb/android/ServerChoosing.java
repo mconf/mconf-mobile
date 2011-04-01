@@ -80,7 +80,7 @@ public class ServerChoosing extends Activity  {
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 
-		menu.add(0, DELETE_SERVER, 0, "Delete server");
+		menu.add(0, DELETE_SERVER, 0, R.string.delete_server);
 
 	}
 	//delete server on long press
@@ -106,12 +106,14 @@ public class ServerChoosing extends Activity  {
 	public void setServerFile() {
 		if(this.getSharedPreferences("storedServers", MODE_PRIVATE)!=null)
 			this.serverFile = this.getSharedPreferences("storedServers", MODE_PRIVATE);
-		else
-		{
+		else {
 			SharedPreferences.Editor serverEditor = serverFile.edit();
 			serverEditor.commit(); 
 			this.serverFile = this.getSharedPreferences("storedServers", MODE_PRIVATE);
 		}
+		// always insert the prav servers to the list
+		addServer("http://devbbb-mconf.no-ip.org");
+		addServer("http://bbb-mconf.no-ip.org");
 		this.storedServers = (Map<String, String>) serverFile.getAll();
 	}
 	
