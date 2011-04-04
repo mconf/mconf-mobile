@@ -310,9 +310,9 @@ public class PrivateChat extends Activity{
 		else
 			p.setNotified(false);
 
-		if(p.isNotified()) //if there is a notification shows only 
+		//if(p.isNotified()) //if there is a notification shows only 
 			//what the person said, not what I said before closing the private chat
-		{
+		//{
 			List<ChatMessage> messages = Client.bbb.getChatModule().getPrivateChatMessage().get(userId);
 			if (messages != null)
 			{
@@ -321,8 +321,8 @@ public class PrivateChat extends Activity{
 						p.onPrivateChatMessage(message);
 				}
 			}
-		}
-
+		//}
+ 
 
 		final ListView chatListView = (ListView) flipper.getChildAt(p.getViewId()).findViewById(R.id.messages);
 		chatListView.setOnTouchListener(new View.OnTouchListener() {
@@ -484,6 +484,7 @@ public class PrivateChat extends Activity{
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
+			bringBackClient.setAction(Client.BACK_TO_CLIENT);
 			startActivity(bringBackClient);
 			return true;
 		}
@@ -517,6 +518,9 @@ public class PrivateChat extends Activity{
 			else
 			{
 				removeParticipant(getParticipantKeyByViewId(viewID));
+				Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
+				bringBackClient.setAction(Client.BACK_TO_CLIENT);
+				startActivity(bringBackClient);
 				finish();
 			}
 			return true;

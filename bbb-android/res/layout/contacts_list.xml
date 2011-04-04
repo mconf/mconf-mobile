@@ -76,7 +76,7 @@
 			<Button android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:id="@id/handle"
 				android:textAppearance="@style/TitleStyle" android:text="@string/public_chat"
-				android:background="@drawable/public_chat_title_background"
+				android:background="@drawable/public_chat_title_background_up"
 				android:gravity="center" android:minHeight="42dp" android:padding="0dip" />
 
 			<!-- http://developer.android.com/resources/articles/layout-tricks-reuse.html -->

@@ -35,7 +35,9 @@
 	<string name="logout">Logout</string>
 	<string name="raise_hand">Raise hand</string>
 	<string name="lower_hand">Lower hand</string>
-		<string name="open_private_chat">Open private chat</string>
+	<string name="open_private_chat">Open private chat</string>
+	<string name="lost_connection">Lost connection</string>
+	<string name="attempting_to_reconnect">Reconnecting...</string>
 	<string name="private_chat_notification">New private chat message from&#160;</string>
 	<string name="public_chat_notification">New public chat message from&#160;</string>
 	<string name="private_chat_title">Private chat with&#160;</string>

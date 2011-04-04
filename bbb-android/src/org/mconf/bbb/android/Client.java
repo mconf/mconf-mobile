@@ -36,6 +36,7 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -98,6 +99,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static final int CHAT_NOTIFICATION_ID = 77000;
 
 	public static final String ACTION_OPEN_SLIDER = "org.mconf.bbb.android.Client.OPEN_SLIDER";
+	public static final String BACK_TO_CLIENT = "org.mconf.bbb.android.Client.BACK_TO_CLIENT";
 	private static final String FINISH = "bbb.android.action.FINISH";
 	private static final String SEND_TO_BACK = "bbb.android.action.SEND_TO_BACK";
 
@@ -210,7 +212,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		listenerListView.setAdapter(listenerAdapter);
 		registerForContextMenu(listenerListView);
 
-		//initialize onClickListeners, onOpenedDrawerListeners, etc
+		//initialize onClickListeners, onOpenedDrawerListeners, etc 
 		initializeListeners();
 
 		//voice connection
@@ -445,7 +447,14 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	@Override
 	public void onDisconnected() {
 
+		final ProgressDialog reconnectDialog = new ProgressDialog(this);
+		reconnectDialog.setTitle(R.string.lost_connection);
+		reconnectDialog.setMessage(getResources().getString(R.string.attempting_to_reconnect));
+		boolean moderator= bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator();
+		String meetingName = bbb.getJoinService().getJoinedMeeting().getConfname();
+		Client.bbb.getJoinService().join(meetingName, myusername, moderator);
 	}
+	
 	@Override
 	public void onKickUserCallback() {
 		// TODO Auto-generated method stub
@@ -489,6 +498,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		if (message.getUserId() == bbb.getMyUserId())
 			return;
 
+		log.debug("HELLO" + message.getMessage());
 		showNotification(message, source, true);
 
 	}
@@ -504,8 +514,17 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		log.debug("onNewIntent");
 		super.onNewIntent(intent);
 
-		if (intent.getAction() == null)
+		if(intent.getAction()==null)
 			return;
+		
+		if (intent.getAction().equals(BACK_TO_CLIENT)) 
+		{
+			for(int i=0; i<contactAdapter.getCount(); i++)
+				if(contactAdapter.getChatStatus(i)==Contact.CONTACT_ON_PRIVATE_MESSAGE)
+					((Contact) contactAdapter.getItem(i)).setChatStatus(Contact.CONTACT_NORMAL);
+			
+			contactAdapter.notifyDataSetChanged();
+		}
 		else if (intent.getAction().equals(ACTION_OPEN_SLIDER)) {
 			if (!slidingDrawer.isOpened())
 			{

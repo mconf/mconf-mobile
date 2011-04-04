@@ -46,6 +46,12 @@
 	<ImageView android:id="@+id/raise_hand" android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:src="@drawable/raisehand"
 		android:minWidth="24dp" android:minHeight="24dp"
+		android:layout_toLeftOf="@+id/private_chat"
+		android:layout_marginRight="5dp"
+	/>
+	<ImageView android:id="@+id/private_chat" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:src="@drawable/balloon2"
+		android:minWidth="24dp" android:minHeight="24dp"
 		android:layout_alignParentRight="true"
 		android:layout_marginRight="5dp"
 	/>
