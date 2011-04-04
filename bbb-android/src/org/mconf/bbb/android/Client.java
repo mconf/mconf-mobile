@@ -284,8 +284,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				bbb.kickListener(listener.getUserId());
 				return true;
 			case SHOW_VIDEO:
-				Client.bbb.connectVideo();
 	    		Intent intent = new Intent(getApplicationContext(), ShowVideo.class);
+	    		intent.putExtra("userId", contact.getUserId());
 	    		startActivity(intent);
 				return true;
 		}

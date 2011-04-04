@@ -34,6 +34,7 @@ import org.mconf.bbb.chat.ChatModule;
 import org.mconf.bbb.listeners.ListenersModule;
 import org.mconf.bbb.users.Participant;
 import org.mconf.bbb.users.UsersModule;
+import org.mconf.bbb.video.IVideoListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,6 @@ public class BigBlueButtonClient {
 	private static final Logger log = LoggerFactory.getLogger(BigBlueButtonClient.class);
 	
 	private MainRtmpConnection mainConnection;
-	private VideoRtmpConnection videoConnection; //TODO Gian Verify if there is a connection ID on the stream. If not, it may be needed to create a VideoRtmpConnection variable for each connection.
 
 	private JoinService joinService = new JoinService();
 	
@@ -105,18 +105,25 @@ public class BigBlueButtonClient {
 		return eventListeners;
 	}
 	
-	public void addListener(IVideoListener listener) {
-		log.debug("JAVA -> addListener certo");
+	public void addVideoListener(IVideoListener listener) {
 		videoListeners.add(listener);
 	}
 
-	public void removeListener(IVideoListener listener) {
+	public void removeVideoListener(IVideoListener listener) {
+		listener.stop();
 		videoListeners.remove(listener);
 	}
 	
-//	public Set<IVideoListener> getListeners() {
-//		return videoListeners;
-//	}	
+	public void removeAllVideoListeners() {
+		for (IVideoListener v : videoListeners) {
+			v.stop();
+		}
+		videoListeners.clear();
+	}
+	
+	public Set<IVideoListener> getVideoListeners() {
+		return videoListeners;
+	}	
 
 	public JoinService getJoinService() {
 		return joinService;
@@ -131,18 +138,6 @@ public class BigBlueButtonClient {
 		
 		mainConnection = new MainRtmpConnection(opt, this);
 		mainConnection.connect();
-	}
-	
-	public void connectVideo() {
-		ClientOptions opt = new ClientOptions();
-		opt.setClientVersionToUse(Utils.fromHex("00000000"));
-		opt.setHost(joinService.getServerUrl().toLowerCase().replace("http://", ""));
-		opt.setAppName("video/" + joinService.getJoinedMeeting().getConference());
-		opt.setStreamName("160x120147"); //TODO Gian Auto detect the stream name
-		log.debug(opt.toString());
-		
-		videoConnection = new VideoRtmpConnection(opt, this);
-		videoConnection.connect();
 	}
 	
 	@SuppressWarnings("unused")
@@ -200,9 +195,7 @@ public class BigBlueButtonClient {
 		
 		client.getJoinService().join("Demo Meeting", "Eclipse", false);
 		if (client.getJoinService().getJoinedMeeting() != null) {
-//			client.connectBigBlueButton();
-			client.connectVideo();
-			log.info("CONNECTED!");
+			client.connectBigBlueButton();
 		}
 	}
 

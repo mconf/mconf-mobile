@@ -19,7 +19,7 @@
  * along with Mconf-Mobile.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mconf.bbb;
+package org.mconf.bbb.video;
 
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -37,6 +37,8 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
+import org.mconf.bbb.BigBlueButtonClient;
+import org.mconf.bbb.RtmpConnection;
 import org.mconf.bbb.api.JoinedMeeting;
 import org.red5.server.so.SharedObjectMessage;
 import org.slf4j.Logger;

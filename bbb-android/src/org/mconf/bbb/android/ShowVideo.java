@@ -22,26 +22,36 @@
 package org.mconf.bbb.android;
 
 import org.mconf.bbb.BigBlueButtonClient;
-import org.mconf.bbb.IVideoListener;
+import org.mconf.bbb.video.IVideoListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
-import android.view.KeyEvent;
 import android.view.WindowManager;
 
+public class ShowVideo extends Activity {
+	
+	private class VideoHandler extends IVideoListener {
 
+		public VideoHandler(int userId, BigBlueButtonClient context) {
+			super(userId, context);
+		}
 
-public class ShowVideo extends Activity implements IVideoListener {
+		@Override
+		public void onVideo(byte[] data) {
+			enqueueEncoded(data,data.length);
+		}
+		
+	}
+	
 	private static final Logger log = LoggerFactory.getLogger(ShowVideo.class);
 	private GLSurfaceView_mconf mGLView = null;
 	private DisplayMetrics metrics = null;
 	private int width=0,height=0;
-	private static boolean DEBUG = true;
+	private VideoHandler videoHandler = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -55,70 +65,39 @@ public class ShowVideo extends Activity implements IVideoListener {
         width = metrics.widthPixels;
         height = metrics.heightPixels;        
         changeOrientation(width,height);        
-        if(DEBUG){
-        	log.debug("ShowVideo class", String.format("Screen resolution: %d X %d\n",width, height));
-        }
+
+        log.debug(String.format("Screen resolution: %d X %d\n",width, height));
 		
         //prepares the surface to render the video
 		if(mGLView==null){
 			mGLView = new GLSurfaceView_mconf(this,width,height);
 		} else {
-			Log.v("ShowVideo Class", String.format("Error: mGLView should be null but isnt!\n"));
+			log.debug(String.format("Error: mGLView should be null but isnt!\n"));
 		} 
 		setContentView(mGLView);
 		
-		Client.bbb.addListener(this);
+		Bundle extras = getIntent().getExtras();
+		int userId = extras.getInt("userId");
+		
+		videoHandler = new VideoHandler(userId, Client.bbb);
 	}
 	
 	@Override
 	protected void onStart() {
 		super.onStart();
-		
+		Client.bbb.addVideoListener(videoHandler);
+		videoHandler.start();
 	}
 	
 	@Override
 	protected void onStop() {
 		super.onStop();
 	
+		videoHandler.stop();
+		Client.bbb.removeVideoListener(videoHandler);
+
 		stopThreads();//stops the C++ code, otherwise it will keep running
 	}	
-	
-	@Override
-	protected void onDestroy() {
-		//TODO Gian implement the onDestroy for ShowVideo.java
-		log.debug("onDestroy");
-//		
-		Client.bbb.removeListener(this);
-//		bbb.disconnect();
-//
-//		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-//		notificationManager.cancelAll();	
-//
-////		unregisterReceiver(receiver);
-//
-		super.onDestroy();
-	}
-	
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-    	//TODO Gian implement the onKeyDown for ShowVideo.java
-//    	if (keyCode == KeyEvent.KEYCODE_BACK) {
-//    		Intent intent = new Intent(SEND_TO_BACK);
-//    		sendBroadcast(intent);
-//    		log.debug("KEYCODE_BACK");
-//    		moveTaskToBack(true);
-//    		return true;
-//    	}    		
-    	return super.onKeyDown(keyCode, event);
-    }
-
-	
-	@Override
-	public void onVideo(byte[] data) {
-		//insert encoded data into the queue		
-		enqueueEncoded(data,data.length);
-//		log.debug("new frame");
-	}
 	
 	 static {
     	System.loadLibrary("avutil");
@@ -131,9 +110,7 @@ public class ShowVideo extends Activity implements IVideoListener {
     	System.loadLibrary("decode");
     	System.loadLibrary("mconfnative");  
         
-    	if(DEBUG){
-    		Log.v("Java ShowVideo class", String.format("native libraries loaded\n"));
-    	}
+    	log.debug("native libraries loaded");
     }
 
 	native void changeOrientation(int w,int h);
