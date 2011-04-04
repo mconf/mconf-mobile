@@ -64,13 +64,24 @@ public class ContactAdapter extends BaseAdapter {
 			listContact.remove(contact);
 	}
 
+	public void setPrivateChat(Contact contact)
+	{
+		ImageView privateChat = (ImageView) view.findViewById(R.id.private_chat);
+		if(contact.getChatStatus()==Contact.CONTACT_ON_PRIVATE_MESSAGE)
+		{
+			privateChat.setImageDrawable(this.context.getResources().getDrawable(R.drawable.balloon2));
+			privateChat.setVisibility(ImageView.VISIBLE);
+		}
+		else
+			privateChat.setVisibility(ImageView.INVISIBLE);
+	}
 
 	public void setPresenterStatus(Contact changedStatus)
 	{
 		ImageView presenter = (ImageView) view.findViewById(R.id.presenter);
 		if(changedStatus.isPresenter())
 		{
-			presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.presenter_big));
+			presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.presenter));
 			presenter.setVisibility(ImageView.VISIBLE);
 		}
 		else
@@ -83,7 +94,7 @@ public class ContactAdapter extends BaseAdapter {
 		ImageView stream = (ImageView) view.findViewById(R.id.stream);
 		if(changedStatus.hasStream())
 		{
-			stream.setImageDrawable(this.context.getResources().getDrawable(R.drawable.webcam_big));
+			stream.setImageDrawable(this.context.getResources().getDrawable(R.drawable.webcam));
 			stream.setVisibility(ImageView.VISIBLE);
 		}
 		else
@@ -95,7 +106,7 @@ public class ContactAdapter extends BaseAdapter {
 		ImageView raiseHand = (ImageView) view.findViewById(R.id.raise_hand);
 		if(changedStatus.isRaiseHand())
 		{
-			raiseHand.setImageDrawable(this.context.getResources().getDrawable(R.drawable.raisehand_big));
+			raiseHand.setImageDrawable(this.context.getResources().getDrawable(R.drawable.raisehand));
 			raiseHand.setVisibility(ImageView.VISIBLE);
 		}
 		else
@@ -103,6 +114,15 @@ public class ContactAdapter extends BaseAdapter {
 
 	}
 
+	public void resetAllChatStatus()
+	{
+		for (IParticipant contact : listContact)
+		{
+			Contact entry = new Contact(contact);
+			entry.setChatStatus(Contact.CONTACT_NORMAL);
+			
+		}
+	}
 
 
 	public int getCount() {
@@ -150,7 +170,7 @@ public class ContactAdapter extends BaseAdapter {
 		//puts the correct images of moderator, presenter, etc
 		ImageView moderator = (ImageView) convertView.findViewById(R.id.moderator);
 		if(entry.isModerator()) {
-			moderator.setImageDrawable(this.context.getResources().getDrawable(R.drawable.administrator_big));
+			moderator.setImageDrawable(this.context.getResources().getDrawable(R.drawable.administrator));
 			moderator.setVisibility(ImageView.VISIBLE);
 		}
 		else
@@ -159,19 +179,23 @@ public class ContactAdapter extends BaseAdapter {
 		setPresenterStatus(entry);
 		setStreamStatus(entry);
 		setRaiseHandStatus(entry);
+		setPrivateChat(entry);
 
-
-		int color;
-		//change the background of people on the private chat
-		switch (entry.getChatStatus()) {
-		case Contact.CONTACT_ON_PRIVATE_MESSAGE:
-			color = R.color.title_background;
-			break;
-		default:
-			color = R.color.background;
-		}
-
-		convertView.setBackgroundResource(color);
+//		int color;
+//		//change the background of people on the private chat
+//		switch (entry.getChatStatus()) {
+//		case Contact.CONTACT_ON_PRIVATE_MESSAGE:
+//			color = R.color.title_background;
+//			break;
+//		default:
+//			color = R.color.background;
+//		}
+//
+//		convertView.setBackgroundResource(color);
+		
+		//selector doesn't work if seResourceBackground is called
+		//need to find another way to show yhat a user is on private chat
+	
 
 
 		return convertView;

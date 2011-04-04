@@ -22,6 +22,7 @@
 	<string name="connect">Connect</string>
 	<string name="type_server">Or type a server URL:</string>
 	<string name="choose_a_server">Choose a server</string>
+	<string name="delete_server">Delete server</string>
 	<string name="kick">Kick</string>
 	<string name="mute">Mute</string>
 	<string name="unmute">Unmute</string>
@@ -33,6 +34,10 @@
 	<string name="quit">Quit</string>
 	<string name="logout">Logout</string>
 	<string name="raise_hand">Raise hand</string>
+	<string name="lower_hand">Lower hand</string>
+	<string name="open_private_chat">Open private chat</string>
+	<string name="lost_connection">Lost connection</string>
+	<string name="attempting_to_reconnect">Reconnecting...</string>
 	<string name="private_chat_notification">New private chat message from&#160;</string>
 	<string name="public_chat_notification">New public chat message from&#160;</string>
 	<string name="private_chat_title">Private chat with&#160;</string>

@@ -2,8 +2,9 @@
 
 <RelativeLayout android:id="@+id/ContactLayout"
 	android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="42dp"
-	android:background="@color/background" xmlns:android="http://schemas.android.com/apk/res/android"
-	android:gravity="center_vertical" >
+	 xmlns:android="http://schemas.android.com/apk/res/android"
+	android:gravity="center_vertical" android:listSelector="@color/selector" 
+	 android:drawSelectorOnTop="true"   >
 
 	<ImageView android:id="@+id/moderator" 
 		android:layout_width="wrap_content"
@@ -43,7 +44,13 @@
 
 
 	<ImageView android:id="@+id/raise_hand" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:src="@drawable/raisehand_big"
+		android:layout_height="wrap_content" android:src="@drawable/raisehand"
+		android:minWidth="24dp" android:minHeight="24dp"
+		android:layout_toLeftOf="@+id/private_chat"
+		android:layout_marginRight="5dp"
+	/>
+	<ImageView android:id="@+id/private_chat" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:src="@drawable/balloon2"
 		android:minWidth="24dp" android:minHeight="24dp"
 		android:layout_alignParentRight="true"
 		android:layout_marginRight="5dp"

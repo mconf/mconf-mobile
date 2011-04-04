@@ -36,6 +36,7 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -92,11 +93,13 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static final int MUTE_LISTENER = Menu.FIRST+1;
 	public static final int SET_PRESENTER = Menu.FIRST+2;
 	public static final int KICK_LISTENER = Menu.FIRST+3;
-	public static final int SHOW_VIDEO = Menu.FIRST+4;
+	public static final int OPEN_PRIVATE_CHAT = Menu.FIRST+4;
+	public static final int SHOW_VIDEO = Menu.FIRST+5;
 
 	public static final int CHAT_NOTIFICATION_ID = 77000;
 
 	public static final String ACTION_OPEN_SLIDER = "org.mconf.bbb.android.Client.OPEN_SLIDER";
+	public static final String BACK_TO_CLIENT = "org.mconf.bbb.android.Client.BACK_TO_CLIENT";
 	private static final String FINISH = "bbb.android.action.FINISH";
 	private static final String SEND_TO_BACK = "bbb.android.action.SEND_TO_BACK";
 
@@ -206,7 +209,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		listenerListView.setAdapter(listenerAdapter);
 		registerForContextMenu(listenerListView);
 
-		//initialize onClickListeners, onOpenedDrawerListeners, etc
+		//initialize onClickListeners, onOpenedDrawerListeners, etc 
 		initializeListeners();
 
 		//voice connection
@@ -229,15 +232,16 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 		if(v.getId()==R.id.contacts_list) {
 			final Contact contact = (Contact) contactAdapter.getItem(info.position);
-
 			if (contact.getUserId() != bbb.getMyUserId()) {
-				if (moderator)
-					menu.add(0, KICK_USER, 0, R.string.kick);
+				menu.add(0, OPEN_PRIVATE_CHAT, 0, R.string.open_private_chat);
     			menu.add(0, SHOW_VIDEO, 0, "Show video");
 			}
-
-			if (moderator && !contact.isPresenter())
-				menu.add(0, SET_PRESENTER, 0, R.string.assign_presenter);
+			if (moderator) {
+				if (contact.getUserId() != bbb.getMyUserId())
+					menu.add(0, KICK_USER, 0, R.string.kick);
+				if (!contact.isPresenter())
+					menu.add(0, SET_PRESENTER, 0, R.string.assign_presenter);
+			}
 		} else {
 			final Listener listener = (Listener) listenerAdapter.getItem(info.position);
 			
@@ -245,7 +249,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				menu.add(0, KICK_LISTENER, 0, R.string.kick);
 				menu.add(0, MUTE_LISTENER, 0, listener.isMuted()? R.string.unmute: R.string.mute);
 			}
-		}
+		}		
+		
+		if (menu.size() == 0)
+			Toast.makeText(getApplicationContext(),getResources().getString(R.string.no_options), Toast.LENGTH_SHORT).show(); 
 	}
 
 	@Override
@@ -258,6 +265,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			case KICK_USER:
 			case SET_PRESENTER:
 			case SHOW_VIDEO:
+			case OPEN_PRIVATE_CHAT:
 				contact= (Contact) contactAdapter.getItem(info.position);
 				log.debug("clicked on participant " + contact.toString());
 				break;
@@ -267,27 +275,30 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		}
 		
 		switch (item.getItemId()) {
-			case KICK_USER:
-				bbb.kickUser(contact.getUserId());
-				//closes private chat with the user if he is kicked
-				Intent kickedUser = new Intent(PrivateChat.KICKED_USER);
-				kickedUser.putExtra("userId", contact.getUserId());
-				sendBroadcast(kickedUser);
-				return true;
-			case SET_PRESENTER:
-				bbb.assignPresenter(contact.getUserId());
-				return true;
-			case MUTE_LISTENER:
-				bbb.muteUnmuteListener(listener.getUserId(), !listener.isMuted());
-				return true;
-			case KICK_LISTENER: 
-				bbb.kickListener(listener.getUserId());
-				return true;
-			case SHOW_VIDEO:
-	    		Intent intent = new Intent(getApplicationContext(), ShowVideo.class);
-	    		intent.putExtra("userId", contact.getUserId());
-	    		startActivity(intent);
-				return true;
+		case KICK_USER:
+			bbb.kickUser(contact.getUserId());
+			//closes private chat with the user if he is kicked
+			Intent kickedUser = new Intent(PrivateChat.KICKED_USER);
+			kickedUser.putExtra("userId", contact.getUserId());
+			sendBroadcast(kickedUser);
+			return true;
+		case SET_PRESENTER:
+			bbb.assignPresenter(contact.getUserId());
+			return true;
+		case MUTE_LISTENER:
+			bbb.muteUnmuteListener(listener.getUserId(), !listener.isMuted());
+			return true;
+		case KICK_LISTENER: 
+			bbb.kickListener(listener.getUserId());
+			return true;
+		case OPEN_PRIVATE_CHAT:
+			startPrivateChat(contact);
+			return true;
+		case SHOW_VIDEO:
+    		Intent intent = new Intent(getApplicationContext(), ShowVideo.class);
+    		intent.putExtra("userId", contact.getUserId());
+    		startActivity(intent);
+			return true;
 		}
 		return super.onContextItemSelected(item);
 	}
@@ -350,7 +361,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		} else {
 			menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, R.string.start_voice).setIcon(android.R.drawable.ic_btn_speak_now);
 		}
-		menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.raise_hand).setIcon(android.R.drawable.ic_menu_myplaces);
+		if (bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isRaiseHand())
+			menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.lower_hand).setIcon(android.R.drawable.ic_menu_myplaces);
+		else
+			menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.raise_hand).setIcon(android.R.drawable.ic_menu_myplaces);
 		menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, R.string.logout).setIcon(android.R.drawable.ic_menu_revert);
 		menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 		menu.add(Menu.NONE, MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
@@ -440,7 +454,14 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	@Override
 	public void onDisconnected() {
 
+		final ProgressDialog reconnectDialog = new ProgressDialog(this);
+		reconnectDialog.setTitle(R.string.lost_connection);
+		reconnectDialog.setMessage(getResources().getString(R.string.attempting_to_reconnect));
+		boolean moderator= bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator();
+		String meetingName = bbb.getJoinService().getJoinedMeeting().getConfname();
+		Client.bbb.getJoinService().join(meetingName, myusername, moderator);
 	}
+	
 	@Override
 	public void onKickUserCallback() {
 		// TODO Auto-generated method stub
@@ -484,6 +505,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		if (message.getUserId() == bbb.getMyUserId())
 			return;
 
+		log.debug("HELLO" + message.getMessage());
 		showNotification(message, source, true);
 
 	}
@@ -499,15 +521,25 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		log.debug("onNewIntent");
 		super.onNewIntent(intent);
 
-		if (intent.getAction() == null)
+		if(intent.getAction()==null)
 			return;
+		
+		if (intent.getAction().equals(BACK_TO_CLIENT)) 
+		{
+			for(int i=0; i<contactAdapter.getCount(); i++)
+				if(contactAdapter.getChatStatus(i)==Contact.CONTACT_ON_PRIVATE_MESSAGE)
+					((Contact) contactAdapter.getItem(i)).setChatStatus(Contact.CONTACT_NORMAL);
+			
+			contactAdapter.notifyDataSetChanged();
+		}
 		else if (intent.getAction().equals(ACTION_OPEN_SLIDER)) {
 			if (!slidingDrawer.isOpened())
 			{
 				slidingDrawer.open();
 				openedDrawer();
 				Button handler = (Button)findViewById(R.id.handle);
-				handler.setBackgroundDrawable(this.getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background));
+				handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background));
+//				handler.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.title_background_onfocus));
 			}
 
 		}
@@ -574,14 +606,11 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 				//doesn't notify again for already read messages
 				addedMessages++;
-				if(addedMessages>lastReadNum )
-				{
-					if (!slidingDrawer.isShown() || !slidingDrawer.isOpened())
-					{
+				if(addedMessages>lastReadNum ) {
+					if (!slidingDrawer.isShown() || !slidingDrawer.isOpened()) {
 						showNotification(message, source, false);
 						Button handler = (Button)findViewById(R.id.handle);
-						handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background_new_message)); 
-
+						handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background_up_new_message));
 					}
 					else
 						lastReadNum = chatAdapter.getCount();
@@ -797,7 +826,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				notificationManager.cancel(CHAT_NOTIFICATION_ID);
 				Button handler = (Button)findViewById(R.id.handle);
 				//and the "message received" icon is off too
-				handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background));
+				handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background_down));
+//				handler.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.title_background_onfocus));
 				handler.setGravity(Gravity.CENTER);
 				lastReadNum = chatAdapter.getCount();
 				openedDrawer(); 
@@ -811,7 +841,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 			@Override
 			public void onDrawerClosed() {
-
+				Button handler = (Button)findViewById(R.id.handle);
+				//and the "message received" icon is off too
+				handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background_up));
 
 			}
 		});
