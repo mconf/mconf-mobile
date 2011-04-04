@@ -70,7 +70,7 @@ public class ContactAdapter extends BaseAdapter {
 		ImageView presenter = (ImageView) view.findViewById(R.id.presenter);
 		if(changedStatus.isPresenter())
 		{
-			presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.presenter_big));
+			presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.presenter));
 			presenter.setVisibility(ImageView.VISIBLE);
 		}
 		else
@@ -83,7 +83,7 @@ public class ContactAdapter extends BaseAdapter {
 		ImageView stream = (ImageView) view.findViewById(R.id.stream);
 		if(changedStatus.hasStream())
 		{
-			stream.setImageDrawable(this.context.getResources().getDrawable(R.drawable.webcam_big));
+			stream.setImageDrawable(this.context.getResources().getDrawable(R.drawable.webcam));
 			stream.setVisibility(ImageView.VISIBLE);
 		}
 		else
@@ -95,7 +95,7 @@ public class ContactAdapter extends BaseAdapter {
 		ImageView raiseHand = (ImageView) view.findViewById(R.id.raise_hand);
 		if(changedStatus.isRaiseHand())
 		{
-			raiseHand.setImageDrawable(this.context.getResources().getDrawable(R.drawable.raisehand_big));
+			raiseHand.setImageDrawable(this.context.getResources().getDrawable(R.drawable.raisehand));
 			raiseHand.setVisibility(ImageView.VISIBLE);
 		}
 		else
@@ -150,7 +150,7 @@ public class ContactAdapter extends BaseAdapter {
 		//puts the correct images of moderator, presenter, etc
 		ImageView moderator = (ImageView) convertView.findViewById(R.id.moderator);
 		if(entry.isModerator()) {
-			moderator.setImageDrawable(this.context.getResources().getDrawable(R.drawable.administrator_big));
+			moderator.setImageDrawable(this.context.getResources().getDrawable(R.drawable.administrator));
 			moderator.setVisibility(ImageView.VISIBLE);
 		}
 		else

@@ -227,37 +227,29 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-		//only opens the context if the user is moderator
-		if (bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator()) {
-			if(v.getId()==R.id.contacts_list)
-			{
-				final Contact contact = (Contact) contactAdapter.getItem(info.position);
+		
+		boolean moderator = bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator();
+		
+		if(v.getId()==R.id.contacts_list) {
+			final Contact contact = (Contact) contactAdapter.getItem(info.position);
 
-				if (contact.getUserId() != bbb.getMyUserId()) {
+			if (moderator) {
+				if (contact.getUserId() != bbb.getMyUserId())
 					menu.add(0, KICK_USER, 0, R.string.kick);
-				}
-
 				if (!contact.isPresenter())
 					menu.add(0, SET_PRESENTER, 0, R.string.assign_presenter);
-				if(contact.getUserId() == bbb.getMyUserId()&&contact.isPresenter())
-					Toast.makeText(getApplicationContext(),getResources().getString(R.string.no_options), Toast.LENGTH_SHORT).show(); 
-
 			}
-			else
-			{
-				final Listener listener = (Listener) listenerAdapter.getItem(info.position);
+		} else {
+			final Listener listener = (Listener) listenerAdapter.getItem(info.position);
+			
+			if (moderator) {
 				menu.add(0, KICK_LISTENER, 0, R.string.kick);
-				int muted;
-				if(listener.isMuted())
-					muted=R.string.unmute;
-				else
-					muted = R.string.mute;
-				menu.add(0, MUTE_LISTENER, 0, muted);
+				menu.add(0, MUTE_LISTENER, 0, listener.isMuted()? R.string.unmute: R.string.mute);
 			}
-		}
-		else
-			Toast.makeText(getApplicationContext(),getResources().getString(R.string.not_moderator), Toast.LENGTH_SHORT).show(); 
-
+		}		
+		
+		if (menu.size() == 0)
+			Toast.makeText(getApplicationContext(),getResources().getString(R.string.no_options), Toast.LENGTH_SHORT).show(); 
 	}
 
 	@Override
@@ -355,7 +347,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		} else {
 			menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, R.string.start_voice).setIcon(android.R.drawable.ic_btn_speak_now);
 		}
-		menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.raise_hand).setIcon(android.R.drawable.ic_menu_myplaces);
+		if (bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isRaiseHand())
+			menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.lower_hand).setIcon(android.R.drawable.ic_menu_myplaces);
+		else
+			menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.raise_hand).setIcon(android.R.drawable.ic_menu_myplaces);
 		menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, R.string.logout).setIcon(android.R.drawable.ic_menu_revert);
 		menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 		menu.add(Menu.NONE, MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
@@ -512,7 +507,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				slidingDrawer.open();
 				openedDrawer();
 				Button handler = (Button)findViewById(R.id.handle);
-				handler.setBackgroundDrawable(this.getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background));
+				handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background));
+//				handler.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.title_background_onfocus));
 			}
 
 		}
@@ -579,14 +575,11 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 				//doesn't notify again for already read messages
 				addedMessages++;
-				if(addedMessages>lastReadNum )
-				{
-					if (!slidingDrawer.isShown() || !slidingDrawer.isOpened())
-					{
+				if(addedMessages>lastReadNum ) {
+					if (!slidingDrawer.isShown() || !slidingDrawer.isOpened()) {
 						showNotification(message, source, false);
 						Button handler = (Button)findViewById(R.id.handle);
-						handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background_new_message)); 
-
+						handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background_new_message));
 					}
 					else
 						lastReadNum = chatAdapter.getCount();
@@ -803,6 +796,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				Button handler = (Button)findViewById(R.id.handle);
 				//and the "message received" icon is off too
 				handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background));
+//				handler.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.title_background_onfocus));
 				handler.setGravity(Gravity.CENTER);
 				lastReadNum = chatAdapter.getCount();
 				openedDrawer(); 

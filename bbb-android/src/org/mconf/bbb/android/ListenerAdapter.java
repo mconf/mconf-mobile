@@ -42,12 +42,12 @@ public class ListenerAdapter extends BaseAdapter {
 		ImageView muted = (ImageView) view.findViewById(R.id.muted);
 		if(changedStatus.isMuted())
 		{
-			muted.setImageDrawable(this.context.getResources().getDrawable(R.drawable.sound_mute_big));
+			muted.setImageDrawable(this.context.getResources().getDrawable(R.drawable.sound_mute));
 			muted.setVisibility(ImageView.VISIBLE);
 		}
 		else
 			{
-			muted.setImageDrawable(this.context.getResources().getDrawable(R.drawable.sound_none_big));
+			muted.setImageDrawable(this.context.getResources().getDrawable(R.drawable.sound_none));
 			muted.setVisibility(ImageView.VISIBLE);
 			}
 
@@ -58,7 +58,7 @@ public class ListenerAdapter extends BaseAdapter {
 		ImageView talking = (ImageView) view.findViewById(R.id.talking);
 		if(changedStatus.isTalking())
 		{
-			talking.setImageDrawable(this.context.getResources().getDrawable(R.drawable.sound_big));
+			talking.setImageDrawable(this.context.getResources().getDrawable(R.drawable.sound));
 			talking.setVisibility(ImageView.VISIBLE);
 		}
 		else

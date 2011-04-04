@@ -11,29 +11,35 @@
 <%
     if (request.getParameterMap().isEmpty()) {
     } else if (request.getParameter("action").equals("getMeetings")) {
-	String meetings = getMeetings();
+        String meetings = getMeetings();
 %>
 <%=meetings%>
 <%
     } else if (request.getParameter("action").equals("join")) {
-	String meetingID = request.getParameter("meetingID");
-	String fullName = request.getParameter("fullName");
-	String password = request.getParameter("password");
-	String joinUrl = getJoinMeetingURL(fullName, meetingID, password);
-	String enterUrl = BigBlueButtonURL + "api/enter";
-	String result = "<response><returncode>FAILED</returncode><message>Can't join the meeting</message></response>";
-	try {
-	    HttpClient client = new HttpClient();
-	    HttpMethod method = new GetMethod(joinUrl);
-	    client.executeMethod(method);
-	    method.releaseConnection();
-	    
-	    method = new GetMethod(enterUrl);
-	    client.executeMethod(method);
-	    result = method.getResponseBodyAsString();
-	    method.releaseConnection();
-	} catch (Exception e) {
-	}
+        String meetingID = request.getParameter("meetingID");
+        String fullName = request.getParameter("fullName");
+        String password = request.getParameter("password");
+        String joinUrl = getJoinMeetingURL(fullName, meetingID, password);
+        String enterUrl = BigBlueButtonURL + "api/enter";
+        String result = "<response><returncode>FAILED</returncode><message>Can't join the meeting</message></response>";
+        try {
+            HttpClient client = new HttpClient();
+            HttpMethod method = new GetMethod(joinUrl);
+            client.executeMethod(method);
+            method.releaseConnection();
+            
+            method = new GetMethod(enterUrl);
+            client.executeMethod(method);
+            result = method.getResponseBodyAsString();
+            method.releaseConnection();
+        } catch (Exception e) {
+        }
+%>
+<%=result%>
+<%
+    } else if (request.getParameter("action").equals("create")) {
+        String meetingID = request.getParameter("meetingID");
+        String result = createMeeting(meetingID, "", "", "", 0, BigBlueButtonURL);
 %>
 <%=result%>
 <%
