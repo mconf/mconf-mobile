@@ -236,11 +236,11 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				if (contact.getUserId() != bbb.getMyUserId()) {
 					menu.add(0, KICK_USER, 0, R.string.kick);
 				}
-				else
-					Toast.makeText(getApplicationContext(),getResources().getString(R.string.no_options), Toast.LENGTH_SHORT).show(); 
 
 				if (!contact.isPresenter())
 					menu.add(0, SET_PRESENTER, 0, R.string.assign_presenter);
+				if(contact.getUserId() == bbb.getMyUserId()&&contact.isPresenter())
+					Toast.makeText(getApplicationContext(),getResources().getString(R.string.no_options), Toast.LENGTH_SHORT).show(); 
 
 			}
 			else

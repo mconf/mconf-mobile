@@ -8,10 +8,10 @@
 		android:layout_height="fill_parent" android:background="@color/background">
 		<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			android:layout_width="fill_parent" android:layout_height="fill_parent"
-			android:background="@color/background">
+			>
 			<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				android:layout_width="fill_parent" android:layout_height="wrap_content"
-				android:background="@color/background" android:id="@+id/participants"
+				 android:id="@+id/participants"
 				android:layout_alignParentTop="true">
 
 				<TextView android:layout_height="wrap_content"
@@ -29,11 +29,8 @@
 				<view class="org.mconf.bbb.android.CustomListview" android:id="@+id/contacts_list"
 					android:divider="@color/title_background_onfocus"
 					android:dividerHeight="2dp" android:layout_below="@+id/separator1"
-					android:layout_width="fill_parent" android:layout_height="wrap_content"
-					android:isScrollContainer="false" />
-
-
-
+					android:layout_width="fill_parent" android:layout_height="fill_parent" />
+					
 
 			</RelativeLayout>
 
@@ -43,7 +40,7 @@
 
 			<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				android:layout_width="fill_parent" android:layout_height="fill_parent"
-				android:background="@color/background" android:id="@+id/listeners_drawer"
+				 android:id="@+id/listeners_drawer"
 				android:layout_below="@+id/participants">
 				<TextView android:layout_width="fill_parent"
 					android:layout_height="wrap_content" android:id="@+id/label_listeners"
@@ -60,8 +57,7 @@
 				<view class="org.mconf.bbb.android.CustomListview" android:id="@+id/listeners_list"
 					android:layout_width="fill_parent" android:layout_height="fill_parent"
 					android:divider="@color/title_background_onfocus"
-					android:dividerHeight="2dp" android:layout_below="@+id/separator2"
-					 />
+					android:dividerHeight="2dp" android:layout_below="@+id/separator2" />
 				<LinearLayout android:id="@+id/Bottom_separator"
 					xmlns:android="http://schemas.android.com/apk/res/android"
 					android:layout_width="fill_parent" android:layout_height="42dp"
@@ -80,10 +76,8 @@
 			<Button android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:id="@id/handle"
 				android:textAppearance="@style/TitleStyle" android:text="@string/public_chat"
-				android:background="@drawable/public_chat_title_background" android:gravity="center"
-				android:minHeight="42dp" 
-				android:padding="0dip" 
-				 />
+				android:background="@drawable/public_chat_title_background"
+				android:gravity="center" android:minHeight="42dp" android:padding="0dip" />
 
 			<!-- http://developer.android.com/resources/articles/layout-tricks-reuse.html -->
 			<include layout="@layout/chat" />

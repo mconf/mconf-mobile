@@ -161,17 +161,21 @@ public class ContactAdapter extends BaseAdapter {
 		setRaiseHandStatus(entry);
 
 
-		int color;
-		//change the background of people on the private chat
-		switch (entry.getChatStatus()) {
-		case Contact.CONTACT_ON_PRIVATE_MESSAGE:
-			color = R.color.title_background;
-			break;
-		default:
-			color = R.color.background;
-		}
-
-		convertView.setBackgroundResource(color);
+//		int color;
+//		//change the background of people on the private chat
+//		switch (entry.getChatStatus()) {
+//		case Contact.CONTACT_ON_PRIVATE_MESSAGE:
+//			color = R.color.title_background;
+//			break;
+//		default:
+//			color = R.color.background;
+//		}
+//
+//		convertView.setBackgroundResource(color);
+		
+		//selector doesn't work if seResourceBackground is called
+		//need to find another way to show yhat a user is on private chat
+	
 
 
 		return convertView;
