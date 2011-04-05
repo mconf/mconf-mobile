@@ -3,7 +3,7 @@
 #include <GLES/glext.h>
 #include "opengl.h"
 
-void aplly_first_texture(uint8_t* pixels, int w, int h){
+void apply_first_texture(uint8_t* pixels, int w, int h){
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, ARRAY_DATA_TYPE, pixels);
 	CHECK_GL_ERROR();
 }

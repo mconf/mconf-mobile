@@ -23,7 +23,7 @@
  * pixels: array de pixels
  * w: largura
  * h: altura */
-void aplly_first_texture(uint8_t* pixels, int w, int h);
+void apply_first_texture(uint8_t* pixels, int w, int h);
 
 /* usa chamadas opengl para desenhar o frame
  * parametros:
