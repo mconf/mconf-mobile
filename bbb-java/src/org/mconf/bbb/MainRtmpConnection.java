@@ -125,6 +125,20 @@ public class MainRtmpConnection extends RtmpConnection {
         Command connect = new CommandAmf0("connect", object, meeting.getFullname(), meeting.getRole(), meeting.getConference(), meeting.getMode(), meeting.getRoom(), meeting.getVoicebridge(), meeting.getRecord().equals("true"), meeting.getExternUserID());
 
         writeCommandExpectingResult(e.getChannel(), connect);
+        
+		for (IBigBlueButtonClientListener l : context.getListeners()) {
+			l.onConnected();
+		}        
+	}
+	
+	@Override
+	public void channelDisconnected(ChannelHandlerContext ctx,
+			ChannelStateEvent e) throws Exception {
+		super.channelDisconnected(ctx, e);
+		
+		for (IBigBlueButtonClientListener l : context.getListeners()) {
+			l.onDisconnected();
+		}
 	}
 	
     @SuppressWarnings("unchecked")
