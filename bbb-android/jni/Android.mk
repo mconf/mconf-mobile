@@ -6,8 +6,10 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE    := mconfnative
 
-LOCAL_SRC_FILES := mconfnative/mconf.cpp \
-				   mconfnative/opengl/opengl.cpp
+LOCAL_SRC_FILES := \
+				   mconfnative/opengl/opengl.cpp \
+				   mconfnative/DrawerManager.cpp \
+				   mconfnative/VideoDrawer.cpp
 				  
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/iva/thread \
 					$(LOCAL_PATH)/iva/common \
