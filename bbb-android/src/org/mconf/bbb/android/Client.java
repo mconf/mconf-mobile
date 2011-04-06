@@ -444,15 +444,15 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		// TODO Auto-generated method stub
 
 	}
+	
 	@Override
 	public void onDisconnected() {
-
-		final ProgressDialog reconnectDialog = new ProgressDialog(this);
-		reconnectDialog.setTitle(R.string.lost_connection);
-		reconnectDialog.setMessage(getResources().getString(R.string.attempting_to_reconnect));
-		boolean moderator= bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator();
-		String meetingName = bbb.getJoinService().getJoinedMeeting().getConfname();
-		Client.bbb.getJoinService().join(meetingName, myusername, moderator);
+//		final ProgressDialog reconnectDialog = new ProgressDialog(this);
+//		reconnectDialog.setTitle(R.string.lost_connection);
+//		reconnectDialog.setMessage(getResources().getString(R.string.attempting_to_reconnect));
+//		boolean moderator= bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator();
+//		String meetingName = bbb.getJoinService().getJoinedMeeting().getConfname();
+//		Client.bbb.getJoinService().join(meetingName, myusername, moderator);
 	}
 	
 	@Override
