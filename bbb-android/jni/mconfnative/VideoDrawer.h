@@ -17,7 +17,7 @@ private:
 	queue_consumer_t* consumer;
 
 	int screenWidth, screenHeight;
-	bool firstFrame;
+	bool firstFrame, stopThread;
 
 public:
 	VideoDrawer(int screenWidth, int screenHeight) {
@@ -27,6 +27,7 @@ public:
 		this->screenHeight = screenHeight;
 
 		firstFrame = true;
+		stopThread = false;
 
 		encoded_video = queue_create();
 		decoded_video = queue_create();
@@ -49,6 +50,12 @@ public:
 
 	~VideoDrawer() {
 		Log("~VideoDrawer() begin");
+
+		// \todo syncronize the finalize of the renderer to solve the end problem!
+		Seconds(1).sleep();
+
+		stopThread = true;
+		queue_broadcast(decoded_video);
 
 		video_dec->stop();
 		queue_unregisterConsumer(&consumer);
@@ -77,8 +84,16 @@ public:
 		QueueExtraData* extraData;
 
 		Log("threadFunction() trying to dequeue");
-		if (queue_dequeue(consumer, &buffer, &bufferSize, &timestamp, &extraData) != E_OK)
+		while (!stopThread) {
+			if (queue_dequeueCond(consumer, &buffer, &bufferSize, &timestamp, &extraData) == E_OK) {
+				break;
+			}
+		}
+		if (stopThread) {
+			Log("renderFrame() returning");
 			return;
+		}
+
 		Log("threadFunction() dequeued");
 
 		QueueExtraDataVideo* extraDataVideo;

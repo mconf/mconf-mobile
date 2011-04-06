@@ -23,6 +23,7 @@ package org.mconf.bbb.android;
 
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.IBigBlueButtonClientListener;
+import org.mconf.bbb.android.video.VideoDialog;
 import org.mconf.bbb.android.voip.VoiceModule;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.listeners.IListener;
@@ -295,9 +296,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			startPrivateChat(contact);
 			return true;
 		case SHOW_VIDEO:
-    		Intent intent = new Intent(getApplicationContext(), ShowVideo.class);
-    		intent.putExtra("userId", contact.getUserId());
-    		startActivity(intent);
+    		new VideoDialog(this, contact.getUserId()).show();
 			return true;
 		}
 		return super.onContextItemSelected(item);
@@ -361,9 +360,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		} else {
 			menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, R.string.start_voice).setIcon(android.R.drawable.ic_btn_speak_now);
 		}
-		if (bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isRaiseHand())
-			menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.lower_hand).setIcon(android.R.drawable.ic_menu_myplaces);
-		else
+//		if (bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isRaiseHand())
+//			menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.lower_hand).setIcon(android.R.drawable.ic_menu_myplaces);
+//		else
 			menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.raise_hand).setIcon(android.R.drawable.ic_menu_myplaces);
 		menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, R.string.logout).setIcon(android.R.drawable.ic_menu_revert);
 		menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
