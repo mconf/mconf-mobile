@@ -235,13 +235,15 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			final Contact contact = (Contact) contactAdapter.getItem(info.position);
 			if (contact.getUserId() != bbb.getMyUserId()) {
 				menu.add(0, OPEN_PRIVATE_CHAT, 0, R.string.open_private_chat);
-    			menu.add(0, SHOW_VIDEO, 0, "Show video");
 			}
 			if (moderator) {
 				if (contact.getUserId() != bbb.getMyUserId())
 					menu.add(0, KICK_USER, 0, R.string.kick);
 				if (!contact.isPresenter())
 					menu.add(0, SET_PRESENTER, 0, R.string.assign_presenter);
+			}
+			if (contact.getStatus().isHasStream()) {
+				menu.add(0, SHOW_VIDEO, 0, R.string.show_video);
 			}
 		} else {
 			final Listener listener = (Listener) listenerAdapter.getItem(info.position);
