@@ -9,7 +9,10 @@
 #include "LogData.h"
 #include "IvaOutStream.h"
 #include "CommonLeaksCpp.h"
+
+#ifdef ANDROID
 #include <android/log.h>
+#endif
 
 LogData::LogData()
 {
@@ -29,7 +32,11 @@ LogData::LogData(LogData & operand)
 
 LogData::LogData(const IvaString& s)
 {
+#ifdef ANDROID
+    str(s);
+#else
     str(s + "\n");
+#endif
     time_ = NULL;
 }
 
@@ -49,7 +56,7 @@ void LogData::push()
 {
 
 #ifdef ANDROID
-	__android_log_print(ANDROID_LOG_INFO,"IVA Log","%s\n",this->getCompleteMsg().c_str());
+	__android_log_print(ANDROID_LOG_INFO,"IVA Log","%s",this->getCompleteMsg().c_str());
 #else
 	Log_.start();
 	Log_ << *this;
