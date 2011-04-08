@@ -94,7 +94,7 @@ public:
 		return k+1;
 	}
 
-	void renderFrame() {
+	int renderFrame() {
 //		Log("threadFunction() begin");
 
 		uint32_t timestamp, bufferSize;
@@ -109,7 +109,7 @@ public:
 		}
 		if (stopThread) {
 //			Log("renderFrame() returning");
-			return;
+			return 0;
 		}
 
 //		Log("threadFunction() dequeued");
@@ -121,6 +121,8 @@ public:
 		videoH = extraDataVideo->getHeight();
 //		log << "video resolution = " << w << " " << h << endl;
 //		log.push();
+
+		int ret = 0;
 
 		if (firstFrame) {
 //			Log("threadFunction() firstFrame");
@@ -145,6 +147,19 @@ public:
 			log << "first texture resolution: " << tmpW << "x" << tmpH << endl;
 			log << "first texture buffer size: " << tmpSize << endl;
 			log.push();
+
+			float videoAspect = videoW / (float) videoH;
+			float displayAspect = displayAreaW / (float) displayAreaH;
+
+			if (videoAspect - displayAspect > 0.1 ||
+					displayAspect - videoAspect > 0.1) {
+				if (videoAspect < displayAspect)
+					displayAreaW = displayAreaH * videoAspect;
+				else
+					displayAreaH = displayAreaW / (float) videoAspect;
+
+				ret = 1;
+			}
 		}
 
 //		Log("threadFunction() updating frame begin");
@@ -160,10 +175,13 @@ public:
 //		Log("threadFunction() consumer free");
 
 //		Log("threadFunction() end");
+
+		return ret;
 	}
 
 	int getVideoW() { return videoW; }
 	int getVideoH() { return videoH; }
+	float getAspectRatio() { return videoW / (float) videoH; }
 	void setDisplayAreaW(int w) { displayAreaW = w; }
 	void setDisplayAreaH(int h) { displayAreaH = h; }
 	void setDisplayPositionX(int x) { displayPositionX = x; }

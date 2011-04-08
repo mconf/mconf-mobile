@@ -27,8 +27,23 @@ jint Java_org_mconf_bbb_android_video_VideoSurface_enqueueFrame(JNIEnv *env, job
 
 jint Java_org_mconf_bbb_android_video_VideoRenderer_nativeRender(JNIEnv *env, jobject obj) {
 	if (videoDrawer)
-		videoDrawer->renderFrame();
-	return 0;
+		return videoDrawer->renderFrame();
+	else
+		return 0;
+}
+
+jint Java_org_mconf_bbb_android_video_VideoRenderer_getVideoWidth(JNIEnv *env, jobject obj) {
+	if (videoDrawer)
+		return videoDrawer->getVideoW();
+	else
+		return 1;
+}
+
+jint Java_org_mconf_bbb_android_video_VideoRenderer_getVideoHeight(JNIEnv *env, jobject obj) {
+	if (videoDrawer)
+		return videoDrawer->getVideoH();
+	else
+		return 1;
 }
 
 jint Java_org_mconf_bbb_android_video_VideoSurface_endDrawer(JNIEnv *env, jobject obj) {

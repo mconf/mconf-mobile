@@ -27,24 +27,28 @@ import org.slf4j.LoggerFactory;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
+import android.view.Window;
 import android.view.ViewGroup.LayoutParams;
 
 public class VideoDialog extends Dialog {	
 	private static final Logger log = LoggerFactory.getLogger(VideoDialog.class);
+	private static final float defaultAspectRatio = 4 / (float) 3;
+	
 	private VideoSurface videoWindow;
 	
 	public VideoDialog(Context context, int userId, String name) {
 		super(context);
 		
-//		requestWindowFeature(Window.FEATURE_NO_TITLE); //Removes the title from the Dialog
+		requestWindowFeature(Window.FEATURE_NO_TITLE); //Removes the title from the Dialog
 		setContentView(R.layout.video_window);
 		
 		android.view.WindowManager.LayoutParams windowAttributes = getWindow().getAttributes();
 		
 		//Changes the place of the Dialog
-		windowAttributes.gravity = Gravity.BOTTOM; //title shows ok
-//		windowAttributes.gravity = Gravity.CENTER; //title shows cutted
+//		windowAttributes.gravity = Gravity.BOTTOM; //title shows ok
+		windowAttributes.gravity = Gravity.CENTER; //title shows cutted
 //		windowAttributes.gravity = Gravity.FILL; //title shows weird. The Dialog appears at the top left	
 //		windowAttributes.gravity = Gravity.LEFT; //title shows cutted	
 //		windowAttributes.gravity = Gravity.TOP; //title shows cutted	
@@ -53,14 +57,29 @@ public class VideoDialog extends Dialog {
 //		windowAttributes.flags = android.view.WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE; //Makes it possible to interact with the window behind, but the video should be closed properly when the screen changes
 //		windowAttributes.flags = android.view.WindowManager.LayoutParams.FLAG_SCALED; //Removes the title from the dialog and removes the border also
 		 
-		getWindow().setAttributes(windowAttributes);			
+		getWindow().setAttributes(windowAttributes);
 		
 		videoWindow = (VideoSurface) findViewById(R.id.video_window);
 		LayoutParams layoutParams = videoWindow.getLayoutParams();
-		layoutParams.height = 240;
-		layoutParams.width = 320;				
+		
+		DisplayMetrics metrics = VideoSurface.getDisplayMetrics(getContext());
+		metrics.widthPixels -= 30;
+		metrics.heightPixels -= 30;
+		float displayAspectRatio = metrics.widthPixels / (float) metrics.heightPixels;
+		
+		int h = 0, w = 0;
+		if (displayAspectRatio < defaultAspectRatio) {
+			w = metrics.widthPixels;
+			h = (int) (w / defaultAspectRatio);
+		} else {
+			h = metrics.heightPixels;
+			w = (int) (h * defaultAspectRatio);
+		}
+		
+		layoutParams.height = h;
+		layoutParams.width = w;
 		videoWindow.setLayoutParams(layoutParams);
-		videoWindow.start(userId, 320, 240);
+		videoWindow.start(userId, w, h);
 		
 		setTitle(name);
 		setCancelable(true);		

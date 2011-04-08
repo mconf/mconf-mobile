@@ -45,7 +45,7 @@ class VideoSurface extends GLSurfaceView {
        	
         initDrawer(metrics.widthPixels, metrics.heightPixels, displayAreaW, displayAreaH);
 
-        mRenderer = new VideoRenderer();
+        mRenderer = new VideoRenderer(this);
 		setRenderer(mRenderer);
 
 		videoHandler = new VideoHandler(userId, Client.bbb);
@@ -63,9 +63,8 @@ class VideoSurface extends GLSurfaceView {
 		endDrawer();
 	}
 	
-	private DisplayMetrics getDisplayMetrics(Context context){
-		DisplayMetrics metrics = null;
-		metrics = new DisplayMetrics();
+	static public DisplayMetrics getDisplayMetrics(Context context){
+		DisplayMetrics metrics = new DisplayMetrics();
 		Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         display.getMetrics(metrics);
         return metrics;
