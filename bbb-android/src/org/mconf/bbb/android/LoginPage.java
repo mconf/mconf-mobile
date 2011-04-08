@@ -168,7 +168,7 @@ public class LoginPage extends Activity {
 			public void onClick(View viewParam)
 			{
 				EditText usernameEditText = (EditText) findViewById(R.id.login_edittext_name);
-				final String username = usernameEditText.getText().toString();
+				username = usernameEditText.getText().toString();
 
 				if (username.length() < 1) {
 					Toast.makeText(getApplicationContext(), R.string.login_empty_name, Toast.LENGTH_SHORT).show();  
@@ -395,6 +395,7 @@ public class LoginPage extends Activity {
 
 		Intent myIntent = new Intent(getApplicationContext(), Client.class);
 		myIntent.putExtra("username", username);
+		myIntent.putExtra("meetingName", meeting);
 		startActivity(myIntent);
 
 		finish();

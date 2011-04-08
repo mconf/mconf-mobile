@@ -47,6 +47,10 @@
 	<string name="connection_refused">Connection refused</string>
 	<string name="no_options">No options avaiable</string>
 	<string name="not_moderator">You don\'t have enough permission</string>
+	<string name="cant_reconnect">Can\'t reconnect. Check your internet connection</string>
+	<string name="reconnected">Successfully reconnected</string>
+	<string name="reconnect">Reconnect</string>
+	<string name="no_connection">No internet connection</string>
 	<string name="about">
 BBB-Android is an Android implementation of the BigBlueButton client.
 \n

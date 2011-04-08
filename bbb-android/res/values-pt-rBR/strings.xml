@@ -47,6 +47,8 @@
 	<string name="not_moderator">Sem permissão para executar essa operação</string>
 	<string name="lost_connection">Conexão perdida</string>
 	<string name="attempting_to_reconnect">Reconectando...</string>
+	<string name="cant_reconnect">Impossível reconectar. Verifique sua conexão</string>
+	<string name="reconnected">Reconectado com sucesso</string>
 	<string name="about">
 BBB-Android é uma implementação do cliente BigBlueButton para Android.
 \n

@@ -39,6 +39,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
@@ -203,6 +204,8 @@ public class PrivateChat extends Activity{
 	private Animation RightIn;
 	private Animation RightOut;
 	private ViewFlipper flipper;
+	
+	private int orientation;
 
 	public static boolean hasUserOnPrivateChat(int userId)
 	{
@@ -244,14 +247,30 @@ public class PrivateChat extends Activity{
 	};
 
 
+
+
 	private int addView() {
 		int index = flipper.getChildCount();
 		flipper.addView(getView(), index);
 		return index;
 	}
+	
+	private void changeView(int index){
+		flipper.addView(getView(), index);
+	}
 
+	
 	private View getView() {
-		return getLayoutInflater().inflate(R.layout.chat, null);        
+		if(orientation == Configuration.ORIENTATION_PORTRAIT)
+		{
+			log.debug("portrait");
+			return getLayoutInflater().inflate(R.layout.chat, null);   
+		}
+		else
+		{
+			log.debug("landscape");
+			return getLayoutInflater().inflate(R.layout.chat_landscape, null);
+		}
 	}
 	
 	//remove all the participants on the chat, when the aplication is closed
@@ -331,7 +350,7 @@ public class PrivateChat extends Activity{
 				return gestureDetector.onTouchEvent(event);
 			}
 		});
-		chatListView.setAdapter(p.getChatAdapter());
+		chatListView.setAdapter(p.getChatAdapter()); 
 		Client.bbb.addListener(p);
 		Button send = (Button) flipper.getChildAt(p.getViewId()).findViewById(R.id.sendMessage);
 		send.setOnClickListener(new OnClickListener() {
@@ -362,6 +381,8 @@ public class PrivateChat extends Activity{
 		if (p == null)
 			p = createParticipant(userId, username, notified);
 
+		else
+			changeView(flipper.indexOfChild(flipper.findViewById(p.getViewId())));
 		log.debug("displaying view of userId=" + userId + " and username=" + username);
 
 		flipper.setDisplayedChild(p.getViewId());
@@ -374,7 +395,9 @@ public class PrivateChat extends Activity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.private_chat);
 
-
+		
+		Configuration config = getResources().getConfiguration();
+		orientation = config.orientation;
 		log.debug("ON CREATE");
 
 		flipper = (ViewFlipper) findViewById(R.id.manyPages); 
@@ -526,6 +549,39 @@ public class PrivateChat extends Activity{
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	public void onConfigurationChanged(final Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		orientation = newConfig.orientation;
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				if(newConfig.orientation==Configuration.ORIENTATION_PORTRAIT)
+					setContentView(R.layout.private_chat);
+				else
+					setContentView(R.layout.private_chat_landscape);
+				
+
+				displayView(getIntent().getExtras());
+				
+				
+				//gesture detector, to change the participant shown
+				gestureDetector = new GestureDetector(new MyGestureDetector());
+				gestureListener = new View.OnTouchListener() {
+					public boolean onTouch(View v, MotionEvent event) {
+						return gestureDetector.onTouchEvent(event);
+					}
+				};
+				registerFinishedReceiver();
+				registerMoveToBackReceiver();
+				registerKickedUser();
+			}
+			
+		
+		});
+		
 	}
 
 }

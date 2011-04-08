@@ -55,7 +55,8 @@ public class ContactAdapter extends BaseAdapter {
 
 	public void addSection(IParticipant participant) {
 		Contact contact = new Contact(participant);
-		listContact.add(contact);
+		if(getUserById(contact.getUserId())==null)//só adiciona se o usuário já não está na lista
+			listContact.add(contact);
 	}
 
 	public void removeSection(IParticipant participant){

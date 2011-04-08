@@ -22,6 +22,7 @@
 package org.mconf.bbb.android;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.mconf.bbb.chat.ChatMessage;
@@ -108,6 +109,11 @@ public class ChatAdapter extends BaseAdapter {
 
 	public void remove(ChatMessage message) {
 		list.remove(message);
+	}
+
+	public void clearList() {
+		list.clear();
+
 	}
 
 }

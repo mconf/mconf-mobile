@@ -21,9 +21,14 @@
 
 package org.mconf.bbb.android;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.android.voip.VoiceModule;
+import org.mconf.bbb.api.Meeting;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.listeners.IListener;
 import org.mconf.bbb.listeners.Listener;
@@ -33,20 +38,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.media.AudioManager;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -69,11 +79,13 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.SlidingDrawer;
+import android.widget.Spinner;
 import android.widget.SlidingDrawer.OnDrawerCloseListener;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SlidingDrawer.OnDrawerOpenListener;
+import android.net.NetworkInfo;
 
 
 public class Client extends Activity implements IBigBlueButtonClientListener {
@@ -88,14 +100,16 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static final int MENU_SPEAKER = Menu.FIRST + 6;
 	public static final int MENU_AUDIO_CONFIG = Menu.FIRST + 7;
 	public static final int MENU_ABOUT = Menu.FIRST + 8;
-	
+	public static final int MENU_DISCONNECT = Menu.FIRST + 9;
+	public static final int MENU_RECONNECT = Menu.FIRST + 10;
+
 	public static final int KICK_USER = Menu.FIRST;
 	private static final int MUTE_LISTENER = Menu.FIRST+1;
 	public static final int SET_PRESENTER = Menu.FIRST+2;
 	private static final int KICK_LISTENER = Menu.FIRST+3;
 	private static final int OPEN_PRIVATE_CHAT = Menu.FIRST+4;
 
-	
+
 	public static final int CHAT_NOTIFICATION_ID = 77000;
 
 	public static final String ACTION_OPEN_SLIDER = "org.mconf.bbb.android.Client.OPEN_SLIDER";
@@ -105,7 +119,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 	public static final int ROW_HEIGHT = 42;
 
-	
+	public static final int ID_DIALOG_RECONNECT = 111000;
+
 
 
 	//change the contact status qhen the private chat is closed
@@ -128,7 +143,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	//BBB elements
 	public static BigBlueButtonClient bbb = new BigBlueButtonClient();
 	private VoiceModule voice;
-	
+
 	//UI elements
 	protected ContactAdapter contactAdapter;
 	protected ChatAdapter chatAdapter;
@@ -137,13 +152,15 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	CustomListview listenerListView;
 	ListView chatListView;
 	protected SlidingDrawer slidingDrawer;
-	
-	
+
+
+	protected String meetingName;
 	protected String myusername;
 	private static int lastReadNum=-1; 
 	private int addedMessages=0;
+	private boolean connected = true;
+	private boolean dialogShown = false;
 
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -187,16 +204,17 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 			notificationManager.cancel(CHAT_NOTIFICATION_ID);
 		}
-		
+
 
 
 
 
 		Bundle extras = getIntent().getExtras();
 		myusername = extras.getString("username");
+		meetingName=extras.getString("meetingName");
 		Toast.makeText(getApplicationContext(),getResources().getString(R.string.welcome) + ", " + myusername, Toast.LENGTH_SHORT).show(); 
 
-		
+
 		//UI elements registration and setting of adapters
 		chatAdapter = new ChatAdapter(this);
 		chatListView = (ListView)findViewById(R.id.messages);
@@ -223,16 +241,16 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		bbb.addListener(this);
 		bbb.connectBigBlueButton();
 	}
- 
+
 	//create context menu for the listeners and contacts list
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-		
+
 		boolean moderator = bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator();
-		
+
 		if(v.getId()==R.id.contacts_list) {
 			final Contact contact = (Contact) contactAdapter.getItem(info.position);
 			if (contact.getUserId() != bbb.getMyUserId())
@@ -245,13 +263,13 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			}
 		} else {
 			final Listener listener = (Listener) listenerAdapter.getItem(info.position);
-			
+
 			if (moderator) {
 				menu.add(0, KICK_LISTENER, 0, R.string.kick);
 				menu.add(0, MUTE_LISTENER, 0, listener.isMuted()? R.string.unmute: R.string.mute);
 			}
 		}		
-		
+
 		if (menu.size() == 0)
 			Toast.makeText(getApplicationContext(),getResources().getString(R.string.no_options), Toast.LENGTH_SHORT).show(); 
 	}
@@ -361,6 +379,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, R.string.logout).setIcon(android.R.drawable.ic_menu_revert);
 		menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 		menu.add(Menu.NONE, MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
+		//test purposes only
+		menu.add(Menu.NONE, MENU_DISCONNECT, Menu.NONE, "disconnect").setIcon(android.R.drawable.ic_dialog_alert);
+		if(!isConnected())
+			menu.add(Menu.NONE, MENU_RECONNECT, Menu.NONE, R.string.reconnect).setIcon(android.R.drawable.ic_dialog_info);
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -415,6 +437,28 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		case MENU_AUDIO_CONFIG:
 			new AudioControlDialog(this).show();
 			return true;
+		case MENU_DISCONNECT:
+			bbb.disconnect();
+			Toast.makeText(getApplicationContext(), "disconnected", Toast.LENGTH_SHORT).show();
+			return true;
+		case MENU_RECONNECT:
+			if(!isConnected())
+			{
+				ConnectivityManager connectivityManager =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+				if(connectivityManager.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED
+						||  connectivityManager.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED)
+				{
+					boolean moderator= bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator();
+					Client.bbb.getJoinService().join(meetingName, myusername, moderator);
+					boolean connected = bbb.connectBigBlueButton();
+					if(connected)
+						Toast.makeText(getApplicationContext(), R.string.reconnected, Toast.LENGTH_SHORT).show();
+					else
+						Toast.makeText(getApplicationContext(), R.string.cant_reconnect, Toast.LENGTH_SHORT).show();
+				}
+				else
+					Toast.makeText(getApplicationContext(), R.string.no_connection, Toast.LENGTH_SHORT).show();
+			}
 		default:			
 			return super.onOptionsItemSelected(item);
 		}
@@ -442,19 +486,97 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	@Override
 	public void onConnected() {
 		// TODO Auto-generated method stub
+		log.debug("connected");
+		setConnected(true);
+		chatAdapter.clearList();
+	}
+
+	//created this coded based on this http://bend-ing.blogspot.com/2008/11/properly-handle-progress-dialog-in.html
+	@Override 
+	public void onDisconnected() {
+		IParticipant participant = contactAdapter.getUserById(bbb.getMyUserId());
+		contactAdapter.removeSection(participant);
+		setConnected(false);
+		log.debug("onDisconnected");
+		bbb.getJoinService().resetJoinedMeeting();
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				log.debug("dialog shown");
+				showDialog(ID_DIALOG_RECONNECT);
+				setDialogShown(true);
+			}
+		});
+		final boolean moderator= bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {	
+				ConnectivityManager connectivityManager =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+				if(connectivityManager.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED 
+						||  connectivityManager.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED)
+				{
+					log.debug("no internet connection");
+					while(!isDialogShown());
+					dismissDialog(Client.ID_DIALOG_RECONNECT); //exception:no dialog with this id was shown
+					setDialogShown(false);
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							Toast.makeText(getApplicationContext(), R.string.cant_reconnect, Toast.LENGTH_SHORT).show();
+						}
+					});
+					log.error("Can't reconnect. Check internet connection");
+					return;
+				}
+
+				//only tries to reconnect if there the phone is connected to the internet
+				Client.bbb.getJoinService().join(meetingName, myusername, moderator);
+				boolean connected = bbb.connectBigBlueButton();
+				if (!connected) { 
+					dismissDialog(Client.ID_DIALOG_RECONNECT);
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							Toast.makeText(getApplicationContext(), R.string.cant_reconnect, Toast.LENGTH_SHORT).show();
+						}
+					});
+					log.error("Can't reconnect. Check internet connection");
+					return;
+				} 
+				else{
+					log.error("successfully reconnected");
+					dismissDialog(Client.ID_DIALOG_RECONNECT);
+					runOnUiThread(new Runnable() { 
+						@Override
+						public void run() {
+
+							Toast.makeText(getApplicationContext(), R.string.reconnected, Toast.LENGTH_SHORT).show();
+						}
+					});
+
+					return;
+				}
+
+			}
+		}).start();
 
 	}
-	
+
+	//so the app won't crash if the phone is rotated while the dialog is being shown
 	@Override
-	public void onDisconnected() {
-//		final ProgressDialog reconnectDialog = new ProgressDialog(this);
-//		reconnectDialog.setTitle(R.string.lost_connection);
-//		reconnectDialog.setMessage(getResources().getString(R.string.attempting_to_reconnect));
-//		boolean moderator= bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isModerator();
-//		String meetingName = bbb.getJoinService().getJoinedMeeting().getConfname();
-//		Client.bbb.getJoinService().join(meetingName, myusername, moderator);
+	protected Dialog onCreateDialog(int id) {
+		if(id == ID_DIALOG_RECONNECT){
+			final ProgressDialog reconnectDialog = new ProgressDialog(this);
+			reconnectDialog.setTitle(R.string.lost_connection);
+			reconnectDialog.setMessage(getResources().getString(R.string.attempting_to_reconnect));
+			return reconnectDialog;
+		}
+
+		return super.onCreateDialog(id);
 	}
-	
+
+
+
 	@Override
 	public void onKickUserCallback() {
 		// TODO Auto-generated method stub
@@ -516,13 +638,13 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 		if(intent.getAction()==null)
 			return;
-		
+
 		if (intent.getAction().equals(BACK_TO_CLIENT)) 
 		{
 			for(int i=0; i<contactAdapter.getCount(); i++)
 				if(contactAdapter.getChatStatus(i)==Contact.CONTACT_ON_PRIVATE_MESSAGE)
 					((Contact) contactAdapter.getItem(i)).setChatStatus(Contact.CONTACT_NORMAL);
-			
+
 			contactAdapter.notifyDataSetChanged();
 		}
 		else if (intent.getAction().equals(ACTION_OPEN_SLIDER)) {
@@ -532,7 +654,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				openedDrawer();
 				Button handler = (Button)findViewById(R.id.handle);
 				handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background));
-//				handler.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.title_background_onfocus));
+				//				handler.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.title_background_onfocus));
 			}
 
 		}
@@ -720,7 +842,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		});
 	}
 
-//calculates the size of the contacts and listeners lists
+	//calculates the size of the contacts and listeners lists
 	public void setListHeight(CustomListview listView) {
 
 		int totalHeight = 0;
@@ -792,7 +914,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				registerForContextMenu(listenerListView);
 
 				initializeListeners();
-				
+
 				//calculates the height os both lists
 				setListHeight(listenerListView);
 				setListHeight(contactListView);
@@ -808,7 +930,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		ScrollView scrollView = (ScrollView)findViewById(R.id.Scroll);
 		// Hide the Scollbar
 		scrollView.setVerticalScrollBarEnabled(false);
-		
+
 		slidingDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
 
 			@Override
@@ -820,7 +942,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				Button handler = (Button)findViewById(R.id.handle);
 				//and the "message received" icon is off too
 				handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background_down));
-//				handler.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.title_background_onfocus));
+				//				handler.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.title_background_onfocus));
 				handler.setGravity(Gravity.CENTER);
 				lastReadNum = chatAdapter.getCount();
 				openedDrawer(); 
@@ -872,6 +994,22 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 		IntentFilter filter = new IntentFilter(PrivateChat.CHAT_CLOSED); 
 		registerReceiver(chatClosed, filter); 
+	}
+
+	public void setConnected(boolean connected) {
+		this.connected = connected;
+	}
+
+	public boolean isConnected() {
+		return connected;
+	}
+
+	public void setDialogShown(boolean dialogShown) {
+		this.dialogShown = dialogShown;
+	}
+
+	public boolean isDialogShown() {
+		return dialogShown;
 	}
 
 

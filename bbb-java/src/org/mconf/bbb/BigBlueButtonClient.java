@@ -61,6 +61,11 @@ public class BigBlueButtonClient {
     	log.info("My userID is {}", myUserId);
 	}
 
+	public MainRtmpConnection getConnection()
+	{
+		return mainConnection;
+	}
+	
 	public int getMyUserId() {
 		return myUserId;
 	}
@@ -107,7 +112,8 @@ public class BigBlueButtonClient {
 		return joinService;
 	}
 
-	public void connectBigBlueButton() {
+	public boolean connectBigBlueButton() {
+		
 		ClientOptions opt = new ClientOptions();
 		opt.setClientVersionToUse(Utils.fromHex("00000000"));
 		opt.setHost(joinService.getServerUrl().toLowerCase().replace("http://", ""));
@@ -115,7 +121,7 @@ public class BigBlueButtonClient {
 		log.debug(opt.toString());
 		
 		mainConnection = new MainRtmpConnection(opt, this);
-		mainConnection.connect();
+		return mainConnection.connect();
 	}
 	
 	@SuppressWarnings("unused")
@@ -126,11 +132,7 @@ public class BigBlueButtonClient {
 	public void disconnect() {
 		mainConnection.disconnect();
 	}
-	
-//	public MainRtmpConnection getHandler() {
-//		return mainConnection;
-//	}
-	
+
 	public Collection<Participant> getParticipants() {
 		return getUsersModule().getParticipants().values();
 	}

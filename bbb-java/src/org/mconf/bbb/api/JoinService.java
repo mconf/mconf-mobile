@@ -19,6 +19,11 @@ public class JoinService {
 	public JoinedMeeting getJoinedMeeting() {
 		return joinedMeeting;
 	}
+	
+	public void resetJoinedMeeting()
+	{
+		joinedMeeting=null;
+	}
 
 	public List<Meeting> getMeetings() {
 		return meetings.getMeetings();

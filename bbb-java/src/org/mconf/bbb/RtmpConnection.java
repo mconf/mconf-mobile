@@ -26,15 +26,20 @@ public abstract class RtmpConnection extends ClientHandler {
 	private ClientBootstrap bootstrap;
 	private ChannelFuture future;
 	
-	public void connect() {  
+	public boolean connect() {  
         bootstrap = getBootstrap(Executors.newCachedThreadPool());
         future = bootstrap.connect(new InetSocketAddress(options.getHost(), options.getPort()));
         future.awaitUninterruptibly();
         if(!future.isSuccess()) {
             future.getCause().printStackTrace();
             log.error("error creating client connection: {}", future.getCause().getMessage());
+            return false;
         }
+        else
+        	return true;
     }
+	
+
 	
 	public void disconnect() {
 		future.getChannel().close();

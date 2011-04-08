@@ -135,12 +135,13 @@ public class MainRtmpConnection extends RtmpConnection {
 	public void channelDisconnected(ChannelHandlerContext ctx,
 			ChannelStateEvent e) throws Exception {
 		super.channelDisconnected(ctx, e);
-		
+		log.debug("Rtmp Channel Disconnected");
 		for (IBigBlueButtonClientListener l : context.getListeners()) {
 			l.onDisconnected();
 		}
 	}
 	
+
     @SuppressWarnings("unchecked")
 	public String connectGetCode(Command command) {
     	return ((Map<String, Object>) command.getArg(0)).get("code").toString();
