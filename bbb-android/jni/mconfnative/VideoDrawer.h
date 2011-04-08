@@ -3,6 +3,10 @@
 
 //#include <jni.h>
 
+#include <android/log.h>
+#include <GLES/gl.h>
+#include <GLES/glext.h>
+
 #include "mconfnative/opengl/opengl.h"
 #include "iva/decode/DecodeVideo.h"
 
@@ -16,15 +20,20 @@ private:
 		* decoded_video;
 	queue_consumer_t* consumer;
 
-	int screenWidth, screenHeight;
+	int screenW, screenH,
+		videoW, videoH,
+		displayAreaW, displayAreaH,
+		displayPositionX, displayPositionY;
 	bool firstFrame, stopThread;
 
 public:
 	VideoDrawer(int screenWidth, int screenHeight) {
 		Log("VideoDrawer() begin");
 
-		this->screenWidth = screenWidth;
-		this->screenHeight = screenHeight;
+		screenW = screenWidth;
+		screenH = screenHeight;
+		displayPositionX = 0;
+		displayPositionY = 0;
 
 		firstFrame = true;
 		stopThread = false;
@@ -73,65 +82,94 @@ public:
 	        Log("enqueueFrame() fail");
 	        return;
 	    }
-	    Log("enqueueFrame() done");
+//	    Log("enqueueFrame() done");
+	}
+
+	static uint32_t next_power_of_two(uint32_t k) {
+		if (k == 0)
+				return 1;
+		k--;
+		for (int i=1; i < 32; i<<=1)
+				k = k | k >> i;
+		return k+1;
 	}
 
 	void renderFrame() {
-		Log("threadFunction() begin");
+//		Log("threadFunction() begin");
 
 		uint32_t timestamp, bufferSize;
 		uint8_t* buffer;
 		QueueExtraData* extraData;
 
-		Log("threadFunction() trying to dequeue");
+//		Log("threadFunction() trying to dequeue");
 		while (!stopThread) {
 			if (queue_dequeueCond(consumer, &buffer, &bufferSize, &timestamp, &extraData) == E_OK) {
 				break;
 			}
 		}
 		if (stopThread) {
-			Log("renderFrame() returning");
+//			Log("renderFrame() returning");
 			return;
 		}
 
-		Log("threadFunction() dequeued");
+//		Log("threadFunction() dequeued");
 
 		QueueExtraDataVideo* extraDataVideo;
 		extraDataVideo = (QueueExtraDataVideo*) extraData;
-		LogData log;
-		int w = extraDataVideo->getWidth();
-		int h = extraDataVideo->getHeight();
-		log << "video resolution = " << w << " " << h << endl;
-		log.push();
+//		LogData log;
+		videoW = extraDataVideo->getWidth();
+		videoH = extraDataVideo->getHeight();
+//		log << "video resolution = " << w << " " << h << endl;
+//		log.push();
 
 		if (firstFrame) {
-			Log("threadFunction() firstFrame");
-			initGL(w, h);
-			Log("threadFunction() gl initialized");
+//			Log("threadFunction() firstFrame");
+			initGL(videoW, videoH);
+//			Log("threadFunction() gl initialized");
 
-			int tmpW = next_power_of_2(screenWidth);
-			int tmpH = next_power_of_2(screenHeight);
+			int tmpW = next_power_of_two(videoW);
+			int tmpH = next_power_of_two(videoH);
 			uint32_t tmpSize = avpicture_get_size(PIX_FMT_RGB565LE, tmpW, tmpH);
 			uint8_t* tmpBuffer = (uint8_t*) malloc(tmpSize);
 			memset(tmpBuffer, '\0', tmpSize);
-			Log("threadFunction() applying first texture");
+//			Log("threadFunction() applying first texture");
 			apply_first_texture(tmpBuffer, tmpW, tmpH);
-			Log("threadFunction() first texture applied");
+//			Log("threadFunction() first texture applied");
 			free(tmpBuffer);
-			Log("threadFunction() buffer released");
+//			Log("threadFunction() buffer released");
 
 			firstFrame = false;
+
+			LogData log;
+			log << "video resolution: " << videoW << "x" << videoH << endl;
+			log << "first texture resolution: " << tmpW << "x" << tmpH << endl;
+			log << "first texture buffer size: " << tmpSize << endl;
+			log.push();
 		}
 
-		Log("threadFunction() updating frame begin");
-		update_frame(buffer, w, h, (screenWidth - w) / 2, (screenHeight - h) / 2);
-		Log("threadFunction() updating frame end");
+//		Log("threadFunction() updating frame begin");
+
+		glClear(GL_COLOR_BUFFER_BIT);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, videoW, videoH, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, buffer);
+		glDrawTexiOES(displayPositionX, displayPositionY, 0, displayAreaW, displayAreaH);
+		CHECK_GL_ERROR();
+
+//		Log("threadFunction() updating frame end");
 
 		queue_free(consumer);
-		Log("threadFunction() consumer free");
+//		Log("threadFunction() consumer free");
 
-		Log("threadFunction() end");
+//		Log("threadFunction() end");
 	}
+
+	int getVideoW() { return videoW; }
+	int getVideoH() { return videoH; }
+	void setDisplayAreaW(int w) { displayAreaW = w; }
+	void setDisplayAreaH(int h) { displayAreaH = h; }
+	void setDisplayPositionX(int x) { displayPositionX = x; }
+	void setDisplayPositionY(int y) { displayPositionY = y; }
+	void setScreenW(int w) { screenW = w; }
+	void setScreenH(int h) { screenH = h; }
 };
 
 }

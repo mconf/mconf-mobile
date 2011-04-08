@@ -7,8 +7,12 @@ VideoDrawer* videoDrawer = NULL;
 extern "C"{
 #endif
 
-jint Java_org_mconf_bbb_android_video_VideoSurface_initDrawer(JNIEnv *env, jobject obj, jint width, jint height) {
-	videoDrawer = new VideoDrawer(width, height);
+jint Java_org_mconf_bbb_android_video_VideoSurface_initDrawer(JNIEnv *env, jobject obj, jint screenW, jint screenH, jint displayAreaW, jint displayAreaH) {
+	if (!videoDrawer) {
+		videoDrawer = new VideoDrawer(screenW, screenH);
+		videoDrawer->setDisplayAreaW(displayAreaW);
+		videoDrawer->setDisplayAreaH(displayAreaH);
+	}
 	return 0;
 }
 
@@ -28,8 +32,10 @@ jint Java_org_mconf_bbb_android_video_VideoRenderer_nativeRender(JNIEnv *env, jo
 }
 
 jint Java_org_mconf_bbb_android_video_VideoSurface_endDrawer(JNIEnv *env, jobject obj) {
-	if (videoDrawer)
+	if (videoDrawer) {
 		delete videoDrawer;
+		videoDrawer = NULL;
+	}
 	return 0;
 }
 

@@ -8,13 +8,6 @@ void apply_first_texture(uint8_t* pixels, int w, int h){
 	CHECK_GL_ERROR();
 }
 
-void update_frame(uint8_t* pixels, int w, int h, int dw, int dh){
-	glClear(GL_COLOR_BUFFER_BIT);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGB, ARRAY_DATA_TYPE, pixels);
-	glDrawTexiOES(dw, dh, 0, w, h);
-	CHECK_GL_ERROR();
-}
-
 void checkGLVersion(){
 	__android_log_print(ANDROID_LOG_DEBUG,  "(opengl.h)checkGLVersion", "GL_VENDOR = %s\n", glGetString(GL_VENDOR));
 	__android_log_print(ANDROID_LOG_DEBUG,  "(opengl.h)checkGLVersion", "GL_RENDERER = %s\n", glGetString(GL_RENDERER));
@@ -36,5 +29,5 @@ int initGL(int w_orig, int h_orig)
 	glEnable(GL_TEXTURE_2D);
 	glColor4f(1,1,1,1);
 	CHECK_GL_ERROR();
-	return 1;
+	return 0;
 }

@@ -12,22 +12,16 @@ import org.slf4j.LoggerFactory;
 
 import android.content.SyncResult;
 import android.opengl.GLSurfaceView;
+import android.view.ViewGroup.LayoutParams;
 
 class VideoRenderer implements GLSurfaceView.Renderer {
 	
 	private static final Logger log = LoggerFactory.getLogger(VideoRenderer.class);
-//	private int width,height;
 		
 	public VideoRenderer(){
 		super();
-//		width = w;
-//		height = h;
 		
 	}
-	
-//	public VideoHandler getVideoHandler() {
-//		return videoHandler;
-//	}
 	
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 //    	initDrawer(width, height);
@@ -40,9 +34,12 @@ class VideoRenderer implements GLSurfaceView.Renderer {
     }
     
     public void onDrawFrame(GL10 gl) {
-    	//synchronized (this) {
-        	nativeRender();
-		//}
+    	if (nativeRender() == 0) {
+//    		LayoutParams layoutParams = context.getLayoutParams();
+//    		layoutParams.height = 240;
+//    		layoutParams.width = 320;
+//    		context.setLayoutParams(layoutParams);
+    	}
     }
       
     private native int nativeRender();

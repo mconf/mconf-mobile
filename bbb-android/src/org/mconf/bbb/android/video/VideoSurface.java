@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
+import android.view.ViewGroup.LayoutParams;
 
 class VideoSurface extends GLSurfaceView {
 	private class VideoHandler extends IVideoListener {
@@ -35,17 +36,17 @@ class VideoSurface extends GLSurfaceView {
 	
 	public VideoSurface(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		
 	}
 	
-	public void start(int userId) {
+	public void start(int userId, int displayAreaW, int displayAreaH) {
 		DisplayMetrics metrics = null;
 		metrics = getDisplayMetrics(getContext());
 		log.debug("Maximum display resolution: {} X {}\n", metrics.widthPixels, metrics.heightPixels);
 		 
 //        changeOrientation(metrics.widthPixels, metrics.heightPixels);  	
        	
-        initDrawer(metrics.widthPixels, metrics.heightPixels);
+        initDrawer(metrics.widthPixels, metrics.heightPixels, displayAreaW, displayAreaH);
+
         mRenderer = new VideoRenderer();
 		setRenderer(mRenderer);
 
@@ -91,7 +92,7 @@ class VideoSurface extends GLSurfaceView {
     	log.debug("Video native libraries loaded");    
     }
 	
-	private native int initDrawer(int width, int heigth);
+	private native int initDrawer(int screenW, int screenH, int displayAreaW, int displayAreaH);
 	private native int endDrawer();
     private native int enqueueFrame(byte[] data, int length);
 	

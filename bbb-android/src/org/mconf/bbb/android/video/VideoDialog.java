@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 
 public class VideoDialog extends Dialog {	
 	private static final Logger log = LoggerFactory.getLogger(VideoDialog.class);
@@ -38,11 +38,20 @@ public class VideoDialog extends Dialog {
 		
 		setContentView(R.layout.video_window);
 		
+		android.view.WindowManager.LayoutParams windowAttributes = getWindow().getAttributes();
+//		windowAttributes.screenBrightness = 1;
+	    windowAttributes.flags = android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+		getWindow().setAttributes(windowAttributes);
+		
 		videoWindow = (VideoSurface) findViewById(R.id.video_window);
-		videoWindow.start(userId);
+		LayoutParams layoutParams = videoWindow.getLayoutParams();
+		layoutParams.height = 240;
+		layoutParams.width = 320;				
+		videoWindow.setLayoutParams(layoutParams);
+		videoWindow.start(userId, 320, 240);
 
-		setTitle(R.string.menu_about); //TODO Gian set the title of the video
-		setCancelable(true); //TODO Gian see what is this		
+		setTitle("Video");
+		setCancelable(true);
 	}
 	
 	@Override
