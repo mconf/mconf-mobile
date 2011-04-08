@@ -3,16 +3,10 @@ package org.mconf.bbb.android.video;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import org.mconf.bbb.BigBlueButtonClient;
-import org.mconf.bbb.android.Client;
-import org.mconf.bbb.video.IVideoListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-import android.content.SyncResult;
 import android.opengl.GLSurfaceView;
-import android.view.ViewGroup.LayoutParams;
 
 class VideoRenderer implements GLSurfaceView.Renderer {
 	

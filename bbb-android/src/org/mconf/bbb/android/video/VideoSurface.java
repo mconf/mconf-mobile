@@ -12,7 +12,6 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
-import android.view.ViewGroup.LayoutParams;
 
 class VideoSurface extends GLSurfaceView {
 	private class VideoHandler extends IVideoListener {
@@ -28,7 +27,6 @@ class VideoSurface extends GLSurfaceView {
 		
 	}
 	
-
 	
 	private static final Logger log = LoggerFactory.getLogger(VideoSurface.class);
 	private VideoRenderer mRenderer;		
@@ -57,7 +55,6 @@ class VideoSurface extends GLSurfaceView {
 	
 	@Override
 	public void onPause() {
-		// TODO Auto-generated method stub
 		super.onPause();
 		
 		Client.bbb.removeVideoListener(videoHandler);
@@ -74,9 +71,7 @@ class VideoSurface extends GLSurfaceView {
         return metrics;
 	}
 	
-	//TODO Gian: Close the video
 //	native void changeOrientation(int w,int h);	
-//	native void enqueueEncoded(byte[] Data, int length);
 	
 	static {
     	System.loadLibrary("avutil");

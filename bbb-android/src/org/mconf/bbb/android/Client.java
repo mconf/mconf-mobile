@@ -29,6 +29,7 @@ import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.listeners.IListener;
 import org.mconf.bbb.listeners.Listener;
 import org.mconf.bbb.users.IParticipant;
+import org.mconf.bbb.users.Status;
 import org.sipdroid.sipua.ui.Receiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -298,7 +299,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			startPrivateChat(contact);
 			return true;
 		case SHOW_VIDEO:
-    		new VideoDialog(this, contact.getUserId()).show();
+    		new VideoDialog(this, contact.getUserId(), contact.getName()).show();		
 			return true;
 		}
 		return super.onContextItemSelected(item);
