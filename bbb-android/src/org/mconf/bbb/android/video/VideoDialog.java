@@ -63,8 +63,8 @@ public class VideoDialog extends Dialog {
 		LayoutParams layoutParams = videoWindow.getLayoutParams();
 		
 		DisplayMetrics metrics = VideoSurface.getDisplayMetrics(getContext());
-		metrics.widthPixels -= 30;
-		metrics.heightPixels -= 30;
+		metrics.widthPixels -= 40;
+		metrics.heightPixels -= 40;
 		float displayAspectRatio = metrics.widthPixels / (float) metrics.heightPixels;
 		
 		int h = 0, w = 0;

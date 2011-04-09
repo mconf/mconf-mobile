@@ -7,7 +7,6 @@ include $(CLEAR_VARS)
 LOCAL_MODULE    := mconfnative
 
 LOCAL_SRC_FILES := \
-				   mconfnative/opengl/opengl.cpp \
 				   mconfnative/DrawerManager.cpp \
 				   mconfnative/VideoDrawer.cpp
 				  
