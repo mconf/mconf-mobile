@@ -70,8 +70,6 @@ public class VoiceModule implements ExtendedCallListener {
 
 	private MediaLauncher audio_app = null;
 
-	private int speakerMode;
-
 	private boolean mute;
 
 	final private Context context;
@@ -155,10 +153,12 @@ public class VoiceModule implements ExtendedCallListener {
 	}
 	
 	public void hang() {
+		closeMediaApplication();
 		if (call != null && isOnCall()) {
 			call.hangup();
 			call = null;
 		}
+		Receiver.call_state = UserAgent.UA_STATE_IDLE;		
 	}
 	
 	protected String getContactURL(String username,SipProvider sip_provider) {
@@ -210,7 +210,10 @@ public class VoiceModule implements ExtendedCallListener {
 		makeToast(R.string.connection_established);
 		RtpStreamReceiver.good = RtpStreamReceiver.lost = RtpStreamReceiver.loss = RtpStreamReceiver.late = 0;
 		mute = false;
-		speakerMode = AudioManager.MODE_IN_CALL;
+
+		if (getSpeaker() != AudioManager.MODE_IN_CALL &&
+				getSpeaker() != AudioManager.MODE_NORMAL)
+			setSpeaker(AudioManager.MODE_IN_CALL);
 		
 		SessionDescriptor remote_sdp = new SessionDescriptor(sdp);
 		SessionDescriptor new_sdp = new SessionDescriptor(local_sdp.getOrigin(),
@@ -266,7 +269,6 @@ public class VoiceModule implements ExtendedCallListener {
 				user_profile.audio_sample_size,
 				codecs.codec.frame_size(), null, codecs, dtmf_pt);
 		audio_app.startMedia();		
-		setSpeaker(speakerMode);
 	}
 
 	@Override
@@ -278,18 +280,16 @@ public class VoiceModule implements ExtendedCallListener {
 	public void onCallClosed(Call call, Message resp) {
 		log.debug("===========> onCallClosed");
 
-		Receiver.call_state = UserAgent.UA_STATE_IDLE;
 		makeToast(R.string.connection_closed);
-		
-		if (audio_app != null) {
-			audio_app.stopMedia();
-			audio_app = null;
-		}
 	}
 
 	@Override
 	public void onCallClosing(Call call, Message bye) {
 		log.debug("===========> onCallClosing");
+		
+		closeMediaApplication();
+		Receiver.call_state = UserAgent.UA_STATE_IDLE;
+		makeToast(R.string.connection_closed);
 	}
 
 	@Override
@@ -357,16 +357,22 @@ public class VoiceModule implements ExtendedCallListener {
 			audio_app.muteMedia();
 		}
 	}
+	
+	private void closeMediaApplication() {
+		if (audio_app != null) {
+			audio_app.stopMedia();
+			audio_app = null;
+		}
+	}
 
 	public int getSpeaker() {
-		return speakerMode;
+		return RtpStreamReceiver.speakermode;
 	}
 
 	public void setSpeaker(int mode) {
-		if (audio_app != null) {
-			speakerMode = mode;
-			audio_app.speakerMedia(speakerMode);
-		}
+		if (audio_app != null)
+			audio_app.speakerMedia(mode);
+		RtpStreamReceiver.speakermode = mode;
 	}
 	
 	private void makeToast(final int resId) {
