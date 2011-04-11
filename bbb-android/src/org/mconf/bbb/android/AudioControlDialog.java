@@ -52,15 +52,44 @@ public class AudioControlDialog extends Dialog {
 //			}
 //		});
 		
+    	// the mic gain should be 0, 0.1, 0.2 or 1.0
 		final int multiplicator = 10;
 		final SeekBar mic_gain = (SeekBar) this.findViewById(R.id.mic_gain);
-		mic_gain.setMax(multiplicator);
-		mic_gain.setProgress(Float.valueOf(Settings.getMicGain() * multiplicator).intValue());
+		mic_gain.setMax(3); // four states
+		switch (Float.valueOf(Settings.getMicGain() * multiplicator).intValue()) {
+			case 1:
+				mic_gain.setProgress(0);
+				break;
+			case 2:
+				mic_gain.setProgress(1);
+				break;
+			case 0:
+				mic_gain.setProgress(2);
+				break;
+			case 10:
+				mic_gain.setProgress(3);
+				break;
+		}
 		mic_gain.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
 				Editor editor = PreferenceManager.getDefaultSharedPreferences(Receiver.mContext).edit();
-				editor.putString(Settings.PREF_MICGAIN, "" + (seekBar.getProgress() / (float) multiplicator));
+				double value = 0;
+				switch (seekBar.getProgress()) {
+					case 0:
+						value = 0.1;
+						break;
+					case 1:
+						value = 0.2;
+						break;
+					case 2:
+						value = 0.0;
+						break;
+					case 3:
+						value = 1.0;
+						break;
+				}
+				editor.putString(Settings.PREF_MICGAIN, "" + value);
 				editor.commit();
 				RtpStreamSender.changed = true;
 			}

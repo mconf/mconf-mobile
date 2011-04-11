@@ -71,7 +71,7 @@ BBB-Android é uma implementação do cliente BigBlueButton para Android.
 	<string name="audio_config">Configuração de áudio</string>
 	<string name="speaker_volume">Volume do speaker</string>
 	<string name="earphone_volume">Volume do earphone</string>
-	<string name="mic_gain">Ganho no microfone</string>
+	<string name="mic_gain">Ganho do microfone</string>
 
 <!--
  * Copyright (C) 2009 The Sipdroid Open Source Project
