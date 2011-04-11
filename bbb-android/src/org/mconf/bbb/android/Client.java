@@ -162,6 +162,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	private int addedMessages=0;
 	private boolean connected = true;
 	private boolean dialogShown = false;
+	private boolean kicked=false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -233,8 +234,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		registerForContextMenu(listenerListView);
 
 		contactsTitle = (TextView)findViewById(R.id.label_participants);
-		contactsTitle.setBackgroundResource(R.drawable.connected);
-		
+		if(isConnected())
+			contactsTitle.setBackgroundResource(R.drawable.connected);
+		else
+			contactsTitle.setBackgroundResource(R.drawable.disconnected);
 		//initialize onClickListeners, onOpenedDrawerListeners, etc 
 		initializeListeners();
 
@@ -444,7 +447,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			return true;
 		case MENU_DISCONNECT:
 			bbb.disconnect();
-			Toast.makeText(getApplicationContext(), "disconnected", Toast.LENGTH_SHORT).show();
 			return true;
 		case MENU_RECONNECT:
 			if(!isConnected())
@@ -463,7 +465,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 					}
 					else
 						Toast.makeText(getApplicationContext(), R.string.cant_reconnect, Toast.LENGTH_SHORT).show();
-					
+
 				}
 				else
 					Toast.makeText(getApplicationContext(), R.string.no_connection, Toast.LENGTH_SHORT).show();
@@ -494,7 +496,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 	@Override
 	public void onConnected() {
-		// TODO Auto-generated method stub
+
 		contactsTitle.setBackgroundResource(R.drawable.connected);
 		log.debug("connected");
 		setConnected(true);
@@ -504,12 +506,12 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	//created this coded based on this http://bend-ing.blogspot.com/2008/11/properly-handle-progress-dialog-in.html
 	@Override 
 	public void onDisconnected() {
-		
+
 		IParticipant participant = contactAdapter.getUserById(bbb.getMyUserId());
 		contactAdapter.removeSection(participant);
+		listenerAdapter.clearList();
 		setConnected(false);
 		log.debug("onDisconnected");
-		bbb.getJoinService().resetJoinedMeeting();
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -523,54 +525,70 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {	
-				ConnectivityManager connectivityManager =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-				if(connectivityManager.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED 
-						||  connectivityManager.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED)
+				if(!isKicked())
 				{
-					log.debug("no internet connection");
-					while(!isDialogShown());
-					dismissDialog(Client.ID_DIALOG_RECONNECT); //exception:no dialog with this id was shown
-					setDialogShown(false);
-					runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							contactsTitle.setBackgroundResource(R.drawable.disconnected);
-							Toast.makeText(getApplicationContext(), R.string.cant_reconnect, Toast.LENGTH_SHORT).show();
-						}
-					});
-					log.error("Can't reconnect. Check internet connection");
-					return;
+					ConnectivityManager connectivityManager =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+					if(connectivityManager.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED 
+							||  connectivityManager.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED)
+					{
+						log.debug("no internet connection");
+						
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								contactsTitle.setBackgroundResource(R.drawable.disconnected);
+								Toast.makeText(getApplicationContext(), R.string.cant_reconnect, Toast.LENGTH_SHORT).show();
+								while(!isDialogShown());
+								dismissDialog(Client.ID_DIALOG_RECONNECT); //exception:no dialog with this id was shown
+								setDialogShown(false);
+							}
+						});
+						log.error("Can't reconnect. Check internet connection");
+						return;
+					}
+
+					//only tries to reconnect if there the phone is connected to the internet
+					Client.bbb.getJoinService().join(meetingName, myusername, moderator);
+					boolean connected = bbb.connectBigBlueButton();
+					if (!connected) { 
+						
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								contactsTitle.setBackgroundResource(R.drawable.disconnected);
+								Toast.makeText(getApplicationContext(), R.string.cant_reconnect, Toast.LENGTH_SHORT).show();
+								dismissDialog(Client.ID_DIALOG_RECONNECT);
+							}
+						});
+						log.error("Can't reconnect. Check internet connection");
+						return;
+					} 
+					else{
+						log.error("successfully reconnected");
+						
+						runOnUiThread(new Runnable() { 
+							@Override
+							public void run() {
+								contactsTitle.setBackgroundResource(R.drawable.connected);
+								Toast.makeText(getApplicationContext(), R.string.reconnected, Toast.LENGTH_SHORT).show();
+								dismissDialog(Client.ID_DIALOG_RECONNECT);
+							}
+						});
+
+						return;
+					}
+
 				}
-
-				//only tries to reconnect if there the phone is connected to the internet
-				Client.bbb.getJoinService().join(meetingName, myusername, moderator);
-				boolean connected = bbb.connectBigBlueButton();
-				if (!connected) { 
-					dismissDialog(Client.ID_DIALOG_RECONNECT);
-					runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							contactsTitle.setBackgroundResource(R.drawable.disconnected);
-							Toast.makeText(getApplicationContext(), R.string.cant_reconnect, Toast.LENGTH_SHORT).show();
-						}
-					});
-					log.error("Can't reconnect. Check internet connection");
-					return;
-				} 
-				else{
-					log.error("successfully reconnected");
-					dismissDialog(Client.ID_DIALOG_RECONNECT);
-					runOnUiThread(new Runnable() { 
-						@Override
-						public void run() {
-							contactsTitle.setBackgroundResource(R.drawable.connected);
-							Toast.makeText(getApplicationContext(), R.string.reconnected, Toast.LENGTH_SHORT).show();
-						}
-					});
-
-					return;
+				else
+				{
+					quit();
+					Intent login = new Intent(getApplicationContext(), LoginPage.class);
+					login.putExtra("username", myusername);
+					startActivity(login);
+					lastReadNum=-1;
+					sendBroadcast(new Intent(FINISH));
+					finish();
 				}
-
 			}
 		}).start();
 
@@ -594,6 +612,14 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	@Override
 	public void onKickUserCallback() {
 		// TODO Auto-generated method stub
+
+		setKicked(true);
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Toast.makeText(getApplicationContext(), R.string.kicked, Toast.LENGTH_SHORT).show();
+			}
+		});
 
 	}
 	@Override
@@ -828,6 +854,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				listenerAdapter.removeSection(p);
 				listenerAdapter.notifyDataSetChanged();		
 				setListHeight(listenerListView);
+
 			}
 		});
 	}
@@ -927,6 +954,12 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				listenerListView.setAdapter(listenerAdapter);
 				registerForContextMenu(listenerListView);
 
+				contactsTitle = (TextView)findViewById(R.id.label_participants);
+				if(isConnected())
+					contactsTitle.setBackgroundResource(R.drawable.connected);
+				else
+					contactsTitle.setBackgroundResource(R.drawable.disconnected);
+
 				initializeListeners();
 
 				//calculates the height os both lists
@@ -1024,6 +1057,14 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 	public boolean isDialogShown() {
 		return dialogShown;
+	}
+
+	public void setKicked(boolean kicked) {
+		this.kicked = kicked;
+	}
+
+	public boolean isKicked() {
+		return kicked;
 	}
 
 

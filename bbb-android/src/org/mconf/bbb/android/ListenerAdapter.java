@@ -107,4 +107,9 @@ public class ListenerAdapter extends BaseAdapter {
         return convertView;
     }
 
+	public void clearList() {
+		// TODO Auto-generated method stub
+		listListener.clear();
+	}
+
 }
