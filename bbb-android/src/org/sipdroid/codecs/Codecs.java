@@ -48,15 +48,15 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 
 public class Codecs {
     	private static final Vector<Codec> codecs = new Vector<Codec>() {{
-			add(new G722());			
+//			add(new G722());			
 //			add(new SILK24());		save space (until a common library for all bitrates gets available?)
 //			add(new SILK16());
 //			add(new SILK8());
 			add(new alaw());
 			add(new ulaw());
 			add(new Speex());
-			add(new GSM());
-			add(new BV16());
+//			add(new GSM());
+//			add(new BV16());
 		}};
 	private static final HashMap<Integer, Codec> codecsNumbers;
 	private static final HashMap<String, Codec> codecsNames;
