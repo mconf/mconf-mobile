@@ -49,6 +49,9 @@
 	<string name="attempting_to_reconnect">Reconectando...</string>
 	<string name="cant_reconnect">Impossível reconectar. Verifique sua conexão</string>
 	<string name="reconnected">Reconectado com sucesso</string>
+	<string name="reconnect">Reconectar</string>
+	<string name="no_connection">Sem conexão com a internet</string>
+	<string name="choose_a_server_to_login">Escolha um servidor para conectar</string>
 	<string name="about">
 BBB-Android é uma implementação do cliente BigBlueButton para Android.
 \n

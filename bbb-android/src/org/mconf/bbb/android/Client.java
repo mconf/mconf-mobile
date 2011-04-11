@@ -81,6 +81,7 @@ import android.widget.ScrollView;
 import android.widget.SlidingDrawer;
 import android.widget.Spinner;
 import android.widget.SlidingDrawer.OnDrawerCloseListener;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
@@ -149,9 +150,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	protected ChatAdapter chatAdapter;
 	protected ListenerAdapter listenerAdapter;
 	private CustomListview contactListView;
-	CustomListview listenerListView;
-	ListView chatListView;
+	private CustomListview listenerListView;
+	private ListView chatListView;
 	protected SlidingDrawer slidingDrawer;
+	private TextView contactsTitle;
 
 
 	protected String meetingName;
@@ -230,6 +232,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		listenerListView.setAdapter(listenerAdapter);
 		registerForContextMenu(listenerListView);
 
+		contactsTitle = (TextView)findViewById(R.id.label_participants);
+		contactsTitle.setBackgroundResource(R.drawable.connected);
+		
 		//initialize onClickListeners, onOpenedDrawerListeners, etc 
 		initializeListeners();
 
@@ -452,9 +457,13 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 					Client.bbb.getJoinService().join(meetingName, myusername, moderator);
 					boolean connected = bbb.connectBigBlueButton();
 					if(connected)
+					{
+						contactsTitle.setBackgroundResource(R.drawable.connected);
 						Toast.makeText(getApplicationContext(), R.string.reconnected, Toast.LENGTH_SHORT).show();
+					}
 					else
 						Toast.makeText(getApplicationContext(), R.string.cant_reconnect, Toast.LENGTH_SHORT).show();
+					
 				}
 				else
 					Toast.makeText(getApplicationContext(), R.string.no_connection, Toast.LENGTH_SHORT).show();
@@ -486,6 +495,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	@Override
 	public void onConnected() {
 		// TODO Auto-generated method stub
+		contactsTitle.setBackgroundResource(R.drawable.connected);
 		log.debug("connected");
 		setConnected(true);
 		chatAdapter.clearList();
@@ -494,6 +504,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	//created this coded based on this http://bend-ing.blogspot.com/2008/11/properly-handle-progress-dialog-in.html
 	@Override 
 	public void onDisconnected() {
+		
 		IParticipant participant = contactAdapter.getUserById(bbb.getMyUserId());
 		contactAdapter.removeSection(participant);
 		setConnected(false);
@@ -502,6 +513,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
+				contactsTitle.setBackgroundResource(R.drawable.reconnecting);
 				log.debug("dialog shown");
 				showDialog(ID_DIALOG_RECONNECT);
 				setDialogShown(true);
@@ -522,6 +534,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
+							contactsTitle.setBackgroundResource(R.drawable.disconnected);
 							Toast.makeText(getApplicationContext(), R.string.cant_reconnect, Toast.LENGTH_SHORT).show();
 						}
 					});
@@ -537,6 +550,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
+							contactsTitle.setBackgroundResource(R.drawable.disconnected);
 							Toast.makeText(getApplicationContext(), R.string.cant_reconnect, Toast.LENGTH_SHORT).show();
 						}
 					});
@@ -549,7 +563,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 					runOnUiThread(new Runnable() { 
 						@Override
 						public void run() {
-
+							contactsTitle.setBackgroundResource(R.drawable.connected);
 							Toast.makeText(getApplicationContext(), R.string.reconnected, Toast.LENGTH_SHORT).show();
 						}
 					});

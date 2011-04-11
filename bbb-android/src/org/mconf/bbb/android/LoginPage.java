@@ -38,6 +38,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -273,7 +275,16 @@ public class LoginPage extends Activity {
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							Toast.makeText(getApplicationContext(), R.string.login_cant_contact_server, Toast.LENGTH_SHORT).show();
+							ConnectivityManager connectivityManager =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+							
+							
+							if(serverURL.length()<1)
+								Toast.makeText(getApplicationContext(), R.string.choose_a_server_to_login, Toast.LENGTH_SHORT).show();
+							else if(connectivityManager.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED 
+									||  connectivityManager.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED)
+								Toast.makeText(getApplicationContext(), R.string.no_connection, Toast.LENGTH_SHORT).show();
+							else
+								Toast.makeText(getApplicationContext(), R.string.login_cant_contact_server, Toast.LENGTH_SHORT).show();
 						}
 					});
 					log.error("Can't contact the server. Try it later");

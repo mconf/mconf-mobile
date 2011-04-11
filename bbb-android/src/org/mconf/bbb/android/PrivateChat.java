@@ -277,12 +277,7 @@ public class PrivateChat extends Activity{
 	private void removeAllParticipants()
 
 	{
-		for(Iterator<Integer> iter=participants.keySet().iterator(); iter.hasNext();)
-		{
-			Integer key = iter.next();
-			if(participants.containsKey(key))
-				iter.remove(); 
-		}
+		participants.clear();
 	}
 
 
