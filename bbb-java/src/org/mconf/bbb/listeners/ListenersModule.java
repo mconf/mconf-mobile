@@ -205,7 +205,6 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 		} else if (method.equals("userMute")) {
 			// meetMeUsersSO { SOEvent(SERVER_SEND_MESSAGE, userMute, [4.0, true]) }
 			IListener listener = listeners.get(userId);
-			System.out.println(userId+"  HELLO");
 			if (listener != null)
 			{
 				listener.setMuted((Boolean) params.get(1));
