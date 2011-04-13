@@ -43,6 +43,7 @@
 	<string name="connection_established">Conexão estabelecida</string>
 	<string name="connection_closed">Conexão fechada</string>
 	<string name="connection_refused">Conexão rejeitada</string>
+	<string name="invalid_number">não é um número VoIP válido</string>
 	<string name="no_options">Nenhuma opção disponível</string>
 	<string name="not_moderator">Sem permissão para executar essa operação</string>
 	<string name="lost_connection">Conexão perdida</string>
