@@ -46,19 +46,10 @@ public class VideoDialog extends Dialog {
 		requestWindowFeature(Window.FEATURE_NO_TITLE); //Removes the title from the Dialog
 		setContentView(R.layout.video_window);
 		
-		android.view.WindowManager.LayoutParams windowAttributes = getWindow().getAttributes();
-		
-		//Changes the place of the Dialog
-//		windowAttributes.gravity = Gravity.BOTTOM; //title shows ok
-		windowAttributes.gravity = Gravity.CENTER; //title shows cutted
-//		windowAttributes.gravity = Gravity.FILL; //title shows weird. The Dialog appears at the top left	
-//		windowAttributes.gravity = Gravity.LEFT; //title shows cutted	
-//		windowAttributes.gravity = Gravity.TOP; //title shows cutted	
-		
+		android.view.WindowManager.LayoutParams windowAttributes = getWindow().getAttributes();		
 		windowAttributes.flags = android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON; //Makes the video brigth
 //		windowAttributes.flags = android.view.WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE; //Makes it possible to interact with the window behind, but the video should be closed properly when the screen changes
-//		windowAttributes.flags = android.view.WindowManager.LayoutParams.FLAG_SCALED; //Removes the title from the dialog and removes the border also
-		 
+//		windowAttributes.flags = android.view.WindowManager.LayoutParams.FLAG_SCALED; //Removes the title from the dialog and removes the border also		 
 		getWindow().setAttributes(windowAttributes);
 		
 		videoWindow = (VideoSurface) findViewById(R.id.video_window);

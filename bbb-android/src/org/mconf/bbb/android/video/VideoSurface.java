@@ -42,7 +42,7 @@ public class VideoSurface extends GLSurfaceView {
 		LayoutParams layoutParams = getLayoutParams();
 		DisplayMetrics metrics = getDisplayMetrics(getContext());
 		log.debug("Maximum display resolution: {} X {}\n", metrics.widthPixels, metrics.heightPixels);
-		int h = 0, w = 0, xPos = 0, yPos = 0;
+		int h = 0, w = 0;
 		if(inDialog){
 			metrics.widthPixels -= 40;
 			metrics.heightPixels -= 40;
@@ -55,15 +55,11 @@ public class VideoSurface extends GLSurfaceView {
 			h = metrics.heightPixels;
 			w = (int) (h * defaultAspectRatio);			
 		}
-		if(!inDialog){
-			xPos = (int)((metrics.widthPixels-w)/2);
-			yPos = 0;
-		}
-		layoutParams.width = w+xPos;
-		layoutParams.height = h+yPos;
+		layoutParams.width = w;
+		layoutParams.height = h;
 		setLayoutParams(layoutParams);		
 		 
-        initDrawer(metrics.widthPixels, metrics.heightPixels, w, h, xPos, yPos);
+        initDrawer(metrics.widthPixels, metrics.heightPixels, w, h, 0, 0);
 
         mRenderer = new VideoRenderer(this);
 		setRenderer(mRenderer);
