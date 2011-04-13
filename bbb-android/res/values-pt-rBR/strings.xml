@@ -53,7 +53,9 @@
 	<string name="reconnect">Reconectar</string>
 	<string name="no_connection">Sem conexão com a internet</string>
 	<string name="choose_a_server_to_login">Escolha um servidor para conectar</string>
-	<string name="kicked">You have been kicked</string>
+	<string name="kicked">Você foi expulso da sala</string>
+	<string name="new_meeting">Criar nova sala</string>
+	<string name="create">Criar</string>
 	<string name="about">
 BBB-Android é uma implementação do cliente BigBlueButton para Android.
 \n

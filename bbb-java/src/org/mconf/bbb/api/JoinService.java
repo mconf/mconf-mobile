@@ -69,25 +69,32 @@ public class JoinService {
 		return null;
 	}
 	
-//	public boolean createMeeting(Meeting meeting) {
-//		String create = api.createMeeting(meeting.getMeetingID(), 
-//				"Welcome message", 
-//				meeting.getModeratorPW(), 
-//				meeting.getAttendeePW(), 
-//				0, 
-//				serverUrl);
-//		log.debug("createMeeting: {}", create);
-//		return create.equals(meeting.getMeetingID()); 
-//	}
+	public boolean createMeeting(String meetingID) {
+		String createUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?action=create"
+			+ "&meetingID=" + urlEncode(meetingID);
+		log.debug(createUrl);
+		
+		String response = "Unknown error";
+		try {
+			HttpClient client = new HttpClient();
+			HttpMethod method = new GetMethod(createUrl);
+			client.executeMethod(method);
+			response = method.getResponseBodyAsString().trim();
+			method.releaseConnection();
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("Can't create the meeting {}", meetingID);
+		}
+		
+		if (meetingID.equals(response))
+			return true;
+		else {
+			log.error(response);
+			return false;
+		}
+	}
 	
 	public JoinedMeeting join(Meeting meeting, String name, boolean moderator) {
-//		if (api.isMeetingRunning(meeting.getMeetingID()).equals("false")) {
-//			if (!createMeeting(meeting)) {
-//				log.error("The meeting {} is not running", meeting.getMeetingID());
-//				return null;
-//			}
-//		}
-		
 		String joinUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?action=join"
 			+ "&meetingID=" + urlEncode(meeting.getMeetingID())
 			+ "&fullName=" + urlEncode(name)

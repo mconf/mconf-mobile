@@ -48,10 +48,12 @@ import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -69,14 +71,10 @@ public class LoginPage extends Activity {
 
 	private ArrayAdapter<String> spinnerAdapter;
 	private boolean moderator;
-	private static final String labelCreateMeeting = "== Create a new meeting ==";
-	private String username="Android";
-	private String serverURL="";
-	private String meeting="custom Meeting";
+	private String username = "Android";
+	private String serverURL = "";
+	private String createdMeeting = "";
 	
-	private boolean created=false;
-	
-	//private Context context = this;
 	BroadcastReceiver serverChosed = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
 		{ 
@@ -124,53 +122,66 @@ public class LoginPage extends Activity {
 			}
 		});
 
-		        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-		
-					@Override
-					public void onItemSelected(AdapterView<?> parent, View view,
-							int position, long id) {
-						
-						// the create new meeting label
-						if (spinnerAdapter.getItem(position).equals(labelCreateMeeting)) {
-							final AlertDialog.Builder alert = new AlertDialog.Builder(LoginPage.this);
-							final EditText input = new EditText(LoginPage.this);
-							alert.setTitle("New meeting");
-							alert.setMessage("Enter the meeting name:");
-							alert.setView(input);
-							alert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
-								
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									meeting = input.getText().toString().trim();
-									created=true;
-									log.error(meeting);
-									runOnUiThread(new Runnable() {
-										
-										@Override
-										public void run() {
-											spinnerAdapter.add(input.getText().toString());
-											spinnerAdapter.notifyDataSetChanged();
-											spinner.setSelection(spinnerAdapter.getCount()-1);
-										}
-									});
-								}
-							});
-							alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-								
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									created=false;
-								}
-							});
-							alert.show();
-						}
-					}
-		
-					@Override
-					public void onNothingSelected(AdapterView<?> parent) {
-					}
-				});
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				
+				// create a new meeting is the last option on the list
+				if (position == spinnerAdapter.getCount() - 1) {
+					final AlertDialog.Builder alert = new AlertDialog.Builder(LoginPage.this);
+					LayoutParams params = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+					final EditText input = new EditText(LoginPage.this);
+					input.setLayoutParams(params);
+					
+					// need to use a linear layout to set padding
+					final LinearLayout layout = new LinearLayout(LoginPage.this);
+					layout.setPadding(40, 0, 40, 0);
+					layout.setLayoutParams(params);
+					layout.addView(input);
+					
+					alert.setMessage(R.string.new_meeting);
+					alert.setView(layout);
+					alert.setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							createdMeeting = input.getText().toString().trim();
+							
+							if (!Client.bbb.getJoinService().createMeeting(createdMeeting)) {
+								AlertDialog.Builder builder = new AlertDialog.Builder(LoginPage.this);
+								builder.setCancelable(false)
+								       .setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
+								           public void onClick(DialogInterface dialog, int id) {
+								                dialog.cancel();
+								           }
+								       });
+								builder.setMessage("Error");
+								builder.show();
+								
+								return;
+							}
+							
+							updateMeetingsList();
+						}
+					});
+					alert.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							spinnerAdapter.clear();
+						}
+					});
+					alert.show();
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+			}
+		});
+        
 		final Button join = (Button) findViewById(R.id.login_button_join);       
 		join.setOnClickListener( new OnClickListener()
 		{
@@ -189,38 +200,20 @@ public class LoginPage extends Activity {
 					Toast.makeText(getApplicationContext(), R.string.login_select_meeting, Toast.LENGTH_SHORT).show();
 					return;
 				}
-//				if (spinner.getSelectedItem() == labelCreateMeeting)
-//				{
-//					System.out.println("dialog");
-//					final AlertDialog.Builder alert = new AlertDialog.Builder(context);
-//					final EditText input = new EditText(context);
-//					alert.setView(input);
-//					alert.setTitle("Type the meeting name");
-//					alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//						public void onClick(DialogInterface dialog, int whichButton) {
-//							meeting = input.getText().toString().trim();
-//							System.out.println(meeting);
-//							connect();
-//
-//						}
-//					});
-//
-//					alert.setNegativeButton("Cancel",
-//							new DialogInterface.OnClickListener() {
-//						public void onClick(DialogInterface dialog, int whichButton) {
-//							dialog.cancel();
-//						}
-//					});
-//					alert.show();
-//
-//				}
-				else
-				{
-					if(!created)
-						meeting = (String) spinner.getSelectedItem();
-						
-					connect();
-				}
+
+           		Client.bbb.getJoinService().join((String) spinner.getSelectedItem(), username, moderator);
+           		if (Client.bbb.getJoinService().getJoinedMeeting() == null) {
+                	Toast.makeText(getApplicationContext(), R.string.login_cant_join, Toast.LENGTH_SHORT).show();
+                	return;
+                }
+
+           		updatePreferences(username, serverURL);
+           		
+                Intent myIntent = new Intent(getApplicationContext(), Client.class);
+                myIntent.putExtra("username", username);
+                startActivity(myIntent);
+     
+                finish();
 			}
 		}
 		);
@@ -317,15 +310,23 @@ public class LoginPage extends Activity {
 						}
 
 						spinnerAdapter.sort(new Comparator<String>() {
-
 							@Override
 							public int compare(String s1, String s2) {
 								return s1.compareTo(s2);
 							}
 						});
-						spinnerAdapter.add(labelCreateMeeting);
+						spinnerAdapter.add(getApplicationContext().getResources().getString(R.string.new_meeting));
 						spinnerAdapter.notifyDataSetChanged();
 						Spinner spinner = (Spinner) findViewById(R.id.login_spinner);
+
+						// select the created meeting in the list
+						for (int i = 0; i < spinnerAdapter.getCount(); ++i) {
+							if (spinnerAdapter.getItem(i).equals(createdMeeting)) {
+								spinner.setSelection(i);
+								createdMeeting = "";
+								break;
+							}
+						}
 						spinner.performClick();
 					}
 				});
@@ -403,25 +404,5 @@ public class LoginPage extends Activity {
 		}
 		preferenceEditor.commit();
 	}
-
-	public void connect ()
-	{
-		log.debug(meeting);
-		Client.bbb.getJoinService().join(meeting, username, moderator);
-		if (Client.bbb.getJoinService().getJoinedMeeting() == null) {
-			Toast.makeText(getApplicationContext(), R.string.login_cant_join, Toast.LENGTH_SHORT).show();
-			return;
-		}
-
-		updatePreferences(username, serverURL);
-
-		Intent myIntent = new Intent(getApplicationContext(), Client.class);
-		myIntent.putExtra("username", username);
-		myIntent.putExtra("meetingName", meeting);
-		startActivity(myIntent);
-
-		finish();
-	}
-
 
 }
