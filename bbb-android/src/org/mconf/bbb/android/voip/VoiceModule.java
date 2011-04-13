@@ -107,6 +107,15 @@ public class VoiceModule implements ExtendedCallListener {
 	public void call(String number) {
 		if (isOnCall())
 			return;
+
+		log.debug("Trying to call number {}", number);
+		
+		try{
+			Integer.parseInt(number);
+		} catch (NumberFormatException e) {
+			makeToast("\"" + number + "\" " + context.getResources().getString(R.string.invalid_number));
+			return;
+		}
 		
 		local_sdp = new SessionDescriptor(user_profile.from_url,
 				sip_provider.getViaAddress());
@@ -376,10 +385,14 @@ public class VoiceModule implements ExtendedCallListener {
 	}
 	
 	private void makeToast(final int resId) {
+		makeToast(context.getResources().getString(resId));
+	}
+	
+	private void makeToast(final String s) {
 		((Activity) context).runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				Toast.makeText(context, resId, Toast.LENGTH_SHORT).show();
+				Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
 			}
 		});
 	}
