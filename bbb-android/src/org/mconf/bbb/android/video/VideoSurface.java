@@ -57,9 +57,10 @@ public class VideoSurface extends GLSurfaceView {
 		}
 		if(!inDialog){
 			xPos = (int)((metrics.widthPixels-w)/2);
+			yPos = 0;
 		}
-		layoutParams.height = h;
-		layoutParams.width = w;
+		layoutParams.width = w+xPos;
+		layoutParams.height = h+yPos;
 		setLayoutParams(layoutParams);		
 		 
         initDrawer(metrics.widthPixels, metrics.heightPixels, w, h, xPos, yPos);
