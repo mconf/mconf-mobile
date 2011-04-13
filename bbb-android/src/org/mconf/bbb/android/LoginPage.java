@@ -48,6 +48,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -68,10 +69,13 @@ public class LoginPage extends Activity {
 
 	private ArrayAdapter<String> spinnerAdapter;
 	private boolean moderator;
-	//private static final String labelCreateMeeting = "== Create a new meeting ==";
+	private static final String labelCreateMeeting = "== Create a new meeting ==";
 	private String username="Android";
 	private String serverURL="";
 	private String meeting="custom Meeting";
+	
+	private boolean created=false;
+	
 	//private Context context = this;
 	BroadcastReceiver serverChosed = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
@@ -106,6 +110,7 @@ public class LoginPage extends Activity {
 		spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
 		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(spinnerAdapter);
+		
 
 		spinner.setOnTouchListener(new OnTouchListener() {
 
@@ -119,49 +124,52 @@ public class LoginPage extends Activity {
 			}
 		});
 
-		//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-		//
-		//			@Override
-		//			public void onItemSelected(AdapterView<?> parent, View view,
-		//					int position, long id) {
-		//				
-		//				// the create new meeting label
-		//				if (spinnerAdapter.getItem(position).equals(labelCreateMeeting)) {
-		//					final AlertDialog.Builder alert = new AlertDialog.Builder(LoginPage.this);
-		//					final EditText input = new EditText(LoginPage.this);
-		//					alert.setTitle("New meeting");
-		//					alert.setMessage("Enter the meeting name:");
-		//					alert.setView(input);
-		//					alert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
-		//						
-		//						@Override
-		//						public void onClick(DialogInterface dialog, int which) {
-		//							runOnUiThread(new Runnable() {
-		//								
-		//								@Override
-		//								public void run() {
-		//									spinnerAdapter.add(input.getText().toString());
-		//									spinnerAdapter.notifyDataSetChanged();
-		//									spinner.setSelection(spinnerAdapter.getCount()-1);
-		//								}
-		//							});
-		//						}
-		//					});
-		//					alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-		//						
-		//						@Override
-		//						public void onClick(DialogInterface dialog, int which) {
-		//							
-		//						}
-		//					});
-		//					alert.show();
-		//				}
-		//			}
-		//
-		//			@Override
-		//			public void onNothingSelected(AdapterView<?> parent) {
-		//			}
-		//		});
+		        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		
+					@Override
+					public void onItemSelected(AdapterView<?> parent, View view,
+							int position, long id) {
+						
+						// the create new meeting label
+						if (spinnerAdapter.getItem(position).equals(labelCreateMeeting)) {
+							final AlertDialog.Builder alert = new AlertDialog.Builder(LoginPage.this);
+							final EditText input = new EditText(LoginPage.this);
+							alert.setTitle("New meeting");
+							alert.setMessage("Enter the meeting name:");
+							alert.setView(input);
+							alert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+								
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									meeting = input.getText().toString().trim();
+									created=true;
+									log.error(meeting);
+									runOnUiThread(new Runnable() {
+										
+										@Override
+										public void run() {
+											spinnerAdapter.add(input.getText().toString());
+											spinnerAdapter.notifyDataSetChanged();
+											spinner.setSelection(spinnerAdapter.getCount()-1);
+										}
+									});
+								}
+							});
+							alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+								
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									created=false;
+								}
+							});
+							alert.show();
+						}
+					}
+		
+					@Override
+					public void onNothingSelected(AdapterView<?> parent) {
+					}
+				});
 
 		final Button join = (Button) findViewById(R.id.login_button_join);       
 		join.setOnClickListener( new OnClickListener()
@@ -208,11 +216,9 @@ public class LoginPage extends Activity {
 //				}
 				else
 				{
-					System.out.println("no dialog");
-					meeting = (String) spinner.getSelectedItem();
-
-
-
+					if(!created)
+						meeting = (String) spinner.getSelectedItem();
+						
 					connect();
 				}
 			}
@@ -282,7 +288,10 @@ public class LoginPage extends Activity {
 								Toast.makeText(getApplicationContext(), R.string.choose_a_server_to_login, Toast.LENGTH_SHORT).show();
 							else if(connectivityManager.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED 
 									||  connectivityManager.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED)
+							{
 								Toast.makeText(getApplicationContext(), R.string.no_connection, Toast.LENGTH_SHORT).show();
+								//create dialog to connection proprierties
+							}
 							else
 								Toast.makeText(getApplicationContext(), R.string.login_cant_contact_server, Toast.LENGTH_SHORT).show();
 						}
@@ -306,6 +315,7 @@ public class LoginPage extends Activity {
 						for (Meeting m : meetings) {
 							spinnerAdapter.add(m.getMeetingID());
 						}
+
 						spinnerAdapter.sort(new Comparator<String>() {
 
 							@Override
@@ -313,7 +323,7 @@ public class LoginPage extends Activity {
 								return s1.compareTo(s2);
 							}
 						});
-						//spinnerAdapter.add(labelCreateMeeting);
+						spinnerAdapter.add(labelCreateMeeting);
 						spinnerAdapter.notifyDataSetChanged();
 						Spinner spinner = (Spinner) findViewById(R.id.login_spinner);
 						spinner.performClick();
@@ -396,6 +406,7 @@ public class LoginPage extends Activity {
 
 	public void connect ()
 	{
+		log.debug(meeting);
 		Client.bbb.getJoinService().join(meeting, username, moderator);
 		if (Client.bbb.getJoinService().getJoinedMeeting() == null) {
 			Toast.makeText(getApplicationContext(), R.string.login_cant_join, Toast.LENGTH_SHORT).show();

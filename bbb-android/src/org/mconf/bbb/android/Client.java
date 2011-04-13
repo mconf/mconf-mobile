@@ -329,8 +329,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		quit();
 
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		notificationManager.cancelAll();	
-
+		notificationManager.cancelAll();
 		unregisterReceiver(chatClosed);
 
 		super.onDestroy();
@@ -345,16 +344,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	}
 
 	private void startPrivateChat(final Contact contact) {
-
-		runOnUiThread(new Runnable() {
-
-			@Override
-			public void run() {
-				contactAdapter.setChatStatus(contact.getUserId(), Contact.CONTACT_ON_PRIVATE_MESSAGE); 
-				contactAdapter.notifyDataSetChanged();
-			}
-
-		});
 
 		Intent intent = new Intent(getApplicationContext(), PrivateChat.class);
 		intent.putExtra("username", contact.getName());
@@ -468,7 +457,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 				}
 				else
+				{
 					Toast.makeText(getApplicationContext(), R.string.no_connection, Toast.LENGTH_SHORT).show();
+					//create dialog to connection proprierties
+				}
 			}
 		default:			
 			return super.onOptionsItemSelected(item);
@@ -541,6 +533,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 								while(!isDialogShown());
 								dismissDialog(Client.ID_DIALOG_RECONNECT); //exception:no dialog with this id was shown
 								setDialogShown(false);
+								//create dialog to connection proprierties
 							}
 						});
 						log.error("Can't reconnect. Check internet connection");
