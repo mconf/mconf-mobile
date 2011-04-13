@@ -193,7 +193,7 @@ public:
 	void updateFrame(uint8_t* buffer, int width, int height) {
 		glClear(GL_COLOR_BUFFER_BIT); CHECK_GL_ERROR();
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, buffer); CHECK_GL_ERROR();
-		glDrawTexiOES(displayPositionX, displayPositionY, 0, displayAreaW, displayAreaH); CHECK_GL_ERROR();	
+		glDrawTexiOES(displayPositionX, displayPositionY, 0, displayAreaW, displayAreaH); CHECK_GL_ERROR();
 	}
 	
 	int getVideoW() { return videoW; }

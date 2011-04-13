@@ -12,8 +12,9 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
+import android.view.ViewGroup.LayoutParams;
 
-class VideoSurface extends GLSurfaceView {
+public class VideoSurface extends GLSurfaceView {
 	private class VideoHandler extends IVideoListener {
 
 		public VideoHandler(int userId, BigBlueButtonClient context) {
@@ -31,19 +32,37 @@ class VideoSurface extends GLSurfaceView {
 	private static final Logger log = LoggerFactory.getLogger(VideoSurface.class);
 	private VideoRenderer mRenderer;		
 	private VideoHandler videoHandler;
+	private static final float defaultAspectRatio = 4 / (float) 3;
 	
 	public VideoSurface(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 	
-	public void start(int userId, int displayAreaW, int displayAreaH) {
-		DisplayMetrics metrics = null;
-		metrics = getDisplayMetrics(getContext());
+	public void start(int userId, boolean inDialog) {		
+		LayoutParams layoutParams = getLayoutParams();
+		DisplayMetrics metrics = getDisplayMetrics(getContext());
 		log.debug("Maximum display resolution: {} X {}\n", metrics.widthPixels, metrics.heightPixels);
+		int h = 0, w = 0, xPos = 0, yPos = 0;
+		if(inDialog){
+			metrics.widthPixels -= 40;
+			metrics.heightPixels -= 40;
+		}
+		float displayAspectRatio = metrics.widthPixels / (float) metrics.heightPixels;
+		if (displayAspectRatio < defaultAspectRatio) {
+			w = metrics.widthPixels;
+			h = (int) (w / defaultAspectRatio);
+		} else {
+			h = metrics.heightPixels;
+			w = (int) (h * defaultAspectRatio);			
+		}
+		if(!inDialog){
+			xPos = (int)((metrics.widthPixels-w)/2);
+		}
+		layoutParams.height = h;
+		layoutParams.width = w;
+		setLayoutParams(layoutParams);		
 		 
-//        changeOrientation(metrics.widthPixels, metrics.heightPixels);  	
-       	
-        initDrawer(metrics.widthPixels, metrics.heightPixels, displayAreaW, displayAreaH);
+        initDrawer(metrics.widthPixels, metrics.heightPixels, w, h, xPos, yPos);
 
         mRenderer = new VideoRenderer(this);
 		setRenderer(mRenderer);
@@ -69,9 +88,7 @@ class VideoSurface extends GLSurfaceView {
         display.getMetrics(metrics);
         return metrics;
 	}
-	
-//	native void changeOrientation(int w,int h);	
-	
+		
 	static {
     	System.loadLibrary("avutil");
     	System.loadLibrary("swscale");
@@ -86,9 +103,8 @@ class VideoSurface extends GLSurfaceView {
     	log.debug("Video native libraries loaded");    
     }
 	
-	private native int initDrawer(int screenW, int screenH, int displayAreaW, int displayAreaH);
+	private native int initDrawer(int screenW, int screenH, int displayAreaW, int displayAreaH, int displayPositionX, int displayPositionY);
 	private native int endDrawer();
-    private native int enqueueFrame(byte[] data, int length);
-	
+    private native int enqueueFrame(byte[] data, int length);	
 }
 

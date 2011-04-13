@@ -27,19 +27,21 @@ import org.slf4j.LoggerFactory;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Window;
-import android.view.ViewGroup.LayoutParams;
 
 public class VideoDialog extends Dialog {	
 	private static final Logger log = LoggerFactory.getLogger(VideoDialog.class);
-	private static final float defaultAspectRatio = 4 / (float) 3;
-	
+		
 	private VideoSurface videoWindow;
+	private int userId;
+	private String name;
 	
-	public VideoDialog(Context context, int userId, String name) {
+	public VideoDialog(Context context, int userIdLocal, String nameLocal) {
 		super(context);
+		
+		setVideoId(userIdLocal);
+		setVideoName(nameLocal);
 		
 		requestWindowFeature(Window.FEATURE_NO_TITLE); //Removes the title from the Dialog
 		setContentView(R.layout.video_window);
@@ -60,29 +62,26 @@ public class VideoDialog extends Dialog {
 		getWindow().setAttributes(windowAttributes);
 		
 		videoWindow = (VideoSurface) findViewById(R.id.video_window);
-		LayoutParams layoutParams = videoWindow.getLayoutParams();
-		
-		DisplayMetrics metrics = VideoSurface.getDisplayMetrics(getContext());
-		metrics.widthPixels -= 40;
-		metrics.heightPixels -= 40;
-		float displayAspectRatio = metrics.widthPixels / (float) metrics.heightPixels;
-		
-		int h = 0, w = 0;
-		if (displayAspectRatio < defaultAspectRatio) {
-			w = metrics.widthPixels;
-			h = (int) (w / defaultAspectRatio);
-		} else {
-			h = metrics.heightPixels;
-			w = (int) (h * defaultAspectRatio);
-		}
-		
-		layoutParams.height = h;
-		layoutParams.width = w;
-		videoWindow.setLayoutParams(layoutParams);
-		videoWindow.start(userId, w, h);
+		videoWindow.start(userId, true);
 		
 		setTitle(name);
 		setCancelable(true);		
+	}
+	
+	private void setVideoId(int userIdLocal){
+		userId = userIdLocal;
+	}
+	
+	private void setVideoName(String userName){
+		name = userName;
+	}
+	
+	public int getVideoId(){
+		return userId;
+	}
+	
+	public String getVideoName(){
+		return name;
 	}
 	
 	@Override

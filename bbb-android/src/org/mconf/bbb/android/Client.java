@@ -24,6 +24,7 @@ package org.mconf.bbb.android;
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.android.video.VideoDialog;
+import org.mconf.bbb.android.video.VideoFullScreen;
 import org.mconf.bbb.android.voip.VoiceModule;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.listeners.IListener;
@@ -141,7 +142,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	protected String myusername;
 	private static int lastReadNum=-1; 
 	private int addedMessages=0;
-
+	
+	private VideoDialog mVideoDialog;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -299,7 +301,11 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			startPrivateChat(contact);
 			return true;
 		case SHOW_VIDEO:
-    		new VideoDialog(this, contact.getUserId(), contact.getName()).show();		
+			int orientation = getResources().getConfiguration().orientation;
+			if(orientation==Configuration.ORIENTATION_PORTRAIT)
+				showVideo(true, contact.getUserId(), contact.getName());
+			else 
+				showVideo(false, contact.getUserId(), contact.getName());
 			return true;
 		}
 		return super.onContextItemSelected(item);
@@ -742,7 +748,19 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		listView.requestLayout();
 
 	} 
-
+	
+	private void showVideo(boolean inDialog, int videoId, String videoName){
+		if(inDialog){
+			mVideoDialog = new VideoDialog(this, videoId, videoName);
+			mVideoDialog.show();
+		} else {
+			Intent intent = new Intent(getApplicationContext(), VideoFullScreen.class);
+			intent.putExtra("userId", videoId);
+			intent.putExtra("name", videoName);			
+			startActivity(intent);
+		}
+	}
+	
 	//detects when the device is rotated
 	@Override
 	public void onConfigurationChanged(final Configuration newConfig) {
@@ -769,9 +787,18 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 						findViewById(R.id.frame4).setLayoutParams(params);
 					}
 					else{
-						setContentView(R.layout.contacts_list);  
-						setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+						if(mVideoDialog == null || !mVideoDialog.isShowing()){
+							setContentView(R.layout.contacts_list);  
+							setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+						}
 
+					}
+					if(mVideoDialog != null && mVideoDialog.isShowing()){
+						int videoId = mVideoDialog.getVideoId();
+						String videoName = mVideoDialog.getVideoName();						
+						mVideoDialog.dismiss();
+						mVideoDialog=null;
+						showVideo(false, videoId, videoName);
 					}
 				}
 
