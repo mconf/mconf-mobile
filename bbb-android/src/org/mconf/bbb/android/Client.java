@@ -23,6 +23,7 @@ package org.mconf.bbb.android;
 
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.IBigBlueButtonClientListener;
+import org.mconf.bbb.android.video.VideoCapture;
 import org.mconf.bbb.android.video.VideoDialog;
 import org.mconf.bbb.android.video.VideoFullScreen;
 import org.mconf.bbb.android.voip.VoiceModule;
@@ -301,12 +302,15 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			startPrivateChat(contact);
 			return true;
 		case SHOW_VIDEO:
-			int orientation = getResources().getConfiguration().orientation;
+			/*int orientation = getResources().getConfiguration().orientation;
 			if(orientation==Configuration.ORIENTATION_PORTRAIT)
 				showVideo(true, contact.getUserId(), contact.getName());
 			else 
 				showVideo(false, contact.getUserId(), contact.getName());
-			return true;
+			return true;*/
+			VideoCapture mCapture = new VideoCapture(getApplicationContext());
+			   ViewGroup.LayoutParams x = new ViewGroup.LayoutParams(320,240);
+			   setContentView(mCapture, x);
 		}
 		return super.onContextItemSelected(item);
 	}

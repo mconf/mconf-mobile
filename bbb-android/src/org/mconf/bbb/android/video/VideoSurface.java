@@ -95,7 +95,7 @@ public class VideoSurface extends GLSurfaceView {
     	System.loadLibrary("common");
     	System.loadLibrary("queue");
     	System.loadLibrary("decode");
-    	System.loadLibrary("mconfnative");  
+    	System.loadLibrary("mconfnativeshowvideo");  
         
     	log.debug("Video native libraries loaded");    
     }

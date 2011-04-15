@@ -62,6 +62,7 @@ public:
 		stopThread = true;
 		queue_broadcast(decoded_video);
 
+		//TODO Check if video_dec was created before we can stop it?
 		video_dec->stop();
 		queue_unregisterConsumer(&consumer);
 

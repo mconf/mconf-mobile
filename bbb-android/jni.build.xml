@@ -31,8 +31,13 @@
 		</sequential>
 	</macrodef>
 	
-	<target name="mconfnative" depends="init">
-		<build target="mconfnative"/>
+	<target name="mconfnativeshowvideo" depends="init">
+		<build target="mconfnativeshowvideo"/>
+		<antcall target="install"/>
+	</target>
+	
+	<target name="mconfnativeencodevideo" depends="init">
+		<build target="mconfnativeencodevideo"/>
 		<antcall target="install"/>
 	</target>
 	
@@ -42,7 +47,7 @@
 	</target>
 	
     <target name="iva" depends="init">
-        <build target="thread common queue decode"/>
+        <build target="thread common queue decode encode"/>
         <antcall target="install"/>
     </target>
     
@@ -57,5 +62,5 @@
 		</copy>
 	</target>
 	
-	<target name="all" depends="ffmpeg,iva,mconfnative,sipdroid"/>
+	<target name="all" depends="ffmpeg,iva,mconfnativeshowvideo,mconfnativeencodevideo,sipdroid"/>
 </project>

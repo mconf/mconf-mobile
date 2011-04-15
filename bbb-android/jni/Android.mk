@@ -1,10 +1,10 @@
 #this directory variable declaration
 LOCAL_PATH := $(call my-dir)
 
-#mconfnative module START
+#mconfnativeshowvideo module START
 include $(CLEAR_VARS)
 
-LOCAL_MODULE    := mconfnative
+LOCAL_MODULE    := mconfnativeshowvideo
 
 LOCAL_SRC_FILES := \
 				   mconfnative/DrawerManager.cpp \
@@ -27,7 +27,36 @@ LOCAL_LDLIBS += -llog \
 				$(LOCAL_PATH)/../obj/local/armeabi/libdecode.so
 							   
 include $(BUILD_SHARED_LIBRARY)
-#mconfnative module END
+#mconfnativeshowvideo module END
+
+#mconfnativeencodevideo module START
+include $(CLEAR_VARS)
+
+LOCAL_MODULE    := mconfnativeencodevideo
+
+LOCAL_SRC_FILES := \
+				   mconfnative/EncoderManager.cpp \
+				   mconfnative/VideoEncoder.cpp
+				  
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/iva/thread \
+					$(LOCAL_PATH)/iva/common \
+					$(LOCAL_PATH)/iva/queue \
+					$(LOCAL_PATH)/iva/encode
+									   
+LOCAL_LDLIBS += -llog \
+				-lGLESv1_CM \
+				$(LOCAL_PATH)/../obj/local/armeabi/libavcodec.so \
+				$(LOCAL_PATH)/../obj/local/armeabi/libavformat.so \
+				$(LOCAL_PATH)/../obj/local/armeabi/libavutil.so \
+				$(LOCAL_PATH)/../obj/local/armeabi/libswscale.so \
+				$(LOCAL_PATH)/../obj/local/armeabi/libthread.so \
+				$(LOCAL_PATH)/../obj/local/armeabi/libcommon.so \
+				$(LOCAL_PATH)/../obj/local/armeabi/libqueue.so \
+				$(LOCAL_PATH)/../obj/local/armeabi/libencode.so
+							   
+include $(BUILD_SHARED_LIBRARY)
+#mconfnativeencodevideo module END
+
 
 #thread module
 include $(CLEAR_VARS)
@@ -121,7 +150,7 @@ LOCAL_SRC_FILES :=	iva/queue/queue.cpp \
 include $(BUILD_SHARED_LIBRARY)
 #end of queue module
 
-#modulo decode
+#decode module
 include $(CLEAR_VARS)
 
 LOCAL_MODULE    := decode
@@ -144,6 +173,36 @@ LOCAL_SRC_FILES :=	iva/decode/Decode.cpp \
 												   
 include $(BUILD_SHARED_LIBRARY)
 #end of decode module
+
+#encode module
+include $(CLEAR_VARS)
+
+LOCAL_MODULE    := encode
+
+LOCAL_SHARED_LIBRARIES := thread common queue
+
+LOCAL_LDLIBS += -llog \
+				$(LOCAL_PATH)/../obj/local/armeabi/libavcodec.so \
+				$(LOCAL_PATH)/../obj/local/armeabi/libavutil.so \
+				$(LOCAL_PATH)/../obj/local/armeabi//libavformat.so \
+				$(LOCAL_PATH)/../obj/local/armeabi/libswscale.so
+
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/iva/thread \
+					$(LOCAL_PATH)/iva/common \
+					$(LOCAL_PATH)/iva/queue \
+					$(LOCAL_PATH)/iva/encode
+
+LOCAL_SRC_FILES :=	iva/encode/Encode.cpp \
+					iva/encode/EncodeAudio.cpp \
+					iva/encode/EncodeAudioParams.cpp \
+					iva/encode/EncodeVideo.cpp \
+					iva/encode/EncodeVideoH264Opt.cpp \
+					iva/encode/EncodeVideoH264Presets.cpp \
+					iva/encode/EncodeVideoParams.cpp \
+					iva/encode/VideoLoader.cpp	
+												   
+include $(BUILD_SHARED_LIBRARY)
+#end of encode module
 
 #swscale module
 include $(CLEAR_VARS)
