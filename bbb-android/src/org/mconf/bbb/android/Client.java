@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -377,9 +378,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 		menu.add(Menu.NONE, MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
 		//test purposes only
-		menu.add(Menu.NONE, MENU_DISCONNECT, Menu.NONE, "disconnect").setIcon(android.R.drawable.ic_dialog_alert);
+		//menu.add(Menu.NONE, MENU_DISCONNECT, Menu.NONE, "disconnect").setIcon(android.R.drawable.ic_dialog_alert);
 		if(!isConnected())
-			menu.add(Menu.NONE, MENU_RECONNECT, Menu.NONE, R.string.reconnect).setIcon(android.R.drawable.ic_dialog_info);
+			menu.add(Menu.NONE, MENU_RECONNECT, Menu.NONE, R.string.reconnect).setIcon(android.R.drawable.ic_menu_rotate);
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -434,9 +435,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		case MENU_AUDIO_CONFIG:
 			new AudioControlDialog(this).show();
 			return true;
-		case MENU_DISCONNECT:
-			bbb.disconnect();
-			return true;
+//		case MENU_DISCONNECT:
+//			bbb.disconnect();
+//			return true;
 		case MENU_RECONNECT:
 			if(!isConnected())
 			{
@@ -460,11 +461,31 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				{
 					Toast.makeText(getApplicationContext(), R.string.no_connection, Toast.LENGTH_SHORT).show();
 					//create dialog to connection proprierties
+					openProperties();
 				}
 			}
 		default:			
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	private void openProperties() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(Client.this);
+		builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		        	   startActivityForResult(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS), 0);
+		           }
+		       });
+		builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+	           public void onClick(DialogInterface dialog, int id) {
+	        	   dialog.cancel();
+	           }
+	       });
+		builder.setTitle("No internet connection");
+		builder.setMessage("Open connection propeties?");
+		
+		builder.show();
+		
 	}
 
 	@Override
@@ -534,6 +555,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 								dismissDialog(Client.ID_DIALOG_RECONNECT); //exception:no dialog with this id was shown
 								setDialogShown(false);
 								//create dialog to connection proprierties
+								openProperties();
 							}
 						});
 						log.error("Can't reconnect. Check internet connection");
