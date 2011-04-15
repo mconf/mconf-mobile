@@ -21,14 +21,10 @@
 
 package org.mconf.bbb.android;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.IBigBlueButtonClientListener;
+import org.mconf.bbb.android.voip.AudioBarLayout;
 import org.mconf.bbb.android.voip.VoiceModule;
-import org.mconf.bbb.api.Meeting;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.listeners.IListener;
 import org.mconf.bbb.listeners.Listener;
@@ -54,40 +50,37 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.SystemClock;
-import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.SlidingDrawer;
-import android.widget.Spinner;
-import android.widget.SlidingDrawer.OnDrawerCloseListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.SlidingDrawer.OnDrawerCloseListener;
 import android.widget.SlidingDrawer.OnDrawerOpenListener;
-import android.net.NetworkInfo;
 
 
 public class Client extends Activity implements IBigBlueButtonClientListener {
@@ -209,10 +202,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			notificationManager.cancel(CHAT_NOTIFICATION_ID);
 		}
 
-
-
-
-
 		Bundle extras = getIntent().getExtras();
 		myusername = extras.getString("username");
 		meetingName=extras.getString("meetingName");
@@ -241,6 +230,42 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			contactsTitle.setBackgroundResource(R.drawable.disconnected);
 		//initialize onClickListeners, onOpenedDrawerListeners, etc 
 		initializeListeners();
+		
+		final Button tapToSpeak = (Button) findViewById(R.id.taptospeak);
+		tapToSpeak.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					if (voice != null)
+						voice.muteCall(false);
+				}
+				if (event.getAction() == MotionEvent.ACTION_UP) {
+					if (voice != null)
+						voice.muteCall(true);
+				}
+				return false;
+			}
+		});
+		
+		final Button lockSpeak = (Button) findViewById(R.id.lockspeak);
+		lockSpeak.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if (voice != null) {
+					boolean muted = !voice.isMuted();
+					voice.muteCall(muted);
+					
+					if (muted) {
+						lockSpeak.setCompoundDrawablesWithIntrinsicBounds(0,android.R.drawable.button_onoff_indicator_off,0,0);
+						tapToSpeak.setEnabled(true);
+					} else {
+						lockSpeak.setCompoundDrawablesWithIntrinsicBounds(0,android.R.drawable.button_onoff_indicator_on,0,0);
+						tapToSpeak.setEnabled(false);
+					}
+				}
+			}
+		});
 
 		//voice connection
 		Receiver.mContext = this;
@@ -345,7 +370,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	}
 
 	private void startPrivateChat(final Contact contact) {
-
 		Intent intent = new Intent(getApplicationContext(), PrivateChat.class);
 		intent.putExtra("username", contact.getName());
 		intent.putExtra("userId", contact.getUserId());
@@ -383,17 +407,22 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			menu.add(Menu.NONE, MENU_RECONNECT, Menu.NONE, R.string.reconnect).setIcon(android.R.drawable.ic_menu_rotate);
 		return super.onPrepareOptionsMenu(menu);
 	}
-
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent intent= new Intent(FINISH);
+		
+		AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);
+
 		switch (item.getItemId()) {
 		case MENU_START_VOICE:
 			voice.call(bbb.getJoinService().getJoinedMeeting().getVoicebridge());
+			audiolayout.show();
 			return true;
 
 		case MENU_STOP_VOICE:
 			voice.hang();
+			audiolayout.hide();
 			return true;
 
 		case MENU_MUTE:

@@ -70,7 +70,7 @@ public class VoiceModule implements ExtendedCallListener {
 
 	private MediaLauncher audio_app = null;
 
-	private boolean mute;
+	private boolean mute = false;
 
 	final private Context context;
 
@@ -218,7 +218,7 @@ public class VoiceModule implements ExtendedCallListener {
 		Receiver.call_state = UserAgent.UA_STATE_INCALL;
 		makeToast(R.string.connection_established);
 		RtpStreamReceiver.good = RtpStreamReceiver.lost = RtpStreamReceiver.loss = RtpStreamReceiver.late = 0;
-		mute = false;
+		mute = true;
 
 		if (getSpeaker() != AudioManager.MODE_IN_CALL &&
 				getSpeaker() != AudioManager.MODE_NORMAL)

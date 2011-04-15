@@ -68,7 +68,8 @@
 	</ScrollView>
 	<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="fill_parent" android:layout_height="wrap_content"
-		android:id="@+id/frame2" android:layout_alignParentBottom="true">
+		android:id="@+id/frame2" android:layout_above="@id/audio_bar"
+		>
 		<SlidingDrawer android:layout_height="fill_parent"
 			android:handle="@+id/handle" android:content="@+id/chat" android:id="@+id/slide"
 			android:orientation="vertical" android:layout_width="fill_parent">
@@ -82,12 +83,46 @@
 			<!-- http://developer.android.com/resources/articles/layout-tricks-reuse.html -->
 			<include layout="@layout/chat" />
 		</SlidingDrawer>
-
-
-
-
-
 	</FrameLayout>
+	
+	<org.mconf.bbb.android.voip.AudioBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@id/audio_bar"
+		android:layout_width="fill_parent"
+		android:layout_height="0dip"
+		android:visibility="visible"		
+		android:layout_alignParentBottom="true"
+		android:weightSum="0.50"
+	>
+		
+		<!-- Button android:id="@+id/audioconfig"
+			android:layout_weight="0.25"
+			android:gravity="center_horizontal|bottom"
+			android:layout_width="0dip"
+			android:layout_height="fill_parent"
+			android:drawableTop="@android:drawable/ic_menu_preferences"
+			android:text="Config"
+		/-->
+		
+		<Button android:id="@+id/lockspeak"
+			android:layout_weight="0.25"
+			android:gravity="center_horizontal|bottom"
+			android:layout_width="0dip"
+			android:layout_height="fill_parent"
+			android:drawableTop="@android:drawable/button_onoff_indicator_off"
+			android:paddingTop="30dip"
+			android:text="Lock speak"
+		/>
+		
+		<Button android:id="@+id/taptospeak"
+			android:layout_weight="0.25"
+			android:gravity="center_horizontal|bottom"
+			android:layout_width="0dip"
+			android:layout_height="fill_parent"
+			android:drawableTop="@android:drawable/ic_btn_speak_now"
+			android:text="Tap to speak"
+		/>
+	</org.mconf.bbb.android.voip.AudioBarLayout>
+
 
 </RelativeLayout>
 
