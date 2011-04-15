@@ -662,7 +662,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		if (message.getUserId() == bbb.getMyUserId())
 			return;
 
-		log.debug("HELLO" + message.getMessage());
 		showNotification(message, source, true);
 
 	}
@@ -941,8 +940,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 					notificationManager.cancel(CHAT_NOTIFICATION_ID);
 				}
 
-
-
 				//registration and setting of adapters of the UI elements
 				chatListView = (ListView)findViewById(R.id.messages);
 				chatListView.setAdapter(chatAdapter);
@@ -967,7 +964,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				//calculates the height os both lists
 				setListHeight(listenerListView);
 				setListHeight(contactListView);
-
 
 			}
 		});
@@ -997,9 +993,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 				openedDrawer(); 
 			}
 		});
-
-
-
 
 		slidingDrawer.setOnDrawerCloseListener(new OnDrawerCloseListener() {
 
@@ -1069,8 +1062,4 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		return kicked;
 	}
 
-
-
 }
-
-

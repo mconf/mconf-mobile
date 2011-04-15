@@ -158,7 +158,7 @@ public class LoginPage extends Activity {
 								                dialog.cancel();
 								           }
 								       });
-								builder.setMessage("Error");
+								builder.setMessage(R.string.error);
 								builder.show();
 								
 								return;
