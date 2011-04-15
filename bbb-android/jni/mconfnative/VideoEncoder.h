@@ -25,8 +25,8 @@ private:
 	jmethodID JavaOnFrameReady;
 	JNIEnv* envGlobal;
 
-//	int pixels, halfpixels, quarterpixels, halfby;
-//	jbyte *aux;
+	int pixels, halfpixels, quarterpixels, halfby;
+	uint8_t *aux;
 
 public:
 	VideoEncoder(JNIEnv *env, jobject obj) {
@@ -37,7 +37,7 @@ public:
 		EncodeVideoParams * paramsVideo = new EncodeVideoParams();
 		setVideoParams(&paramsVideo);
 
-//		initNV21toYUV420P(paramsVideo->getWidth(), paramsVideo->getHeight()); //use this if it is necessary to convert from yuv420sp to yuv420p before encoding
+		initNV21toYUV420P(paramsVideo->getWidth(), paramsVideo->getHeight()); //use this if it is necessary to convert from yuv420sp to yuv420p before encoding
 
 		decoded_video = queue_create();
 		encoded_video = queue_create();
@@ -108,7 +108,7 @@ public:
 		//If not, it may be necessary to convert from yuv420sp to yuv420p first
 		//using the function NV21toYUV420P.
 		//PS: for the mpeg4 codec this step is necessary.
-		//NV21toYUV420P(&data);
+		NV21toYUV420P(&data);
 	    if (queue_enqueue(decoded_video, (uint8_t*)data, length, Milliseconds().getTime(), NULL) != E_OK) {
 	        Log("enqueueFrame() fail");
 	        return;
@@ -244,30 +244,30 @@ public:
 	// Initializes global vars to optimize the conversion.
 	// This method must be called only once, from an initializing function.
 	// This method should also be called if the w or h changes.
-	//	void initNV21toYUV420P(int w, int h){
-	//		pixels = w*h;
-	//		halfpixels = pixels/2;
-	//		quarterpixels = pixels/4;
-	//		halfby = quarterpixels+pixels;
-	//
-	//		if(aux){
-	//			free(aux);
-	//		}
-	//		aux = (jbyte *) malloc(halfpixels);
-	//	}
+	void initNV21toYUV420P(int w, int h){
+		pixels = w*h;
+		halfpixels = pixels/2;
+		quarterpixels = pixels/4;
+		halfby = quarterpixels+pixels;
+
+		if(aux){
+			free(aux);
+		}
+		aux = (uint8_t *) malloc(halfpixels);
+	}
 
 	// converts in (passed as reference) from nv21 (yuv420sp) to yuv420p.
 	// initNV21toYUV420p must be called before using this function for the first time
 	// and when w or h changes.
-	//	void NV21toYUV420P(jbyte **in){
-	//		memcpy(aux,&(*in)[pixels],halfpixels);
-	//		int count = -pixels;
-	//		for(int i = pixels; i < halfby; i++){
-	//			(*in)[i+quarterpixels] = aux[i+count];
-	//			count++;
-	//			(*in)[i] = aux[i+count];
-	//		}
-	//	}
+	void NV21toYUV420P(uint8_t **in){
+		memcpy(aux,&(*in)[pixels],halfpixels);
+		int count = -pixels;
+		for(int i = pixels; i < halfby; i++){
+			(*in)[i+quarterpixels] = aux[i+count];
+			count++;
+			(*in)[i] = aux[i+count];
+		}
+	}
 
 };
 
