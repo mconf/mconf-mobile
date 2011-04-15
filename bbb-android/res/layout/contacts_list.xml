@@ -68,7 +68,7 @@
 	</ScrollView>
 	<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="fill_parent" android:layout_height="wrap_content"
-		android:id="@+id/frame2" android:layout_above="@id/audio_bar"
+		android:id="@+id/frame2" android:layout_above="@+id/audio_bar"
 		>
 		<SlidingDrawer android:layout_height="fill_parent"
 			android:handle="@+id/handle" android:content="@+id/chat" android:id="@+id/slide"
@@ -86,7 +86,7 @@
 	</FrameLayout>
 	
 	<org.mconf.bbb.android.voip.AudioBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		android:id="@id/audio_bar"
+		android:id="@+id/audio_bar"
 		android:layout_width="fill_parent"
 		android:layout_height="0dip"
 		android:visibility="visible"		
@@ -109,8 +109,8 @@
 			android:layout_width="0dip"
 			android:layout_height="fill_parent"
 			android:drawableTop="@android:drawable/button_onoff_indicator_off"
-			android:paddingTop="30dip"
-			android:text="Lock speak"
+			android:paddingTop="20dip"
+			android:text="@string/lockspeak"
 		/>
 		
 		<Button android:id="@+id/taptospeak"
@@ -119,7 +119,7 @@
 			android:layout_width="0dip"
 			android:layout_height="fill_parent"
 			android:drawableTop="@android:drawable/ic_btn_speak_now"
-			android:text="Tap to speak"
+			android:text="@string/taptospeak"
 		/>
 	</org.mconf.bbb.android.voip.AudioBarLayout>
 

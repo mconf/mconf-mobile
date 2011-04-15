@@ -56,6 +56,8 @@
 	<string name="kicked">You have been kicked</string>
 	<string name="new_meeting">Create new meeting</string>
 	<string name="create">Create</string>
+	<string name="taptospeak">Tap to speak</string>
+	<string name="lockspeak">Lock speak</string>
 	<string name="about">
 BBB-Android is an Android implementation of the BigBlueButton client.
 \n

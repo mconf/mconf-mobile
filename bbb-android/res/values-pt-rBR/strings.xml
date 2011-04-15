@@ -56,6 +56,8 @@
 	<string name="kicked">Você foi expulso da sala</string>
 	<string name="new_meeting">Criar nova sala</string>
 	<string name="create">Criar</string>
+	<string name="taptospeak">Pressione para falar</string>
+	<string name="lockspeak">Fala contínua</string>
 	<string name="about">
 BBB-Android é uma implementação do cliente BigBlueButton para Android.
 \n

@@ -363,8 +363,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 
 	private void quit() {
-		if (voice.isOnCall())
-			voice.hang();
+		voiceHang();
 		bbb.removeListener(this);
 		bbb.disconnect();
 	}
@@ -381,10 +380,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
 		if (voice.isOnCall()) {
-			if (voice.isMuted())
-				menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.unmute).setIcon(android.R.drawable.ic_lock_silent_mode_off);
-			else
-				menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.mute).setIcon(android.R.drawable.ic_lock_silent_mode);
+//			if (voice.isMuted())
+//				menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.unmute).setIcon(android.R.drawable.ic_lock_silent_mode_off);
+//			else
+//				menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.mute).setIcon(android.R.drawable.ic_lock_silent_mode);
 			if (voice.getSpeaker() == AudioManager.MODE_NORMAL)
 				menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, R.string.speaker).setIcon(android.R.drawable.button_onoff_indicator_on);
 			else
@@ -402,27 +401,36 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 		menu.add(Menu.NONE, MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
 		//test purposes only
-		//menu.add(Menu.NONE, MENU_DISCONNECT, Menu.NONE, "disconnect").setIcon(android.R.drawable.ic_dialog_alert);
+//		menu.add(Menu.NONE, MENU_DISCONNECT, Menu.NONE, "disconnect").setIcon(android.R.drawable.ic_dialog_alert);
 		if(!isConnected())
 			menu.add(Menu.NONE, MENU_RECONNECT, Menu.NONE, R.string.reconnect).setIcon(android.R.drawable.ic_menu_rotate);
 		return super.onPrepareOptionsMenu(menu);
 	}
 	
+	private void voiceCall() {
+		AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);
+		voice.call(bbb.getJoinService().getJoinedMeeting().getVoicebridge());
+		audiolayout.show();
+	}
+	
+	private void voiceHang() {
+		AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);
+		if (voice.isOnCall())
+			voice.hang();
+		audiolayout.hide();
+	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Intent intent= new Intent(FINISH);
-		
-		AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);
+		Intent intent= new Intent(FINISH);	
 
 		switch (item.getItemId()) {
 		case MENU_START_VOICE:
-			voice.call(bbb.getJoinService().getJoinedMeeting().getVoicebridge());
-			audiolayout.show();
+			voiceCall();
 			return true;
 
 		case MENU_STOP_VOICE:
-			voice.hang();
-			audiolayout.hide();
+			voiceHang();
 			return true;
 
 		case MENU_MUTE:
@@ -464,9 +472,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		case MENU_AUDIO_CONFIG:
 			new AudioControlDialog(this).show();
 			return true;
-//		case MENU_DISCONNECT:
-//			bbb.disconnect();
-//			return true;
+		case MENU_DISCONNECT:
+			bbb.disconnect();
+			return true;
 		case MENU_RECONNECT:
 			if(!isConnected())
 			{
