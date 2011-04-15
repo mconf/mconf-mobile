@@ -52,6 +52,7 @@
 	<string name="reconnected">Successfully reconnected</string>
 	<string name="reconnect">Reconnect</string>
 	<string name="no_connection">No internet connection</string>
+	<string name="open_properties">Open network properties?</string>
 	<string name="choose_a_server_to_login">Choose a server to login</string>
 	<string name="kicked">You have been kicked</string>
 	<string name="new_meeting">Create new meeting</string>

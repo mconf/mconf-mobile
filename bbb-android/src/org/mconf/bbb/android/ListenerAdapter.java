@@ -82,7 +82,7 @@ public class ListenerAdapter extends BaseAdapter {
     		if (listener.getUserId() == id)
     			return (ListenerContact) listener;
     	}
-    	return null;
+    	return null;  
     }
     
     public View getView(int position, View convertView, ViewGroup viewGroup) {

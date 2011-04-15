@@ -470,21 +470,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	}
 
 	private void openProperties() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(Client.this);
-		builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
-		           public void onClick(DialogInterface dialog, int id) {
-		        	   startActivityForResult(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS), 0);
-		           }
-		       });
-		builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-	           public void onClick(DialogInterface dialog, int id) {
-	        	   dialog.cancel();
-	           }
-	       });
-		builder.setTitle("No internet connection");
-		builder.setMessage("Open connection propeties?");
-		
-		builder.show();
+		NetworkPropertiesDialog networkProperties = new NetworkPropertiesDialog(Client.this);
+		networkProperties.show();
 		
 	}
 
@@ -498,7 +485,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			moveTaskToBack(true);
 			return true;
 			//    		case KeyEvent.KEYCODE_VOLUME_DOWN:
-			//    		case KeyEvent.KEYCODE_VOLUME_UP:
+ 			//    		case KeyEvent.KEYCODE_VOLUME_UP:
 			//				Dialog dialog = new AudioControlDialog(this);
 			//				dialog.show();
 			//				return true;

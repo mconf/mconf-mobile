@@ -285,20 +285,8 @@ public class LoginPage extends Activity {
 							{
 								Toast.makeText(getApplicationContext(), R.string.no_connection, Toast.LENGTH_SHORT).show();
 								//create dialog to connection proprierties
-								AlertDialog.Builder builder = new AlertDialog.Builder(LoginPage.this);
-								builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-								           public void onClick(DialogInterface dialog, int id) {
-								        	   dialog.cancel();
-								           }
-								       });
-								builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
-								           public void onClick(DialogInterface dialog, int id) {
-								        	   startActivityForResult(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS), 0);
-								           }
-								       });
-								builder.setTitle("No internet connection");
-								builder.setMessage("Open connection propeties?");
-								builder.show();
+								NetworkPropertiesDialog networkProperties = new NetworkPropertiesDialog(LoginPage.this);
+								networkProperties.show();
 							}
 							else
 								Toast.makeText(getApplicationContext(), R.string.login_cant_contact_server, Toast.LENGTH_SHORT).show();

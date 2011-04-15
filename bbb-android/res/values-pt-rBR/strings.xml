@@ -52,6 +52,7 @@
 	<string name="reconnected">Reconectado com sucesso</string>
 	<string name="reconnect">Reconectar</string>
 	<string name="no_connection">Sem conexão com a internet</string>
+	<string name="open_properties">Abrir propriedades de conexão?</string>
 	<string name="choose_a_server_to_login">Escolha um servidor para conectar</string>
 	<string name="kicked">Você foi expulso da sala</string>
 	<string name="new_meeting">Criar nova sala</string>
