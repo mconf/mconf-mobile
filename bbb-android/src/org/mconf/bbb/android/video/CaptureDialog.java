@@ -34,17 +34,11 @@ public class CaptureDialog extends Dialog {
 	private static final Logger log = LoggerFactory.getLogger(CaptureDialog.class);
 		
 	private VideoCapture videoWindow;
-	private int userId;
-	private String name;
-	
-	public CaptureDialog(Context context, int userIdLocal, String nameLocal) {
+		
+	public CaptureDialog(Context context) {
 		super(context);
 		
-		setVideoId(userIdLocal);
-		setVideoName(nameLocal);
-		
 		requestWindowFeature(Window.FEATURE_NO_TITLE); //Removes the title from the Dialog
-		ViewGroup.LayoutParams x = new ViewGroup.LayoutParams(320,240);
 		setContentView(R.layout.video_capture);
 		
 		android.view.WindowManager.LayoutParams windowAttributes = getWindow().getAttributes();		
@@ -56,30 +50,14 @@ public class CaptureDialog extends Dialog {
 		videoWindow = (VideoCapture) findViewById(R.id.video_capture);
 		//videoWindow.start(userId, true);
 		
-		setTitle(name);
+		setTitle("Camera preview");
 		setCancelable(true);		
 	}
 	
-	private void setVideoId(int userIdLocal){
-		userId = userIdLocal;
-	}
-	
-	private void setVideoName(String userName){
-		name = userName;
-	}
-	
-	public int getVideoId(){
-		return userId;
-	}
-	
-	public String getVideoName(){
-		return name;
-	}
-	
-	@Override
-	protected void onStop() {
-		super.onStop();
-
-		//videoWindow.onPause();
-	}
+//	@Override
+//	protected void onStop() {
+//		super.onStop();
+//
+//		videoWindow.surfaceDestroyed(videoWindow.mHolder);
+//	}
 }

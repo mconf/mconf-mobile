@@ -3,14 +3,20 @@ package org.mconf.bbb.android.video;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
+import org.mconf.bbb.android.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
+import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.WindowManager;
+import android.view.ViewGroup.LayoutParams;
 
 public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,Camera.PreviewCallback {
 	
@@ -19,9 +25,12 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     Camera mCamera;
     private byte[] mJavaBuffer;
     private int bufSize;
+    private static final float defaultAspectRatio = 4 / (float) 3;
+    private static final int width = 320;
+    private static final int height = 240;
     
-    public VideoCapture(Context context) {
-        super(context);
+    public VideoCapture(Context context, AttributeSet attrs) {
+        super(context, attrs);
         
         // Install a SurfaceHolder.Callback so we get notified when the
         // underlying surface is created and destroyed.
@@ -31,6 +40,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     }
 
     // VideoCapture is started or resumed
+    @Override
     public void surfaceCreated(SurfaceHolder holder) {
         // The Surface has been created, acquire the camera and tell it where
         // to draw.
@@ -44,6 +54,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
       	}
     }
 
+    @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         // Surface will be destroyed when we return, so stop the preview.
         // Because the CameraDevice object is not a shared resource, it's very
@@ -52,19 +63,50 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         mCamera.release();
         mCamera = null;
         
-        endEncoder();
+        endEncoder();        
     }
     
+    static public DisplayMetrics getDisplayMetrics(Context context){
+		DisplayMetrics metrics = new DisplayMetrics();
+		Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        display.getMetrics(metrics);
+        return metrics;
+	}
+    
+    @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-    	// Now that the size is known, set up the camera parameters, init the native side and begin
+    	// Set up the camera parameters, init the native side and begin
         // the preview.        
         Camera.Parameters parameters = mCamera.getParameters();
 //        Log.v("Java", String.format("PICTURE FORMAT %d\n",parameters.getPictureFormat()));
 //        Log.v("Java", String.format("PREVIEW FORMAT %d\n",parameters.getPreviewFormat()));
 //        Log.v("Java", String.format("PREVIEW FRAMERATE %d\n",parameters.getPreviewFrameRate()));
-        int frameRate = 15;
+        int frameRate = 15;        
+        
+        LayoutParams layoutParams = getLayoutParams();
+		DisplayMetrics metrics = getDisplayMetrics(getContext());
+		log.debug("Maximum display resolution: {} X {}\n", metrics.widthPixels, metrics.heightPixels);
+		h = 0;
+		w = 0;
+		boolean inDialog = true;
+		if(inDialog){
+			metrics.widthPixels -= 40;
+			metrics.heightPixels -= 40;
+		}
+		float displayAspectRatio = metrics.widthPixels / (float) metrics.heightPixels;
+		if (displayAspectRatio < defaultAspectRatio) {
+			w = metrics.widthPixels;
+			h = (int) (w / defaultAspectRatio);
+		} else {
+			h = metrics.heightPixels;
+			w = (int) (h * defaultAspectRatio);			
+		}
+		layoutParams.width = w;
+		layoutParams.height = h;
+		setLayoutParams(layoutParams);		
+        
         parameters.setPreviewFrameRate(frameRate);        
-        parameters.setPreviewSize(w, h);
+        parameters.setPreviewSize(width, height);
         mCamera.setParameters(parameters);
 //        Log.v("Java", String.format("PREVIEW FRAMERATE %d\n",parameters.getPreviewFrameRate()));
         
@@ -209,6 +251,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 		}
     }
     
+    @Override
     public void onPreviewFrame (byte[] _data, Camera camera)
     {
        	addCallbackBuffer_Android2p2(_data);

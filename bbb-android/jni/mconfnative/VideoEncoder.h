@@ -67,11 +67,7 @@ public:
 	~VideoEncoder() {
 		Log("~VideoEncoder() begin");
 
-		// \todo syncronize the finalize of the encoder to solve the end problem!
-		Seconds(1).sleep();
-
 		stop();
-		queue_broadcast(encoded_video);
 
 		//TODO Check if video_enc was created before we can stop it?
 		video_enc->stop();
@@ -134,7 +130,11 @@ public:
 		_mutex.lock();
 
 		if (_thread) {
+			// \todo syncronize the finalize of the encoder to solve the end problem!
+			Seconds(1).sleep();
+
 			stopThread = true;
+			queue_broadcast(encoded_video);
 			if (_thread->isRunning()) {
 				_thread->join(NULL);
 			}

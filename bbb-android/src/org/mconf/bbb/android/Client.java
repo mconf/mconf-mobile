@@ -23,6 +23,7 @@ package org.mconf.bbb.android;
 
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.IBigBlueButtonClientListener;
+import org.mconf.bbb.android.video.CaptureDialog;
 import org.mconf.bbb.android.video.VideoCapture;
 import org.mconf.bbb.android.video.VideoDialog;
 import org.mconf.bbb.android.video.VideoFullScreen;
@@ -146,6 +147,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	private int addedMessages=0;
 	
 	private VideoDialog mVideoDialog;
+	private CaptureDialog mCaptureDialog;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -395,9 +397,11 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			return true;
 			
 		case MENU_START_VIDEO:
-			VideoCapture mCapture = new VideoCapture(getApplicationContext());
-		    ViewGroup.LayoutParams captureParams = new ViewGroup.LayoutParams(320,240);
-		    setContentView(mCapture, captureParams);
+			int orientation = getResources().getConfiguration().orientation;
+			if(orientation==Configuration.ORIENTATION_PORTRAIT)
+				showCapture(true);
+			else 
+				showCapture(false);			
 			return true;			
 
 		case MENU_MUTE:
@@ -767,6 +771,18 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			intent.putExtra("userId", videoId);
 			intent.putExtra("name", videoName);			
 			startActivity(intent);
+		}
+	}
+	
+	private void showCapture(boolean inDialog){
+		if(inDialog){
+			mCaptureDialog = new CaptureDialog(this);
+			mCaptureDialog.show();
+		} else {
+//			Intent intent = new Intent(getApplicationContext(), VideoFullScreen.class);
+//			intent.putExtra("userId", videoId);
+//			intent.putExtra("name", videoName);			
+//			startActivity(intent);
 		}
 	}
 	
