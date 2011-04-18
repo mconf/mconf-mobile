@@ -27,9 +27,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         // underlying surface is created and destroyed.
         mHolder = getHolder();
         mHolder.addCallback(this);
-        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);        
-        
-        initEncoder();
+        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
 
     // VideoCapture is started or resumed
@@ -58,13 +56,16 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     }
     
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-        // Now that the size is known, set up the camera parameters and begin
+    	// Now that the size is known, init the native side, set up the camera parameters and begin
         // the preview.
+    	int frameRate = 15;
+    	initEncoder(w, h, frameRate);
+        
         Camera.Parameters parameters = mCamera.getParameters();
 //        Log.v("Java", String.format("PICTURE FORMAT %d\n",parameters.getPictureFormat()));
 //        Log.v("Java", String.format("PREVIEW FORMAT %d\n",parameters.getPreviewFormat()));
 //        Log.v("Java", String.format("PREVIEW FRAMERATE %d\n",parameters.getPreviewFrameRate()));
-//        parameters.setPreviewFrameRate(15);        
+        parameters.setPreviewFrameRate(frameRate);        
         parameters.setPreviewSize(w, h);
         mCamera.setParameters(parameters);
 //        Log.v("Java", String.format("PREVIEW FRAMERATE %d\n",parameters.getPreviewFrameRate()));
@@ -238,7 +239,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	log.debug("Video native libraries loaded");    
     }
     
-    private native int initEncoder();
+    private native int initEncoder(int width, int height, int frameRate);
 	private native int endEncoder();
     private native int enqueueFrame(byte[] data, int length);	
 }

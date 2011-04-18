@@ -31,6 +31,7 @@
 	<string name="speaker">Speaker</string>
 	<string name="start_voice">Start voice</string>
 	<string name="stop_voice">Stop voice</string>
+	<string name="start_video">Start video</string>
 	<string name="quit">Quit</string>
 	<string name="logout">Logout</string>
 	<string name="raise_hand">Raise hand</string>

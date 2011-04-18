@@ -31,6 +31,7 @@
 	<string name="speaker">Speaker</string>
 	<string name="start_voice">Iniciar voz</string>
 	<string name="stop_voice">Parar voz</string>
+	<string name="start_video">Iniciar video</string>
 	<string name="quit">Sair</string>
 	<string name="logout">Fechar sala</string>
 	<string name="raise_hand">Levantar a mão</string>

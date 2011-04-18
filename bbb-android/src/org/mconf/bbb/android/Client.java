@@ -92,6 +92,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	public static final int MENU_SPEAKER = Menu.FIRST + 6;
 	public static final int MENU_AUDIO_CONFIG = Menu.FIRST + 7;
 	public static final int MENU_ABOUT = Menu.FIRST + 8;
+	public static final int MENU_START_VIDEO = Menu.FIRST + 9;
 	
 	public static final int KICK_USER = Menu.FIRST;
 	public static final int MUTE_LISTENER = Menu.FIRST+1;
@@ -302,15 +303,12 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			startPrivateChat(contact);
 			return true;
 		case SHOW_VIDEO:
-			/*int orientation = getResources().getConfiguration().orientation;
+			int orientation = getResources().getConfiguration().orientation;
 			if(orientation==Configuration.ORIENTATION_PORTRAIT)
 				showVideo(true, contact.getUserId(), contact.getName());
 			else 
 				showVideo(false, contact.getUserId(), contact.getName());
-			return true;*/
-			VideoCapture mCapture = new VideoCapture(getApplicationContext());
-			   ViewGroup.LayoutParams x = new ViewGroup.LayoutParams(320,240);
-			   setContentView(mCapture, x);
+			return true;
 		}
 		return super.onContextItemSelected(item);
 	}
@@ -373,6 +371,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		} else {
 			menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, R.string.start_voice).setIcon(android.R.drawable.ic_btn_speak_now);
 		}
+		menu.add(Menu.NONE, MENU_START_VIDEO, Menu.NONE, R.string.start_video).setIcon(android.R.drawable.ic_btn_speak_now);
 //		if (bbb.getUsersModule().getParticipants().get(bbb.getMyUserId()).isRaiseHand())
 //			menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.lower_hand).setIcon(android.R.drawable.ic_menu_myplaces);
 //		else
@@ -394,6 +393,12 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		case MENU_STOP_VOICE:
 			voice.hang();
 			return true;
+			
+		case MENU_START_VIDEO:
+			VideoCapture mCapture = new VideoCapture(getApplicationContext());
+		    ViewGroup.LayoutParams captureParams = new ViewGroup.LayoutParams(320,240);
+		    setContentView(mCapture, captureParams);
+			return true;			
 
 		case MENU_MUTE:
 			voice.muteCall(!voice.isMuted());

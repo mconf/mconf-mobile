@@ -29,15 +29,14 @@ private:
 	uint8_t *aux;
 
 public:
-	VideoEncoder(JNIEnv *env, jobject obj) {
+	VideoEncoder(JNIEnv *env, jobject obj, jint width, jint height, jint frameRate) {
 		Log("VideoEncoder() begin");
 
 		assignBuffers(env, obj);
-
 		EncodeVideoParams * paramsVideo = new EncodeVideoParams();
-		setVideoParams(&paramsVideo);
+		setVideoParams(width, height, frameRate, &paramsVideo);
 
-		initNV21toYUV420P(paramsVideo->getWidth(), paramsVideo->getHeight()); //use this if it is necessary to convert from yuv420sp to yuv420p before encoding
+		initNV21toYUV420P(width, height); //use this if it is necessary to convert from yuv420sp to yuv420p before encoding
 
 		decoded_video = queue_create();
 		encoded_video = queue_create();
@@ -172,7 +171,7 @@ public:
 		return NULL;
 	}
 
-	void setVideoParams(EncodeVideoParams ** paramsVideo){
+	void setVideoParams(jint width, jint height, jint frameRate, EncodeVideoParams ** paramsVideo){
 		//		pixel format:
 		//		default:IvaPixFmt::FMT_YUV420P
 		//		possible:
@@ -214,7 +213,7 @@ public:
 		//		COMMON_CODEC_VIDEO_MIN_FPS          2       ///< lowest
 		//		COMMON_CODEC_VIDEO_MAX_FPS          60      ///< highest
 		//		iva docs: any value between 1 and 60
-				(*paramsVideo)->setFrameRate(15);
+				(*paramsVideo)->setFrameRate(frameRate);
 
 		//		width:
 		//		default:COMMON_VIDEO_DEFAULT_WIDTH
@@ -223,7 +222,7 @@ public:
 		//		COMMON_CODEC_VIDEO_MIN_WIDTH        180     ///< lowest
 		//		COMMON_CODEC_VIDEO_MAX_WIDTH        1440    ///< highest
 		//		iva docs: 1280, 720 and 360 are allowed
-				(*paramsVideo)->setWidth(320);
+				(*paramsVideo)->setWidth(width);
 
 		//		heigth:
 		//		default:COMMON_VIDEO_DEFAULT_HEIGHT
@@ -232,7 +231,7 @@ public:
 		//		COMMON_CODEC_VIDEO_MIN_HEIGHT       120     ///< Lowest
 		//		COMMON_CODEC_VIDEO_MAX_HEIGHT       960     ///< Highest
 		//		iva docs: 720, 480 e 240 are allowed
-				(*paramsVideo)->setHeight(240);
+				(*paramsVideo)->setHeight(height);
 
 		//		gop:
 		//		default:COMMON_VIDEO_DEFAULT_GOP
@@ -251,6 +250,7 @@ public:
 		halfby = quarterpixels+pixels;
 
 		if(aux){
+			aux = NULL;
 			free(aux);
 		}
 		aux = (uint8_t *) malloc(halfpixels);
