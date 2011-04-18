@@ -6,8 +6,6 @@
 #include "iva/encode/EncodeVideo.h"
 #include "iva/encode/EncodeVideoParams.h"
 
-//#include <cstring> // TODO Gian: include this if it is necessary to convert from yuv420sp to yuv420p before encoding
-
 class VideoEncoder {
 
 private:
@@ -22,7 +20,7 @@ private:
 
 	int8_t * javaBuffer;
 	jobject JavaSenderClass;
-	jmethodID JavaOnFrameReady;
+	jmethodID JavaOnReadyFrame;
 	JNIEnv* envGlobal;
 
 	int pixels, halfpixels, quarterpixels, halfby;
@@ -32,7 +30,12 @@ public:
 	VideoEncoder(JNIEnv *env, jobject obj, jint width, jint height, jint frameRate) {
 		Log("VideoEncoder() begin");
 
-		assignBuffers(env, obj);
+		if(assignBuffers(env, obj) != 0){
+			Log("Error initializing the JNI objects");
+			// TODO Gian handle this error
+//			return;
+		}
+
 		EncodeVideoParams * paramsVideo = new EncodeVideoParams();
 		setVideoParams(width, height, frameRate, &paramsVideo);
 
@@ -82,23 +85,34 @@ public:
 		Log("~VideoEncoder() end");
 	}
 
+	//initialize the JNI variables and functions and assign the java array with the C++ array for the encoded frames
 	int assignBuffers(JNIEnv *env, jobject obj){
 		JavaSenderClass = env->NewGlobalRef(obj);
 		jclass JavaSenderObject = NULL;
 		JavaSenderObject = env->GetObjectClass(JavaSenderClass);
+		JavaOnReadyFrame = NULL;
+		JavaOnReadyFrame = env->GetMethodID(JavaSenderObject, "onReadyFrame", "()I");
+		env->CallIntMethod( JavaSenderClass, JavaOnReadyFrame ); // TODO Gian:
+																 // If we don't call onReadyFrame here,
+																 // then the thread will crash later when
+																 // onReadyFrame is called. This is not
+																 // a problem, but it shouldnt be
+																 // necessary to call onReadyFrame here...
+																 // Se why this is happening
 		jmethodID JavaAssignBuffers = NULL;
 		JavaAssignBuffers = env->GetMethodID(JavaSenderObject, "assignJavaBuffer", "()[B");
 		jbyteArray javaBufferJNI = NULL;
 		javaBufferJNI = (_jbyteArray*)env->CallObjectMethod( JavaSenderClass, JavaAssignBuffers );
 		jboolean isCopy = JNI_TRUE;
-		javaBuffer = (int8_t*)env->GetByteArrayElements(javaBufferJNI, &isCopy);
+		javaBuffer = (int8_t*)env->GetByteArrayElements(javaBufferJNI, &isCopy); // this call assigns the C++ buffer with
+																				 // the Java buffer that will be the encoded frame
 		if( !javaBuffer )
 		{
-			Log("JNI::GetByteArrayElements() failed! we will crash now");
-			return (-1);
+			Log("ERROR: JNI::GetByteArrayElements() failed!");
+			return -1;
 		}
 		if( isCopy == JNI_TRUE )
-			Log("JNI returns a copy of byte (or short) array - this is slow");
+			Log("WARNING: JNI returns a copy of byte array - this is slow");
 		return 0;
 	}
 
@@ -135,6 +149,7 @@ public:
 
 	int start()
 	{
+		_thread = NULL;
 		stop();
 
 		_mutex.lock();
@@ -156,14 +171,19 @@ public:
 		QueueExtraData * extraData;
 
 		while (!stopThread) {
-
 			ret = queue_dequeueCond(consumer, &buffer, &bufferSize, &timestamp, &extraData);
 			if (ret != E_OK) {
 				continue;
 			}
 
+			// TODO Gian we could avoid this memcpy if we passed the "&javaBuffer" in the queue_dequeueCond
+			// function in the place of the "&buffer". However, if we do that, the C++ buffer loses its link
+			// with the Java buffer.
+			// See if it is possible to do this without losing the link.
+			// If it is not possible, then check if it is possible to avoid the memcpy by linking them again.
 			memcpy(javaBuffer, buffer, bufferSize);
-			envGlobal->CallIntMethod( JavaSenderClass, JavaOnFrameReady );
+			// The java buffer has a new encoded frame. Lets callback java to sinalize it
+			envGlobal->CallIntMethod( JavaSenderClass, JavaOnReadyFrame );
 
 			queue_free(consumer);
 		}

@@ -3,7 +3,6 @@ package org.mconf.bbb.android.video;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
-import org.mconf.bbb.android.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +18,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     SurfaceHolder mHolder;
     Camera mCamera;
     private byte[] mJavaBuffer;
+    private int bufSize;
     
     public VideoCapture(Context context) {
         super(context);
@@ -56,20 +56,25 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     }
     
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-    	// Now that the size is known, init the native side, set up the camera parameters and begin
-        // the preview.
-    	int frameRate = 15;
-    	initEncoder(w, h, frameRate);
-        
+    	// Now that the size is known, set up the camera parameters, init the native side and begin
+        // the preview.        
         Camera.Parameters parameters = mCamera.getParameters();
 //        Log.v("Java", String.format("PICTURE FORMAT %d\n",parameters.getPictureFormat()));
 //        Log.v("Java", String.format("PREVIEW FORMAT %d\n",parameters.getPreviewFormat()));
 //        Log.v("Java", String.format("PREVIEW FRAMERATE %d\n",parameters.getPreviewFrameRate()));
+        int frameRate = 15;
         parameters.setPreviewFrameRate(frameRate);        
         parameters.setPreviewSize(w, h);
         mCamera.setParameters(parameters);
 //        Log.v("Java", String.format("PREVIEW FRAMERATE %d\n",parameters.getPreviewFrameRate()));
         
+        PixelFormat p = new PixelFormat();
+		PixelFormat.getPixelFormatInfo(parameters.getPreviewFormat(),p);
+//		log.debug("Pixel Format {}", parameters.getPreviewFormat());
+//	    log.debug("Bytes per pixel {}, Bits per pixel {}", p.bytesPerPixel, p.bitsPerPixel);
+		bufSize = (w*h*p.bitsPerPixel)/8;
+		mJavaBuffer = new byte[bufSize];
+		initEncoder(w, h, frameRate);        
         
         //hack (idea from http://code.google.com/p/android/issues/detail?id=2794):
         //This kind of hack is safe to be used as explained in the official android documentation
@@ -96,11 +101,6 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 //	    	mCamera.addCallbackBuffer(callbackBuffer);
 //			mCamera.setPreviewCallbackWithBuffer(this);
 //	    } else if(supports hack) {
-            PixelFormat p = new PixelFormat();
-			PixelFormat.getPixelFormatInfo(parameters.getPreviewFormat(),p);
-	//		log.debug("Pixel Format {}", parameters.getPreviewFormat());
-	//	    log.debug("Bytes per pixel {}, Bits per pixel {}", p.bytesPerPixel, p.bitsPerPixel);
-			int bufSize = (w*h*p.bitsPerPixel)/8;
 			 //Must call this before calling addCallbackBuffer to get all the
 	        // reflection variables setup
 	        initForACB();
@@ -211,18 +211,19 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     
     public void onPreviewFrame (byte[] _data, Camera camera)
     {
-    	addCallbackBuffer_Android2p2(_data);
-    	enqueueFrame(_data,_data.length);
+       	addCallbackBuffer_Android2p2(_data);
+       	enqueueFrame(_data,_data.length);
     }
     
     public byte[] assignJavaBuffer()
 	{
-		return mJavaBuffer;
+    	return mJavaBuffer;
 	}
     
-    public void onReadyFrame (byte[] _data)
+    public int onReadyFrame ()
     {
-    	
+    	//mJavaBuffer has the value of the decoded frame
+    	return 0;
     }
     
     static {
