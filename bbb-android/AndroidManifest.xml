@@ -18,7 +18,8 @@
 		<activity android:name=".ServerChoosing"  android:screenOrientation="portrait" />
 		<activity android:name=".Client" android:launchMode="singleTask" android:alwaysRetainTaskState="true"  android:configChanges="orientation|keyboardHidden"/>
 		<activity android:name=".PrivateChat" android:launchMode="singleInstance" android:screenOrientation="portrait"/>
-		<activity android:name=".video.VideoFullScreen" android:configChanges="orientation|keyboardHidden" android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>		
+		<activity android:name=".video.VideoFullScreen" android:configChanges="orientation|keyboardHidden" android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
+		<activity android:name=".video.CaptureFullScreen" android:configChanges="orientation|keyboardHidden" android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>		
 	</application>
 	<uses-sdk android:minSdkVersion="4" />
 

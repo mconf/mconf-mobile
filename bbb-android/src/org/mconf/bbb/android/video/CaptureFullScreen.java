@@ -37,22 +37,16 @@ public class CaptureFullScreen extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		Bundle extras = getIntent().getExtras();
-		int userId = extras.getInt("userId");
-		String name = extras.getString("name");
 
 		setContentView(R.layout.video_capture);
 		
 		videoWindow = (VideoCapture) findViewById(R.id.video_capture);
-		//videoWindow.start(userId, false);
+		videoWindow.centerPreview(false);
 	}
 	
 	@Override
 	protected void onStop() {
 		super.onStop();
-		
-		//videoWindow.onPause();
 	}
 	
 	@Override

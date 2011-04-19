@@ -24,6 +24,7 @@ package org.mconf.bbb.android;
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.android.video.CaptureDialog;
+import org.mconf.bbb.android.video.CaptureFullScreen;
 import org.mconf.bbb.android.video.VideoCapture;
 import org.mconf.bbb.android.video.VideoDialog;
 import org.mconf.bbb.android.video.VideoFullScreen;
@@ -779,10 +780,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			mCaptureDialog = new CaptureDialog(this);
 			mCaptureDialog.show();
 		} else {
-//			Intent intent = new Intent(getApplicationContext(), VideoFullScreen.class);
-//			intent.putExtra("userId", videoId);
-//			intent.putExtra("name", videoName);			
-//			startActivity(intent);
+			Intent intent = new Intent(getApplicationContext(), CaptureFullScreen.class);
+			startActivity(intent);
 		}
 	}
 	
@@ -812,7 +811,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 						findViewById(R.id.frame4).setLayoutParams(params);
 					}
 					else{
-						if(mVideoDialog == null || !mVideoDialog.isShowing()){
+						if((mVideoDialog == null || !mVideoDialog.isShowing()) && (mCaptureDialog == null || !mCaptureDialog.isShowing())){
+							//then it means there is not a Dialog showing video
 							setContentView(R.layout.contacts_list);  
 							setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 						}
@@ -824,6 +824,11 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 						mVideoDialog.dismiss();
 						mVideoDialog=null;
 						showVideo(false, videoId, videoName);
+					}
+					if(mCaptureDialog != null && mCaptureDialog.isShowing()){
+						mCaptureDialog.dismiss();
+						mCaptureDialog=null;
+						showCapture(false);
 					}
 				}
 
