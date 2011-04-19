@@ -20,6 +20,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     SurfaceHolder mHolder;
     Camera mCamera;
     private byte[] sharedBuffer;
+    boolean isAvailableSprintFFC;
     
     public VideoCapture(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -36,20 +37,45 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	LayoutParams layoutParams = VideoCentering.getVideoLayoutParams(VideoCentering.getDisplayMetrics(this.getContext(), inDialog), this.getLayoutParams());
 		setLayoutParams(layoutParams);   	
 	}
-
+    
+    private void checkForSpecificHTCFFCCamera()
+    {
+        try {
+            Class.forName("android.hardware.HtcFrontFacingCamera");
+            isAvailableSprintFFC = true;
+        } catch (Exception ex) {
+            isAvailableSprintFFC = false;
+        }
+    }
+    
     // VideoCapture is started or resumed
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         // The Surface has been created, acquire the camera and tell it where
-        // to draw.
-        mCamera = Camera.open();
+        // to draw.       
+        checkForSpecificHTCFFCCamera();
+        if (isAvailableSprintFFC) {
+        	try {
+                Method method = Class.forName("android.hardware.HtcFrontFacingCamera").getDeclaredMethod("getCamera", null);
+                mCamera = (Camera) method.invoke(null, null);
+            } catch (Exception ex) {
+                log.debug(ex.toString());
+                // TODO Gian better error handling here?
+            }
+        } else {
+            mCamera = Camera.open();
+            Camera.Parameters parameters = mCamera.getParameters();
+            parameters.set("camera-id", 2);
+            mCamera.setParameters(parameters);
+        }    
+        
         try {
-           //mCamera.setPreviewDisplay(holder);
-        	mCamera.setPreviewDisplay(mHolder);
+            mCamera.setPreviewDisplay(mHolder);
         } catch (IOException exception) {
             mCamera.release();
             mCamera = null;
-      	}
+            // TODO Gian better error handling here?
+       	}
         
         // Set up the camera parameters, init the native side and begin
         // the preview. 
@@ -61,7 +87,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 		final int widthCaptureResolution = 320;
 	    final int heightCaptureResolution = 240;
         parameters.setPreviewFrameRate(frameRate);        
-        parameters.setPreviewSize(widthCaptureResolution, heightCaptureResolution);
+        parameters.setPreviewSize(widthCaptureResolution, heightCaptureResolution);        
         mCamera.setParameters(parameters);
 //        Log.v("Java", String.format("PREVIEW FRAMERATE %d\n",parameters.getPreviewFrameRate()));
         
