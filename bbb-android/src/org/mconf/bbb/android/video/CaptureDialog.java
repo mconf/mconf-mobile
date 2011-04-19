@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.view.ViewGroup;
 import android.view.Window;
 
 public class CaptureDialog extends Dialog {	
@@ -48,16 +47,9 @@ public class CaptureDialog extends Dialog {
 		getWindow().setAttributes(windowAttributes);
 		
 		videoWindow = (VideoCapture) findViewById(R.id.video_capture);
-		//videoWindow.start(userId, true);
+		videoWindow.centerPreview(true);
 		
 		setTitle("Camera preview");
 		setCancelable(true);		
 	}
-	
-//	@Override
-//	protected void onStop() {
-//		super.onStop();
-//
-//		videoWindow.surfaceDestroyed(videoWindow.mHolder);
-//	}
 }

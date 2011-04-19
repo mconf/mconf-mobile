@@ -10,8 +10,6 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.view.Display;
-import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 
 public class VideoSurface extends GLSurfaceView {
@@ -32,34 +30,16 @@ public class VideoSurface extends GLSurfaceView {
 	private static final Logger log = LoggerFactory.getLogger(VideoSurface.class);
 	private VideoRenderer mRenderer;		
 	private VideoHandler videoHandler;
-	private static final float defaultAspectRatio = 4 / (float) 3;
 	
 	public VideoSurface(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 	
-	public void start(int userId, boolean inDialog) {		
-		LayoutParams layoutParams = getLayoutParams();
-		DisplayMetrics metrics = getDisplayMetrics(getContext());
-		log.debug("Maximum display resolution: {} X {}\n", metrics.widthPixels, metrics.heightPixels);
-		int h = 0, w = 0;
-		if(inDialog){
-			metrics.widthPixels -= 40;
-			metrics.heightPixels -= 40;
-		}
-		float displayAspectRatio = metrics.widthPixels / (float) metrics.heightPixels;
-		if (displayAspectRatio < defaultAspectRatio) {
-			w = metrics.widthPixels;
-			h = (int) (w / defaultAspectRatio);
-		} else {
-			h = metrics.heightPixels;
-			w = (int) (h * defaultAspectRatio);			
-		}
-		layoutParams.width = w;
-		layoutParams.height = h;
+	public void start(int userId, boolean inDialog) {
+		DisplayMetrics metrics = VideoCentering.getDisplayMetrics(this.getContext(), inDialog);
+		LayoutParams layoutParams = VideoCentering.getVideoLayoutParams(metrics, this.getLayoutParams());
 		setLayoutParams(layoutParams);		
-		 
-        initDrawer(metrics.widthPixels, metrics.heightPixels, w, h, 0, 0);
+        initDrawer(metrics.widthPixels, metrics.heightPixels, layoutParams.width, layoutParams.height, 0, 0);
 
         mRenderer = new VideoRenderer(this);
 		setRenderer(mRenderer);
@@ -77,13 +57,6 @@ public class VideoSurface extends GLSurfaceView {
 		videoHandler.stop();
 		
 		endDrawer();
-	}
-	
-	static public DisplayMetrics getDisplayMetrics(Context context){
-		DisplayMetrics metrics = new DisplayMetrics();
-		Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        display.getMetrics(metrics);
-        return metrics;
 	}
 		
 	static {

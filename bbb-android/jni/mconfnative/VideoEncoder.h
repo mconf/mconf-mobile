@@ -88,13 +88,7 @@ public:
 		JavaSenderObject = env->GetObjectClass(JavaSenderClass);
 		JavaOnReadyFrame = NULL;
 		JavaOnReadyFrame = env->GetMethodID(JavaSenderObject, "onReadyFrame", "(I)I");
-		env->CallIntMethod( JavaSenderClass, JavaOnReadyFrame, 0 ); // TODO Gian:
-																 // If we don't call onReadyFrame here,
-																 // then the thread will crash later when
-																 // onReadyFrame is called. This is not
-																 // a problem, but it shouldnt be
-																 // necessary to call onReadyFrame here...
-																 // Se why this is happening
+		env->CallIntMethod( JavaSenderClass, JavaOnReadyFrame, 0 );
 		jmethodID JavaAssignBuffers = NULL;
 		JavaAssignBuffers = env->GetMethodID(JavaSenderObject, "assignJavaBuffer", "()[B");
 		jbyteArray javaBufferJNI = NULL;
