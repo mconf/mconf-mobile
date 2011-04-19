@@ -23,7 +23,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	private static final Logger log = LoggerFactory.getLogger(VideoCapture.class);
     SurfaceHolder mHolder;
     Camera mCamera;
-    private byte[] mJavaBuffer;
+    private byte[] sharedBuffer;
     private int bufSize;
     private static final float defaultAspectRatio = 4 / (float) 3;
     private static final int width = 320;
@@ -115,7 +115,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 //		log.debug("Pixel Format {}", parameters.getPreviewFormat());
 //	    log.debug("Bytes per pixel {}, Bits per pixel {}", p.bytesPerPixel, p.bitsPerPixel);
 		bufSize = (w*h*p.bitsPerPixel)/8;
-		mJavaBuffer = new byte[bufSize];
+		sharedBuffer = new byte[bufSize]; //the encoded frame will never be bigger than the not encoded	
 		initEncoder(w, h, frameRate);        
         
         //hack (idea from http://code.google.com/p/android/issues/detail?id=2794):
@@ -260,12 +260,13 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     
     public byte[] assignJavaBuffer()
 	{
-    	return mJavaBuffer;
+    	return sharedBuffer;
 	}
     
-    public int onReadyFrame ()
+    public int onReadyFrame (int bufferSize)
     {
-    	//mJavaBuffer has the value of the decoded frame
+    	//sharedBuffer has the data of the encoded frame
+    	//bufferSize has the length of the encoded frame (it is <= sharedBuffer.length)
     	return 0;
     }
     

@@ -18,7 +18,7 @@ private:
 	Thread<VideoEncoder> * _thread;
 	Mutex _mutex;
 
-	int8_t * javaBuffer;
+	int8_t * sharedBuffer;
 	jobject JavaSenderClass;
 	jmethodID JavaOnReadyFrame;
 	JNIEnv* envGlobal;
@@ -87,8 +87,8 @@ public:
 		jclass JavaSenderObject = NULL;
 		JavaSenderObject = env->GetObjectClass(JavaSenderClass);
 		JavaOnReadyFrame = NULL;
-		JavaOnReadyFrame = env->GetMethodID(JavaSenderObject, "onReadyFrame", "()I");
-		env->CallIntMethod( JavaSenderClass, JavaOnReadyFrame ); // TODO Gian:
+		JavaOnReadyFrame = env->GetMethodID(JavaSenderObject, "onReadyFrame", "(I)I");
+		env->CallIntMethod( JavaSenderClass, JavaOnReadyFrame, 0 ); // TODO Gian:
 																 // If we don't call onReadyFrame here,
 																 // then the thread will crash later when
 																 // onReadyFrame is called. This is not
@@ -100,9 +100,9 @@ public:
 		jbyteArray javaBufferJNI = NULL;
 		javaBufferJNI = (_jbyteArray*)env->CallObjectMethod( JavaSenderClass, JavaAssignBuffers );
 		jboolean isCopy = JNI_TRUE;
-		javaBuffer = (int8_t*)env->GetByteArrayElements(javaBufferJNI, &isCopy); // this call assigns the C++ buffer with
+		sharedBuffer = (int8_t*)env->GetByteArrayElements(javaBufferJNI, &isCopy); // this call assigns the C++ buffer with
 																				 // the Java buffer that will be the encoded frame
-		if( !javaBuffer )
+		if( !sharedBuffer )
 		{
 			Log("ERROR: JNI::GetByteArrayElements() failed!");
 			return -1;
@@ -176,14 +176,14 @@ public:
 				continue;
 			}
 
-			// TODO Gian we could avoid this memcpy if we passed the "&javaBuffer" in the queue_dequeueCond
+			// TODO Gian we could avoid this memcpy if we passed the "&sharedBuffer" in the queue_dequeueCond
 			// function in the place of the "&buffer". However, if we do that, the C++ buffer loses its link
 			// with the Java buffer.
 			// See if it is possible to do this without losing the link.
 			// If it is not possible, then check if it is possible to avoid the memcpy by linking them again.
-			memcpy(javaBuffer, buffer, bufferSize);
-			// The java buffer has a new encoded frame. Lets callback java to sinalize it
-			envGlobal->CallIntMethod( JavaSenderClass, JavaOnReadyFrame );
+			memcpy(sharedBuffer, buffer, bufferSize);
+			// The shared buffer has a new encoded frame. Lets callback java to sinalize it
+			envGlobal->CallIntMethod( JavaSenderClass, JavaOnReadyFrame, (jint)bufferSize );
 
 			queue_free(consumer);
 		}
