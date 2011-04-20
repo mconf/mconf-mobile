@@ -251,7 +251,7 @@ public:
 		//		default:COMMON_VIDEO_DEFAULT_GOP
 		//		possible:
 		//		COMMON_VIDEO_DEFAULT_GOP              12                        ///< GOP default
-		//		(*paramsVideo)->setGopSize(32);
+				(*paramsVideo)->setGopSize(5);
 	}
 
 	// Initializes global vars to optimize the conversion.

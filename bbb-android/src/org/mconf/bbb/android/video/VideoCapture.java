@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -21,6 +22,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     Camera mCamera;
     private byte[] sharedBuffer;
     boolean isAvailableSprintFFC;
+    boolean usingHidden;
+    boolean usingSlow;
     
     public VideoCapture(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -97,8 +100,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 		sharedBuffer = new byte[bufSize]; //the encoded frame will never be bigger than the not encoded	
 		initEncoder(widthCaptureResolution, heightCaptureResolution, frameRate);        
         
-        //hack (idea from http://code.google.com/p/android/issues/detail?id=2794):
-        //This kind of hack is safe to be used as explained in the official android documentation
+        //java reflection (idea from http://code.google.com/p/android/issues/detail?id=2794):
+        //This kind of java reflection is safe to be used as explained in the official android documentation
         //on (http://developer.android.com/resources/articles/backward-compatibility.html).
         //Explanation: The method setPreviewCallback exists since Android's API level 1.
         //An alternative method is the setPreviewCallbackWithBuffer, which exists since API level 8 (Android 2.2).
@@ -110,18 +113,18 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         //avoiding the GC to perform.
         //In mconf we want compatibility with API levels lower than 8.
         //The setPreviewCallbackWithBuffer method is implemented on a Debug class on API levels lower than 8.
-        //In order to use it, we need to use Java Reflection (and this is what this hack consists on).
-        // TODO Gian: until now we know that the setPreviewCallbackWithBuffer method can be called 
-        //using Java reflection on 2.0.1 and higher android versions. We have to test this hack on emulator
-        //on lower android versions to determine what is the lower version which we can use this.
-        //Then, the idea is to verify the version on the fly like this:
-        //if(version >= 2.2){then call setPreviewCallbackWithBuffer normally}
-        //elseif(version < 2.2 AND version supports the hack){then use the hack}
-        //else{use the setPreviewCallback method or look for an alternative if the performance is too low}        
-//	    if(2.2 or higher){
-//	    	mCamera.addCallbackBuffer(callbackBuffer);
-//			mCamera.setPreviewCallbackWithBuffer(this);
-//	    } else if(supports hack) {
+        //In order to use it, we need to use Java Reflection.      
+		if (Integer.parseInt(Build.VERSION.SDK) >= 8){ //if(2.2 or higher){
+			log.debug("Using fast preview callback");
+			usingHidden = false;
+			usingSlow = false;
+			byte[] buffer = new byte[bufSize];
+			mCamera.addCallbackBuffer(buffer);
+			mCamera.setPreviewCallbackWithBuffer(this);
+	    } else if(HiddenCallbackWithBuffer()) { //} else if(has the methods hidden){
+	    	log.debug("Using fast but hidden preview callback");
+	        usingHidden = true;
+			usingSlow = false;
 			 //Must call this before calling addCallbackBuffer to get all the
 	        // reflection variables setup
 	        initForACB();
@@ -131,9 +134,12 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	        buffer = new byte[bufSize];
 	        addCallbackBuffer_Android2p2(buffer);
 	        setPreviewCallbackWithBuffer_Android2p2();
-//    	} else {
-//	        mCamera.setPreviewCallback(this);        
-//    	}
+	    } else {
+	    	log.debug("Using slow preview callback");
+	    	usingHidden = false;
+	    	usingSlow = true;
+	    	mCamera.setPreviewCallback(this);        
+	    }
         
         mCamera.startPreview();
     }
@@ -143,11 +149,13 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         // Surface will be destroyed when we return, so stop the preview.
         // Because the CameraDevice object is not a shared resource, it's very
         // important to release it when the activity is paused.
-        mCamera.stopPreview();
+    	if(usingSlow){
+    		mCamera.setPreviewCallback(null); //this is needed to avoid a crash (http://code.google.com/p/android/issues/detail?id=6201)
+    	}
+    	mCamera.stopPreview();
+        endEncoder();  
         mCamera.release();
-        mCamera = null;
-        
-        endEncoder();        
+        mCamera = null;              
     }
     
     @Override
@@ -155,18 +163,29 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	
     }
     
-    // This method will list all methods of the android.hardware.Camera class,
-    // even the hidden ones. With the information it provides, you can use the same
-    // approach below to expose methods that were written but hidden
-    private void listAllCameraMethods(){
+    // Checks if addCallbackBuffer and setPreviewCallbackWithBuffer are written but hidden.
+    // This method will look for all methods of the android.hardware.Camera class,
+    // even the hidden ones.
+    private boolean HiddenCallbackWithBuffer(){
+    	int exist = 0;    	
     	try {
 			Class c = Class.forName("android.hardware.Camera");
 			Method[] m = c.getMethods();
 			for(int i=0; i<m.length; i++){
-				log.debug("  method:"+m[i].toString());
+				//log.debug("  method:"+m[i].toString());
+				String method = m[i].toString();
+				if(method.indexOf("setPreviewCallbackWithBuffer") != -1 || method.indexOf("addCallbackBuffer") != -1){
+					exist++; 
+				}				
 			}
 		} catch (Exception e) {
-			log.debug("{}",e.toString());
+			log.debug(e.toString());
+			return false;
+		}
+		if(exist == 2){
+			return true;
+		} else {
+			return false;
 		}
     }
     
@@ -250,7 +269,9 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     @Override
     public void onPreviewFrame (byte[] _data, Camera camera)
     {
-       	addCallbackBuffer_Android2p2(_data);
+       	if(usingHidden){
+       		addCallbackBuffer_Android2p2(_data);
+       	}
        	enqueueFrame(_data,_data.length);
     }
     
