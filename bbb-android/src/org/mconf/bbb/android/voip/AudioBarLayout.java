@@ -22,5 +22,7 @@ public class AudioBarLayout extends LinearLayout {
 		params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
 		setLayoutParams(params);
 	}
+	
+	
 
 }
