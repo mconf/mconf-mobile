@@ -68,13 +68,15 @@ public class VoiceModule implements ExtendedCallListener {
 	protected SessionDescriptor local_sdp;
 	protected KeepAliveSip keep_alive;
 
-	private MediaLauncher audio_app = null;
+	protected MediaLauncher audio_app = null;
 
-	private boolean mute = false;
+	protected boolean mute;
+	protected OnCallListener listener;
 
-	final private Context context;
+	final protected Context context;
 
 	public VoiceModule(Context context, String username, String url) {
+		Receiver.mContext = context;
 		this.context = context;
 		
 		SipStack.init();
@@ -162,12 +164,18 @@ public class VoiceModule implements ExtendedCallListener {
 	}
 	
 	public void hang() {
-		closeMediaApplication();
-		if (call != null && isOnCall()) {
+		if (call != null) {
 			call.hangup();
 			call = null;
 		}
-		Receiver.call_state = UserAgent.UA_STATE_IDLE;		
+	}
+	
+	private void onHang() {
+		mute = true;
+		closeMediaApplication();
+		listener.onCallFinished();
+		makeToast(R.string.connection_closed);
+		Receiver.call_state = UserAgent.UA_STATE_IDLE;
 	}
 	
 	protected String getContactURL(String username,SipProvider sip_provider) {
@@ -216,10 +224,10 @@ public class VoiceModule implements ExtendedCallListener {
 		log.debug("===========> onCallAccepted");
 		
 		Receiver.call_state = UserAgent.UA_STATE_INCALL;
-		makeToast(R.string.connection_established);
 		RtpStreamReceiver.good = RtpStreamReceiver.lost = RtpStreamReceiver.loss = RtpStreamReceiver.late = 0;
+		// on each new call, the mute state is reset to "true"
 		mute = true;
-
+		
 		if (getSpeaker() != AudioManager.MODE_IN_CALL &&
 				getSpeaker() != AudioManager.MODE_NORMAL)
 			setSpeaker(AudioManager.MODE_IN_CALL);
@@ -235,6 +243,7 @@ public class VoiceModule implements ExtendedCallListener {
 		call.setLocalSessionDescriptor(local_sdp.toString());
 
 		Codecs.Map codecs = Codecs.getCodec(local_sdp);
+		@SuppressWarnings("unused")
 		int local_audio_port = 0,
 			local_video_port = 0,
 			dtmf_pt = 0,
@@ -277,7 +286,10 @@ public class VoiceModule implements ExtendedCallListener {
 				audio_out, codecs.codec.samp_rate(),
 				user_profile.audio_sample_size,
 				codecs.codec.frame_size(), null, codecs, dtmf_pt);
-		audio_app.startMedia();		
+		audio_app.startMedia();
+		
+		makeToast(R.string.connection_established);
+		listener.onCallStarted();
 	}
 
 	@Override
@@ -285,20 +297,20 @@ public class VoiceModule implements ExtendedCallListener {
 		log.debug("===========> onCallCanceling");
 	}
 
+	// called when the user hangs the call
 	@Override
 	public void onCallClosed(Call call, Message resp) {
 		log.debug("===========> onCallClosed");
 
-		makeToast(R.string.connection_closed);
+		onHang();
 	}
 
+	// called when the user is kicked from the conference
 	@Override
 	public void onCallClosing(Call call, Message bye) {
 		log.debug("===========> onCallClosing");
 		
-		closeMediaApplication();
-		Receiver.call_state = UserAgent.UA_STATE_IDLE;
-		makeToast(R.string.connection_closed);
+		onHang();
 	}
 
 	@Override
@@ -357,6 +369,8 @@ public class VoiceModule implements ExtendedCallListener {
 	}
 
 	public boolean isMuted() {
+		if (!isOnCall())
+			return true;
 		return mute;
 	}
 	
@@ -382,6 +396,10 @@ public class VoiceModule implements ExtendedCallListener {
 		if (audio_app != null)
 			audio_app.speakerMedia(mode);
 		RtpStreamReceiver.speakermode = mode;
+	}
+	
+	public void setListener(OnCallListener listener) {
+		this.listener = listener;
 	}
 	
 	private void makeToast(final int resId) {
