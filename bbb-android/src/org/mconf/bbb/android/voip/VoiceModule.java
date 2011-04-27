@@ -21,6 +21,8 @@
 
 package org.mconf.bbb.android.voip;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -96,7 +98,11 @@ public class VoiceModule implements ExtendedCallListener {
 		user_profile.passwd = "";
 		user_profile.realm = url.replace("http://", "");
 		user_profile.realm_orig = user_profile.realm;
-		user_profile.from_url = username + "@" + user_profile.realm;
+		try {
+			user_profile.from_url = URLEncoder.encode(username, "UTF-8").replace("+", "%20") + "@" + user_profile.realm;
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 	
 		IpAddress.setLocalIpAddress();
 		sip_provider = new SipProvider(IpAddress.localIpAddress, 0);
