@@ -28,7 +28,6 @@ import java.util.Set;
 
 import org.jboss.netty.channel.Channel;
 import org.mconf.bbb.api.JoinService;
-import org.mconf.bbb.api.JoinedMeeting;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.chat.ChatModule;
 import org.mconf.bbb.listeners.ListenersModule;
@@ -45,7 +44,7 @@ public class BigBlueButtonClient {
 	
 	private static final Logger log = LoggerFactory.getLogger(BigBlueButtonClient.class);
 	
-	private MainRtmpConnection mainConnection;
+	private MainRtmpConnection mainConnection = null;
 
 	private JoinService joinService = new JoinService();
 	
@@ -130,7 +129,8 @@ public class BigBlueButtonClient {
 	}
 	
 	public void disconnect() {
-		mainConnection.disconnect();
+		if (mainConnection != null)
+			mainConnection.disconnect();
 	}
 
 	public Collection<Participant> getParticipants() {

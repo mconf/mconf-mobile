@@ -123,6 +123,37 @@ public class JoinService {
 		
 		return joinedMeeting;
 	}
+	
+	public JoinedMeeting join(String serverUrl, String joinUrl) {
+		this.serverUrl = serverUrl;
+		String enterUrl = serverUrl + "/bigbluebutton/api/enter";
+			
+		JoinedMeeting joinedMeeting = new JoinedMeeting();
+		try {
+			HttpClient client = new HttpClient();
+			HttpMethod method = new GetMethod(joinUrl);
+			client.executeMethod(method);
+			method.releaseConnection();
+
+			method = new GetMethod(enterUrl);
+			client.executeMethod(method);
+			joinedMeeting.parse(method.getResponseBodyAsString().trim());
+			method.releaseConnection();
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("Can't join the url {}", joinUrl);
+			
+			return null;
+		}
+		
+		if (joinedMeeting.getReturncode().equals("SUCCESS")) {
+			this.joinedMeeting = joinedMeeting;
+		} else {
+			log.error(joinedMeeting.getMessage());
+		}
+		
+		return joinedMeeting;
+	}
 
 	public static String urlEncode(String s) {	
 		try {

@@ -21,14 +21,9 @@
 
 package org.mconf.bbb.android;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.android.voip.VoiceModule;
-import org.mconf.bbb.api.Meeting;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.listeners.IListener;
 import org.mconf.bbb.listeners.Listener;
@@ -38,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -46,7 +40,6 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
@@ -54,12 +47,10 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.SystemClock;
-import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.Gravity;
@@ -68,26 +59,23 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.SlidingDrawer;
-import android.widget.Spinner;
-import android.widget.SlidingDrawer.OnDrawerCloseListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.SlidingDrawer.OnDrawerCloseListener;
 import android.widget.SlidingDrawer.OnDrawerOpenListener;
-import android.net.NetworkInfo;
 
 
 public class Client extends Activity implements IBigBlueButtonClientListener {
@@ -197,8 +185,6 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			}
 		}
 
-
-
 		slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
 		if(orientation==Configuration.ORIENTATION_LANDSCAPE)
 		{
@@ -209,13 +195,33 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			notificationManager.cancel(CHAT_NOTIFICATION_ID);
 		}
 
+		
+		
+		if (getIntent().hasCategory("android.intent.category.BROWSABLE")
+				&& getIntent().getScheme().equals(getResources().getString(R.string.protocol))) {
+			String joinUrl = getIntent().getData().toString().replace(getResources().getString(R.string.protocol) + "://", "http://");
+			String serverUrl = joinUrl.substring(0, joinUrl.indexOf("/bigbluebutton/api/"));
+			bbb.getJoinService().join(serverUrl, joinUrl);
+       		if (bbb.getJoinService().getJoinedMeeting() != null) {
+       			myusername = bbb.getJoinService().getJoinedMeeting().getFullname();
+       			meetingName = bbb.getJoinService().getJoinedMeeting().getMeetingID();
+       			BigBlueButton.launchedBy = BigBlueButton.LAUNCHED_BY_BROWSER;
+       		} else {
+       			// \TODO show an error message
+       			finish();
+       			return;
+       		}
+		} else if (getIntent().getExtras() != null) {		
+			Bundle extras = getIntent().getExtras();
+			myusername = extras.getString("username");
+			meetingName = extras.getString("meetingName");
+   			BigBlueButton.launchedBy = BigBlueButton.LAUNCHED_BY_APPLICATION;
+		} else {
+   			// \TODO show an error message
+			finish();
+			return;
+		}
 
-
-
-
-		Bundle extras = getIntent().getExtras();
-		myusername = extras.getString("username");
-		meetingName=extras.getString("meetingName");
 		Toast.makeText(getApplicationContext(),getResources().getString(R.string.welcome) + ", " + myusername, Toast.LENGTH_SHORT).show(); 
 
 
@@ -338,7 +344,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 
 	private void quit() {
-		if (voice.isOnCall())
+		if (voice != null && voice.isOnCall())
 			voice.hang();
 		bbb.removeListener(this);
 		bbb.disconnect();
@@ -374,7 +380,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 			menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.lower_hand).setIcon(android.R.drawable.ic_menu_myplaces);
 		else
 			menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.raise_hand).setIcon(android.R.drawable.ic_menu_myplaces);
-		menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, R.string.logout).setIcon(android.R.drawable.ic_menu_revert);
+		if (BigBlueButton.launchedBy == BigBlueButton.LAUNCHED_BY_APPLICATION)
+			menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, R.string.logout).setIcon(android.R.drawable.ic_menu_revert);
 		menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 		menu.add(Menu.NONE, MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
 		//test purposes only

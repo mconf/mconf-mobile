@@ -2,6 +2,7 @@
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 	<string name="app_name">BigBlueButton</string>
+	<string name="protocol">bigbluebutton</string>
 	<string name="login_name">Name:</string>
 	<string name="login_button_join">Join</string>
 	<string name="login_empty_name">Empty username</string>
