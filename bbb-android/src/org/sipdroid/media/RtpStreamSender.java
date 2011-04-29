@@ -82,7 +82,7 @@ public class RtpStreamSender extends Thread {
 
 	/** Whether it is running */
 	boolean running = false;
-	boolean muted = false;
+	boolean muted = true;
 	
 	//DTMF change
 	String dtmf = "";
@@ -356,7 +356,7 @@ public class RtpStreamSender extends Thread {
 				record = null;
 				while (running && (muted || Receiver.call_state == UserAgent.UA_STATE_HOLD)) {
 					try {
-						sleep(1000);
+						sleep(100);
 					} catch (InterruptedException e1) {
 					}
 				}

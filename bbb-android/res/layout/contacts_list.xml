@@ -5,7 +5,8 @@
 	android:background="@color/background">
 	<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
 		android:id="@+id/Scroll" android:layout_width="fill_parent"
-		android:layout_height="fill_parent" android:background="@color/background">
+		android:layout_height="fill_parent" android:background="@color/background"
+		android:layout_above="@+id/audio_bar">
 		<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			android:layout_width="fill_parent" android:layout_height="fill_parent"
 			>
@@ -68,7 +69,8 @@
 	</ScrollView>
 	<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="fill_parent" android:layout_height="wrap_content"
-		android:id="@+id/frame2" android:layout_alignParentBottom="true">
+		android:id="@+id/frame2" android:layout_above="@+id/audio_bar"
+		>
 		<SlidingDrawer android:layout_height="fill_parent"
 			android:handle="@+id/handle" android:content="@+id/chat" android:id="@+id/slide"
 			android:orientation="vertical" android:layout_width="fill_parent">
@@ -82,12 +84,10 @@
 			<!-- http://developer.android.com/resources/articles/layout-tricks-reuse.html -->
 			<include layout="@layout/chat" />
 		</SlidingDrawer>
-
-
-
-
-
 	</FrameLayout>
+	
+	<include layout="@layout/audio_bar" />
+
 
 </RelativeLayout>
 

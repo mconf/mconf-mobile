@@ -15,7 +15,7 @@
 			</intent-filter>
 		</activity>
 		<activity android:name=".ServerChoosing"  android:screenOrientation="portrait" />
-		<activity android:name=".Client" android:launchMode="singleTask" android:alwaysRetainTaskState="true"  android:configChanges="orientation">
+		<activity android:name=".Client" android:launchMode="singleTask" android:alwaysRetainTaskState="true"  android:configChanges="orientation|keyboardHidden">
 			<intent-filter>
 			    <data android:scheme="@string/protocol" />
 			    <action android:name="android.intent.action.VIEW" />
@@ -27,6 +27,9 @@
 		</activity>
 
 	</application>
+	<supports-screens  android:smallScreens="true" android:normalScreens="true" android:largeScreens="true" />
+
+	
 	<uses-sdk android:minSdkVersion="4" />
 
 
