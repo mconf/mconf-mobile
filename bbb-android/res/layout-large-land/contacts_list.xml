@@ -81,20 +81,22 @@
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="0dip" android:layout_height="fill_parent"
 		android:id="@+id/rightSide">
+
+		<LinearLayout android:background="@color/title_background"
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="2dp" android:layout_height="fill_parent"
+			android:id="@+id/separatorSides" android:layout_alignParentLeft="true"/>
+
 		<RelativeLayout android:background="@color/chat_time"
 			xmlns:android="http://schemas.android.com/apk/res/android"
 			android:layout_height="fill_parent" android:id="@+id/rightSideFrame"
 			android:layout_gravity="right" android:layout_width="fill_parent">
-			<LinearLayout android:background="@color/title_background"
-				xmlns:android="http://schemas.android.com/apk/res/android"
-				android:layout_width="2dp" android:layout_height="fill_parent"
-				android:id="@+id/separatorSides" android:layout_alignParentLeft="true"></LinearLayout>
 
 			<RelativeLayout android:background="@color/chat_time"
 				xmlns:android="http://schemas.android.com/apk/res/android"
 				android:layout_height="fill_parent" android:id="@+id/chatFrame"
 				android:layout_toRightOf="@+id/separatorSides" android:layout_width="fill_parent"
-				android:layout_above="@+id/audio_bar_layout">
+				android:layout_above="@+id/audio_bar">
 
 
 				<Button android:layout_width="fill_parent"
@@ -112,38 +114,10 @@
 					<include layout="@layout/chat" android:layout_below="@+id/button" />
 				</LinearLayout>
 
-
 			</RelativeLayout>
 
+			<include layout="@layout/audio_bar" />
 
-
-			<LinearLayout android:background="@color/title_background"
-				xmlns:android="http://schemas.android.com/apk/res/android"
-				android:layout_alignParentBottom="true" android:id="@+id/audio_bar_layout"
-				android:layout_height="wrap_content" android:layout_width="fill_parent">
-				<org.mconf.bbb.android.voip.AudioBarLayout
-					android:id="@+id/audio_bar" android:visibility="visible"
-					android:weightSum="0.50" android:layout_width="fill_parent"
-					android:layout_height="0dip">
-
-					<!-- Button android:id="@+id/audioconfig" android:layout_weight="0.25" 
-						android:gravity="center_horizontal|bottom" android:layout_width="0dip" android:layout_height="fill_parent" 
-						android:drawableTop="@android:drawable/ic_menu_preferences" android:text="Config" 
-						/ -->
-
-					<Button android:id="@+id/lockspeak" android:layout_weight="0.25"
-						android:gravity="center_horizontal|bottom" android:layout_width="0dip"
-						android:layout_height="fill_parent"
-						android:drawableTop="@android:drawable/button_onoff_indicator_off"
-						android:paddingTop="20dip" android:text="@string/lockspeak" />
-
-					<Button android:id="@+id/taptospeak" android:layout_weight="0.25"
-						android:gravity="center_horizontal|bottom" android:layout_width="0dip"
-						android:layout_height="fill_parent" android:drawableTop="@android:drawable/ic_btn_speak_now"
-						android:text="@string/taptospeak" />
-				</org.mconf.bbb.android.voip.AudioBarLayout>
-
-			</LinearLayout>
 		</RelativeLayout>
 	</LinearLayout>
 </LinearLayout>

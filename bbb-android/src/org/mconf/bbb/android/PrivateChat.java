@@ -22,7 +22,6 @@
 package org.mconf.bbb.android;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -261,16 +260,7 @@ public class PrivateChat extends Activity{
 	
 
 	private View getView() {
-		if(orientation == Configuration.ORIENTATION_PORTRAIT)
-		{
-			log.debug("portrait");
-			return getLayoutInflater().inflate(R.layout.chat, null);   
-		}
-		else
-		{
-			log.debug("landscape");
-			return getLayoutInflater().inflate(R.layout.chat_landscape, null);
-		}
+		return getLayoutInflater().inflate(R.layout.chat, null);   
 	}
 
 	//remove all the participants on the chat, when the aplication is closed
