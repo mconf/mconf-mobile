@@ -361,7 +361,7 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		voice.call(bbb.getJoinService().getJoinedMeeting().getVoicebridge());
 		runOnUiThread(new Runnable() {
 			@Override
-			public void run() {
+			public void run() { 
 					audiolayout.show();
 				
 			}
@@ -372,8 +372,8 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 	private void voiceHang() {
 		AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);
 		if (voice.isOnCall())
-			voice.hang();
-		audiolayout.hide();
+			voice.hang(); 
+		audiolayout.hide(); 
 		setOnCall(false);
 	}
 
@@ -915,11 +915,11 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 
 			@Override                                       
 			public void run() {
+				
 				setContentView(R.layout.contacts_list);
 
 				if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE)
 				{
-
 					NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 					notificationManager.cancel(CHAT_NOTIFICATION_ID);
 				}

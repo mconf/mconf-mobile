@@ -136,7 +136,7 @@ public class PrivateChat extends Activity{
 		@Override
 		public void onPrivateChatMessage(final ChatMessage message,
 				IParticipant source) {
-			
+
 			if (source.getUserId() == userId) {
 				onPrivateChatMessage(message);
 				if (flipper.isShown() && flipper.getDisplayedChild() == viewId)
@@ -204,7 +204,7 @@ public class PrivateChat extends Activity{
 	private Animation RightIn;
 	private Animation RightOut;
 	private ViewFlipper flipper;
-	
+
 	private int orientation;
 
 	public static boolean hasUserOnPrivateChat(int userId)
@@ -254,12 +254,12 @@ public class PrivateChat extends Activity{
 		flipper.addView(getView(), index);
 		return index;
 	}
-	
+
 	private void changeView(int index){
 		flipper.addView(getView(), index);
 	}
-
 	
+
 	private View getView() {
 		if(orientation == Configuration.ORIENTATION_PORTRAIT)
 		{
@@ -272,7 +272,7 @@ public class PrivateChat extends Activity{
 			return getLayoutInflater().inflate(R.layout.chat_landscape, null);
 		}
 	}
-	
+
 	//remove all the participants on the chat, when the aplication is closed
 	private void removeAllParticipants()
 
@@ -308,7 +308,7 @@ public class PrivateChat extends Activity{
 		else
 			return null;
 	}
-	
+
 	//create a new participant when a new chat is opened
 	private RemoteParticipant createParticipant(int userId, String username, boolean notified) {
 		log.debug("creating a new remote participant");
@@ -324,19 +324,16 @@ public class PrivateChat extends Activity{
 		else
 			p.setNotified(false);
 
-		//if(p.isNotified()) //if there is a notification shows only 
-			//what the person said, not what I said before closing the private chat
-		//{
-			List<ChatMessage> messages = Client.bbb.getChatModule().getPrivateChatMessage().get(userId);
-			if (messages != null)
-			{
-				for (ChatMessage message : messages) {
-					if(message.getUserId()!=Client.bbb.getMyUserId())
-						p.onPrivateChatMessage(message);
-				}
+
+		List<ChatMessage> messages = Client.bbb.getChatModule().getPrivateChatMessage().get(userId);
+		if (messages != null)
+		{
+			for (ChatMessage message : messages) {
+					p.onPrivateChatMessage(message);
 			}
-		//}
- 
+		}
+
+
 
 		final ListView chatListView = (ListView) flipper.getChildAt(p.getViewId()).findViewById(R.id.messages);
 		chatListView.setOnTouchListener(new View.OnTouchListener() {
@@ -346,7 +343,7 @@ public class PrivateChat extends Activity{
 			}
 		});
 		chatListView.setAdapter(p.getChatAdapter()); 
-		Client.bbb.addListener(p);
+		Client.bbb.addListener(p); 
 		Button send = (Button) flipper.getChildAt(p.getViewId()).findViewById(R.id.sendMessage);
 		send.setOnClickListener(new OnClickListener() {
 			@Override
@@ -361,7 +358,7 @@ public class PrivateChat extends Activity{
 		});
 		return p;
 	}
-	
+
 	//show a especific participant, or creates him if he doesn't already exists
 	private void displayView(Bundle extras) {
 		int userId = extras.getInt("userId");
@@ -385,12 +382,54 @@ public class PrivateChat extends Activity{
 		p.setNotified(false);
 	}
 
+	private void orientationChanged()
+	{
+		flipper.removeAllViews();
+		for(Integer userId:participants.keySet())
+		{
+			final RemoteParticipant p= participants.get(userId);
+			p.setChatAdapter(new ChatAdapter(this));
+			p.setViewId(addView());
+
+			List<ChatMessage> messages = Client.bbb.getChatModule().getPrivateChatMessage().get(userId);
+			if (messages != null)
+			{
+				for (ChatMessage message : messages) {
+						p.onPrivateChatMessage(message);
+				}
+			}
+			
+			final ListView chatListView = (ListView) flipper.getChildAt(p.getViewId()).findViewById(R.id.messages);
+			chatListView.setOnTouchListener(new View.OnTouchListener() {
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					return gestureDetector.onTouchEvent(event);
+				}
+			});
+			chatListView.setAdapter(p.getChatAdapter()); 
+			Client.bbb.addListener(p);
+			Button send = (Button) flipper.getChildAt(p.getViewId()).findViewById(R.id.sendMessage);
+			send.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					EditText text = (EditText) flipper.getChildAt(p.getViewId()).findViewById(R.id.chatMessage);
+					if (text.getText().toString().length() > 0) {
+						Client.bbb.sendPrivateChatMessage(text.getText().toString(), p.getUserId());
+						text.setText("");
+						chatListView.setSelection(chatListView.getCount());
+					}
+				}
+			});
+
+		}
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.private_chat);
 
-		
+
 		Configuration config = getResources().getConfiguration();
 		orientation = config.orientation;
 		log.debug("ON CREATE");
@@ -473,12 +512,12 @@ public class PrivateChat extends Activity{
 						flipper.showNext();
 						//left to right swipe
 					}  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-						
+
 						//flipper.setAnimation(LeftOut);
 						flipper.showPrevious();
 					} else
 						return false;
-					
+
 					int viewId = flipper.getDisplayedChild();
 					setTitle(getResources().getString(R.string.private_chat_title) + getParticipantByViewId(viewId).getUsername());
 					ListView chatListView = (ListView) flipper.getChildAt(viewId).findViewById(R.id.messages);
@@ -545,7 +584,8 @@ public class PrivateChat extends Activity{
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
+	@Override
 	public void onConfigurationChanged(final Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		orientation = newConfig.orientation;
@@ -553,15 +593,14 @@ public class PrivateChat extends Activity{
 
 			@Override
 			public void run() {
-				if(newConfig.orientation==Configuration.ORIENTATION_PORTRAIT)
-					setContentView(R.layout.private_chat);
-				else
-					setContentView(R.layout.private_chat_landscape);
-				
 
-				displayView(getIntent().getExtras());
-				
-				
+				setContentView(R.layout.private_chat);
+
+
+
+				flipper = (ViewFlipper) findViewById(R.id.manyPages);
+
+
 				//gesture detector, to change the participant shown
 				gestureDetector = new GestureDetector(new MyGestureDetector());
 				gestureListener = new View.OnTouchListener() {
@@ -569,14 +608,15 @@ public class PrivateChat extends Activity{
 						return gestureDetector.onTouchEvent(event);
 					}
 				};
+				orientationChanged();
 				registerFinishedReceiver();
 				registerMoveToBackReceiver();
 				registerKickedUser();
 			}
-			
-		
+
+
 		});
-		
+
 	}
 
 }

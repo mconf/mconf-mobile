@@ -331,9 +331,9 @@ public class LoginPage extends Activity {
 							}
 						});
 						spinnerAdapter.add(getApplicationContext().getResources().getString(R.string.new_meeting));
-						spinnerAdapter.notifyDataSetChanged();
+						
 						Spinner spinner = (Spinner) findViewById(R.id.login_spinner);
-
+//NULL pointer          spinner.getChildAt(spinnerAdapter.getCount()-1).setBackgroundResource(R.color.text_selected);
 						// select the created meeting in the list
 						for (int i = 0; i < spinnerAdapter.getCount(); ++i) {
 							if (spinnerAdapter.getItem(i).equals(createdMeeting)) {
