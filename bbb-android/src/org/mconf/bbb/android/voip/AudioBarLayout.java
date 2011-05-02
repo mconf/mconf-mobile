@@ -78,15 +78,10 @@ public class AudioBarLayout extends LinearLayout {
 	}
 	
 	public void updateUI() {
-		if (voice == null) {
-			hide();
-			return;
-		} 
-		
-		if (voice.isOnCall())
+		if (voice != null && voice.isOnCall()) {
 			show();
-		else
+			setLockSpeak(!voice.isMuted());
+		} else
 			hide();
-		setLockSpeak(!voice.isMuted());
 	}
 }

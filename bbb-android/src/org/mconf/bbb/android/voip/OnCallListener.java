@@ -4,4 +4,5 @@ public interface OnCallListener {
 
 	public void onCallStarted();
 	public void onCallFinished();
+	public void onCallRefused();
 }

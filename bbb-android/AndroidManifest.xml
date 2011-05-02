@@ -14,7 +14,7 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name=".ServerChoosing"  android:screenOrientation="portrait" />
+		<activity android:name=".ServerChoosing" />
 		<activity android:name=".Client" android:launchMode="singleTask" android:alwaysRetainTaskState="true"  android:configChanges="orientation|keyboardHidden">
 			<intent-filter>
 			    <data android:scheme="@string/protocol" />

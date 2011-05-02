@@ -29,7 +29,6 @@ import org.mconf.bbb.api.Meeting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -41,7 +40,6 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.preference.PreferenceScreen;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -61,7 +59,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 //page where the user chooses the room, the name, and connects to a conference
-public class LoginPage extends Activity {
+public class LoginPage extends BigBlueButtonActivity {
 
 	private static final Logger log = LoggerFactory.getLogger(LoginPage.class);
 
@@ -150,7 +148,7 @@ public class LoginPage extends Activity {
 						public void onClick(DialogInterface dialog, int which) {
 							createdMeeting = input.getText().toString().trim();
 							
-							if (!Client.bbb.getJoinService().createMeeting(createdMeeting)) {
+							if (!getBigBlueButton().getJoinService().createMeeting(createdMeeting)) {
 								AlertDialog.Builder builder = new AlertDialog.Builder(LoginPage.this);
 								builder.setCancelable(false)
 								       .setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
@@ -202,8 +200,8 @@ public class LoginPage extends Activity {
 					return;
 				}
 
-           		Client.bbb.getJoinService().join((String) spinner.getSelectedItem(), username, moderator);
-           		if (Client.bbb.getJoinService().getJoinedMeeting() == null) {
+				getBigBlueButton().getJoinService().join((String) spinner.getSelectedItem(), username, moderator);
+           		if (getBigBlueButton().getJoinService().getJoinedMeeting() == null) {
                 	Toast.makeText(getApplicationContext(), R.string.login_cant_join, Toast.LENGTH_SHORT).show();
                 	return;
                 }
@@ -270,7 +268,7 @@ public class LoginPage extends Activity {
 		final Thread updateThread = new Thread(new Runnable() {
 			@Override
 			public void run() {			        
-				if (!Client.bbb.getJoinService().load(serverURL)) {
+				if (!getBigBlueButton().getJoinService().load(serverURL)) {
 					progressDialog.dismiss();
 					runOnUiThread(new Runnable() {
 						@Override
@@ -299,7 +297,7 @@ public class LoginPage extends Activity {
 				if (Thread.interrupted())
 					return;
 
-				final List<Meeting> meetings = Client.bbb.getJoinService().getMeetings();
+				final List<Meeting> meetings = getBigBlueButton().getJoinService().getMeetings();
 
 				progressDialog.dismiss();
 

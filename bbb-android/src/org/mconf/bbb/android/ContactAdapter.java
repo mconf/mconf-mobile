@@ -55,7 +55,7 @@ public class ContactAdapter extends BaseAdapter {
 
 	public void addSection(IParticipant participant) {
 		Contact contact = new Contact(participant);
-		if(getUserById(contact.getUserId())==null)//só adiciona se o usuário já não está na lista
+		if(getUserById(contact.getUserId())==null) //only add if the user is not on the list
 			listContact.add(contact);
 	}
 
@@ -150,8 +150,7 @@ public class ContactAdapter extends BaseAdapter {
 		Contact entry = (Contact) listContact.get(position);
 
 		if (convertView == null) {
-			LayoutInflater inflater = (LayoutInflater) context
-			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = inflater.inflate(R.layout.contact, null);
 		}
 		view = convertView;
@@ -160,7 +159,7 @@ public class ContactAdapter extends BaseAdapter {
 		String name = entry.getName();
 		TextView contactName = (TextView) convertView.findViewById(R.id.contact_name);
 		//indicates who you are on the list
-		if (entry.getUserId() == Client.bbb.getMyUserId()) {
+		if (entry.getUserId() == ((BigBlueButton) context.getApplicationContext()).getHandler().getMyUserId()) {
 			name += " (" + context.getResources().getString(R.string.you) + ")";
 			contactName.setTextAppearance(context, R.style.MyNameStyle);
 		} else

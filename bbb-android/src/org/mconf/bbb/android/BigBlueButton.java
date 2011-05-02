@@ -1,19 +1,45 @@
 package org.mconf.bbb.android;
 
 import org.mconf.bbb.BigBlueButtonClient;
+import org.mconf.bbb.android.voip.VoiceModule;
 
 import android.app.Application;
-import android.content.Context;
 
 public class BigBlueButton extends Application {
-	public static BigBlueButtonClient handler = new BigBlueButtonClient();
-
+	private BigBlueButtonClient handler = null;
+//	private VoiceModule voice = null;
+	
+	private int launchedBy = LAUNCHED_BY_NON_SPECIFIED;
 	public static final int LAUNCHED_BY_NON_SPECIFIED = 0;
 	public static final int LAUNCHED_BY_APPLICATION = 1;
 	public static final int LAUNCHED_BY_BROWSER = 2;
-	public static int launchedBy = LAUNCHED_BY_NON_SPECIFIED;
 	
-//	public static BigBlueButton getApp(Context context) {
-//		return (BigBlueButton) context.getApplicationContext();
+	public BigBlueButtonClient getHandler() {
+		if (handler == null)
+			handler = new BigBlueButtonClient();
+		return handler;
+	}
+	
+//	public VoiceModule getVoiceModule() {
+//		if (voice == null)
+//			voice = new VoiceModule(this,
+//					getHandler().getJoinService().getJoinedMeeting().getFullname(),
+//					getHandler().getJoinService().getServerUrl()); 
+//		return voice;
 //	}
+
+//	public void invalidateVoiceModule() {
+//		voice = null;
+//	}
+	/*
+	 *	GETTERS AND SETTERS
+	 */
+	
+	public void setLaunchedBy(int launchedBy) {
+		this.launchedBy = launchedBy;
+	}
+
+	public int getLaunchedBy() {
+		return launchedBy;
+	}
 }

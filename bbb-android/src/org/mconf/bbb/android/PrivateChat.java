@@ -32,7 +32,6 @@ import org.mconf.bbb.users.IParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -56,7 +55,7 @@ import android.widget.ListView;
 import android.widget.ViewFlipper;
 
 
-public class PrivateChat extends Activity{
+public class PrivateChat extends BigBlueButtonActivity {
 
 
 
@@ -270,18 +269,17 @@ public class PrivateChat extends Activity{
 		participants.clear();
 	}
 
-
 	//remove one participant
-	private static void removeParticipant(Integer key)
+	private void removeParticipant(Integer key)
 	{
 		RemoteParticipant p = participants.get(key);
 		if (p != null) {
-			Client.bbb.removeListener(p);
+			getBigBlueButton().removeListener(p);
 			participants.remove(key);
 		}
 	}
 
-	//get the participant key asssociated with a viewFlipper view
+	//get the participant key associated with a viewFlipper view
 	private Integer getParticipantKeyByViewId(int viewId)
 	{
 		for (RemoteParticipant p : participants.values()) {
@@ -315,7 +313,7 @@ public class PrivateChat extends Activity{
 			p.setNotified(false);
 
 
-		List<ChatMessage> messages = Client.bbb.getChatModule().getPrivateChatMessage().get(userId);
+		List<ChatMessage> messages = getBigBlueButton().getChatModule().getPrivateChatMessage().get(userId);
 		if (messages != null)
 		{
 			for (ChatMessage message : messages) {
@@ -333,14 +331,14 @@ public class PrivateChat extends Activity{
 			}
 		});
 		chatListView.setAdapter(p.getChatAdapter()); 
-		Client.bbb.addListener(p); 
+		getBigBlueButton().addListener(p); 
 		Button send = (Button) flipper.getChildAt(p.getViewId()).findViewById(R.id.sendMessage);
 		send.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				EditText text = (EditText) flipper.getChildAt(p.getViewId()).findViewById(R.id.chatMessage);
 				if (text.getText().toString().length() > 0) {
-					Client.bbb.sendPrivateChatMessage(text.getText().toString(), p.getUserId());
+					getBigBlueButton().sendPrivateChatMessage(text.getText().toString(), p.getUserId());
 					text.setText("");
 					chatListView.setSelection(chatListView.getCount());
 				}
@@ -349,7 +347,7 @@ public class PrivateChat extends Activity{
 		return p;
 	}
 
-	//show a especific participant, or creates him if he doesn't already exists
+	//show a specific participant, or creates him if he doesn't already exists
 	private void displayView(Bundle extras) {
 		int userId = extras.getInt("userId");
 		String username = extras.getString("username");
@@ -381,7 +379,7 @@ public class PrivateChat extends Activity{
 			p.setChatAdapter(new ChatAdapter(this));
 			p.setViewId(addView());
 
-			List<ChatMessage> messages = Client.bbb.getChatModule().getPrivateChatMessage().get(userId);
+			List<ChatMessage> messages = getBigBlueButton().getChatModule().getPrivateChatMessage().get(userId);
 			if (messages != null)
 			{
 				for (ChatMessage message : messages) {
@@ -397,14 +395,14 @@ public class PrivateChat extends Activity{
 				}
 			});
 			chatListView.setAdapter(p.getChatAdapter()); 
-			Client.bbb.addListener(p);
+			getBigBlueButton().addListener(p);
 			Button send = (Button) flipper.getChildAt(p.getViewId()).findViewById(R.id.sendMessage);
 			send.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					EditText text = (EditText) flipper.getChildAt(p.getViewId()).findViewById(R.id.chatMessage);
 					if (text.getText().toString().length() > 0) {
-						Client.bbb.sendPrivateChatMessage(text.getText().toString(), p.getUserId());
+						getBigBlueButton().sendPrivateChatMessage(text.getText().toString(), p.getUserId());
 						text.setText("");
 						chatListView.setSelection(chatListView.getCount());
 					}

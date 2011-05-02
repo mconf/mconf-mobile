@@ -26,7 +26,6 @@ import java.net.URLEncoder;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import org.mconf.bbb.android.R;
 import org.sipdroid.codecs.Codec;
 import org.sipdroid.codecs.Codecs;
 import org.sipdroid.media.JAudioLauncher;
@@ -55,11 +54,9 @@ import org.zoolu.sip.provider.SipStack;
 import org.zoolu.tools.LogLevel;
 import org.zoolu.tools.Parser;
 
-import android.app.Activity;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Build;
-import android.widget.Toast;
 
 public class VoiceModule implements ExtendedCallListener {
 	private static final Logger log = LoggerFactory.getLogger(VoiceModule.class);
@@ -76,6 +73,9 @@ public class VoiceModule implements ExtendedCallListener {
 	protected OnCallListener listener;
 
 	final protected Context context;
+	
+	public static final int E_OK = 0;
+	public static final int E_INVALID_NUMBER = 1; 
 
 	public VoiceModule(Context context, String username, String url) {
 		Receiver.mContext = context;
@@ -112,17 +112,16 @@ public class VoiceModule implements ExtendedCallListener {
 		keep_alive = new KeepAliveSip(sip_provider, 100000);
 	}
 	
-	public void call(String number) {
+	public int call(String number) {
 		if (isOnCall())
-			return;
+			return E_OK;
 
 		log.debug("Trying to call number {}", number);
 		
 		try{
 			Integer.parseInt(number);
 		} catch (NumberFormatException e) {
-			makeToast("\"" + number + "\" " + context.getResources().getString(R.string.invalid_number));
-			return;
+			return E_INVALID_NUMBER;
 		}
 		
 		local_sdp = new SessionDescriptor(user_profile.from_url,
@@ -163,6 +162,8 @@ public class VoiceModule implements ExtendedCallListener {
 		call.call(target_url, 
 				local_sdp.toString(),
 				/*"\"urn%3Aurn-7%3A3gpp-service.ims.icsi.mmtel\""*/ null);
+		
+		return E_OK;
 	}
 	
 	public boolean isOnCall() {
@@ -180,7 +181,6 @@ public class VoiceModule implements ExtendedCallListener {
 		mute = true;
 		closeMediaApplication();
 		listener.onCallFinished();
-		makeToast(R.string.connection_closed);
 		Receiver.call_state = UserAgent.UA_STATE_IDLE;
 	}
 	
@@ -294,7 +294,6 @@ public class VoiceModule implements ExtendedCallListener {
 				codecs.codec.frame_size(), null, codecs, dtmf_pt);
 		audio_app.startMedia();
 		
-		makeToast(R.string.connection_established);
 		listener.onCallStarted();
 	}
 
@@ -360,8 +359,8 @@ public class VoiceModule implements ExtendedCallListener {
 	public void onCallRefused(Call call, String reason, Message resp) {
 		log.debug("===========> onCallRefused");
 		
-		Receiver.call_state = UserAgent.UA_STATE_IDLE;	
-		makeToast(R.string.connection_refused);
+		Receiver.call_state = UserAgent.UA_STATE_IDLE;
+		listener.onCallRefused();
 	}
 
 	@Override
@@ -406,19 +405,6 @@ public class VoiceModule implements ExtendedCallListener {
 	
 	public void setListener(OnCallListener listener) {
 		this.listener = listener;
-	}
-	
-	private void makeToast(final int resId) {
-		makeToast(context.getResources().getString(resId));
-	}
-	
-	private void makeToast(final String s) {
-		((Activity) context).runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
-			}
-		});
 	}
 	
 }
