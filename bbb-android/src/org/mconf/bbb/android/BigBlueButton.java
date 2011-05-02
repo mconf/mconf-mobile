@@ -7,7 +7,7 @@ import android.app.Application;
 
 public class BigBlueButton extends Application {
 	private BigBlueButtonClient handler = null;
-//	private VoiceModule voice = null;
+	private VoiceModule voice = null;
 	
 	private int launchedBy = LAUNCHED_BY_NON_SPECIFIED;
 	public static final int LAUNCHED_BY_NON_SPECIFIED = 0;
@@ -20,17 +20,19 @@ public class BigBlueButton extends Application {
 		return handler;
 	}
 	
-//	public VoiceModule getVoiceModule() {
-//		if (voice == null)
-//			voice = new VoiceModule(this,
-//					getHandler().getJoinService().getJoinedMeeting().getFullname(),
-//					getHandler().getJoinService().getServerUrl()); 
-//		return voice;
-//	}
+	public VoiceModule getVoiceModule() {
+		if (voice == null)
+			voice = new VoiceModule(this,
+					getHandler().getJoinService().getJoinedMeeting().getFullname(),
+					getHandler().getJoinService().getServerUrl()); 
+		return voice;
+	}
 
-//	public void invalidateVoiceModule() {
-//		voice = null;
-//	}
+	public void invalidateVoiceModule() {
+		if (voice != null)
+			voice.hang();
+		voice = null;
+	}
 	/*
 	 *	GETTERS AND SETTERS
 	 */

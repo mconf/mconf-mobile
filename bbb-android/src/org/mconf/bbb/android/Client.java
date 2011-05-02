@@ -121,8 +121,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		} 
 	};
 
-	private VoiceModule voice = null;
-
 	//UI elements
 	protected ContactAdapter contactAdapter;
 	protected ChatAdapter chatAdapter;
@@ -208,11 +206,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			contactsTitle.setBackgroundResource(R.drawable.disconnected);
 
 		getBigBlueButton().addListener(this);
-		
-		//voice connection
-		voice = new VoiceModule(getApplicationContext(),
-				getBigBlueButton().getJoinService().getJoinedMeeting().getFullname(), 
-				getBigBlueButton().getJoinService().getServerUrl());
 		
 		//initialize onClickListeners, onOpenedDrawerListeners, etc 
 		initializeListeners();
@@ -307,7 +300,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 
 	private void quit() {
-		voiceHang();
+		getGlobalContext().invalidateVoiceModule();
 		getBigBlueButton().removeListener(this);
 		getBigBlueButton().disconnect();
 	}
@@ -323,12 +316,12 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
-		if (voice.isOnCall()) {
-			//			if (voice.isMuted())
-			//				menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.unmute).setIcon(android.R.drawable.ic_lock_silent_mode_off);
-			//			else
-			//				menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.mute).setIcon(android.R.drawable.ic_lock_silent_mode);
-			if (voice.getSpeaker() == AudioManager.MODE_NORMAL)
+		if (getVoiceModule().isOnCall()) {
+//			if (getVoiceModule().isMuted())
+//				menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.unmute).setIcon(android.R.drawable.ic_lock_silent_mode_off);
+//			else
+//				menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.mute).setIcon(android.R.drawable.ic_lock_silent_mode);
+			if (getVoiceModule().getSpeaker() == AudioManager.MODE_NORMAL)
 				menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, R.string.speaker).setIcon(android.R.drawable.button_onoff_indicator_on);
 			else
 				menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, R.string.speaker).setIcon(android.R.drawable.button_onoff_indicator_off);
@@ -346,48 +339,39 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 		menu.add(Menu.NONE, MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
 		//test purposes only
-		//		menu.add(Menu.NONE, MENU_DISCONNECT, Menu.NONE, "disconnect").setIcon(android.R.drawable.ic_dialog_alert);
+//		menu.add(Menu.NONE, MENU_DISCONNECT, Menu.NONE, "Disconnect").setIcon(android.R.drawable.ic_dialog_alert);
 		if(!isConnected())
 			menu.add(Menu.NONE, MENU_RECONNECT, Menu.NONE, R.string.reconnect).setIcon(android.R.drawable.ic_menu_rotate);
 		return super.onPrepareOptionsMenu(menu);
 	}
 
-	private void voiceCall() {
-		int ret = voice.call(getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge());
-		if (ret == VoiceModule.E_INVALID_NUMBER)
-			Toast.makeText(this, "\"" + getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge() + "\" " + getResources().getString(R.string.invalid_number), Toast.LENGTH_SHORT).show();
-	}
-
-	private void voiceHang() {
-		if (voice != null && voice.isOnCall())
-			voice.hang();
-	}
-	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent intent= new Intent(FINISH);	
 
 		switch (item.getItemId()) {
 		case MENU_START_VOICE:
-			voiceCall();
+			int ret = getVoiceModule().call(getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge());
+			if (ret == VoiceModule.E_INVALID_NUMBER)
+				Toast.makeText(this, "\"" + getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge() + "\" " + getResources().getString(R.string.invalid_number), Toast.LENGTH_SHORT).show();
 			return true;
 
 		case MENU_STOP_VOICE:
-			voiceHang();
+			if (getVoiceModule().isOnCall())
+				getVoiceModule().hang();
 			return true;
 
 		case MENU_MUTE:
-			voice.muteCall(!voice.isMuted());
+			getVoiceModule().muteCall(!getVoiceModule().isMuted());
 			return true;
 
 		case MENU_SPEAKER:
-			voice.setSpeaker(voice.getSpeaker() != AudioManager.MODE_NORMAL? AudioManager.MODE_NORMAL: AudioManager.MODE_IN_CALL);
+			getVoiceModule().setSpeaker(getVoiceModule().getSpeaker() != AudioManager.MODE_NORMAL? AudioManager.MODE_NORMAL: AudioManager.MODE_IN_CALL);
 			return true;
 
 		case MENU_LOGOUT:
 			quit();
 			Intent login = new Intent(this, LoginPage.class);
-			login.putExtra("username", myusername);
 			startActivity(login);
 			lastReadNum=-1;
 			sendBroadcast(intent);
@@ -415,9 +399,11 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		case MENU_AUDIO_CONFIG:
 			new AudioControlDialog(this).show();
 			return true;
+			
 		case MENU_DISCONNECT:
 			getBigBlueButton().disconnect();
 			return true;
+			
 		case MENU_RECONNECT:
 			if(!isConnected())
 			{
@@ -444,6 +430,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 					openProperties();
 				}
 			}
+			return true;
 		default:			
 			return super.onOptionsItemSelected(item);
 		}
@@ -589,8 +576,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		return super.onCreateDialog(id);
 	}
 
-
-
 	@Override
 	public void onKickUserCallback() {
 		// TODO Auto-generated method stub
@@ -722,10 +707,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		}
 	}
 
-	public void dismissNotification(int userId) {
-
-	}
-
 	@Override
 	public void onPublicChatMessage(final ChatMessage message, final IParticipant source) {
 		runOnUiThread(new Runnable() {
@@ -824,6 +805,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			}
 		});		
 	}
+	
 	@Override
 	public void onListenerLeft(final IListener p) {
 		runOnUiThread(new Runnable() {
@@ -861,7 +843,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		});
 	}
 
-	//detects when the device is rotated
+	// detects when the device is rotated
 	@Override
 	public void onConfigurationChanged(final Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
@@ -931,18 +913,18 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	
 	public void initializeListeners()
 	{
-		voice.setListener(new OnCallListener() {
+		getVoiceModule().setListener(new OnCallListener() {
 
 			@Override
 			public void onCallStarted() {
 				updateAudioBar();
-				makeToast(R.string.connection_closed);
+				makeToast(R.string.connection_established);
 			}
 			
 			@Override
 			public void onCallFinished() {
 				updateAudioBar();
-				makeToast(R.string.connection_established);
+				makeToast(R.string.connection_closed);
 			}
 
 			@Override
@@ -951,7 +933,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			}
 		});
 		AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);
-		audiolayout.setListeners(voice);
+		audiolayout.setListeners(getVoiceModule());
 
 		ScrollView scrollView = (ScrollView)findViewById(R.id.Scroll);
 		// hide the scrollbar
