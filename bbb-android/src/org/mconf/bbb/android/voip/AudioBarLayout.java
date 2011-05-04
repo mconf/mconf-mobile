@@ -12,19 +12,18 @@ import android.widget.LinearLayout;
 
 public class AudioBarLayout extends LinearLayout {
 
-	private VoiceModule voice;
-	
 	public AudioBarLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 	
-	private void hide() {
+	public void hide() {
 		ViewGroup.LayoutParams params = getLayoutParams();
 		params.height = 0;
 		setLayoutParams(params);
 	}
 	
-	private void show() {
+	public void show(boolean muted) {
+		setLockSpeak(!muted);
 		ViewGroup.LayoutParams params = getLayoutParams();
 		params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
 		setLayoutParams(params);
@@ -42,23 +41,23 @@ public class AudioBarLayout extends LinearLayout {
 		}
 	}
 	
-	public void setListeners(final VoiceModule voice) {
-		this.voice = voice;
-		
-		Button tapToSpeak = (Button) findViewById(R.id.taptospeak);	
-		Button lockSpeak = (Button) findViewById(R.id.lockspeak);
+	public interface Listener {
+		public boolean isOnCall();
+		public boolean isMuted();
+		public void muteCall(boolean mute);
+	}
+	
+	public void initListener(final AudioBarLayout.Listener listener) {
+		final Button tapToSpeak = (Button) findViewById(R.id.taptospeak);
+		final Button lockSpeak = (Button) findViewById(R.id.lockspeak);
 
 		tapToSpeak.setOnTouchListener(new OnTouchListener() {		
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					if (voice != null)
-						voice.muteCall(false);
-				}
-				if (event.getAction() == MotionEvent.ACTION_UP) {
-					if (voice != null)
-						voice.muteCall(true);
-				}
+				if (event.getAction() == MotionEvent.ACTION_DOWN)
+					listener.muteCall(false);
+				else if (event.getAction() == MotionEvent.ACTION_UP)
+					listener.muteCall(true);
 				return false;
 			}
 		});
@@ -66,22 +65,20 @@ public class AudioBarLayout extends LinearLayout {
 		lockSpeak.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (voice != null) {
-					boolean muted = !voice.isMuted();
-					voice.muteCall(muted);
-					setLockSpeak(!muted);
+				if (tapToSpeak.isEnabled()) {
+					setLockSpeak(true);
+					listener.muteCall(false);
+				} else {
+					setLockSpeak(false);
+					listener.muteCall(true);
 				}
 			}
 		});
-
-		updateUI();
-	}
-	
-	public void updateUI() {
-		if (voice != null && voice.isOnCall()) {
-			show();
-			setLockSpeak(!voice.isMuted());
+		
+		if (listener.isOnCall()) {
+			show(listener.isMuted());
 		} else
 			hide();
 	}
+	
 }

@@ -47,8 +47,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.View.OnClickListener;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -64,17 +62,6 @@ public class PrivateChat extends BigBlueButtonActivity {
 		private int viewId;
 		private String username;
 		private ChatAdapter chatAdapter;
-		private boolean notified =false;
-
-
-
-		public void setNotified(boolean notified) {
-			this.notified = notified;
-		}
-
-		public boolean isNotified() {
-			return notified;
-		}
 
 		public int getUserId() {
 			return userId;
@@ -142,34 +129,16 @@ public class PrivateChat extends BigBlueButtonActivity {
 			}
 		}
 
-
-
 		@Override
 		public void onPublicChatMessage(ChatMessage message, IParticipant source) {}
-
 		@Override
-		public void onListenerJoined(IListener p) {
-			// TODO Auto-generated method stub
-
-		}
-
+		public void onListenerJoined(IListener p) {}
 		@Override
-		public void onListenerLeft(IListener p) {
-			// TODO Auto-generated method stub
-
-		}
-
+		public void onListenerLeft(IListener p) {}
 		@Override
-		public void onListenerStatusChangeIsMuted(IListener p) {
-			// TODO Auto-generated method stub
-
-		}
-
+		public void onListenerStatusChangeIsMuted(IListener p) {}
 		@Override
-		public void onListenerStatusChangeIsTalking(IListener p) {
-			// TODO Auto-generated method stub
-
-		}
+		public void onListenerStatusChangeIsTalking(IListener p) {}
 
 	}
 
@@ -178,7 +147,6 @@ public class PrivateChat extends BigBlueButtonActivity {
 	// userId x remote participant
 	protected static Map<Integer, RemoteParticipant> participants = new HashMap<Integer, RemoteParticipant>();
 
-
 	private static final int SWIPE_MIN_DISTANCE = 120;
 	private static final int SWIPE_MAX_OFF_PATH = 400;
 	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
@@ -186,24 +154,19 @@ public class PrivateChat extends BigBlueButtonActivity {
 	public static final int MENU_CLOSE = Menu.FIRST;
 
 	private static final String FINISH = "bbb.android.action.FINISH";
-
 	private static final String SEND_TO_BACK = "bbb.android.action.SEND_TO_BACK";
-
 	public static final String CHAT_CLOSED = "bbb.android.action.CHAT_CLOSED";
-
 	public static final String KICKED_USER = "bbb.android.action.KICKED_USER";
 
 
 	private GestureDetector gestureDetector;
 	View.OnTouchListener gestureListener;
-	//animations. still to resolve
-	private Animation LeftIn;
-	private Animation LeftOut;
-	private Animation RightIn;
-	private Animation RightOut;
+	// \TODO animations. still to resolve
+//	private Animation LeftIn;
+//	private Animation LeftOut;
+//	private Animation RightIn;
+//	private Animation RightOut;
 	private ViewFlipper flipper;
-
-	private int orientation;
 
 	public static boolean hasUserOnPrivateChat(int userId)
 	{
@@ -216,7 +179,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 	}
 
 	//receivers of broadcast intents
-	BroadcastReceiver finishedReceiver = new BroadcastReceiver(){ 
+	private BroadcastReceiver finishedReceiver = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
 		{ 
 			removeAllParticipants();
@@ -225,7 +188,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		} 
 	};
 
-	BroadcastReceiver moveToBack = new BroadcastReceiver(){ 
+	private BroadcastReceiver moveToBack = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
 		{ 
 			log.debug("sent to back");
@@ -233,7 +196,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		} 
 	};
 
-	BroadcastReceiver kickedUser = new BroadcastReceiver(){ 
+	private BroadcastReceiver kickedUser = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
 		{ 
 			log.debug("closing a chat");
@@ -243,9 +206,6 @@ public class PrivateChat extends BigBlueButtonActivity {
 				removeParticipant(userId);
 		} 
 	};
-
-
-
 
 	private int addView() {
 		int index = flipper.getChildCount();
@@ -263,15 +223,12 @@ public class PrivateChat extends BigBlueButtonActivity {
 	}
 
 	//remove all the participants on the chat, when the aplication is closed
-	private void removeAllParticipants()
-
-	{
+	private void removeAllParticipants() {
 		participants.clear();
 	}
 
 	//remove one participant
-	private void removeParticipant(Integer key)
-	{
+	private void removeParticipant(Integer key) {
 		RemoteParticipant p = participants.get(key);
 		if (p != null) {
 			getBigBlueButton().removeListener(p);
@@ -280,8 +237,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 	}
 
 	//get the participant key associated with a viewFlipper view
-	private Integer getParticipantKeyByViewId(int viewId)
-	{
+	private Integer getParticipantKeyByViewId(int viewId) {
 		for (RemoteParticipant p : participants.values()) {
 			if (p.getViewId() == viewId)
 				return p.getUserId();
@@ -305,17 +261,11 @@ public class PrivateChat extends BigBlueButtonActivity {
 		p.setUserId(userId);
 		p.setUsername(username);
 		p.setViewId(addView());
-		p.setChatAdapter(new ChatAdapter(this));
+		p.setChatAdapter(new ChatAdapter());
 		participants.put(userId, p);
-		if(notified)
-			p.setNotified(true);
-		else
-			p.setNotified(false);
-
 
 		List<ChatMessage> messages = getBigBlueButton().getChatModule().getPrivateChatMessage().get(userId);
-		if (messages != null)
-		{
+		if (messages != null) {
 			for (ChatMessage message : messages) {
 					p.onPrivateChatMessage(message);
 			}
@@ -357,26 +307,23 @@ public class PrivateChat extends BigBlueButtonActivity {
 
 		RemoteParticipant p = participants.get(userId);
 
-
 		if (p == null)
 			p = createParticipant(userId, username, notified);
-
 		else
 			changeView(flipper.indexOfChild(flipper.findViewById(p.getViewId())));
+		
 		log.debug("displaying view of userId=" + userId + " and username=" + username);
 
 		flipper.setDisplayedChild(p.getViewId());
 		cancelNotification(userId);
-		p.setNotified(false);
 	}
 
-	private void orientationChanged()
-	{
+	private void orientationChanged() {
 		flipper.removeAllViews();
 		for(Integer userId:participants.keySet())
 		{
 			final RemoteParticipant p= participants.get(userId);
-			p.setChatAdapter(new ChatAdapter(this));
+			p.setChatAdapter(new ChatAdapter());
 			p.setViewId(addView());
 
 			List<ChatMessage> messages = getBigBlueButton().getChatModule().getPrivateChatMessage().get(userId);
@@ -418,8 +365,8 @@ public class PrivateChat extends BigBlueButtonActivity {
 		setContentView(R.layout.private_chat);
 
 
-		Configuration config = getResources().getConfiguration();
-		orientation = config.orientation;
+//		Configuration config = getResources().getConfiguration();
+//		orientation = config.orientation;
 		log.debug("ON CREATE");
 
 		flipper = (ViewFlipper) findViewById(R.id.manyPages); 
@@ -427,11 +374,11 @@ public class PrivateChat extends BigBlueButtonActivity {
 
 		displayView(getIntent().getExtras());
 		//animation on swippe, still need to resolve
-		LeftIn = AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left);
-		LeftOut=AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right);
-		RightIn = AnimationUtils.loadAnimation(this, R.anim.push_right_in);
-		RightOut = AnimationUtils.loadAnimation(this, R.anim.push_right_out);
-
+//		LeftIn = AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left);
+//		LeftOut=AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right);
+//		RightIn = AnimationUtils.loadAnimation(this, R.anim.push_right_in);
+//		RightOut = AnimationUtils.loadAnimation(this, R.anim.push_right_out);
+		
 		//gesture detector, to change the participant shown
 		gestureDetector = new GestureDetector(new MyGestureDetector());
 		gestureListener = new View.OnTouchListener() {
@@ -576,7 +523,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 	@Override
 	public void onConfigurationChanged(final Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-		orientation = newConfig.orientation;
+//		orientation = newConfig.orientation;
 		runOnUiThread(new Runnable() {
 
 			@Override

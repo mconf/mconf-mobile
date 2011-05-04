@@ -131,6 +131,7 @@ public class BigBlueButtonClient {
 	public void disconnect() {
 		if (mainConnection != null)
 			mainConnection.disconnect();
+		joinService = new JoinService();
 	}
 
 	public Collection<Participant> getParticipants() {
@@ -187,6 +188,13 @@ public class BigBlueButtonClient {
 			return true;
 		else
 			return false;
+	}
+
+	public boolean isConnected() {
+		if (mainConnection == null)
+			return false;
+		else
+			return mainConnection.isConnected();
 	}
 
 }

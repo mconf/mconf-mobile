@@ -32,6 +32,7 @@ import org.mconf.bbb.users.IParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -39,6 +40,7 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
@@ -49,7 +51,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.ContextMenu;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -62,7 +63,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -121,21 +121,17 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		} 
 	};
 
-	//UI elements
-	protected ContactAdapter contactAdapter;
-	protected ChatAdapter chatAdapter;
-	protected ListenerAdapter listenerAdapter;
-	private CustomListview contactListView;
-	private CustomListview listenerListView;
-	private ListView chatListView;
-	protected SlidingDrawer slidingDrawer;
-	private TextView contactsTitle;
+	protected ContactAdapter contactAdapter = new ContactAdapter();
+	protected ChatAdapter chatAdapter = new ChatAdapter();
+	protected ListenerAdapter listenerAdapter = new ListenerAdapter();
 
-	protected String meetingName;
-	protected String myusername;
+	protected String username;
+	private boolean moderator;
+	protected String meetingId;
+	private String serverUrl;
+
 	private static int lastReadNum=-1; 
 	private int addedMessages=0;
-	private boolean connected = true;
 	private boolean dialogShown = false;
 	private boolean kicked=false;
 
@@ -145,101 +141,251 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		log.debug("onCreate");
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-		int orientation = getResources().getConfiguration().orientation;
+
+		IntentFilter filter = new IntentFilter(PrivateChat.CHAT_CLOSED);
+		registerReceiver(chatClosed, filter);
+		
+		initListeners();
+		
+		if (!getBigBlueButton().isConnected()) {
+			getBigBlueButton().addListener(this);
+
+			if (joinAndConnect()) {
+				Toast.makeText(getApplicationContext(),getResources().getString(R.string.welcome) + ", " + username, Toast.LENGTH_SHORT).show();
+			}
+		}
+	}
+	
+	private class JoinFailDialog extends AlertDialog.Builder {
+
+		public JoinFailDialog(Context context) {
+			super(context);
+			setMessage(R.string.login_cant_join);
+			initListener();
+		}
+		
+		public JoinFailDialog(Context context, String message) {
+			super(context);
+			setTitle(R.string.login_cant_join);
+			setMessage(message);
+			initListener();
+		}
+		
+		private void initListener() {
+			setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+//					if (getGlobalContext().getLaunchedBy() == BigBlueButton.LAUNCHED_BY_APPLICATION) {
+//						Intent login = new Intent(getGlobalContext(), LoginPage.class);
+//						startActivity(login);
+//					}
+//					finish();
+				}
+			});
+		}
+		
+	}
+	
+	private boolean joinAndConnect() {
+//		if (isNetworkDown()) {
+//			openProperties();
+//			return false;
+//		}
+		
+		if (getIntent().hasCategory("android.intent.category.BROWSABLE")
+				&& getIntent().getScheme().equals(getResources().getString(R.string.protocol))) {
+   			getGlobalContext().setLaunchedBy(BigBlueButton.LAUNCHED_BY_BROWSER);
+   			
+			String joinUrl = getIntent().getData().toString().replace(getResources().getString(R.string.protocol) + "://", "http://");
+			serverUrl = joinUrl.substring(0, joinUrl.indexOf("/bigbluebutton/api/"));
+			if (getBigBlueButton().getJoinService().join(serverUrl, joinUrl)) {
+       			username = getBigBlueButton().getJoinService().getJoinedMeeting().getFullname();
+       			moderator = getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isModerator();
+       			meetingId = getBigBlueButton().getJoinService().getJoinedMeeting().getMeetingID();
+       		} else {
+       			new JoinFailDialog(this).show();
+       			return false;
+       		}
+		} else if (getIntent().getExtras() != null) {
+			getGlobalContext().setLaunchedBy(BigBlueButton.LAUNCHED_BY_APPLICATION);
+
+			Bundle extras = getIntent().getExtras();
+			username = extras.getString("username");
+			moderator = extras.getBoolean("moderator");
+			serverUrl = extras.getString("serverUrl");
+			meetingId = extras.getString("meetingId");
+						
+			if (!getBigBlueButton().getJoinService().join(meetingId, username, moderator)) {
+            	String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
+            	if (error != null && error.equals("null"))
+            		new JoinFailDialog(this, error).show();
+            	else
+            		new JoinFailDialog(this).show();
+            	return false;
+            }
+			
+		} else {
+    		new JoinFailDialog(this).show();
+			return false;
+		}
+
+		boolean connected = getBigBlueButton().connectBigBlueButton();
+		if (!connected) {
+    		new JoinFailDialog(this).show();
+			return false;
+		}
+
+		return true;
+	}
+	
+	private void initListeners() {
 		setContentView(R.layout.contacts_list);
 
-		if(orientation==Configuration.ORIENTATION_LANDSCAPE)
-		{
+		// only applies when the device has large screen
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
+				&& getResources().getConfiguration().screenLayout == Configuration.SCREENLAYOUT_LONG_YES) {
 			NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 			notificationManager.cancel(CHAT_NOTIFICATION_ID);
 		}
 
-		
-		
-		if (getIntent().hasCategory("android.intent.category.BROWSABLE")
-				&& getIntent().getScheme().equals(getResources().getString(R.string.protocol))) {
-			String joinUrl = getIntent().getData().toString().replace(getResources().getString(R.string.protocol) + "://", "http://");
-			String serverUrl = joinUrl.substring(0, joinUrl.indexOf("/bigbluebutton/api/"));
-			getBigBlueButton().getJoinService().join(serverUrl, joinUrl);
-       		if (getBigBlueButton().getJoinService().getJoinedMeeting() != null) {
-       			myusername = getBigBlueButton().getJoinService().getJoinedMeeting().getFullname();
-       			meetingName = getBigBlueButton().getJoinService().getJoinedMeeting().getMeetingID();
-       			getGlobalContext().setLaunchedBy(BigBlueButton.LAUNCHED_BY_BROWSER);
-       		} else {
-       			// \TODO show an error message
-       			finish();
-       			return;
-       		}
-		} else if (getIntent().getExtras() != null) {		
-			Bundle extras = getIntent().getExtras();
-			myusername = extras.getString("username");
-			meetingName = extras.getString("meetingName");
-			getGlobalContext().setLaunchedBy(BigBlueButton.LAUNCHED_BY_APPLICATION);
-		} else {
-   			// \TODO show an error message
-			finish();
-			return;
-		}
-
-		Toast.makeText(getApplicationContext(),getResources().getString(R.string.welcome) + ", " + myusername, Toast.LENGTH_SHORT).show(); 
-
-
-		//UI elements registration and setting of adapters
-		chatAdapter = new ChatAdapter(this);
-		chatListView = (ListView)findViewById(R.id.messages);
+		// UI elements registration and setting of adapters
+		final ListView chatListView = (ListView) findViewById(R.id.messages);
 		chatListView.setAdapter(chatAdapter);
 
-		contactListView = (CustomListview)findViewById(R.id.contacts_list); 
-		contactAdapter = new ContactAdapter(this);
+		final CustomListview contactListView = (CustomListview) findViewById(R.id.contacts_list); 
 		contactListView.setAdapter(contactAdapter);
+		contactListView.setHeight();
 		registerForContextMenu(contactListView);
 
-		listenerListView = (CustomListview)findViewById(R.id.listeners_list);
-		listenerAdapter = new ListenerAdapter(this);
+		final CustomListview listenerListView = (CustomListview) findViewById(R.id.listeners_list);
 		listenerListView.setAdapter(listenerAdapter);
+		listenerListView.setHeight();
 		registerForContextMenu(listenerListView);
 
-		contactsTitle = (TextView)findViewById(R.id.label_participants);
-		if(isConnected())
-			contactsTitle.setBackgroundResource(R.drawable.connected);
-		else
-			contactsTitle.setBackgroundResource(R.drawable.disconnected);
+		final AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);
+		audiolayout.initListener(new AudioBarLayout.Listener() {
+			
+			@Override
+			public void muteCall(boolean mute) {
+				getVoiceModule().muteCall(mute);
+			}
 
-		getBigBlueButton().addListener(this);
+			@Override
+			public boolean isOnCall() {
+				if (getVoiceModule() != null)
+					return getVoiceModule().isOnCall();
+				else
+					return false;
+			}
+
+			@Override
+			public boolean isMuted() {
+				return getVoiceModule().isMuted();
+			}
+		});
+
+		final SlidingDrawer slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);	
+		if (slidingDrawer != null) { 
+			slidingDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
+
+				@Override
+				public void onDrawerOpened() {
+					//when the drawer is opened, the public chat notifications are off
+					NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+					notificationManager.cancel(CHAT_NOTIFICATION_ID);
+					//and the "message received" icon is off too
+					setPublicChatTitleBackground(R.drawable.public_chat_title_background_down);
+					lastReadNum = chatAdapter.getCount();
+					openedDrawer(); 
+				}
+			});
+
+			slidingDrawer.setOnDrawerCloseListener(new OnDrawerCloseListener() {
+
+				@Override
+				public void onDrawerClosed() {
+					setPublicChatTitleBackground(R.drawable.public_chat_title_background_up);
+				}
+			});
+		}
 		
-		//initialize onClickListeners, onOpenedDrawerListeners, etc 
-		initializeListeners();
+		Button send = (Button)findViewById(R.id.sendMessage);
+		send.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View viewParam) {
+				final EditText chatMessageEdit = (EditText) findViewById(R.id.chatMessage);
+				String chatMessage = chatMessageEdit.getText().toString();
+				if(chatMessage.length()>1) {
+					getBigBlueButton().sendPublicChatMessage(chatMessage);
+					chatMessageEdit.setText("");
+				}
+				chatListView.setSelection(chatListView.getCount());
+			} 
+		});
+
+		contactListView.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+
+				final Contact contact = (Contact) contactAdapter.getItem(position); 
+
+				// if the clicked person's ID is different from mine
+				if (contact.getUserId() != getBigBlueButton().getMyUserId())
+					startPrivateChat(contact);
+			}
+		});
 		
-		getBigBlueButton().connectBigBlueButton();
+		setConnectedIcon(getBigBlueButton().isConnected()? R.drawable.connected: R.drawable.disconnected);
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		
+		initListeners();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		log.debug("onDestroy");
+
+		quit();
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		notificationManager.cancelAll();
+		unregisterReceiver(chatClosed);
+
+		super.onDestroy();
 	}
 
 	//create context menu for the listeners and contacts list
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
+	public void onCreateContextMenu(ContextMenu menu, View view,
 			ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
+		super.onCreateContextMenu(menu, view, menuInfo);
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 
-		boolean moderator = getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isModerator();
-
-		if(v.getId()==R.id.contacts_list) {
-			final Contact contact = (Contact) contactAdapter.getItem(info.position);
-			if (contact.getUserId() != getBigBlueButton().getMyUserId())
-				menu.add(0, POPUP_MENU_OPEN_PRIVATE_CHAT, 0, R.string.open_private_chat);
-			if (moderator) {
+		if (getBigBlueButton().isConnected()) {
+			if (view.getId() == R.id.contacts_list) {
+				final Contact contact = (Contact) contactAdapter.getItem(info.position);
 				if (contact.getUserId() != getBigBlueButton().getMyUserId())
-					menu.add(0, POPUP_MENU_KICK_USER, 0, R.string.kick);
-				if (!contact.isPresenter())
-					menu.add(0, POPUP_MENU_SET_PRESENTER, 0, R.string.assign_presenter);
+					menu.add(0, POPUP_MENU_OPEN_PRIVATE_CHAT, 0, R.string.open_private_chat);
+				if (moderator) {
+					if (contact.getUserId() != getBigBlueButton().getMyUserId())
+						menu.add(0, POPUP_MENU_KICK_USER, 0, R.string.kick);
+					if (!contact.isPresenter())
+						menu.add(0, POPUP_MENU_SET_PRESENTER, 0, R.string.assign_presenter);
+				}
+			} else {
+				final Listener listener = (Listener) listenerAdapter.getItem(info.position);
+	
+				if (moderator) {
+					menu.add(0, POPUP_MENU_KICK_LISTENER, 0, R.string.kick);
+					menu.add(0, POPUP_MENU_MUTE_LISTENER, 0, listener.isMuted()? R.string.unmute: R.string.mute);
+				}
 			}
-		} else {
-			final Listener listener = (Listener) listenerAdapter.getItem(info.position);
-
-			if (moderator) {
-				menu.add(0, POPUP_MENU_KICK_LISTENER, 0, R.string.kick);
-				menu.add(0, POPUP_MENU_MUTE_LISTENER, 0, listener.isMuted()? R.string.unmute: R.string.mute);
-			}
-		}		
+		}
 
 		if (menu.size() == 0)
 			Toast.makeText(getApplicationContext(),getResources().getString(R.string.no_options), Toast.LENGTH_SHORT).show(); 
@@ -249,55 +395,45 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-		Contact contact = null;
-		Listener listener = null;
-		if(item.getItemId()==POPUP_MENU_KICK_USER||item.getItemId()==POPUP_MENU_SET_PRESENTER|| item.getItemId()==POPUP_MENU_OPEN_PRIVATE_CHAT)
-		{
-			contact= (Contact) contactAdapter.getItem(info.position);
-			log.debug("clicked on participant " + contact.toString());
-		}
-		else
-		{
-			listener=(Listener) listenerAdapter.getItem(info.position);
-			log.debug("clicked on listener " + listener.toString());
-		}
+
 		switch (item.getItemId()) {
-		case POPUP_MENU_KICK_USER:
-			getBigBlueButton().kickUser(contact.getUserId());
-			//closes private chat with the user if he is kicked
-			Intent kickedUser = new Intent(PrivateChat.KICKED_USER);
-			kickedUser.putExtra("userId", contact.getUserId());
-			sendBroadcast(kickedUser);
-			return true;
-		case POPUP_MENU_SET_PRESENTER:
-			getBigBlueButton().assignPresenter(contact.getUserId());
-			return true;
-		case POPUP_MENU_MUTE_LISTENER:
-			getBigBlueButton().muteUnmuteListener(listener.getUserId(), !listener.isMuted());
-			return true;
-		case POPUP_MENU_KICK_LISTENER: 
-			getBigBlueButton().kickListener(listener.getUserId());
-			return true;
-		case POPUP_MENU_OPEN_PRIVATE_CHAT:
-			startPrivateChat(contact);
-			return true;
+			case POPUP_MENU_KICK_USER:
+			{
+				Contact contact = (Contact) contactAdapter.getItem(info.position);
+				getBigBlueButton().kickUser(contact.getUserId());
+				//closes private chat with the user if he is kicked
+				Intent kickedUser = new Intent(PrivateChat.KICKED_USER);
+				kickedUser.putExtra("userId", contact.getUserId());
+				sendBroadcast(kickedUser);
+				return true;
+			}
+			case POPUP_MENU_SET_PRESENTER:
+			{
+				Contact contact = (Contact) contactAdapter.getItem(info.position);
+				getBigBlueButton().assignPresenter(contact.getUserId());
+				return true;
+			}
+			case POPUP_MENU_MUTE_LISTENER:
+			{
+				Listener listener = (Listener) listenerAdapter.getItem(info.position);
+				getBigBlueButton().muteUnmuteListener(listener.getUserId(), !listener.isMuted());
+				return true;
+			}
+			case POPUP_MENU_KICK_LISTENER: 
+			{
+				Listener listener = (Listener) listenerAdapter.getItem(info.position);
+				getBigBlueButton().kickListener(listener.getUserId());
+				return true;
+			}
+			case POPUP_MENU_OPEN_PRIVATE_CHAT:
+			{
+				Contact contact = (Contact) contactAdapter.getItem(info.position);
+				startPrivateChat(contact);
+				return true;
+			}
 		}
 		return super.onContextItemSelected(item);
 	}
-
-	@Override
-	protected void onDestroy() {
-		log.debug("onDestroy");
-
-		quit();
-
-		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		notificationManager.cancelAll();
-		unregisterReceiver(chatClosed);
-
-		super.onDestroy();
-	}
-
 
 	private void quit() {
 		getGlobalContext().invalidateVoiceModule();
@@ -316,32 +452,34 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
-		if (getVoiceModule().isOnCall()) {
-//			if (getVoiceModule().isMuted())
-//				menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.unmute).setIcon(android.R.drawable.ic_lock_silent_mode_off);
-//			else
-//				menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.mute).setIcon(android.R.drawable.ic_lock_silent_mode);
-			if (getVoiceModule().getSpeaker() == AudioManager.MODE_NORMAL)
-				menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, R.string.speaker).setIcon(android.R.drawable.button_onoff_indicator_on);
+		if (getBigBlueButton().isConnected()) {
+			if (getVoiceModule().isOnCall()) {
+//				if (getVoiceModule().isMuted())
+//					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.unmute).setIcon(android.R.drawable.ic_lock_silent_mode_off);
+//				else
+//					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.mute).setIcon(android.R.drawable.ic_lock_silent_mode);
+				if (getVoiceModule().getSpeaker() == AudioManager.MODE_NORMAL)
+					menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, R.string.speaker).setIcon(android.R.drawable.button_onoff_indicator_on);
+				else
+					menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, R.string.speaker).setIcon(android.R.drawable.button_onoff_indicator_off);
+				menu.add(Menu.NONE, MENU_AUDIO_CONFIG, Menu.NONE, R.string.audio_config).setIcon(android.R.drawable.ic_menu_preferences);
+				menu.add(Menu.NONE, MENU_STOP_VOICE, Menu.NONE, R.string.stop_voice).setIcon(android.R.drawable.ic_btn_speak_now);
+			} else {
+				menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, R.string.start_voice).setIcon(android.R.drawable.ic_btn_speak_now);
+			}
+			if (getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isRaiseHand())
+				menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.lower_hand).setIcon(android.R.drawable.ic_menu_myplaces);
 			else
-				menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, R.string.speaker).setIcon(android.R.drawable.button_onoff_indicator_off);
-			menu.add(Menu.NONE, MENU_AUDIO_CONFIG, Menu.NONE, R.string.audio_config).setIcon(android.R.drawable.ic_menu_preferences);
-			menu.add(Menu.NONE, MENU_STOP_VOICE, Menu.NONE, R.string.stop_voice).setIcon(android.R.drawable.ic_btn_speak_now);
+				menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.raise_hand).setIcon(android.R.drawable.ic_menu_myplaces);
+			if (getGlobalContext().getLaunchedBy() == BigBlueButton.LAUNCHED_BY_APPLICATION)
+				menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, R.string.logout).setIcon(android.R.drawable.ic_menu_revert);
+			menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+			menu.add(Menu.NONE, MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
+			//test purposes only
+//			menu.add(Menu.NONE, MENU_DISCONNECT, Menu.NONE, "Disconnect").setIcon(android.R.drawable.ic_dialog_alert);
 		} else {
-			menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, R.string.start_voice).setIcon(android.R.drawable.ic_btn_speak_now);
-		}
-		if (getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isRaiseHand())
-			menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.lower_hand).setIcon(android.R.drawable.ic_menu_myplaces);
-		else
-			menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.raise_hand).setIcon(android.R.drawable.ic_menu_myplaces);
-		if (getGlobalContext().getLaunchedBy() == BigBlueButton.LAUNCHED_BY_APPLICATION)
-			menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, R.string.logout).setIcon(android.R.drawable.ic_menu_revert);
-		menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
-		menu.add(Menu.NONE, MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
-		//test purposes only
-//		menu.add(Menu.NONE, MENU_DISCONNECT, Menu.NONE, "Disconnect").setIcon(android.R.drawable.ic_dialog_alert);
-		if(!isConnected())
 			menu.add(Menu.NONE, MENU_RECONNECT, Menu.NONE, R.string.reconnect).setIcon(android.R.drawable.ic_menu_rotate);
+		}
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -405,30 +543,15 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			return true;
 			
 		case MENU_RECONNECT:
-			if(!isConnected())
-			{
-				ConnectivityManager connectivityManager =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-				if(connectivityManager.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED
-						||  connectivityManager.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED)
-				{
-					boolean moderator= getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isModerator();
-					getBigBlueButton().getJoinService().join(meetingName, myusername, moderator);
-					boolean connected = getBigBlueButton().connectBigBlueButton();
-					if(connected)
-					{
-						contactsTitle.setBackgroundResource(R.drawable.connected);
-						Toast.makeText(getApplicationContext(), R.string.reconnected, Toast.LENGTH_SHORT).show();
-					}
-					else
-						Toast.makeText(getApplicationContext(), R.string.cant_reconnect, Toast.LENGTH_SHORT).show();
-
-				}
+			if (!isNetworkDown()) {
+				if (joinAndConnect()) 
+					Toast.makeText(getApplicationContext(), R.string.reconnected, Toast.LENGTH_SHORT).show();
 				else
-				{
-					Toast.makeText(getApplicationContext(), R.string.no_connection, Toast.LENGTH_SHORT).show();
-					//create dialog to connection proprierties
-					openProperties();
-				}
+					Toast.makeText(getApplicationContext(), R.string.cant_reconnect, Toast.LENGTH_SHORT).show();
+
+			} else {
+				//create dialog to connection properties
+				openProperties();
 			}
 			return true;
 		default:			
@@ -439,76 +562,106 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	private void openProperties() {
 		NetworkPropertiesDialog networkProperties = new NetworkPropertiesDialog(Client.this);
 		networkProperties.show();
-		
 	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
-		case KeyEvent.KEYCODE_BACK:
-			Intent intent = new Intent(SEND_TO_BACK);
-			sendBroadcast(intent);
-			log.debug("KEYCODE_BACK");
-			moveTaskToBack(true);
-			return true;
-			//    		case KeyEvent.KEYCODE_VOLUME_DOWN:
- 			//    		case KeyEvent.KEYCODE_VOLUME_UP:
-			//				Dialog dialog = new AudioControlDialog(this);
-			//				dialog.show();
-			//				return true;
-		default:
-			return super.onKeyDown(keyCode, event);
+			case KeyEvent.KEYCODE_BACK:
+				Intent intent = new Intent(SEND_TO_BACK);
+				sendBroadcast(intent);
+				log.debug("KEYCODE_BACK");
+				moveTaskToBack(true);
+				return true;
+//    		case KeyEvent.KEYCODE_VOLUME_DOWN:
+//    		case KeyEvent.KEYCODE_VOLUME_UP:
+//				Dialog dialog = new AudioControlDialog(this);
+//				dialog.show();
+//				return true;
+			default:
+				return super.onKeyDown(keyCode, event);
 		}    		
 	}
 
 	@Override
 	public void onConnected() {
+		getVoiceModule().setListener(new OnCallListener() {
 
-		contactsTitle.setBackgroundResource(R.drawable.connected);
+			@Override
+			public void onCallStarted() {
+				updateAudioBar();
+				makeToast(R.string.connection_established);
+			}
+			
+			@Override
+			public void onCallFinished() {
+				updateAudioBar();
+				makeToast(R.string.connection_closed);
+			}
+
+			@Override
+			public void onCallRefused() {
+				makeToast(R.string.connection_refused);
+			}
+		});
+		
+		setConnectedIcon(R.drawable.connected);
 		log.debug("connected");
-		setConnected(true);
-		chatAdapter.clearList();
+		runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				chatAdapter.clearList();
+				chatAdapter.notifyDataSetInvalidated();
+				
+				contactAdapter.clearList();
+				contactAdapter.notifyDataSetInvalidated();
+				
+				listenerAdapter.clearList();
+				listenerAdapter.notifyDataSetInvalidated();
+			}
+		});
+	}
+	
+	private void setConnectedIcon(final int resid) {
+		runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				TextView contactsTitle = (TextView) findViewById(R.id.label_participants);
+				contactsTitle.setBackgroundResource(resid);
+			}
+		});
 	}
 
 	//created this coded based on this http://bend-ing.blogspot.com/2008/11/properly-handle-progress-dialog-in.html
 	@Override 
 	public void onDisconnected() {
-
-		IParticipant participant = contactAdapter.getUserById(getBigBlueButton().getMyUserId());
-		contactAdapter.removeSection(participant);
-		listenerAdapter.clearList();
-		setConnected(false);
 		log.debug("onDisconnected");
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				contactsTitle.setBackgroundResource(R.drawable.reconnecting);
+				setConnectedIcon(R.drawable.reconnecting);
 				log.debug("dialog shown");
 				showDialog(ID_DIALOG_RECONNECT);
 				setDialogShown(true);
 			}
 		});
-		final boolean moderator= getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isModerator();
 		new Thread(new Runnable() {
 			@Override
 			public void run() {	
-				if(!isKicked())
-				{
-					ConnectivityManager connectivityManager =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-					if(connectivityManager.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED 
-							||  connectivityManager.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED)
-					{
+				if(!isKicked()) {
+					if (isNetworkDown()) {
 						log.debug("no internet connection");
 
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
-								contactsTitle.setBackgroundResource(R.drawable.disconnected);
-								Toast.makeText(getApplicationContext(), R.string.cant_reconnect, Toast.LENGTH_SHORT).show();
+								setConnectedIcon(R.drawable.disconnected);
 								while(!isDialogShown());
 								dismissDialog(Client.ID_DIALOG_RECONNECT); //exception:no dialog with this id was shown
 								setDialogShown(false);
-								//create dialog to connection proprierties
+								//create dialog to connection properties
 								openProperties();
 							}
 						});
@@ -516,29 +669,26 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 						return;
 					}
 
-					//only tries to reconnect if there the phone is connected to the internet
-					getBigBlueButton().getJoinService().join(meetingName, myusername, moderator);
-					boolean connected = getBigBlueButton().connectBigBlueButton();
-					if (!connected) { 
+					//only tries to reconnect if there the phone is connected to the Internet
+					if (!joinAndConnect()) {
 
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
-								contactsTitle.setBackgroundResource(R.drawable.disconnected);
+								setConnectedIcon(R.drawable.disconnected);
 								Toast.makeText(getApplicationContext(), R.string.cant_reconnect, Toast.LENGTH_SHORT).show();
 								dismissDialog(Client.ID_DIALOG_RECONNECT);
 							}
 						});
 						log.error("Can't reconnect. Check internet connection");
 						return;
-					} 
-					else{
+					} else {
 						log.error("successfully reconnected");
 
 						runOnUiThread(new Runnable() { 
 							@Override
 							public void run() {
-								contactsTitle.setBackgroundResource(R.drawable.connected);
+								setConnectedIcon(R.drawable.connected);
 								Toast.makeText(getApplicationContext(), R.string.reconnected, Toast.LENGTH_SHORT).show();
 								dismissDialog(Client.ID_DIALOG_RECONNECT);
 							}
@@ -547,12 +697,11 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 						return;
 					}
 
-				}
-				else
-				{
+				} else {
+					makeToast(R.string.kicked);
 					quit();
 					Intent login = new Intent(getApplicationContext(), LoginPage.class);
-					login.putExtra("username", myusername);
+					login.putExtra("username", username);
 					startActivity(login);
 					lastReadNum=-1;
 					sendBroadcast(new Intent(FINISH));
@@ -562,8 +711,14 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		}).start();
 
 	}
+	
+	private boolean isNetworkDown() {
+		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		return !(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED 
+				||  connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED);
+	}
 
-	//so the app won't crash if the phone is rotated while the dialog is being shown
+	// so the app won't crash if the phone is rotated while the dialog is being shown
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		if(id == ID_DIALOG_RECONNECT){
@@ -578,8 +733,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 	@Override
 	public void onKickUserCallback() {
-		// TODO Auto-generated method stub
-
 		setKicked(true);
 		runOnUiThread(new Runnable() {
 			@Override
@@ -595,9 +748,12 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 			@Override
 			public void run() {
+				// \TODO find another way to pass my user id to contactAdapter - this way it's been passed on every join event
+				contactAdapter.setMyUserId(getBigBlueButton().getMyUserId());
 				contactAdapter.addSection(p);
 				contactAdapter.sort();
 				contactAdapter.notifyDataSetChanged();
+				CustomListview contactListView = (CustomListview) findViewById(R.id.contacts_list);
 				contactListView.setHeight();
 			}
 		});		
@@ -611,6 +767,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				contactAdapter.removeSection(p);
 				contactAdapter.sort();
 				contactAdapter.notifyDataSetChanged();
+				CustomListview contactListView = (CustomListview) findViewById(R.id.contacts_list);
 				contactListView.setHeight();
 			}
 		});
@@ -638,31 +795,32 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		log.debug("onNewIntent");
 		super.onNewIntent(intent);
 
-		if(intent.getAction()==null)
+		if (intent.getAction() == null)
 			return;
 
-		if (intent.getAction().equals(BACK_TO_CLIENT)) 
-		{
-			for(int i=0; i<contactAdapter.getCount(); i++)
+		if (intent.getAction().equals(BACK_TO_CLIENT)) {
+			for (int i=0; i<contactAdapter.getCount(); i++)
 				if(contactAdapter.getChatStatus(i)==Contact.CONTACT_ON_PRIVATE_MESSAGE)
 					((Contact) contactAdapter.getItem(i)).setChatStatus(Contact.CONTACT_NORMAL);
 
 			contactAdapter.notifyDataSetChanged();
-		}
-		else if (intent.getAction().equals(ACTION_OPEN_SLIDER)) {
-			if(slidingDrawer!=null)
-				if (!slidingDrawer.isOpened())
-				{
-					slidingDrawer.open();
-					openedDrawer();
-					Button handler = (Button)findViewById(R.id.handle);
-					handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background));
-					//				handler.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.title_background_onfocus));
-				}
-
-		}
+		} else if (intent.getAction().equals(ACTION_OPEN_SLIDER)) {
+			SlidingDrawer slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
+			if (slidingDrawer != null && (!slidingDrawer.isShown() || !slidingDrawer.isOpened())) {
+				slidingDrawer.open();
+				openedDrawer();
+				setPublicChatTitleBackground(R.drawable.public_chat_title_background);
+			}
+		} else
+			log.debug("onNewIntent discarding: {}" + intent.getAction());
 	}
 
+	private void setPublicChatTitleBackground(int resid) {
+		Button handler = (Button) findViewById(R.id.handle);
+		if (handler != null)
+			handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(resid));
+	}
+	
 	public void showNotification(final ChatMessage message, IParticipant source, final boolean privateChat) {
 		// remember that source could be null! that happens when a user send a message and log out - the list of participants don't have the entry anymore
 
@@ -721,11 +879,10 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				//doesn't notify again for already read messages
 				addedMessages++;
 				if(addedMessages>lastReadNum ) {
-
-					if (slidingDrawer!=null&&(!slidingDrawer.isShown() || !slidingDrawer.isOpened())) {
+					SlidingDrawer slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
+					if (slidingDrawer != null && (!slidingDrawer.isShown() || !slidingDrawer.isOpened())) {
 						showNotification(message, source, false);
-						Button handler = (Button)findViewById(R.id.handle);
-						handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background_up_new_message));
+						setPublicChatTitleBackground(R.drawable.public_chat_title_background_up_new_message);
 					}
 					else
 						lastReadNum = chatAdapter.getCount();
@@ -774,10 +931,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		});
 	}
 
-
-
-	public void openedDrawer()
-	{
+	public void openedDrawer() {
 		int position;
 		for(position = 0; position<contactAdapter.getCount(); position++)
 		{
@@ -801,6 +955,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			public void run() {
 				listenerAdapter.addSection(p);
 				listenerAdapter.notifyDataSetChanged();
+				CustomListview listenerListView = (CustomListview) findViewById(R.id.listeners_list);
 				listenerListView.setHeight();
 			}
 		});		
@@ -814,6 +969,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			public void run() {
 				listenerAdapter.removeSection(p);
 				listenerAdapter.notifyDataSetChanged();		
+				CustomListview listenerListView = (CustomListview) findViewById(R.id.listeners_list);
 				listenerListView.setHeight();
 			}
 		});
@@ -843,50 +999,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		});
 	}
 
-	// detects when the device is rotated
-	@Override
-	public void onConfigurationChanged(final Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		runOnUiThread(new Runnable() {
-
-			@Override                                       
-			public void run() {
-				
-				setContentView(R.layout.contacts_list);
-
-				if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE)
-				{
-					NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-					notificationManager.cancel(CHAT_NOTIFICATION_ID);
-				}
-
-				//registration and setting of adapters of the UI elements
-				chatListView = (ListView)findViewById(R.id.messages);
-				chatListView.setAdapter(chatAdapter);
-
-				contactListView = (CustomListview)findViewById(R.id.contacts_list); 
-				contactListView.setAdapter(contactAdapter);
-				registerForContextMenu(contactListView);
-
-
-				listenerListView = (CustomListview)findViewById(R.id.listeners_list);
-				listenerListView.setAdapter(listenerAdapter);
-				registerForContextMenu(listenerListView);
-
-				contactsTitle = (TextView)findViewById(R.id.label_participants);
-				if(isConnected())
-					contactsTitle.setBackgroundResource(R.drawable.connected);
-				else
-					contactsTitle.setBackgroundResource(R.drawable.disconnected);
-
-				initializeListeners();
-
-				contactListView.setHeight();
-				listenerListView.setHeight();
-			}
-		});
-	}
-
 	private void makeToast(final int resId) {
 		makeToast(getResources().getString(resId));
 	}
@@ -906,113 +1018,14 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			@Override
 			public void run() {
 				AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);
-				audiolayout.updateUI();
+				if (getVoiceModule().isOnCall())
+					audiolayout.show(getVoiceModule().isMuted());
+				else
+					audiolayout.hide();
 			}
 		});
 	}
 	
-	public void initializeListeners()
-	{
-		getVoiceModule().setListener(new OnCallListener() {
-
-			@Override
-			public void onCallStarted() {
-				updateAudioBar();
-				makeToast(R.string.connection_established);
-			}
-			
-			@Override
-			public void onCallFinished() {
-				updateAudioBar();
-				makeToast(R.string.connection_closed);
-			}
-
-			@Override
-			public void onCallRefused() {
-				makeToast(R.string.connection_refused);
-			}
-		});
-		AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);
-		audiolayout.setListeners(getVoiceModule());
-
-		ScrollView scrollView = (ScrollView)findViewById(R.id.Scroll);
-		// hide the scrollbar
-		scrollView.setVerticalScrollBarEnabled(false);
-		if(slidingDrawer!=null)
-		{
-			slidingDrawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
-
-				@Override
-				public void onDrawerOpened() {
-
-					//when the drawer is opened, the public chat notifications are off
-					NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-					notificationManager.cancel(CHAT_NOTIFICATION_ID);
-					Button handler = (Button)findViewById(R.id.handle);
-					//and the "message received" icon is off too
-					handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background_down));
-					//				handler.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.title_background_onfocus));
-					handler.setGravity(Gravity.CENTER);
-					lastReadNum = chatAdapter.getCount();
-					openedDrawer(); 
-				}
-			});
-
-
-
-
-			slidingDrawer.setOnDrawerCloseListener(new OnDrawerCloseListener() {
-
-				@Override
-				public void onDrawerClosed() {
-					Button handler = (Button)findViewById(R.id.handle);
-					//and the "message received" icon is off too
-					handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(R.drawable.public_chat_title_background_up));
-
-				}
-			});
-		}
-		Button send = (Button)findViewById(R.id.sendMessage);
-		send.setOnClickListener( new OnClickListener() {
-			@Override
-			public void onClick(View viewParam) {
-				EditText chatMessageEdit = (EditText) findViewById(R.id.chatMessage);
-				String chatMessage = chatMessageEdit.getText().toString();
-				if(chatMessage.length()>1)
-				{
-					getBigBlueButton().sendPublicChatMessage(chatMessage);
-					chatMessageEdit.setText("");
-				}
-				chatListView.setSelection(chatListView.getCount());
-			} 
-		});
-
-
-		contactListView.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-
-				final Contact contact = (Contact) contactAdapter.getItem(position); 
-
-				//if the clicked person's ID is different from mine
-				if (contact.getUserId() != getBigBlueButton().getMyUserId())
-					startPrivateChat(contact);
-			}
-		});
-
-		IntentFilter filter = new IntentFilter(PrivateChat.CHAT_CLOSED); 
-		registerReceiver(chatClosed, filter); 
-	}
-
-	public void setConnected(boolean connected) {
-		this.connected = connected;
-	}
-
-	public boolean isConnected() {
-		return connected;
-	}
-
 	public void setDialogShown(boolean dialogShown) {
 		this.dialogShown = dialogShown;
 	}

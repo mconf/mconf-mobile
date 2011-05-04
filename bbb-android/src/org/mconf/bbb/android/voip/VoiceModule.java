@@ -72,14 +72,11 @@ public class VoiceModule implements ExtendedCallListener {
 	protected boolean mute;
 	protected OnCallListener listener;
 
-	final protected Context context;
-	
 	public static final int E_OK = 0;
 	public static final int E_INVALID_NUMBER = 1; 
 
 	public VoiceModule(Context context, String username, String url) {
 		Receiver.mContext = context;
-		this.context = context;
 		
 		SipStack.init();
 		Sipdroid.release = false;
@@ -93,16 +90,19 @@ public class VoiceModule implements ExtendedCallListener {
 		SipStack.ua_info = "BigBlueButton/" + Build.MODEL;
 		SipStack.server_info = SipStack.ua_info;
 		
+		// there's no need to handle the exception because "UTF-8" is a supported encoder
+		try {
+			username = URLEncoder.encode(username, "UTF-8").replace("+", "%20");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		
 		user_profile = new UserAgentProfile();
 		user_profile.username = username;
 		user_profile.passwd = "";
 		user_profile.realm = url.replace("http://", "");
 		user_profile.realm_orig = user_profile.realm;
-		try {
-			user_profile.from_url = URLEncoder.encode(username, "UTF-8").replace("+", "%20") + "@" + user_profile.realm;
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
+		user_profile.from_url = username + "@" + user_profile.realm;
 	
 		IpAddress.setLocalIpAddress();
 		sip_provider = new SipProvider(IpAddress.localIpAddress, 0);
@@ -180,8 +180,8 @@ public class VoiceModule implements ExtendedCallListener {
 	private void onHang() {
 		mute = true;
 		closeMediaApplication();
-		listener.onCallFinished();
 		Receiver.call_state = UserAgent.UA_STATE_IDLE;
+		listener.onCallFinished();
 	}
 	
 	protected String getContactURL(String username,SipProvider sip_provider) {
@@ -193,8 +193,8 @@ public class VoiceModule implements ExtendedCallListener {
 		}
 
 		return username + "@" + IpAddress.localIpAddress
-		+ (sip_provider.getPort() != 0?":"+sip_provider.getPort():"")
-		+ ";transport=" + sip_provider.getDefaultTransport();		
+				+ (sip_provider.getPort() != 0?":"+sip_provider.getPort():"")
+				+ ";transport=" + sip_provider.getDefaultTransport();		
 	}
 		
 	@Override
@@ -406,5 +406,5 @@ public class VoiceModule implements ExtendedCallListener {
 	public void setListener(OnCallListener listener) {
 		this.listener = listener;
 	}
-	
+
 }

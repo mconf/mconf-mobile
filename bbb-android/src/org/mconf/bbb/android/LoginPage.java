@@ -71,16 +71,16 @@ public class LoginPage extends BigBlueButtonActivity {
 	private ArrayAdapter<String> spinnerAdapter;
 	private boolean moderator;
 	private String username = "Android";
-	private String serverURL = "";
+	private String serverUrl = "";
 	private String createdMeeting = "";
 	
 	BroadcastReceiver serverChosed = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
 		{ 
 			Bundle extras = intent.getExtras();
-			serverURL=extras.getString("serverURL");
+			serverUrl=extras.getString("serverURL");
 			Button serverView = (Button) findViewById(R.id.server);
-			serverView.setText(serverURL);
+			serverView.setText(serverUrl);
 		}
 	};
 
@@ -97,8 +97,8 @@ public class LoginPage extends BigBlueButtonActivity {
 		final EditText editName = (EditText) findViewById(R.id.login_edittext_name);
 		editName.setText(username);
 		Button serverView = (Button) findViewById(R.id.server);
-		if(serverURL.length()>3)
-			serverView.setText(serverURL);
+		if(serverUrl.length()>3)
+			serverView.setText(serverUrl);
 		else
 			serverView.setText(R.string.choose_a_server);
 
@@ -200,16 +200,19 @@ public class LoginPage extends BigBlueButtonActivity {
 					return;
 				}
 
-				getBigBlueButton().getJoinService().join((String) spinner.getSelectedItem(), username, moderator);
-           		if (getBigBlueButton().getJoinService().getJoinedMeeting() == null) {
-                	Toast.makeText(getApplicationContext(), R.string.login_cant_join, Toast.LENGTH_SHORT).show();
-                	return;
-                }
+				String meetingId = (String) spinner.getSelectedItem();
+//				if (!getBigBlueButton().getJoinService().join(meetingId, username, moderator)) {
+//                	Toast.makeText(getApplicationContext(), getResources().getString(R.string.login_cant_join) + ": " + getBigBlueButton().getJoinService().getJoinedMeeting().getMessage(), Toast.LENGTH_SHORT).show();
+//                	return;
+//                }
 
-           		updatePreferences(username, serverURL);
+           		updatePreferences(username, serverUrl);
            		
                 Intent myIntent = new Intent(getApplicationContext(), Client.class);
                 myIntent.putExtra("username", username);
+                myIntent.putExtra("moderator", moderator);
+                myIntent.putExtra("serverUrl", serverUrl);
+                myIntent.putExtra("meetingId", meetingId);
                 startActivity(myIntent);
      
                 finish();
@@ -268,7 +271,7 @@ public class LoginPage extends BigBlueButtonActivity {
 		final Thread updateThread = new Thread(new Runnable() {
 			@Override
 			public void run() {			        
-				if (!getBigBlueButton().getJoinService().load(serverURL)) {
+				if (!getBigBlueButton().getJoinService().load(serverUrl)) {
 					progressDialog.dismiss();
 					runOnUiThread(new Runnable() {
 						@Override
@@ -276,13 +279,12 @@ public class LoginPage extends BigBlueButtonActivity {
 							ConnectivityManager connectivityManager =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
 							
 							
-							if(serverURL.length()<1)
+							if(serverUrl.length()<1)
 								Toast.makeText(getApplicationContext(), R.string.choose_a_server_to_login, Toast.LENGTH_SHORT).show();
 							else if(connectivityManager.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED 
 									||  connectivityManager.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED)
 							{
-								Toast.makeText(getApplicationContext(), R.string.no_connection, Toast.LENGTH_SHORT).show();
-								//create dialog to connection proprierties
+								//create dialog to connection properties
 								NetworkPropertiesDialog networkProperties = new NetworkPropertiesDialog(LoginPage.this);
 								networkProperties.show();
 							}
@@ -372,7 +374,7 @@ public class LoginPage extends BigBlueButtonActivity {
 		if(!storedPreferences.isEmpty())
 		{
 			this.username = this.storedPreferences.get("username");
-			this.serverURL = this.storedPreferences.get("serverURL");
+			this.serverUrl = this.storedPreferences.get("serverURL");
 		}
 	}
 

@@ -15,14 +15,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ListenerAdapter extends BaseAdapter {
-	private Context context;
-	View view;
-	
 	//list of the listeners on the meeting
 	private List<IListener> listListener = new ArrayList<IListener>();
 	
-	public ListenerAdapter(Context context) {
-        this.context = context;
+	public ListenerAdapter() {
     }
     
     public void addSection(IListener listener) {
@@ -39,30 +35,10 @@ public class ListenerAdapter extends BaseAdapter {
     //set the correct images on each listener
     public void setMutedStatus(Listener changedStatus)
 	{
-		ImageView muted = (ImageView) view.findViewById(R.id.muted);
-		if(changedStatus.isMuted())
-		{
-			muted.setImageDrawable(this.context.getResources().getDrawable(R.drawable.sound_mute));
-			muted.setVisibility(ImageView.VISIBLE);
-		}
-		else
-			{
-			muted.setImageDrawable(this.context.getResources().getDrawable(R.drawable.sound_none));
-			muted.setVisibility(ImageView.VISIBLE);
-			}
-
 	}
 
 	public void setTalkingStatus(Listener changedStatus)
 	{
-		ImageView talking = (ImageView) view.findViewById(R.id.talking);
-		if(changedStatus.isTalking())
-		{
-			talking.setImageDrawable(this.context.getResources().getDrawable(R.drawable.sound));
-			talking.setVisibility(ImageView.VISIBLE);
-		}
-		else
-			talking.setVisibility(ImageView.INVISIBLE);
 	}
     
     public int getCount() { 
@@ -89,26 +65,38 @@ public class ListenerAdapter extends BaseAdapter {
     	ListenerContact entry = (ListenerContact) listListener.get(position);
         
         if (convertView == null) {
-            LayoutInflater inflater = (LayoutInflater) context
+            LayoutInflater inflater = (LayoutInflater) viewGroup.getContext()
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.listener, null);
         }
-        view = convertView;
         
         String name = entry.getCidName();
-        TextView contactName = (TextView) convertView.findViewById(R.id.listener_name);
-        contactName.setTextAppearance(context, R.style.ParticipantNameStyle);
+        final TextView contactName = (TextView) convertView.findViewById(R.id.listener_name);
+        contactName.setTextAppearance(viewGroup.getContext(), R.style.ParticipantNameStyle);
         contactName.setText(name);
         contactName.setTag(name);
-        setMutedStatus(entry);
-        setTalkingStatus(entry);
 
-       
+        
+		final ImageView muted = (ImageView) convertView.findViewById(R.id.muted);
+		if(entry.isMuted()) {
+			muted.setImageDrawable(viewGroup.getContext().getResources().getDrawable(R.drawable.sound_mute));
+			muted.setVisibility(ImageView.VISIBLE);
+		} else {
+			muted.setImageDrawable(viewGroup.getContext().getResources().getDrawable(R.drawable.sound_none));
+			muted.setVisibility(ImageView.VISIBLE);
+		}
+
+		final ImageView talking = (ImageView) convertView.findViewById(R.id.talking);
+		if(entry.isTalking()) {
+			talking.setImageDrawable(viewGroup.getContext().getResources().getDrawable(R.drawable.sound));
+			talking.setVisibility(ImageView.VISIBLE);
+		} else
+			talking.setVisibility(ImageView.INVISIBLE);
+		
         return convertView;
     }
 
 	public void clearList() {
-		// TODO Auto-generated method stub
 		listListener.clear();
 	}
 

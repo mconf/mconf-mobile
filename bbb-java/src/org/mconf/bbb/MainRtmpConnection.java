@@ -83,6 +83,7 @@ import com.flazr.rtmp.message.Control;
 public class MainRtmpConnection extends RtmpConnection {
 
     private static final Logger log = LoggerFactory.getLogger(MainRtmpConnection.class);
+	private boolean connected = false;
     
 	public MainRtmpConnection(ClientOptions options, BigBlueButtonClient context) {
 		super(options, context);
@@ -128,7 +129,9 @@ public class MainRtmpConnection extends RtmpConnection {
         
 		for (IBigBlueButtonClientListener l : context.getListeners()) {
 			l.onConnected();
-		}        
+		}
+		
+		connected = true;
 	}
 	
 	@Override
@@ -139,8 +142,9 @@ public class MainRtmpConnection extends RtmpConnection {
 		for (IBigBlueButtonClientListener l : context.getListeners()) {
 			l.onDisconnected();
 		}
+		
+		connected = false;
 	}
-	
 
     @SuppressWarnings("unchecked")
 	public String connectGetCode(Command command) {
@@ -220,4 +224,7 @@ public class MainRtmpConnection extends RtmpConnection {
 		return context;
 	}
 	
+	public boolean isConnected() {
+		return connected;
+	}
 }

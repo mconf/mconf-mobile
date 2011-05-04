@@ -21,7 +21,8 @@ public class BigBlueButton extends Application {
 	}
 	
 	public VoiceModule getVoiceModule() {
-		if (voice == null)
+		// the application could call getVoiceModule before connect to a meeting, so additional tests must be applied
+		if (voice == null && getHandler().getJoinService().getJoinedMeeting() != null)
 			voice = new VoiceModule(this,
 					getHandler().getJoinService().getJoinedMeeting().getFullname(),
 					getHandler().getJoinService().getServerUrl()); 

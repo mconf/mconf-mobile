@@ -59,14 +59,14 @@ public class JoinService {
 		return true;
 	}
 
-	public JoinedMeeting join(String meetingID, String name, boolean moderator) {
+	public boolean join(String meetingID, String name, boolean moderator) {
 		for (Meeting m : meetings.getMeetings()) {
 			log.info(m.getMeetingID());
 			if (m.getMeetingID().equals(meetingID)) {
 				return join(m, name, moderator);
 			}
 		}
-		return null;
+		return false;
 	}
 	
 	public boolean createMeeting(String meetingID) {
@@ -94,14 +94,14 @@ public class JoinService {
 		}
 	}
 	
-	public JoinedMeeting join(Meeting meeting, String name, boolean moderator) {
+	public boolean join(Meeting meeting, String name, boolean moderator) {
 		String joinUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?action=join"
 			+ "&meetingID=" + urlEncode(meeting.getMeetingID())
 			+ "&fullName=" + urlEncode(name)
 			+ "&password=" + urlEncode(moderator? meeting.getModeratorPW(): meeting.getAttendeePW());
 		log.debug(joinUrl);
 		
-		JoinedMeeting joinedMeeting = new JoinedMeeting();
+		joinedMeeting = new JoinedMeeting();
 		try {
 			HttpClient client = new HttpClient();
 			HttpMethod method = new GetMethod(joinUrl);
@@ -112,23 +112,22 @@ public class JoinService {
 			e.printStackTrace();
 			log.error("Can't join the meeting {}", meeting.getMeetingID());
 			
-			return null;
+			return false;
 		}
 		
 		if (joinedMeeting.getReturncode().equals("SUCCESS")) {
-			this.joinedMeeting = joinedMeeting;
+			return true;
 		} else {
 			log.error(joinedMeeting.getMessage());
+			return false;
 		}
-		
-		return joinedMeeting;
 	}
 	
-	public JoinedMeeting join(String serverUrl, String joinUrl) {
+	public boolean join(String serverUrl, String joinUrl) {
 		this.serverUrl = serverUrl;
 		String enterUrl = serverUrl + "/bigbluebutton/api/enter";
 			
-		JoinedMeeting joinedMeeting = new JoinedMeeting();
+		joinedMeeting = new JoinedMeeting();
 		try {
 			HttpClient client = new HttpClient();
 			HttpMethod method = new GetMethod(joinUrl);
@@ -143,16 +142,15 @@ public class JoinService {
 			e.printStackTrace();
 			log.error("Can't join the url {}", joinUrl);
 			
-			return null;
+			return false;
 		}
 		
 		if (joinedMeeting.getReturncode().equals("SUCCESS")) {
-			this.joinedMeeting = joinedMeeting;
+			return true;
 		} else {
 			log.error(joinedMeeting.getMessage());
+			return false;
 		}
-		
-		return joinedMeeting;
 	}
 
 	public static String urlEncode(String s) {	

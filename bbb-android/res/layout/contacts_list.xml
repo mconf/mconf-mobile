@@ -2,7 +2,7 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
-	android:background="@color/background">
+	android:background="@color/background" android:id="@+id/main">
 	<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
 		android:id="@+id/Scroll" android:layout_width="fill_parent"
 		android:layout_height="fill_parent" android:background="@color/background"
@@ -19,7 +19,7 @@
 					android:layout_width="fill_parent" android:id="@+id/label_participants"
 					android:layout_alignParentTop="true" android:textAppearance="@style/TitleStyle"
 					android:text="@string/list_participants" android:gravity="center"
-					android:background="@color/title_background_onfocus"
+					android:background="@drawable/disconnected"
 					android:minHeight="42dp" />
 
 				<LinearLayout android:id="@+id/separator1"
