@@ -35,7 +35,7 @@ public class AudioControlDialog extends Dialog {
     	final int setVolFlags = AudioManager.FLAG_PLAY_SOUND | AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE |
 				AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_VIBRATE;
     	
-		// \TODO verificar se existe volume do microfone realmente
+		// \TODO check if there's a way to change the microphone volume
 //		final SeekBar mic_volume = (SeekBar) dialog.findViewById(R.id.mic_volume);
 //		mic_volume.setMax(manager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL));
 //		mic_volume.setProgress(manager.getStreamVolume(AudioManager.STREAM_VOICE_CALL));

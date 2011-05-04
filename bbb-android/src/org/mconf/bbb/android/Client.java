@@ -105,7 +105,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 
 
-	//change the contact status qhen the private chat is closed
+	//change the contact status when the private chat is closed
 	private BroadcastReceiver chatClosed = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
 		{ 
@@ -1018,7 +1018,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			@Override
 			public void run() {
 				AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);
-				if (getVoiceModule().isOnCall())
+				if (getVoiceModule() != null && getVoiceModule().isOnCall())
 					audiolayout.show(getVoiceModule().isMuted());
 				else
 					audiolayout.hide();
