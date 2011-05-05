@@ -1,6 +1,8 @@
 package org.mconf.bbb.android.test;
 
+import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.LoginPage;
+import org.mconf.bbb.android.R;
 
 import android.test.ActivityInstrumentationTestCase2;
 
@@ -31,25 +33,62 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 			super.tearDown();
 			}
 	
-public	void loginAsModerator(){}
+	public	void loginAsModerator(int num)
+	{
+		TestLogin.connectOnMeeting(solo, num, 0);
+	}
 	
-	void loginAsViewer(){}
+	void loginAsViewer(int num)
+	{
+		TestLogin.connectOnMeeting(solo, num, 1);
+	}
 	
-	void loginAtRoom(int num){}
 	
-	void loginAtServer(String server){}
+	public	void closeRoom()
+	{
+		loginAsModerator(0);
+		solo.assertCurrentActivity("not on Client", Client.class);
+		solo.clickOnMenuItem(solo.getString(R.string.logout));
+		solo.assertCurrentActivity("didn't logout", LoginPage.class);
+		
+	}
 	
-	public	void closeRoom(){}
-	
-	void quit(){}
+	public void Quit()
+	{
+		loginAsModerator(0);
+		solo.assertCurrentActivity("not on Client", Client.class);
+		solo.clickOnMenuItem(solo.getString(R.string.quit));
+
+		solo.assertCurrentActivity("quitted", Client.class); //?? how to know that it's over
+	}
 	
 	void publicChat(){}
 	
-	void about(){}
+	public void testAbout()
+	{
+		loginAsModerator(0);
+		solo.assertCurrentActivity("not on Client", Client.class);
+		solo.clickOnMenuItem(solo.getString(R.string.menu_about));
+		solo.scrollDown();
+		solo.clickOnButton(0);
+		solo.assertCurrentActivity("didn't close the About", Client.class);
+	}
 	
-	void raiseHand(){}
+	void raiseHand()
+	{
+		loginAsModerator(0);
+		solo.assertCurrentActivity("not on Client", Client.class);
+		solo.clickOnMenuItem(solo.getString(R.string.raise_hand));
+	}
 	
-	void kick(int num){}
+	void kick(int num)
+	{
+		loginAsModerator(0);
+		solo.assertCurrentActivity("not on Client", Client.class);
+		
+		solo.clickLongInList(num);
+		solo.clickOnMenuItem(solo.getString(R.string.kick));
+	}
 	
 	void openChatLongPress(int num){}
 	

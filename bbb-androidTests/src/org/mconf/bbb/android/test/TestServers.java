@@ -11,7 +11,7 @@ import com.jayway.android.robotium.solo.Solo;
 
 public class TestServers extends ActivityInstrumentationTestCase2<LoginPage>  {
 
-	private String server = "http://mconfdev.inf.ufrgs.br/";
+	private static String server = "http://mconfdev.inf.ufrgs.br/";
 	private Solo solo;
 	
 	public TestServers() {
@@ -38,6 +38,13 @@ public class TestServers extends ActivityInstrumentationTestCase2<LoginPage>  {
 
 	  }
 	
+	public static void typeServerConnect(Solo solo)
+	{
+		solo.clickOnView(solo.getView(R.id.server));
+		solo.enterText(0, server);
+		solo.clickOnButton(solo.getString(R.string.connect));
+		
+	}
 
 	
 	public void deleteServer(int num)
@@ -94,6 +101,8 @@ public class TestServers extends ActivityInstrumentationTestCase2<LoginPage>  {
 		}
 		
 	}
+	
+	
 	
 	public void testChoose()
 	{

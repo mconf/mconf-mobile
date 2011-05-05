@@ -1,6 +1,7 @@
 package org.mconf.bbb.android.test;
 
 import org.mconf.bbb.android.AboutDialog;
+import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.LoginPage;
 import org.mconf.bbb.android.R;
 import org.mconf.bbb.android.ServerChoosing;
@@ -45,18 +46,14 @@ public class TestLogin extends ActivityInstrumentationTestCase2<LoginPage>  {
 	
 	public void  about()
 	{
-		solo.clickOnMenuItem(solo.getString(R.string.about));
+		solo.clickOnMenuItem(solo.getString(R.string.menu_about));
 		solo.assertCurrentActivity("didn't open the dialog", AboutDialog.class);
 		solo.scrollDown();
 		solo.clickOnButton(0);
 		solo.assertCurrentActivity("didn't close the about dialog", LoginPage.class);
 	}
 	
-	public void choseServer()
-	{
-		TestServers testServers = new TestServers();
-		testServers.goToServers();
-	}
+	
 	
 	public void roleModerator()
 	{
@@ -75,29 +72,25 @@ public class TestLogin extends ActivityInstrumentationTestCase2<LoginPage>  {
 		
 	}
 	
-	public void type() //conseguir usar as funções das outras classes
-	{
-		solo.assertCurrentActivity("not on login", LoginPage.class);
-		solo.clickOnView(solo.getView(R.id.server));
-		solo.assertCurrentActivity("didn't go to Serveres", ServerChoosing.class);
-		solo.enterText(0, "http://mconfdev.inf.ufrgs.br/");
-		solo.clickOnButton(solo.getString(R.string.connect));
-	}
-	
-	public void changeRoom(int num)
-	{
-		type();
-		solo.waitForText(solo.getString(R.string.login_name));
-		Spinner spinner = (Spinner) solo.getView(R.id.login_spinner);
-		solo.clickOnView(solo.getView(R.id.login_spinner));
-		solo.waitForText("Demo Meeting");
-		String room = spinner.getItemAtPosition(num).toString();
-		solo.clickOnText(room);
-		assertTrue(solo.searchText(room));
-	}
 	
 	public void testLogin(){
 		solo.assertCurrentActivity("hhhh", LoginPage.class);
+		connectOnMeeting(solo, 3,0);//moderator
+		solo.assertCurrentActivity("didn't go to CLient", Client.class);
+	}
+	
+	public static void connectOnMeeting(Solo solo, int num, int role)
+	{
+		TestServers.typeServerConnect(solo);
+		solo.waitForText(solo.getString(R.string.login_name));
+		Spinner spinner = (Spinner) solo.getView(R.id.login_spinner);
+		solo.clickOnView(spinner);
+		solo.waitForDialogToClose(1000);
+		String room = spinner.getItemAtPosition(num).toString();
+		solo.clickOnText(room);
+		assertTrue(solo.searchText(room));
+		solo.clickOnRadioButton(role);
+		solo.clickOnButton(solo.getString(R.string.login_button_join));
 	}
 	
 	
