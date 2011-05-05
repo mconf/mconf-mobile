@@ -171,13 +171,15 @@ public class VoiceModule implements ExtendedCallListener {
 	}
 	
 	public void hang() {
-		if (call != null) {
+		if (call != null && call.isOnCall())
 			call.hangup();
-			call = null;
-		}
 	}
 	
 	private void onHang() {
+		// if the network get down, the user can't send "bye" after the receiver timeout, so if it tries to call "hang()" before continue
+		hang();
+		call = null;
+		
 		mute = true;
 		closeMediaApplication();
 		Receiver.call_state = UserAgent.UA_STATE_IDLE;
