@@ -100,16 +100,26 @@ public class PrivateChat extends BigBlueButtonActivity {
 		@Override
 		public void onParticipantJoined(IParticipant p) {}
 		@Override
-		public void onParticipantLeft(IParticipant p) {
-			System.out.println("HI");
+		public void onParticipantLeft(final IParticipant p) {
 			//se o participante que saiu é o que está sendo mostrado o chat
-			if(getParticipantKeyByViewId(flipper.getDisplayedChild())==p.getUserId())
+			if(p.getUserId()==userId && getParticipantByViewId(flipper.getDisplayedChild()).getUserId()==userId)
 			{
-				System.out.println("INSIDE");
-				showPartcicipantLeftDialog();
+				System.out.println("first");
+				showPartcicipantLeftDialog();//works fine
+			} 
+			//se o participante saiu, mas está por trás nas abas de chat
+			else if(p.getUserId()==userId && getParticipantByViewId(flipper.getDisplayedChild()).getUserId()!=userId)
+			{
+				runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {
+						System.out.println("second");
+						removeParticipant(p.getUserId());
+					}
+				});
 			}
-			else
-				removeParticipant(p.getUserId());
+
 		}
 		@Override
 		public void onParticipantStatusChangeHasStream(IParticipant p) {}
@@ -169,6 +179,8 @@ public class PrivateChat extends BigBlueButtonActivity {
 	public static final String CHAT_CLOSED = "bbb.android.action.CHAT_CLOSED";
 	public static final String KICKED_USER = "bbb.android.action.KICKED_USER";
 
+	private static final int INVALIDATED = 6678;
+
 
 	private GestureDetector gestureDetector;
 	View.OnTouchListener gestureListener;
@@ -177,7 +189,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 	//	private Animation LeftOut;
 	//	private Animation RightIn;
 	//	private Animation RightOut;
-	private ViewFlipper flipper;
+	private ViewFlipper flipper; 
 	private Context context= this;
 
 	public static boolean hasUserOnPrivateChat(int userId)
@@ -266,7 +278,8 @@ public class PrivateChat extends BigBlueButtonActivity {
 		RemoteParticipant p = participants.get(key);
 		if (p != null) {
 			//was starting a concurrent modification exception
-			//getBigBlueButton().removeListener(p);
+			getBigBlueButton().removeListener(p);
+			flipper.getChildAt(p.getViewId()).setId(INVALIDATED);
 			participants.remove(key);
 		}
 	}
@@ -348,8 +361,8 @@ public class PrivateChat extends BigBlueButtonActivity {
 
 		if (p == null)
 			p = createParticipant(userId, username, notified);
-		else
-			changeView(flipper.indexOfChild(flipper.findViewById(p.getViewId())));
+		//		else
+		//			changeView(flipper.indexOfChild(flipper.findViewById(p.getViewId())));
 
 		log.debug("displaying view of userId=" + userId + " and username=" + username);
 
@@ -466,6 +479,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 	public void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 		log.debug("ON NEW INTENT");
+		System.out.println(flipper.getChildCount());
 		displayView(intent.getExtras());
 
 	}
@@ -484,12 +498,18 @@ public class PrivateChat extends BigBlueButtonActivity {
 					if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
 						//flipper.setAnimation(LeftIn);
 						//flipper.setOutAnimation(RightOut);
-						flipper.showNext();
+
+						do{
+							flipper.showNext();
+						}while(flipper.getChildAt(flipper.getDisplayedChild()).getId()==INVALIDATED);
+
 						//left to right swipe
 					}  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
 
 						//flipper.setAnimation(LeftOut);
-						flipper.showPrevious();
+						do{
+							flipper.showPrevious();
+						}while(flipper.getChildAt(flipper.getDisplayedChild()).getId()==INVALIDATED);
 					} else
 						return false;
 
@@ -511,7 +531,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 	}
 
 
-	//when a usar hist BACK, needt to go back to client activity
+	//when a user hits BACK, need to go back to client activity
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -598,7 +618,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 			Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
 			bringBackClient.setAction(Client.BACK_TO_CLIENT);
 			startActivity(bringBackClient);
-			finish();
+			finish(); 
 		}
 	}
 
