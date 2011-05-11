@@ -61,6 +61,8 @@
 	<string name="create">Create</string>
 	<string name="taptospeak">Tap to speak</string>
 	<string name="lockspeak">Lock speak</string>
+	<string name="ok">Ok</string>
+	<string name="participant_left">User has disconnected. Closing the chat</string>
 	<string name="user_disconnected">User has disconnected</string>
 	<string name="about">
 BBB-Android is an Android implementation of the BigBlueButton client.

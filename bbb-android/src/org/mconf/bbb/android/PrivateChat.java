@@ -198,10 +198,10 @@ public class PrivateChat extends BigBlueButtonActivity {
 			public void run() {
 
 				AlertDialog alert = new AlertDialog.Builder(context).create();
-				alert.setTitle("participant left, closing the chat");
+				alert.setTitle(R.string.participant_left);
 				alert.setCancelable(false);
 				alert.setIcon(android.R.drawable.ic_dialog_alert);
-				alert.setButton("ok", new DialogInterface.OnClickListener() {
+				alert.setButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						closeChat();
 					}
