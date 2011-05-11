@@ -1,6 +1,9 @@
 package org.mconf.bbb.android.test;
 
 import org.mconf.bbb.android.Client;
+import org.mconf.bbb.android.Contact;
+import org.mconf.bbb.android.ContactAdapter;
+import org.mconf.bbb.android.CustomListview;
 import org.mconf.bbb.android.LoginPage;
 import org.mconf.bbb.android.PrivateChat;
 import org.mconf.bbb.android.R;
@@ -108,7 +111,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	{
 		loginAsModerator(0);
 		solo.assertCurrentActivity("not on Client", Client.class);
-		String name = solo.getCurrentTextViews(solo.getView(R.id.contacts_list)).get(num).getText().toString();
+		String name= getContactName(num, solo);
 		solo.clickLongInList(num);
 		solo.clickOnMenuItem(solo.getString(R.string.kick));
 		assertFalse(solo.searchText(name));
@@ -116,9 +119,10 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	
 	public void OpenChatLongPress()
 	{
+		int num =0;
 		loginAsModerator(0);
-		String name = solo.getCurrentTextViews(solo.getView(R.id.contacts_list)).get(1).getText().toString();
-		solo.clickLongInList(1);
+		String name= getContactName(num, solo);
+		solo.clickLongInList(num);
 		solo.clickOnText(solo.getString(R.string.open_private_chat));
 		solo.assertCurrentActivity("didn't open private chat", PrivateChat.class);
 		String title = solo.getCurrentActivity().getTitle().toString();
@@ -129,7 +133,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	void assignPresenter(int num)
 	{
 		loginAsModerator(0);
-		String name = solo.getCurrentTextViews(solo.getView(R.id.contacts_list)).get(num).getText().toString();
+		String name= getContactName(num, solo);
 		solo.clickLongInList(num);
 		solo.clickOnText(solo.getString(R.string.assign_presenter));
 		//como testar?
@@ -137,23 +141,36 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	
 	public void testOpenChat()
 	{
-		loginAsModerator(1);
+		loginAsModerator(0);
+		int num = 0;
 		
-		//String name = solo.getView(R.id.contacts_list).getC; //how to get the textView inside an item on an custom listview??????
-		solo.clickInList(0);
+		String name = getContactName(num, solo);
+		
+		solo.clickInList(num);
 		solo.assertCurrentActivity("didn't open private chat", PrivateChat.class);
 		String title = solo.getCurrentActivity().getTitle().toString();
-		//assertEquals(title, name);
+		assertTrue(title.contains(name));
 	}
 	
 	public static void openPrivateChat(Solo solo, int num)
 	{
 		TestLogin.connectOnMeeting(solo, num, 0);
-		String name = solo.getCurrentTextViews(solo.getView(R.id.contacts_list)).get(num).getText().toString();
+		
+		String name = getContactName(num, solo);
+		
 		solo.clickInList(num);
 		solo.assertCurrentActivity("didn't open private chat", PrivateChat.class);
 		String title = solo.getCurrentActivity().getTitle().toString();
-		//assertTrue(title.contains(name));
+		assertTrue(title.contains(name));
+	}
+	
+	private static String getContactName(int num, Solo solo)
+	{
+		solo.waitForText(solo.getString(R.string.list_participants));
+		CustomListview contacts = (CustomListview) solo.getView(R.id.contacts_list);
+		ContactAdapter contactAdapter = (ContactAdapter) contacts.getAdapter();
+		Contact contact = contactAdapter.getUserById(contactAdapter.getUserId(num));
+		return contact.getContactName();
 	}
 	
 }

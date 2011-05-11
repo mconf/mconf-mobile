@@ -32,9 +32,11 @@ import org.mconf.bbb.users.IParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
@@ -50,6 +52,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 
@@ -98,7 +101,15 @@ public class PrivateChat extends BigBlueButtonActivity {
 		public void onParticipantJoined(IParticipant p) {}
 		@Override
 		public void onParticipantLeft(IParticipant p) {
-			removeParticipant(p.getUserId());
+			System.out.println("HI");
+			//se o participante que saiu é o que está sendo mostrado o chat
+			if(getParticipantKeyByViewId(flipper.getDisplayedChild())==p.getUserId())
+			{
+				System.out.println("INSIDE");
+				showPartcicipantLeftDialog();
+			}
+			else
+				removeParticipant(p.getUserId());
 		}
 		@Override
 		public void onParticipantStatusChangeHasStream(IParticipant p) {}
@@ -162,11 +173,12 @@ public class PrivateChat extends BigBlueButtonActivity {
 	private GestureDetector gestureDetector;
 	View.OnTouchListener gestureListener;
 	// \TODO animations. still to resolve
-//	private Animation LeftIn;
-//	private Animation LeftOut;
-//	private Animation RightIn;
-//	private Animation RightOut;
+	//	private Animation LeftIn;
+	//	private Animation LeftOut;
+	//	private Animation RightIn;
+	//	private Animation RightOut;
 	private ViewFlipper flipper;
+	private Context context= this;
 
 	public static boolean hasUserOnPrivateChat(int userId)
 	{
@@ -176,6 +188,28 @@ public class PrivateChat extends BigBlueButtonActivity {
 				return true;
 		}
 		return false;
+	}
+
+	public void showPartcicipantLeftDialog() {
+
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+
+				AlertDialog alert = new AlertDialog.Builder(context).create();
+				alert.setTitle("participant left, closing the chat");
+				alert.setCancelable(false);
+				alert.setIcon(android.R.drawable.ic_dialog_alert);
+				alert.setButton("ok", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						closeChat();
+					}
+				});
+
+				alert.show();
+			}
+		});
 	}
 
 	//receivers of broadcast intents
@@ -216,7 +250,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 	private void changeView(int index){
 		flipper.addView(getView(), index);
 	}
-	
+
 
 	private View getView() {
 		return getLayoutInflater().inflate(R.layout.chat, null);   
@@ -231,7 +265,8 @@ public class PrivateChat extends BigBlueButtonActivity {
 	private void removeParticipant(Integer key) {
 		RemoteParticipant p = participants.get(key);
 		if (p != null) {
-			getBigBlueButton().removeListener(p);
+			//was starting a concurrent modification exception
+			//getBigBlueButton().removeListener(p);
 			participants.remove(key);
 		}
 	}
@@ -267,7 +302,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		List<ChatMessage> messages = getBigBlueButton().getChatModule().getPrivateChatMessage().get(userId);
 		if (messages != null) {
 			for (ChatMessage message : messages) {
-					p.onPrivateChatMessage(message);
+				p.onPrivateChatMessage(message);
 			}
 		}
 
@@ -288,7 +323,11 @@ public class PrivateChat extends BigBlueButtonActivity {
 			public void onClick(View v) {
 				EditText text = (EditText) flipper.getChildAt(p.getViewId()).findViewById(R.id.chatMessage);
 				if (text.getText().toString().length() > 0) {
-					getBigBlueButton().sendPrivateChatMessage(text.getText().toString(), p.getUserId());
+
+					if(hasUserOnPrivateChat(p.getUserId()))
+						getBigBlueButton().sendPrivateChatMessage(text.getText().toString(), p.getUserId());
+					else
+						Toast.makeText(getApplicationContext(), R.string.user_disconnected, Toast.LENGTH_SHORT).show();
 					text.setText("");
 					chatListView.setSelection(chatListView.getCount());
 				}
@@ -311,7 +350,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 			p = createParticipant(userId, username, notified);
 		else
 			changeView(flipper.indexOfChild(flipper.findViewById(p.getViewId())));
-		
+
 		log.debug("displaying view of userId=" + userId + " and username=" + username);
 
 		flipper.setDisplayedChild(p.getViewId());
@@ -330,10 +369,10 @@ public class PrivateChat extends BigBlueButtonActivity {
 			if (messages != null)
 			{
 				for (ChatMessage message : messages) {
-						p.onPrivateChatMessage(message);
+					p.onPrivateChatMessage(message);
 				}
 			}
-			
+
 			final ListView chatListView = (ListView) flipper.getChildAt(p.getViewId()).findViewById(R.id.messages);
 			chatListView.setOnTouchListener(new View.OnTouchListener() {
 				@Override
@@ -365,8 +404,8 @@ public class PrivateChat extends BigBlueButtonActivity {
 		setContentView(R.layout.private_chat);
 
 
-//		Configuration config = getResources().getConfiguration();
-//		orientation = config.orientation;
+		//		Configuration config = getResources().getConfiguration();
+		//		orientation = config.orientation;
 		log.debug("ON CREATE");
 
 		flipper = (ViewFlipper) findViewById(R.id.manyPages); 
@@ -374,11 +413,11 @@ public class PrivateChat extends BigBlueButtonActivity {
 
 		displayView(getIntent().getExtras());
 		//animation on swippe, still need to resolve
-//		LeftIn = AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left);
-//		LeftOut=AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right);
-//		RightIn = AnimationUtils.loadAnimation(this, R.anim.push_right_in);
-//		RightOut = AnimationUtils.loadAnimation(this, R.anim.push_right_out);
-		
+		//		LeftIn = AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left);
+		//		LeftOut=AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right);
+		//		RightIn = AnimationUtils.loadAnimation(this, R.anim.push_right_in);
+		//		RightOut = AnimationUtils.loadAnimation(this, R.anim.push_right_out);
+
 		//gesture detector, to change the participant shown
 		gestureDetector = new GestureDetector(new MyGestureDetector());
 		gestureListener = new View.OnTouchListener() {
@@ -437,6 +476,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 			if(participants.size()>1)
 			{
+				System.out.println("SWIPE");
 				try {
 					if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
 						return false;
@@ -496,25 +536,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 
 		switch (item.getItemId()) {
 		case MENU_CLOSE:
-			int viewID =flipper.getDisplayedChild();
-			Intent chatClosed = new Intent(CHAT_CLOSED);
-			chatClosed.putExtra("userId", getParticipantByViewId(viewID).getUserId());
-			sendBroadcast(chatClosed);
-			if(participants.size()>1)
-			{
-				flipper.showPrevious();
-				removeParticipant(getParticipantKeyByViewId(viewID));
-				viewID=flipper.getDisplayedChild();
-				setTitle(getResources().getString(R.string.private_chat_title) + getParticipantByViewId(viewID).getUsername());
-			}
-			else
-			{
-				removeParticipant(getParticipantKeyByViewId(viewID));
-				Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
-				bringBackClient.setAction(Client.BACK_TO_CLIENT);
-				startActivity(bringBackClient);
-				finish();
-			}
+			closeChat();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -523,7 +545,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 	@Override
 	public void onConfigurationChanged(final Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-//		orientation = newConfig.orientation;
+		//		orientation = newConfig.orientation;
 		runOnUiThread(new Runnable() {
 
 			@Override
@@ -552,6 +574,32 @@ public class PrivateChat extends BigBlueButtonActivity {
 
 		});
 
+	}
+
+	void closeChat()
+	{
+		int viewID =flipper.getDisplayedChild();
+		Intent chatClosed = new Intent(CHAT_CLOSED);
+		if(getParticipantByViewId(viewID)!=null)
+			chatClosed.putExtra("userId", getParticipantByViewId(viewID).getUserId());
+		else
+			chatClosed.putExtra("userId", -1);
+		sendBroadcast(chatClosed);
+		if(participants.size()>1)
+		{
+			flipper.showPrevious();
+			removeParticipant(getParticipantKeyByViewId(viewID));
+			viewID=flipper.getDisplayedChild();
+			setTitle(getResources().getString(R.string.private_chat_title) + getParticipantByViewId(viewID).getUsername());
+		}
+		else
+		{
+			removeParticipant(getParticipantKeyByViewId(viewID));
+			Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
+			bringBackClient.setAction(Client.BACK_TO_CLIENT);
+			startActivity(bringBackClient);
+			finish();
+		}
 	}
 
 }

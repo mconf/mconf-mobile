@@ -13,6 +13,7 @@ import android.widget.Spinner;
 
 public class TestLogin extends ActivityInstrumentationTestCase2<LoginPage>  {
 
+	public static String NAME = "MyName";
 	private Solo solo;
 	
 	public TestLogin() {
@@ -76,7 +77,7 @@ public class TestLogin extends ActivityInstrumentationTestCase2<LoginPage>  {
 	public void testLogin(){
 		solo.assertCurrentActivity("hhhh", LoginPage.class);
 		connectOnMeeting(solo, 3,0);//moderator
-		solo.assertCurrentActivity("didn't go to CLient", Client.class);
+		solo.assertCurrentActivity("didn't go to Client", Client.class);
 	}
 	
 	public static void connectOnMeeting(Solo solo, int num, int role)
@@ -90,6 +91,7 @@ public class TestLogin extends ActivityInstrumentationTestCase2<LoginPage>  {
 		solo.clickOnText(room);
 		assertTrue(solo.searchText(room));
 		solo.clickOnRadioButton(role);
+		changeName(NAME);
 		solo.clickOnButton(solo.getString(R.string.login_button_join));
 	}
 	

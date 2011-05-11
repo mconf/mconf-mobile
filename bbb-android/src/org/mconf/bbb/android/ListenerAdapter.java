@@ -53,6 +53,11 @@ public class ListenerAdapter extends BaseAdapter {
         return listListener.get(position).getUserId();
     }
      
+    public ListenerContact getListener ( int position)
+    {
+    	return new ListenerContact (listListener.get(position));
+    }
+    
     public ListenerContact getUserById(int id) { 
     	for (IListener listener : listListener) { 
     		if (listener.getUserId() == id)

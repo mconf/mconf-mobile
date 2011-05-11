@@ -1,6 +1,11 @@
 package org.mconf.bbb.android.test;
 
 import org.mconf.bbb.android.Client;
+import org.mconf.bbb.android.Contact;
+import org.mconf.bbb.android.ContactAdapter;
+import org.mconf.bbb.android.CustomListview;
+import org.mconf.bbb.android.ListenerAdapter;
+import org.mconf.bbb.android.ListenerContact;
 import org.mconf.bbb.android.LoginPage;
 import org.mconf.bbb.android.R;
 
@@ -51,26 +56,82 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 		solo.assertCurrentActivity("didn't go to client", Client.class);
 		solo.clickOnMenuItem(solo.getString(R.string.start_voice));
 		assertTrue(solo.searchButton(solo.getString(R.string.taptospeak)));
+		assertTrue(solo.searchText(TestLogin.NAME, 2));
 	}
 
-	void kickListener(int num)
+	void testKickListener(int num)
 	{
 		startVoice();
+
+		String name = getListenersName(solo, num);
+		solo.clickLongOnText(name);
+		solo.clickOnText(solo.getString(R.string.kick));
+		assertFalse(solo.searchText(name));
 	}
 
-	void muteListener(int num){}
+	void muteListener(int num)
+	{
+		startVoice();
+		String name = getListenersName(solo, num);
+		solo.clickLongOnText(name);
+		solo.clickOnText(solo.getString(R.string.mute));
+		//como testar?
+	}
 
 	void tapToSpeak(){}
 
-	void voiceButton(){}
+	void voiceButton()
+	{
+		startVoice();
+		solo.clickOnButton(solo.getString(R.string.lockspeak));	
+		//como testar?
+	}
 
-	void menuSpeaker(){}
+	void menuSpeaker()
+	{
+		startVoice();
+		solo.clickOnMenuItem(solo.getString(R.string.speaker));
+		//como testar?
+	}
 
-	void menuStopVoice(){}
+	void menuStopVoice()
+	{
+		startVoice();
+		solo.clickOnMenuItem(solo.getString(R.string.stop_voice));
+		assertFalse(solo.searchButton(solo.getString(R.string.taptospeak)));
+		assertFalse(solo.searchText(TestLogin.NAME, 2));
+		
+	}
 
-	void menuMicGain(){}
+	void menuMicGain()
+	{
+		startVoice();
+		solo.clickOnMenuItem(solo.getString(R.string.audio_config));
+		solo.waitForText(solo.getString(R.string.audio_config));
+		
+	}
 
-	void menuEarphone(){}
+	void menuEarphone()
+	{
+		startVoice();
+		solo.clickOnMenuItem(solo.getString(R.string.audio_config));
+		solo.waitForText(solo.getString(R.string.audio_config));
+	}
 
-	void menuSpeakerSound(){}
+	void menuSpeakerSound()
+	{
+		startVoice();
+		solo.clickOnMenuItem(solo.getString(R.string.audio_config));
+		solo.waitForText(solo.getString(R.string.audio_config));
+		//como mudar os parâmetros?
+	}
+	
+	private String getListenersName(Solo solo, int num)
+	{
+		solo.waitForText(solo.getString(R.string.list_listeners));
+		CustomListview listeners = (CustomListview) solo.getView(R.id.listeners_list);
+		ListenerAdapter listAdapter = (ListenerAdapter) listeners.getAdapter();
+		ListenerContact listener = listAdapter.getListener(num);
+		return listener.getListenerName();
+	}
 }

@@ -111,12 +111,15 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		{ 
 			Bundle extras = intent.getExtras();
 			int userId= extras.getInt("userId");
-			if(chatAdapter.hasUser(userId))
-				contactAdapter.setChatStatus(userId, Contact.CONTACT_ON_PUBLIC_MESSAGE);
-			else
-				contactAdapter.setChatStatus(userId, Contact.CONTACT_NORMAL);
+			if(userId!=-1)
+			{
+				if(chatAdapter.hasUser(userId))
+					contactAdapter.setChatStatus(userId, Contact.CONTACT_ON_PUBLIC_MESSAGE);
+				else
+					contactAdapter.setChatStatus(userId, Contact.CONTACT_NORMAL);
 
-			contactAdapter.notifyDataSetChanged();
+				contactAdapter.notifyDataSetChanged();
+			}
 
 		} 
 	};
@@ -144,9 +147,9 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 		IntentFilter filter = new IntentFilter(PrivateChat.CHAT_CLOSED);
 		registerReceiver(chatClosed, filter);
-		
+
 		initListeners();
-		
+
 		if (!getBigBlueButton().isConnected()) {
 			getBigBlueButton().addListener(this);
 
@@ -155,7 +158,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			}
 		}
 	}
-	
+
 	private class JoinFailDialog extends AlertDialog.Builder {
 
 		public JoinFailDialog(Context context) {
@@ -163,52 +166,52 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			setMessage(R.string.login_cant_join);
 			initListener();
 		}
-		
+
 		public JoinFailDialog(Context context, String message) {
 			super(context);
 			setTitle(R.string.login_cant_join);
 			setMessage(message);
 			initListener();
 		}
-		
+
 		private void initListener() {
 			setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
-				
+
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-//					if (getGlobalContext().getLaunchedBy() == BigBlueButton.LAUNCHED_BY_APPLICATION) {
-//						Intent login = new Intent(getGlobalContext(), LoginPage.class);
-//						startActivity(login);
-//					}
-//					finish();
+					//					if (getGlobalContext().getLaunchedBy() == BigBlueButton.LAUNCHED_BY_APPLICATION) {
+					//						Intent login = new Intent(getGlobalContext(), LoginPage.class);
+					//						startActivity(login);
+					//					}
+					//					finish();
 				}
 			});
 		}
-		
+
 	}
-	
+
 	private boolean joinAndConnect() {
-//		if (isNetworkDown()) {
-//			openProperties();
-//			return false;
-//		}
-		
+		//		if (isNetworkDown()) {
+		//			openProperties();
+		//			return false;
+		//		}
+
 		if (getIntent().hasCategory("android.intent.category.BROWSABLE")
 				&& getIntent().getScheme().equals(getResources().getString(R.string.protocol))) {
-   			getGlobalContext().setLaunchedBy(BigBlueButton.LAUNCHED_BY_BROWSER);
-   			
+			getGlobalContext().setLaunchedBy(BigBlueButton.LAUNCHED_BY_BROWSER);
+
 			String joinUrl = getIntent().getData().toString().replace(getResources().getString(R.string.protocol) + "://", "http://");
 			serverUrl = joinUrl.substring(0, joinUrl.indexOf("/bigbluebutton/api/"));
 			if (getBigBlueButton().getJoinService().join(serverUrl, joinUrl)) {
-       			username = getBigBlueButton().getJoinService().getJoinedMeeting().getFullname();
-       			// can't access the moderator information from the user module because at this point, the user isn't connect to the meeting yet
-   				// moderator = getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isModerator();
-       			moderator = getBigBlueButton().getJoinService().getJoinedMeeting().getRole().equals("MODERATOR");
-       			meetingId = getBigBlueButton().getJoinService().getJoinedMeeting().getMeetingID();
-       		} else {
-       			new JoinFailDialog(this).show();
-       			return false;
-       		}
+				username = getBigBlueButton().getJoinService().getJoinedMeeting().getFullname();
+				// can't access the moderator information from the user module because at this point, the user isn't connect to the meeting yet
+				// moderator = getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isModerator();
+				moderator = getBigBlueButton().getJoinService().getJoinedMeeting().getRole().equals("MODERATOR");
+				meetingId = getBigBlueButton().getJoinService().getJoinedMeeting().getMeetingID();
+			} else {
+				new JoinFailDialog(this).show();
+				return false;
+			}
 		} else if (getIntent().getExtras() != null) {
 			getGlobalContext().setLaunchedBy(BigBlueButton.LAUNCHED_BY_APPLICATION);
 
@@ -217,30 +220,30 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			moderator = extras.getBoolean("moderator");
 			serverUrl = extras.getString("serverUrl");
 			meetingId = extras.getString("meetingId");
-						
+
 			if (!getBigBlueButton().getJoinService().join(meetingId, username, moderator)) {
-            	String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
-            	if (error != null && error.equals("null"))
-            		new JoinFailDialog(this, error).show();
-            	else
-            		new JoinFailDialog(this).show();
-            	return false;
-            }
-			
+				String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
+				if (error != null && error.equals("null"))
+					new JoinFailDialog(this, error).show();
+				else
+					new JoinFailDialog(this).show();
+				return false;
+			}
+
 		} else {
-    		new JoinFailDialog(this).show();
+			new JoinFailDialog(this).show();
 			return false;
 		}
 
 		boolean connected = getBigBlueButton().connectBigBlueButton();
 		if (!connected) {
-    		new JoinFailDialog(this).show();
+			new JoinFailDialog(this).show();
 			return false;
 		}
 
 		return true;
 	}
-	
+
 	private void initListeners() {
 		setContentView(R.layout.contacts_list);
 
@@ -267,7 +270,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 		final AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);
 		audiolayout.initListener(new AudioBarLayout.Listener() {
-			
+
 			@Override
 			public void muteCall(boolean mute) {
 				getVoiceModule().muteCall(mute);
@@ -311,7 +314,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				}
 			});
 		}
-		
+
 		Button send = (Button)findViewById(R.id.sendMessage);
 		send.setOnClickListener(new OnClickListener() {
 			@Override
@@ -338,17 +341,17 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 					startPrivateChat(contact);
 			}
 		});
-		
+
 		setConnectedIcon(getBigBlueButton().isConnected()? R.drawable.connected: R.drawable.disconnected);
 	}
 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-		
+
 		initListeners();
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		log.debug("onDestroy");
@@ -381,7 +384,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				}
 			} else {
 				final Listener listener = (Listener) listenerAdapter.getItem(info.position);
-	
+
 				if (moderator) {
 					menu.add(0, POPUP_MENU_KICK_LISTENER, 0, R.string.kick);
 					menu.add(0, POPUP_MENU_MUTE_LISTENER, 0, listener.isMuted()? R.string.unmute: R.string.mute);
@@ -399,40 +402,40 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 
 		switch (item.getItemId()) {
-			case POPUP_MENU_KICK_USER:
-			{
-				Contact contact = (Contact) contactAdapter.getItem(info.position);
-				getBigBlueButton().kickUser(contact.getUserId());
-				//closes private chat with the user if he is kicked
-				Intent kickedUser = new Intent(PrivateChat.KICKED_USER);
-				kickedUser.putExtra("userId", contact.getUserId());
-				sendBroadcast(kickedUser);
-				return true;
-			}
-			case POPUP_MENU_SET_PRESENTER:
-			{
-				Contact contact = (Contact) contactAdapter.getItem(info.position);
-				getBigBlueButton().assignPresenter(contact.getUserId());
-				return true;
-			}
-			case POPUP_MENU_MUTE_LISTENER:
-			{
-				Listener listener = (Listener) listenerAdapter.getItem(info.position);
-				getBigBlueButton().muteUnmuteListener(listener.getUserId(), !listener.isMuted());
-				return true;
-			}
-			case POPUP_MENU_KICK_LISTENER: 
-			{
-				Listener listener = (Listener) listenerAdapter.getItem(info.position);
-				getBigBlueButton().kickListener(listener.getUserId());
-				return true;
-			}
-			case POPUP_MENU_OPEN_PRIVATE_CHAT:
-			{
-				Contact contact = (Contact) contactAdapter.getItem(info.position);
-				startPrivateChat(contact);
-				return true;
-			}
+		case POPUP_MENU_KICK_USER:
+		{
+			Contact contact = (Contact) contactAdapter.getItem(info.position);
+			getBigBlueButton().kickUser(contact.getUserId());
+			//closes private chat with the user if he is kicked
+			Intent kickedUser = new Intent(PrivateChat.KICKED_USER);
+			kickedUser.putExtra("userId", contact.getUserId());
+			sendBroadcast(kickedUser);
+			return true;
+		}
+		case POPUP_MENU_SET_PRESENTER:
+		{
+			Contact contact = (Contact) contactAdapter.getItem(info.position);
+			getBigBlueButton().assignPresenter(contact.getUserId());
+			return true;
+		}
+		case POPUP_MENU_MUTE_LISTENER:
+		{
+			Listener listener = (Listener) listenerAdapter.getItem(info.position);
+			getBigBlueButton().muteUnmuteListener(listener.getUserId(), !listener.isMuted());
+			return true;
+		}
+		case POPUP_MENU_KICK_LISTENER: 
+		{
+			Listener listener = (Listener) listenerAdapter.getItem(info.position);
+			getBigBlueButton().kickListener(listener.getUserId());
+			return true;
+		}
+		case POPUP_MENU_OPEN_PRIVATE_CHAT:
+		{
+			Contact contact = (Contact) contactAdapter.getItem(info.position);
+			startPrivateChat(contact);
+			return true;
+		}
 		}
 		return super.onContextItemSelected(item);
 	}
@@ -456,10 +459,10 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		menu.clear();
 		if (getBigBlueButton().isConnected()) {
 			if (getVoiceModule().isOnCall()) {
-//				if (getVoiceModule().isMuted())
-//					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.unmute).setIcon(android.R.drawable.ic_lock_silent_mode_off);
-//				else
-//					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.mute).setIcon(android.R.drawable.ic_lock_silent_mode);
+				//				if (getVoiceModule().isMuted())
+				//					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.unmute).setIcon(android.R.drawable.ic_lock_silent_mode_off);
+				//				else
+				//					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.mute).setIcon(android.R.drawable.ic_lock_silent_mode);
 				if (getVoiceModule().getSpeaker() == AudioManager.MODE_NORMAL)
 					menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, R.string.speaker).setIcon(android.R.drawable.button_onoff_indicator_on);
 				else
@@ -478,7 +481,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 			menu.add(Menu.NONE, MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
 			//test purposes only
-//			menu.add(Menu.NONE, MENU_DISCONNECT, Menu.NONE, "Disconnect").setIcon(android.R.drawable.ic_dialog_alert);
+			//			menu.add(Menu.NONE, MENU_DISCONNECT, Menu.NONE, "Disconnect").setIcon(android.R.drawable.ic_dialog_alert);
 		} else {
 			menu.add(Menu.NONE, MENU_RECONNECT, Menu.NONE, R.string.reconnect).setIcon(android.R.drawable.ic_menu_rotate);
 		}
@@ -539,11 +542,11 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		case MENU_AUDIO_CONFIG:
 			new AudioControlDialog(this).show();
 			return true;
-			
+
 		case MENU_DISCONNECT:
 			getBigBlueButton().disconnect();
 			return true;
-			
+
 		case MENU_RECONNECT:
 			if (!isNetworkDown()) {
 				if (joinAndConnect()) 
@@ -569,19 +572,19 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
-			case KeyEvent.KEYCODE_BACK:
-				Intent intent = new Intent(SEND_TO_BACK);
-				sendBroadcast(intent);
-				log.debug("KEYCODE_BACK");
-				moveTaskToBack(true);
-				return true;
-//    		case KeyEvent.KEYCODE_VOLUME_DOWN:
-//    		case KeyEvent.KEYCODE_VOLUME_UP:
-//				Dialog dialog = new AudioControlDialog(this);
-//				dialog.show();
-//				return true;
-			default:
-				return super.onKeyDown(keyCode, event);
+		case KeyEvent.KEYCODE_BACK:
+			Intent intent = new Intent(SEND_TO_BACK);
+			sendBroadcast(intent);
+			log.debug("KEYCODE_BACK");
+			moveTaskToBack(true);
+			return true;
+			//    		case KeyEvent.KEYCODE_VOLUME_DOWN:
+			//    		case KeyEvent.KEYCODE_VOLUME_UP:
+			//				Dialog dialog = new AudioControlDialog(this);
+			//				dialog.show();
+			//				return true;
+		default:
+			return super.onKeyDown(keyCode, event);
 		}    		
 	}
 
@@ -594,7 +597,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				updateAudioBar();
 				makeToast(R.string.connection_established);
 			}
-			
+
 			@Override
 			public void onCallFinished() {
 				updateAudioBar();
@@ -606,28 +609,28 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				makeToast(R.string.connection_refused);
 			}
 		});
-		
+
 		setConnectedIcon(R.drawable.connected);
 		log.debug("connected");
 		runOnUiThread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				chatAdapter.clearList();
 				chatAdapter.notifyDataSetInvalidated();
-				
+
 				contactAdapter.clearList();
 				contactAdapter.notifyDataSetInvalidated();
-				
+
 				listenerAdapter.clearList();
 				listenerAdapter.notifyDataSetInvalidated();
 			}
 		});
 	}
-	
+
 	private void setConnectedIcon(final int resid) {
 		runOnUiThread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				TextView contactsTitle = (TextView) findViewById(R.id.label_participants);
@@ -713,7 +716,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		}).start();
 
 	}
-	
+
 	private boolean isNetworkDown() {
 		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		return !(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED 
@@ -822,7 +825,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		if (handler != null)
 			handler.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(resid));
 	}
-	
+
 	public void showNotification(final ChatMessage message, IParticipant source, final boolean privateChat) {
 		// remember that source could be null! that happens when a user send a message and log out - the list of participants don't have the entry anymore
 
@@ -962,7 +965,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			}
 		});		
 	}
-	
+
 	@Override
 	public void onListenerLeft(final IListener p) {
 		runOnUiThread(new Runnable() {
@@ -1004,7 +1007,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	private void makeToast(final int resId) {
 		makeToast(getResources().getString(resId));
 	}
-	
+
 	private void makeToast(final String s) {
 		runOnUiThread(new Runnable() {
 			@Override
@@ -1013,10 +1016,10 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			}
 		});
 	}
-	
+
 	private void updateAudioBar() {
 		runOnUiThread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);
@@ -1027,7 +1030,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			}
 		});
 	}
-	
+
 	public void setDialogShown(boolean dialogShown) {
 		this.dialogShown = dialogShown;
 	}
