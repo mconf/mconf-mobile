@@ -814,7 +814,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			if (slidingDrawer != null && (!slidingDrawer.isShown() || !slidingDrawer.isOpened())) {
 				slidingDrawer.open();
 				openedDrawer();
-				setPublicChatTitleBackground(R.drawable.public_chat_title_background);
+				setPublicChatTitleBackground(R.drawable.public_chat_title_background_down);
 			}
 		} else
 			log.debug("onNewIntent discarding: {}" + intent.getAction());

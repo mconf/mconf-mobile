@@ -12,7 +12,7 @@
 			>
 			<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				android:layout_width="fill_parent" android:layout_height="wrap_content"
-				 android:id="@+id/participants"
+				android:id="@+id/participants"
 				android:layout_alignParentTop="true">
 
 				<TextView android:layout_height="wrap_content"
@@ -75,9 +75,11 @@
 			android:handle="@+id/handle" android:content="@+id/chat" android:id="@+id/slide"
 			android:orientation="vertical" android:layout_width="fill_parent">
 
+			<!-- for some reason, the attribute "android:textAppearence" doesn't work on button, but
+				the attribute "style" works - it was needed to change because of devices with small screens -->
 			<Button android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:id="@id/handle"
-				android:textAppearance="@style/TitleStyle" android:text="@string/public_chat"
+				android:text="@string/public_chat" style="@style/TitleStyle"
 				android:background="@drawable/public_chat_title_background_up"
 				android:gravity="center" android:minHeight="42dp" android:padding="0dip" />
 
