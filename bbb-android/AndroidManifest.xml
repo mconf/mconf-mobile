@@ -23,7 +23,7 @@
 			    <category android:name="android.intent.category.BROWSABLE" />
 			</intent-filter>
 		</activity>
-		<activity android:name=".PrivateChat" android:launchMode="singleInstance" android:configChanges="orientation" > 
+		<activity android:name=".PrivateChat" android:launchMode="singleInstance" android:configChanges="orientation|keyboardHidden" > 
 		</activity>
 
 	</application>

@@ -91,7 +91,8 @@ public class TestLogin extends ActivityInstrumentationTestCase2<LoginPage>  {
 		solo.clickOnText(room);
 		assertTrue(solo.searchText(room));
 		solo.clickOnRadioButton(role);
-		changeName(NAME);
+		solo.clearEditText(0);
+		solo.enterText(0, NAME);
 		solo.clickOnButton(solo.getString(R.string.login_button_join));
 	}
 	

@@ -84,7 +84,7 @@
 			<!-- http://developer.android.com/resources/articles/layout-tricks-reuse.html -->
 			<include layout="@layout/chat" />
 		</SlidingDrawer>
-	</FrameLayout>
+	</FrameLayout> 
 	
 	<include layout="@layout/audio_bar" />
 

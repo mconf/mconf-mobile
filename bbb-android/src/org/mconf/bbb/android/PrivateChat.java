@@ -612,7 +612,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 			viewID=flipper.getDisplayedChild();
 			setTitle(getResources().getString(R.string.private_chat_title) + getParticipantByViewId(viewID).getUsername());
 		}
-		else
+		else 
 		{
 			removeParticipant(getParticipantKeyByViewId(viewID));
 			Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
