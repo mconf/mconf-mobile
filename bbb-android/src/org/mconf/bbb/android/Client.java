@@ -59,6 +59,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -257,6 +259,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		// UI elements registration and setting of adapters
 		final ListView chatListView = (ListView) findViewById(R.id.messages);
 		chatListView.setAdapter(chatAdapter);
+	
+
 
 		final CustomListview contactListView = (CustomListview) findViewById(R.id.contacts_list); 
 		contactListView.setAdapter(contactAdapter);
@@ -289,6 +293,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				return getVoiceModule().isMuted();
 			}
 		});
+
 
 		final SlidingDrawer slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);	
 		if (slidingDrawer != null) { 
@@ -649,13 +654,13 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				setConnectedIcon(R.drawable.reconnecting);
 				log.debug("dialog shown");
 				showDialog(ID_DIALOG_RECONNECT);
-				setDialogShown(true);
+				dialogShown=true;
 			}
 		});
 		new Thread(new Runnable() {
 			@Override
 			public void run() {	
-				if(!isKicked()) {
+				if(!kicked) {
 					if (isNetworkDown()) {
 						log.debug("no internet connection");
 
@@ -663,9 +668,9 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 							@Override
 							public void run() {
 								setConnectedIcon(R.drawable.disconnected);
-								while(!isDialogShown());
+								while(!dialogShown);
 								dismissDialog(Client.ID_DIALOG_RECONNECT); //exception:no dialog with this id was shown
-								setDialogShown(false);
+								dialogShown=false;
 								//create dialog to connection properties
 								openProperties();
 							}
@@ -738,7 +743,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 	@Override
 	public void onKickUserCallback() {
-		setKicked(true);
+		kicked=true;
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -1046,6 +1051,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public boolean isKicked() {
 		return kicked;
 	}
+
+	
 
 }
 

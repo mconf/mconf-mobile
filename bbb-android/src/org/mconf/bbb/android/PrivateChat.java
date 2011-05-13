@@ -49,6 +49,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.View.OnClickListener;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -328,7 +330,8 @@ public class PrivateChat extends BigBlueButtonActivity {
 				return gestureDetector.onTouchEvent(event);
 			}
 		});
-		chatListView.setAdapter(p.getChatAdapter()); 
+		
+
 		getBigBlueButton().addListener(p); 
 		Button send = (Button) flipper.getChildAt(p.getViewId()).findViewById(R.id.sendMessage);
 		send.setOnClickListener(new OnClickListener() {
@@ -622,6 +625,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		}
 	}
 
+	
 }
 
 

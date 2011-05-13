@@ -20,7 +20,7 @@
 		android:layout_alignLeft="@+id/chatName" android:dividerHeight="2dp"
 		android:id="@+id/messages" android:layout_width="wrap_content"
 		android:divider="@color/title_background_onfocus"
-		android:stackFromBottom="true" android:transcriptMode="alwaysScroll" />
+		android:stackFromBottom="true" android:transcriptMode="normal" />
 
 
 	<RelativeLayout android:id="@+id/bottom_bar"
