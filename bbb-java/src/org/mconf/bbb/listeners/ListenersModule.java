@@ -146,6 +146,7 @@ public class ListenersModule extends Module implements ISharedObjectListener {
 	public void doMuteAllUsers(boolean mute) {
     	Command cmd = new CommandAmf0("voice.muteAllUsers", null, Boolean.valueOf(mute));
     	handler.writeCommandExpectingResult(channel, cmd);
+    	doGetRoomMuteState();
 	}
 	
 	public void doEjectUser(int userId) {

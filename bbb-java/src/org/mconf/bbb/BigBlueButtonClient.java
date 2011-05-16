@@ -169,6 +169,11 @@ public class BigBlueButtonClient {
 	public void muteUnmuteListener(int listenerId, boolean value){
 		getListenersModule().doMuteUnmuteUser(listenerId,value);
 	}
+	
+	public void muteUnmuteRoom(boolean value)
+	{
+		getListenersModule().doMuteAllUsers(value);
+	}
 
 	public static void main(String[] args) {
 		BigBlueButtonClient client = new BigBlueButtonClient();

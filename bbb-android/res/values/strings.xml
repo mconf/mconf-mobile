@@ -64,6 +64,8 @@
 	<string name="ok">Ok</string>
 	<string name="participant_left">User has disconnected. Closing the chat</string>
 	<string name="user_disconnected">User has disconnected</string>
+	<string name="mute_room">Mute room</string>
+	<string name="unmute_room">Unmute room</string>
 	<string name="about">
 BBB-Android is an Android implementation of the BigBlueButton client.
 \n

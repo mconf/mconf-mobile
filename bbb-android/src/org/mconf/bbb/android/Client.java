@@ -88,6 +88,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public static final int MENU_ABOUT = Menu.FIRST + 8;
 	public static final int MENU_DISCONNECT = Menu.FIRST + 9;
 	public static final int MENU_RECONNECT = Menu.FIRST + 10;
+	public static final int MENU_MUTE_ROOM = Menu.FIRST + 11;
+	public static final int MENU_UNMUTE_ROOM = Menu.FIRST + 12;
 
 	public static final int POPUP_MENU_KICK_USER = Menu.FIRST;
 	public static final int POPUP_MENU_MUTE_LISTENER = Menu.FIRST + 1;
@@ -472,6 +474,13 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 					menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, R.string.speaker).setIcon(android.R.drawable.button_onoff_indicator_on);
 				else
 					menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, R.string.speaker).setIcon(android.R.drawable.button_onoff_indicator_off);
+				if(moderator)
+				{
+					if(getBigBlueButton().getListenersModule().isRoomMuted())	
+						menu.add(Menu.NONE, MENU_UNMUTE_ROOM, Menu.NONE, R.string.unmute_room).setIcon(android.R.drawable.ic_lock_silent_mode_off);
+					else
+						menu.add(Menu.NONE, MENU_MUTE_ROOM, Menu.NONE, R.string.mute_room).setIcon(android.R.drawable.ic_lock_silent_mode);
+				}
 				menu.add(Menu.NONE, MENU_AUDIO_CONFIG, Menu.NONE, R.string.audio_config).setIcon(android.R.drawable.ic_menu_preferences);
 				menu.add(Menu.NONE, MENU_STOP_VOICE, Menu.NONE, R.string.stop_voice).setIcon(android.R.drawable.ic_btn_speak_now);
 			} else {
@@ -563,6 +572,13 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				//create dialog to connection properties
 				openProperties();
 			}
+			return true;
+			
+		case MENU_MUTE_ROOM:
+			getBigBlueButton().muteUnmuteRoom(true);
+			return true;
+		case MENU_UNMUTE_ROOM:
+			getBigBlueButton().muteUnmuteRoom(false);
 			return true;
 		default:			
 			return super.onOptionsItemSelected(item);
