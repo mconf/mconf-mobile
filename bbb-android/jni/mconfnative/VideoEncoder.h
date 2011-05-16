@@ -21,7 +21,7 @@ private:
 	int8_t * sharedBuffer;
 	jobject JavaSenderClass;
 	jmethodID JavaOnReadyFrame;
-	JNIEnv* envGlobal;
+//	JNIEnv* envGlobal;
 
 	int pixels, halfpixels, quarterpixels, halfby;
 	uint8_t *aux;
@@ -49,17 +49,13 @@ public:
 		if (ret != E_OK)
 			Log("Error on opening the parameters");
 
-		consumer = queue_registerConsumer(encoded_video);
-		if (consumer)
-			Log("threadFunction() consumer registered");
+		start(env);
+		Log("Sender callback started");
+
 		ret = video_enc->start(decoded_video, encoded_video);
 		if (ret != E_OK)
 			return;
 		Log("threadFunction() encode started");
-
-		envGlobal = env;
-		start();
-		Log("Sender callback started");
 
 		Log("VideoEncoder() end");
 	}
@@ -71,12 +67,10 @@ public:
 
 		//TODO Check if video_enc was created before we can stop it?
 		video_enc->stop();
-		queue_unregisterConsumer(&consumer);
+		delete video_enc;
 
 		queue_destroy(&decoded_video);
 		queue_destroy(&encoded_video);
-
-		delete video_enc;
 
 		Log("~VideoEncoder() end");
 	}
@@ -88,7 +82,7 @@ public:
 		JavaSenderObject = env->GetObjectClass(JavaSenderClass);
 		JavaOnReadyFrame = NULL;
 		JavaOnReadyFrame = env->GetMethodID(JavaSenderObject, "onReadyFrame", "(I)I");
-		env->CallIntMethod( JavaSenderClass, JavaOnReadyFrame, 0 );
+		env->CallIntMethod( JavaSenderClass, JavaOnReadyFrame, (jint)0 );
 		jmethodID JavaAssignBuffers = NULL;
 		JavaAssignBuffers = env->GetMethodID(JavaSenderObject, "assignJavaBuffer", "()[B");
 		jbyteArray javaBufferJNI = NULL;
@@ -141,7 +135,7 @@ public:
 		return 0;
 	}
 
-	int start()
+	int start(JNIEnv *env)
 	{
 		_thread = NULL;
 		stop();
@@ -150,20 +144,24 @@ public:
 
 		stopThread = false;
 		_thread = new Thread<VideoEncoder>(this, &VideoEncoder::_SendToJavaThread);
-		_thread->run(NULL, true);
+		_thread->run(env, true);
 
 		_mutex.unlock();
 
 		return 0;
 	}
 
-	void * _SendToJavaThread(void *)
+	void * _SendToJavaThread(void * param)
 	{
+		JNIEnv *env = (JNIEnv*) param;
 		int ret;
 		uint8_t * buffer;
-		uint32_t bufferSize, timestamp;
+		uint32_t timestamp, bufferSize;
 		QueueExtraData * extraData;
 
+		consumer = queue_registerConsumer(encoded_video);
+		if (consumer)
+			Log("threadFunction() consumer registered");
 		while (!stopThread) {
 			ret = queue_dequeueCond(consumer, &buffer, &bufferSize, &timestamp, &extraData);
 			if (ret != E_OK) {
@@ -177,10 +175,11 @@ public:
 			// If it is not possible, then check if it is possible to avoid the memcpy by linking them again.
 			memcpy(sharedBuffer, buffer, bufferSize);
 			// The shared buffer has a new encoded frame. Lets callback java to sinalize it
-			envGlobal->CallIntMethod( JavaSenderClass, JavaOnReadyFrame, (jint)bufferSize );
+			env->CallIntMethod( JavaSenderClass, JavaOnReadyFrame, (jint)bufferSize );
 
 			queue_free(consumer);
 		}
+		queue_unregisterConsumer(&consumer);
 
 		return NULL;
 	}
