@@ -66,6 +66,10 @@
 	<string name="user_disconnected">User has disconnected</string>
 	<string name="mute_room">Mute room</string>
 	<string name="unmute_room">Unmute room</string>
+	<string name="qrcode">QR code</string>
+	<string name="login_in">Login in</string>
+	<string name="install_bar_code">Install Barcode Scanner?</string>
+	<string name="bar_code_no_found">Barcode Scanner not found, install?</string>
 	<string name="about">
 BBB-Android is an Android implementation of the BigBlueButton client.
 \n

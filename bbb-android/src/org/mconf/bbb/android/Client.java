@@ -497,6 +497,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			//test purposes only
 			//			menu.add(Menu.NONE, MENU_DISCONNECT, Menu.NONE, "Disconnect").setIcon(android.R.drawable.ic_dialog_alert);
 		} else {
+			menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 			menu.add(Menu.NONE, MENU_RECONNECT, Menu.NONE, R.string.reconnect).setIcon(android.R.drawable.ic_menu_rotate);
 		}
 		return super.onPrepareOptionsMenu(menu);

@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -39,6 +40,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -73,6 +75,7 @@ public class LoginPage extends BigBlueButtonActivity {
 	private String username = "Android";
 	private String serverUrl = "";
 	private String createdMeeting = "";
+	private Context context = this;
 	
 	BroadcastReceiver serverChosed = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
@@ -101,7 +104,8 @@ public class LoginPage extends BigBlueButtonActivity {
 			serverView.setText(serverUrl);
 		else
 			serverView.setText(R.string.choose_a_server);
-
+		
+		
 
 		final Spinner spinner = (Spinner) findViewById(R.id.login_spinner);
 		spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
@@ -180,6 +184,27 @@ public class LoginPage extends BigBlueButtonActivity {
 			public void onNothingSelected(AdapterView<?> parent) {
 			}
 		});
+        
+        final Button QRcode = (Button) findViewById(R.id.QRcode);       
+		QRcode.setOnClickListener( new OnClickListener()
+		{
+			@Override
+			public void onClick(View viewParam)
+			{
+				
+				Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+		        intent.setPackage("com.google.zxing.client.android");
+		        intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
+		        try {
+			        startActivityForResult(intent, 0);
+		          } catch (ActivityNotFoundException e) {
+		        	  showDownloadDialog();
+		          }
+
+
+			}
+		});
+
         
 		final Button join = (Button) findViewById(R.id.login_button_join);       
 		join.setOnClickListener( new OnClickListener()
@@ -406,6 +431,44 @@ public class LoginPage extends BigBlueButtonActivity {
 			preferenceEditor.putString("serverURL", serverURL);
 		}
 		preferenceEditor.commit();
+	}
+
+	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+	    if (requestCode == 0) {
+	        if (resultCode == RESULT_OK) {
+	        	
+	            String contents = intent.getStringExtra("SCAN_RESULT");
+	            String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
+	            
+	            Uri meetingAdress = Uri.parse(contents);
+	            Intent joinAndLogin = new Intent(getApplicationContext(), Client.class);
+	            joinAndLogin.addCategory("android.intent.category.BROWSABLE");
+	            joinAndLogin.setData(meetingAdress);
+	            startActivity(joinAndLogin);
+	            finish();
+	        } else if (resultCode == RESULT_CANCELED) {
+	            //\TODO Handle cancel
+	        }
+	    }
+	}
+	
+	void showDownloadDialog()
+	{
+		 AlertDialog.Builder downloadDialog = new AlertDialog.Builder(context);
+		    downloadDialog.setTitle(R.string.install_bar_code);
+		    downloadDialog.setMessage(R.string.bar_code_no_found);
+		    downloadDialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+		      public void onClick(DialogInterface dialogInterface, int i) {
+		        Uri uri = Uri.parse("market://search?q=pname:" + "com.google.zxing.client.android");
+		        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+		        startActivity(intent);
+		      }
+		    });
+		    downloadDialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+		      public void onClick(DialogInterface dialogInterface, int i) {}
+		    });
+		    downloadDialog.show();
+
 	}
 
 }
