@@ -1,7 +1,7 @@
 package org.mconf.bbb.android.video;
 
 import org.mconf.bbb.BigBlueButtonClient;
-import org.mconf.bbb.android.Client;
+import org.mconf.bbb.android.BigBlueButton;
 import org.mconf.bbb.video.IVideoListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,16 +64,18 @@ public class VideoSurface extends GLSurfaceView {
         mRenderer = new VideoRenderer(this);
 		setRenderer(mRenderer);
 
-		videoHandler = new VideoHandler(userId, Client.bbb);
+		BigBlueButtonClient bbb = ((BigBlueButton) getContext().getApplicationContext()).getHandler();
+		videoHandler = new VideoHandler(userId, bbb);
 		videoHandler.start();
-		Client.bbb.addVideoListener(videoHandler);
+		bbb.addVideoListener(videoHandler);
 	}
 	
 	@Override
 	public void onPause() {
 		super.onPause();
 		
-		Client.bbb.removeVideoListener(videoHandler);
+		BigBlueButtonClient bbb = ((BigBlueButton) getContext().getApplicationContext()).getHandler();
+		bbb.removeVideoListener(videoHandler);
 		videoHandler.stop();
 		
 		endDrawer();

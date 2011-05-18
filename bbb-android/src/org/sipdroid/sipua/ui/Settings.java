@@ -168,7 +168,7 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 	public static final String	DEFAULT_SEARCH = "";
 	public static final String	DEFAULT_EXCLUDEPAT = "";
 	public static final float	DEFAULT_EARGAIN = (float) 0.25;
-	public static final float	DEFAULT_MICGAIN = (float) 0.25;
+	public static final float	DEFAULT_MICGAIN = (float) 0.1;
 	public static final float	DEFAULT_HEARGAIN = (float) 0.25;
 	public static final float	DEFAULT_HMICGAIN = (float) 1.0;
 	public static final boolean	DEFAULT_OWNWIFI = false;

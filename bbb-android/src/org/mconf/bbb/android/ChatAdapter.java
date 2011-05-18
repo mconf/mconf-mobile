@@ -36,10 +36,8 @@ import android.widget.TextView;
 public class ChatAdapter extends BaseAdapter {
 
 	private List<ChatMessage> list = new ArrayList<ChatMessage>();
-	private Context context;
 
-	public ChatAdapter(Context context) {
-		this.context = context;
+	public ChatAdapter() {
 	}
 
 	public String getLastMessage()
@@ -59,8 +57,8 @@ public class ChatAdapter extends BaseAdapter {
 		ChatMessage entry = (ChatMessage) getItem(position);
 
 		if (convertView == null) {
-			LayoutInflater inflater = (LayoutInflater) context
-			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater inflater = (LayoutInflater) parent.getContext()
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = inflater.inflate(R.layout.chat_message, null);
 		}
 
@@ -108,6 +106,10 @@ public class ChatAdapter extends BaseAdapter {
 
 	public void remove(ChatMessage message) {
 		list.remove(message);
+	}
+
+	public void clearList() {
+		list.clear();
 	}
 
 }

@@ -8,7 +8,8 @@
 	<string name="login_select_meeting">Por favor, selecione uma sala</string>
 	<string name="login_cant_join">Não foi possível entrar na sala</string>
 	<string name="login_updating">Atualizando lista de salas</string>
-	<string name="login_cant_contact_server">Não foi possível conectar ao servidor. Tente novamente mais tarde</string>
+	<string name="login_cant_contact_server">Não foi possível conectar ao servidor. Tente
+		novamente mais tarde</string>
 	<string name="wait">Por favor, aguarde</string>
 	<string name="welcome">Seja bem-vindo</string>
 	<string name="cancel">Cancelar</string>
@@ -43,23 +44,50 @@
 	<string name="connection_established">Conexão estabelecida</string>
 	<string name="connection_closed">Conexão fechada</string>
 	<string name="connection_refused">Conexão rejeitada</string>
+	<string name="invalid_number">não é um número VoIP válido</string>
 	<string name="no_options">Nenhuma opção disponível</string>
 	<string name="not_moderator">Sem permissão para executar essa operação</string>
 	<string name="lost_connection">Conexão perdida</string>
 	<string name="attempting_to_reconnect">Reconectando...</string>
+	<string name="cant_reconnect">Impossível reconectar. Verifique sua conexão
+	</string>
+	<string name="reconnected">Reconectado com sucesso</string>
+	<string name="reconnect">Reconectar</string>
+	<string name="error">Erro</string>
+	<string name="no_connection">Sem conexão com a internet</string>
+	<string name="open_properties">Abrir propriedades de conexão?</string>
+	<string name="choose_a_server_to_login">Escolha um servidor para conectar</string>
+	<string name="kicked">Você foi expulso da sala</string>
+	<string name="new_meeting">Criar nova sala</string>
+	<string name="create">Criar</string>
+	<string name="taptospeak">Pressione para falar</string>
+	<string name="lockspeak">Fala contínua</string>
+	<string name="user_disconnected">Usuário se desconectou</string>
+	<string name="ok">Ok</string>
+	<string name="participant_left">Usuário se desconectou. Fechando o chat</string>
+	<string name="mute_room">Sala sem som</string>
+	<string name="unmute_room">Sala com som</string>
+	<string name="login_in">Entrando</string>
+	<string name="install_bar_code">Instalar Barcode Scanner?</string>
+	<string name="bar_code_no_found">Barcode Scanner não encontrado, instalar?</string>
 	<string name="show_video">Exibir vídeo</string>
 	<string name="about">
-BBB-Android é uma implementação do cliente BigBlueButton para Android.
-\n
-\nFoi desenvolvido pelo Laboratório do PRAV como parte do projeto GT-Mconf (http://inf.ufrgs.br/prav/gtmconf).
-\n
-\nO código fonte está licenciado sob a GNU General Public License (GPL) e está disponível em https://github.com/mconf.
-\n
-\nA implementação de áudio é baseada no Sipdroid, um cliente SIP de código aberto para Android (http://sipdroid.org).
-\n
-\nUtiliza a biblioteca Flazr, uma implementação em Java de protocolos de streaming multimídia (http://flazr.com).
-\n
-\nUtiliza a biblioteca BBB-Java, uma API em Java para interação com o servidor BigBlueButton.
+		BBB-Android é uma implementação do cliente BigBlueButton para Android.
+		\n
+		\nFoi desenvolvido pelo Laboratório do PRAV como parte do projeto GT-Mconf
+		(http://inf.ufrgs.br/prav/gtmconf).
+		\n
+		\nO código fonte está licenciado sob a GNU General Public License (GPL) e
+		está disponível em https://github.com/mconf.
+		\n
+		\nA implementação de áudio é baseada no Sipdroid, um cliente SIP de
+		código aberto para Android (http://sipdroid.org).
+		\n
+		\nUtiliza a biblioteca Flazr, uma implementação em Java de protocolos de
+		streaming multimídia (http://flazr.com).
+		\n
+		\nUtiliza a biblioteca BBB-Java, uma API em Java para interação com o servidor
+		BigBlueButton.
 	</string>
 	<string name="moderator">Moderador</string>
 	<string name="viewer">Participante</string>
@@ -67,53 +95,39 @@ BBB-Android é uma implementação do cliente BigBlueButton para Android.
 	<string name="audio_config">Configuração de áudio</string>
 	<string name="speaker_volume">Volume do speaker</string>
 	<string name="earphone_volume">Volume do earphone</string>
-	<string name="mic_gain">Ganho no microfone</string>
+	<string name="mic_gain">Ganho do microfone</string>
 
-<!--
- * Copyright (C) 2009 The Sipdroid Open Source Project
- *
- * This file is part of Sipdroid (http://www.sipdroid.org)
- *
- * Sipdroid is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * This source code is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this source code; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+	<!-- * Copyright (C) 2009 The Sipdroid Open Source Project * * This file 
+		is part of Sipdroid (http://www.sipdroid.org) * * Sipdroid is free software; 
+		you can redistribute it and/or modify * it under the terms of the GNU General 
+		Public License as published by * the Free Software Foundation; either version 
+		3 of the License, or * (at your option) any later version. * * This source 
+		code is distributed in the hope that it will be useful, * but WITHOUT ANY 
+		WARRANTY; without even the implied warranty of * MERCHANTABILITY or FITNESS 
+		FOR A PARTICULAR PURPOSE. See the * GNU General Public License for more details. 
+		* * You should have received a copy of the GNU General Public License * along 
+		with this source code; if not, write to the Free Software * Foundation, Inc., 
+		59 Temple Place, Suite 330, Boston, MA 02111-1307 USA ///////////////////////////////////////////////////////////////////// 
+		// these are the main messages of Sipdroid // for modifying them additional 
+		terms according to section 7, GPL apply // see ADDITIONAL_TERMS.txt ///////////////////////////////////////////////////////////////////// -->
 
-/////////////////////////////////////////////////////////////////////
-// these are the main messages of Sipdroid
-// for modifying them additional terms according to section 7, GPL apply
-// see ADDITIONAL_TERMS.txt
-/////////////////////////////////////////////////////////////////////
--->
-
-<!-- resources-->
+	<!-- resources -->
 	<string name="pstn_name">Chamada</string>
 	<string name="sip_name">Chamada Sipdroid, quando disponível</string>
 
-	<!-- string name="about">Sipdroid é um cliente SIP open-source para o Android
- \n
- \nVeja http://sipdroid.org para mais informações
- \n
- \nVersão ${VERSION}
- \nSoftware disponível para testes.
- \n
- \nCopyright 2009 The Sipdroid Open Source Project (http://sipdroid.org)
- \nCopyright 2008 Hughes Systique Corporation, E.U.A. (http://hsc.com)
- \nCopyright 2006 The Android Open Source Project (http://android.com)
- \nCopyright 2005 Luca Veltri - Universidade de Parma - Itália (http://mjsip.org)
- \n
- \nEste programa é livre, você pode redistribuí-lo e/ou modificá-lo sob os termos da GNU General Public License conforme publicada pela Free Software Foundation, versão 3 da Licença, ou (na sua opção) qualquer versão posterior.
- \n
- \nEste programa é distribuído na esperança de que será útil, mas SEM QUALQUER GARANTIA, mesmo sem a garantia implícita de COMERCIABILIDADE ou ADEQUAÇÃO A UM DETERMINADO PROPÓSITO. Veja a GNU General Public License para mais detalhes (http://www.gnu.org/licenses).</string-->
+	<!-- string name="about">Sipdroid é um cliente SIP open-source para o Android 
+		\n \nVeja http://sipdroid.org para mais informações \n \nVersão ${VERSION} 
+		\nSoftware disponível para testes. \n \nCopyright 2009 The Sipdroid Open 
+		Source Project (http://sipdroid.org) \nCopyright 2008 Hughes Systique Corporation, 
+		E.U.A. (http://hsc.com) \nCopyright 2006 The Android Open Source Project 
+		(http://android.com) \nCopyright 2005 Luca Veltri - Universidade de Parma 
+		- Itália (http://mjsip.org) \n \nEste programa é livre, você pode redistribuí-lo 
+		e/ou modificá-lo sob os termos da GNU General Public License conforme publicada 
+		pela Free Software Foundation, versão 3 da Licença, ou (na sua opção) qualquer 
+		versão posterior. \n \nEste programa é distribuído na esperança de que será 
+		útil, mas SEM QUALQUER GARANTIA, mesmo sem a garantia implícita de COMERCIABILIDADE 
+		ou ADEQUAÇÃO A UM DETERMINADO PROPÓSITO. Veja a GNU General Public License 
+		para mais detalhes (http://www.gnu.org/licenses).</string -->
 
 	<string name="reg">Registrando...</string>
 	<string name="regok">Registrado</string>
@@ -124,7 +138,8 @@ BBB-Android é uma implementação do cliente BigBlueButton para Android.
 	<string name="auto_enabled">Atender automático/Viva voz</string>
 	<string name="auto_disabled">Atender automático desligado</string>
 	<string name="hint">Endereço do Destinatário</string>
-	<string name="empty">Insira o endereço do destinatário no formato nome@dominio.com</string>
+	<string name="empty">Insira o endereço do destinatário no formato
+		nome@dominio.com</string>
 	<string name="notfast">Sem rede de dados disponível</string>
 
 	<string name="settings_account">Definições de Conta SIP</string>
@@ -132,9 +147,11 @@ BBB-Android é uma implementação do cliente BigBlueButton para Android.
 	<string name="settings_password">Senha</string>
 	<string name="settings_server">Servidor</string>
 	<string name="settings_domain">Domínio</string>
-	<string name="settings_domain2">Deixe em branco se for o mesmo que o servidor</string>
+	<string name="settings_domain2">Deixe em branco se for o mesmo que o servidor
+	</string>
 	<string name="settings_username1">Usuário/ID de chamada</string>
-	<string name="settings_callerid2">Deixe em branco se for o mesmo que o usuário</string>
+	<string name="settings_callerid2">Deixe em branco se for o mesmo que o usuário
+	</string>
 	<string name="settings_port">Porta</string>
 	<string-array name="port_display_values">
 		<item>53</item>
@@ -178,7 +195,7 @@ BBB-Android é uma implementação do cliente BigBlueButton para Android.
 		<item>36999</item>
 		<item>0</item>
 	</string-array>
-	
+
 	<string name="settings_protocol">Protocolo</string>
 	<string-array name="protocol_display_values">
 		<item>UDP (maior consumo em 3G)</item>
@@ -193,17 +210,22 @@ BBB-Android é uma implementação do cliente BigBlueButton para Android.
 	<string name="settings_wlan">Usar WLAN</string>
 	<string name="settings_3g">Usar 3G</string>
 	<string name="settings_edge">Usar EDGE</string>
-	<string name="settings_check">Consulte o sua operadora celular, se ela permite VoIP</string>
-	
-	<string name="dialog_default">O Sipdroid não está definido como o telefone padrão. Gostaria que este seja o seu telefone padrão?
-	\n
-	\nSe responder \'Não\' aqui, pode marcar pelo Sipdroid, acrescentando \'+\' depois do número na tela de seu Telefone, ou selecionando \'mensagem\' nos Contatos.</string>
+	<string name="settings_check">Consulte o sua operadora celular, se ela permite
+		VoIP</string>
+
+	<string name="dialog_default">O Sipdroid não está definido como o telefone
+		padrão. Gostaria que este seja o seu telefone padrão?
+		\n
+		\nSe responder \'Não\' aqui, pode marcar pelo Sipdroid, acrescentando
+		\'+\' depois do número na tela de seu Telefone, ou selecionando
+		\'mensagem\' nos Contatos.</string>
 	<string name="yes">Sim</string>
 	<string name="no">Não</string>
 	<string name="dontask">Não perguntar de novo</string>
-	
+
 	<string name="settings_pref">Tipo de chamada</string>
-	<string name="settings_pref2">Anular acrescentando \'+\' depois do número na tela de seu Telefone, ou selecionando \'mensagem\' nos Contatos.</string>
+	<string name="settings_pref2">Anular acrescentando \'+\' depois do número na tela
+		de seu Telefone, ou selecionando \'mensagem\' nos Contatos.</string>
 	<string-array name="pref_display_values">
 		<item>Sipdroid</item>
 		<item>Sipdroid, quando disponível</item>
@@ -211,30 +233,34 @@ BBB-Android é uma implementação do cliente BigBlueButton para Android.
 		<item>Sempre perguntar</item>
 	</string-array>
 	<string name="settings_compression">Compressão de Voz</string>
-    <string-array name="compression_display_values">
-        <item>Só em WLAN</item>
-        <item>Só em WLAN/3G</item>
-        <item>Sempre</item>
-        <item>Nunca</item>
-    </string-array>
+	<string-array name="compression_display_values">
+		<item>Só em WLAN</item>
+		<item>Só em WLAN/3G</item>
+		<item>Sempre</item>
+		<item>Nunca</item>
+	</string-array>
 	<string name="settings_auto_on">Atender automático em uso</string>
-	<string name="settings_auto_on2">Alerta vibratório curto quando a tela está ligada</string>
+	<string name="settings_auto_on2">Alerta vibratório curto quando a tela está ligada
+	</string>
 	<string name="settings_auto_ondemand">Atender automático a pedido</string>
 	<string name="settings_auto_ondemand2">Mostrar botão na barra de estado</string>
 	<string name="settings_auto_headset">Auto-Atender auricular</string>
 	<string name="settings_auto_headset2">Quando o auricular com fios está ligado</string>
-	
+
 	<string name="settings_notifications">Notificações</string>
 	<string name="settings_MWI">Correio de voz</string>
 	<string name="settings_MWI2">Subscrever mensagem em espera SIP </string>
 	<string name="settings_notify">Chamada perdida</string>
 	<string name="settings_notify2">Notificar com LED azul</string>
 	<string name="settings_nodata">Sem dados</string>
-	<string name="settings_nodata2">Indicar pacotes de voz perdidos com um toque audível</string>
+	<string name="settings_nodata2">Indicar pacotes de voz perdidos com um toque
+		audível</string>
 
 	<string name="settings_advanced_options">Opções Avançadas</string>
-	<string name="settings_policy_never">Alterar política de suspensão para manter o Wifi ligado.</string>
-	<string name="settings_policy_default">Redefinir política de suspensão do Wifi para o valor padrão.</string>
+	<string name="settings_policy_never">Alterar política de suspensão para manter o Wifi
+		ligado.</string>
+	<string name="settings_policy_default">Redefinir política de suspensão do Wifi para o
+		valor padrão.</string>
 	<string name="settings_search">Procurar &amp; Substituir</string>
 	<string name="settings_excludepat">Padrão de Exclusão</string>
 	<string name="settings_sipringtone">Toque SIP</string>
@@ -261,15 +287,18 @@ BBB-Android é uma implementação do cliente BigBlueButton para Android.
 
 	<string name="settings_pbxes_options">Opções PBXes</string>
 	<string name="settings_par">Chamadas Simultâneas</string>
-	<string name="settings_par2">Marcar todos os números de uma pessoa em paralelo</string>
+	<string name="settings_par2">Marcar todos os números de uma pessoa em paralelo
+	</string>
 	<string name="settings_improve">Melhorar Áudio</string>
 	<string name="settings_improve2">requer conta paga</string>
 	<string name="settings_posurl">URL para Localização/Callback</string>
 	<string name="settings_pos">Actualizar Local</string>
-	<string name="settings_pos2">Pode ser anunciado aos contatos do PBXes (requer conta premium)</string>
+	<string name="settings_pos2">Pode ser anunciado aos contatos do PBXes (requer
+		conta premium)</string>
 	<string name="settings_pos3">Atualizando Local</string>
 	<string name="settings_callback">Ativar Callback</string>
-	<string name="settings_callback2">Se nenhuma rede de dados adequada estiver disponível</string>
+	<string name="settings_callback2">Se nenhuma rede de dados adequada estiver
+		disponível</string>
 	<string name="settings_callthru">Activar Callthru</string>
 	<string name="settings_callthru2">Prefixo para Callthru</string>
 
@@ -295,7 +324,8 @@ BBB-Android é uma implementação do cliente BigBlueButton para Android.
 
 	<string name="unknown">Desconhecido</string>
 
-	<string name="slide_hint_down_to_end_call">Deslize para baixo para terminar a chamada.</string>
+	<string name="slide_hint_down_to_end_call">Deslize para baixo para terminar a chamada.
+	</string>
 	<string name="slide_hint_up_to_answer">Deslize para cima para atender.</string>
 
 	<string name="ongoing">Chamada atual</string>

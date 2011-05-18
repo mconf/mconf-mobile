@@ -19,6 +19,11 @@ public class JoinService {
 	public JoinedMeeting getJoinedMeeting() {
 		return joinedMeeting;
 	}
+	
+	public void resetJoinedMeeting()
+	{
+		joinedMeeting=null;
+	}
 
 	public List<Meeting> getMeetings() {
 		return meetings.getMeetings();
@@ -54,42 +59,49 @@ public class JoinService {
 		return true;
 	}
 
-	public JoinedMeeting join(String meetingID, String name, boolean moderator) {
+	public boolean join(String meetingID, String name, boolean moderator) {
 		for (Meeting m : meetings.getMeetings()) {
 			log.info(m.getMeetingID());
 			if (m.getMeetingID().equals(meetingID)) {
 				return join(m, name, moderator);
 			}
 		}
-		return null;
+		return false;
 	}
 	
-//	public boolean createMeeting(Meeting meeting) {
-//		String create = api.createMeeting(meeting.getMeetingID(), 
-//				"Welcome message", 
-//				meeting.getModeratorPW(), 
-//				meeting.getAttendeePW(), 
-//				0, 
-//				serverUrl);
-//		log.debug("createMeeting: {}", create);
-//		return create.equals(meeting.getMeetingID()); 
-//	}
-	
-	public JoinedMeeting join(Meeting meeting, String name, boolean moderator) {
-//		if (api.isMeetingRunning(meeting.getMeetingID()).equals("false")) {
-//			if (!createMeeting(meeting)) {
-//				log.error("The meeting {} is not running", meeting.getMeetingID());
-//				return null;
-//			}
-//		}
+	public boolean createMeeting(String meetingID) {
+		String createUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?action=create"
+			+ "&meetingID=" + urlEncode(meetingID);
+		log.debug(createUrl);
 		
+		String response = "Unknown error";
+		try {
+			HttpClient client = new HttpClient();
+			HttpMethod method = new GetMethod(createUrl);
+			client.executeMethod(method);
+			response = method.getResponseBodyAsString().trim();
+			method.releaseConnection();
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("Can't create the meeting {}", meetingID);
+		}
+		
+		if (meetingID.equals(response))
+			return true;
+		else {
+			log.error(response);
+			return false;
+		}
+	}
+	
+	public boolean join(Meeting meeting, String name, boolean moderator) {
 		String joinUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?action=join"
 			+ "&meetingID=" + urlEncode(meeting.getMeetingID())
 			+ "&fullName=" + urlEncode(name)
 			+ "&password=" + urlEncode(moderator? meeting.getModeratorPW(): meeting.getAttendeePW());
 		log.debug(joinUrl);
 		
-		JoinedMeeting joinedMeeting = new JoinedMeeting();
+		joinedMeeting = new JoinedMeeting();
 		try {
 			HttpClient client = new HttpClient();
 			HttpMethod method = new GetMethod(joinUrl);
@@ -100,16 +112,45 @@ public class JoinService {
 			e.printStackTrace();
 			log.error("Can't join the meeting {}", meeting.getMeetingID());
 			
-			return null;
+			return false;
 		}
 		
 		if (joinedMeeting.getReturncode().equals("SUCCESS")) {
-			this.joinedMeeting = joinedMeeting;
+			return true;
 		} else {
 			log.error(joinedMeeting.getMessage());
+			return false;
+		}
+	}
+	
+	public boolean join(String serverUrl, String joinUrl) {
+		this.serverUrl = serverUrl;
+		String enterUrl = serverUrl + "/bigbluebutton/api/enter";
+			
+		joinedMeeting = new JoinedMeeting();
+		try {
+			HttpClient client = new HttpClient();
+			HttpMethod method = new GetMethod(joinUrl);
+			client.executeMethod(method);
+			method.releaseConnection();
+
+			method = new GetMethod(enterUrl);
+			client.executeMethod(method);
+			joinedMeeting.parse(method.getResponseBodyAsString().trim());
+			method.releaseConnection();
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("Can't join the url {}", joinUrl);
+			
+			return false;
 		}
 		
-		return joinedMeeting;
+		if (joinedMeeting.getReturncode().equals("SUCCESS")) {
+			return true;
+		} else {
+			log.error(joinedMeeting.getMessage());
+			return false;
+		}
 	}
 
 	public static String urlEncode(String s) {	
