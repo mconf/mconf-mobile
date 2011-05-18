@@ -20,10 +20,10 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	private static final Logger log = LoggerFactory.getLogger(VideoCapture.class);
     SurfaceHolder mHolder;
     Camera mCamera;
-    private byte[] sharedBuffer;
     boolean isAvailableSprintFFC;
     boolean usingHidden;
     boolean usingSlow;
+    VideoPublish mVideoPublish;
     
     public VideoCapture(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -97,8 +97,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         PixelFormat pixelFormat = new PixelFormat();
 		PixelFormat.getPixelFormatInfo(parameters.getPreviewFormat(),pixelFormat);
 		final int bufSize = (widthCaptureResolution*heightCaptureResolution*pixelFormat.bitsPerPixel)/8;
-		sharedBuffer = new byte[bufSize]; //the encoded frame will never be bigger than the not encoded	
-		initEncoder(widthCaptureResolution, heightCaptureResolution, frameRate);        
+		mVideoPublish = new VideoPublish(bufSize, widthCaptureResolution, heightCaptureResolution, frameRate); 
         
         //java reflection (idea from http://code.google.com/p/android/issues/detail?id=2794):
         //This kind of java reflection is safe to be used as explained in the official android documentation
@@ -140,8 +139,10 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	    	usingSlow = true;
 	    	mCamera.setPreviewCallback(this);        
 	    }
+		//TODO Gian do more tests with the 3 possibilities above
         
         mCamera.startPreview();
+        mVideoPublish.start();
     }
 
     @Override
@@ -153,9 +154,10 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     		mCamera.setPreviewCallback(null); //this is needed to avoid a crash (http://code.google.com/p/android/issues/detail?id=6201)
     	}
     	mCamera.stopPreview();
-        endEncoder();  
         mCamera.release();
-        mCamera = null;              
+        mCamera = null;
+        
+        mVideoPublish.endEncoding();
     }
     
     @Override
@@ -275,18 +277,6 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
        	enqueueFrame(_data,_data.length);
     }
     
-    public byte[] assignJavaBuffer()
-	{
-    	return sharedBuffer;
-	}
-    
-    public int onReadyFrame (int bufferSize)
-    {
-    	//sharedBuffer has the data of the encoded frame
-    	//bufferSize has the length of the encoded frame (it is <= sharedBuffer.length)
-    	return 0;
-    }
-    
     static {
     	System.loadLibrary("avutil");
     	System.loadLibrary("swscale");
@@ -301,7 +291,5 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	log.debug("Video native libraries loaded");    
     }
     
-    private native int initEncoder(int width, int height, int frameRate);
-	private native int endEncoder();
-    private native int enqueueFrame(byte[] data, int length);	
+	private native int enqueueFrame(byte[] data, int length);	
 }
