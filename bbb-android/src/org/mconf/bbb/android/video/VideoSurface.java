@@ -41,11 +41,17 @@ public class VideoSurface extends GLSurfaceView {
 	
 	public VideoSurface(Context context, AttributeSet attrs) {
 		super(context, attrs);
+	
+        mRenderer = new VideoRenderer(this);
+		setRenderer(mRenderer);
 	}
 	
 	public void start(int userId, boolean inDialog) {
 		this.userId = userId;
 		this.inDialog = inDialog;
+		
+		if (showing)
+			stop();
 		
 		LayoutParams layoutParams = getLayoutParams();
 		DisplayMetrics metrics = getDisplayMetrics(getContext());
@@ -69,9 +75,6 @@ public class VideoSurface extends GLSurfaceView {
 		 
         initDrawer(metrics.widthPixels, metrics.heightPixels, w, h, 0, 0);
 
-        mRenderer = new VideoRenderer(this);
-		setRenderer(mRenderer);
-
 		BigBlueButtonClient bbb = ((BigBlueButton) getContext().getApplicationContext()).getHandler();
 		videoHandler = new VideoHandler(userId, bbb);
 		videoHandler.start();
@@ -81,31 +84,18 @@ public class VideoSurface extends GLSurfaceView {
 	}
 	
 	public void stop() {
-		BigBlueButtonClient bbb = ((BigBlueButton) getContext().getApplicationContext()).getHandler();
-		bbb.removeVideoListener(videoHandler);
-		videoHandler.stop();
-		
-		endDrawer();
-		
-		showing = false;
+		if (showing) {
+			BigBlueButtonClient bbb = ((BigBlueButton) getContext().getApplicationContext()).getHandler();
+			bbb.removeVideoListener(videoHandler);
+			videoHandler.stop();
+			
+			log.debug("VideoSurface.stop().endDrawer()");
+			endDrawer();
+			
+			showing = false;
+		}
 	}
-	
-	@Override
-	public void onPause() {
-		super.onPause();
-		
-		if (showing)
-			stop();
-	}
-	
-	@Override
-	public void onResume() {
-		super.onResume();
-		
-		if (showing)
-			start(userId, inDialog);
-	}
-	
+
 	static public DisplayMetrics getDisplayMetrics(Context context){
 		DisplayMetrics metrics = new DisplayMetrics();
 		Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();

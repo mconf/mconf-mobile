@@ -27,18 +27,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 public class VideoFullScreen extends Activity {	
 	private static final Logger log = LoggerFactory.getLogger(VideoFullScreen.class);
 	
 	private VideoSurface videoWindow;
-
 	private int userId;
-
 	private String name;
+
+	private BroadcastReceiver closeVideo = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Bundle extras = intent.getExtras();
+			int userId= extras.getInt("userId");
+			if (VideoFullScreen.this.userId == userId) {
+				videoWindow.stop();
+				finish();
+			}
+		}
+		
+	};
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -50,15 +64,33 @@ public class VideoFullScreen extends Activity {
 			name = extras.getString("name");
 		}
 
+		IntentFilter closeVideoFilter = new IntentFilter(Client.CLOSE_VIDEO);
+		registerReceiver(closeVideo, closeVideoFilter);
+		
 		setContentView(R.layout.video_window);
 		
 		videoWindow = (VideoSurface) findViewById(R.id.video_window);
+//		videoWindow.start(userId, false);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		
+		videoWindow.stop();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+
 		videoWindow.start(userId, false);
 	}
 
 	@Override
 	protected void onDestroy() {
 		videoWindow.stop();
+		unregisterReceiver(closeVideo);
 		
 		super.onDestroy();
 	}

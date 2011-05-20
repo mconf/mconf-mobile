@@ -104,6 +104,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public static final String ACTION_OPEN_SLIDER = "org.mconf.bbb.android.Client.OPEN_SLIDER";
 	public static final String BACK_TO_CLIENT = "org.mconf.bbb.android.Client.BACK_TO_CLIENT";
 	public static final String FINISH = "bbb.android.action.FINISH";
+	public static final String CLOSE_VIDEO = "org.mconf.bbb.android.Video.CLOSE";
 	public static final String SEND_TO_BACK = "bbb.android.action.SEND_TO_BACK";
 
 	public static final int ID_DIALOG_RECONNECT = 111000;
@@ -127,6 +128,22 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			}
 
 		} 
+	};
+	
+	private BroadcastReceiver closeVideo = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			log.debug("Client.closeVideo.onReceive()");
+			Bundle extras = intent.getExtras();
+			int userId= extras.getInt("userId");
+			if (mVideoDialog != null && mVideoDialog.isShowing() && mVideoDialog.getVideoId() == userId) {
+				log.debug("Client.closeVideo.onReceive().dismissing()");
+				mVideoDialog.dismiss();
+				mVideoDialog = null;
+			}
+		}
+		
 	};
 
 	protected ContactAdapter contactAdapter = new ContactAdapter();
@@ -154,6 +171,9 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 		IntentFilter filter = new IntentFilter(PrivateChat.CHAT_CLOSED);
 		registerReceiver(chatClosed, filter);
+		
+		IntentFilter closeVideoFilter = new IntentFilter(CLOSE_VIDEO);
+		registerReceiver(closeVideo, closeVideoFilter);
 
 		initListeners();
 
@@ -166,6 +186,22 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		}
 	}
 
+	@Override
+	protected void onPause() {
+		if (mVideoDialog != null && mVideoDialog.isShowing())
+			mVideoDialog.pause();
+		
+		super.onPause();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+				
+		if (mVideoDialog != null && mVideoDialog.isShowing())
+			mVideoDialog.resume();
+	}
+	
 	private class JoinFailDialog extends AlertDialog.Builder {
 
 		public JoinFailDialog(Context context) {
@@ -378,7 +414,9 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		quit();
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notificationManager.cancelAll();
+		
 		unregisterReceiver(chatClosed);
+		unregisterReceiver(closeVideo);
 
 		super.onDestroy();
 	}
@@ -812,6 +850,9 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 	@Override
 	public void onParticipantLeft(final IParticipant p) {
+		if (p.getStatus().isHasStream())
+			sendBroadcastCloseVideo(p);
+
 		runOnUiThread(new Runnable() {
 
 			@Override
@@ -958,8 +999,19 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		});
 	}
 
+	private void sendBroadcastCloseVideo(final IParticipant p) {
+		log.debug("Client.sendBroadcastCloseVideo()");
+		
+		Intent intent= new Intent(CLOSE_VIDEO);
+		intent.putExtra("userId", p.getUserId());
+		sendBroadcast(intent);
+	}
+	
 	@Override
 	public void onParticipantStatusChangeHasStream(final IParticipant p) {
+		if (!p.getStatus().isHasStream())
+			sendBroadcastCloseVideo(p);
+
 		runOnUiThread(new Runnable() {
 
 			@Override
