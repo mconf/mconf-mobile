@@ -75,7 +75,7 @@ public:
 		jclass JavaSenderObject = NULL;
 		JavaSenderObject = env->GetObjectClass(JavaSenderClass);
 		JavaOnReadyFrame = NULL;
-		JavaOnReadyFrame = env->GetMethodID(JavaSenderObject, "onReadyFrame", "(I)I");
+		JavaOnReadyFrame = env->GetMethodID(JavaSenderObject, "onReadyFrame", "(II)I");
 		jmethodID JavaAssignBuffers = NULL;
 		JavaAssignBuffers = env->GetMethodID(JavaSenderObject, "assignJavaBuffer", "()[B");
 		jbyteArray javaBufferJNI = NULL;
@@ -117,10 +117,13 @@ public:
 			// with the Java buffer.
 			// See if it is possible to do this without losing the link.
 			// If it is not possible, then check if it is possible to avoid the memcpy by linking them again.
-			memcpy(sharedBuffer, buffer, bufferSize);
+			memcpy(&sharedBuffer[1], buffer, bufferSize);
+			sharedBuffer[0] = 18;
+			sharedBuffer[0] = 34;
+			sharedBuffer[0] = 50;
 //			logBuffer(0,100);
 			// The shared buffer has a new encoded frame. Lets callback java to sinalize it
-			env->CallIntMethod( JavaSenderClass, JavaOnReadyFrame, (jint)bufferSize );
+			env->CallIntMethod( JavaSenderClass, JavaOnReadyFrame, (jint)(bufferSize+1), (jint)timestamp );
 		}
 		queue_unregisterConsumer(&consumer);
 	}

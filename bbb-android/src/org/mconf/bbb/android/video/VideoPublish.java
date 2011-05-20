@@ -1,9 +1,11 @@
 package org.mconf.bbb.android.video;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.flazr.rtmp.RtmpPublisher;
+import com.flazr.rtmp.RtmpReader;
+import com.flazr.rtmp.message.Video;
 
 public class VideoPublish extends Thread {
 	
@@ -27,25 +29,31 @@ public class VideoPublish extends Thread {
     	return sharedBuffer;
 	}
     
-//	com.flazr.rtmp.message.Video video = null;
-    public int onReadyFrame (int bufferSize)
+	
+    public int onReadyFrame (int bufferSize, int timeStamp)
     {    	
-    	log.debug("bufferSize = {}", bufferSize);
-//    	logBuffer(0,100);
+       	Video video;
+    	RtmpPublisher publisher;
+    	RtmpReader reader;
     	
-	   	//video = new Video(sharedBuffer.clone(), bufferSize, time);
+	   	video = new Video(timeStamp, sharedBuffer, bufferSize);
     	
-//		log.debug("SIZE = {}, LENGTH = {}", bufferSize, sharedBuffer.length);
-//		log.debug("CODEC = {}", video.getCodec());
-//		log.debug("FRAMETYPE = {}", video.getFrameType());
-//		log.debug("HEADER = {}", video.getHeader());
-//		log.debug("HEIGHT = {}", video.getHeight());
-//		log.debug("MESSAGETYPE = {}", video.getMessageType());
-//		log.debug("WIDTH = {}", video.getWidth());
-//		log.debug("DATA = {}", video.toString());
+		//log.debug("SIZE = {}, LENGTH = {}", bufferSize, sharedBuffer.length);
+		//log.debug("CODEC = {}", video.getCodec());
+		//log.debug("FRAMETYPE = {}", video.getFrameType());
+		log.debug("HEADER = {}", video.getHeader());
+		//log.debug("HEIGHT = {}", video.getHeight());
+		//log.debug("MESSAGETYPE = {}", video.getMessageType());
+		//log.debug("WIDTH = {}", video.getWidth());
+		//log.debug("DATA = {}", video.toString());
+		log.debug("stream id {}",video.getHeader().getStreamId());
     
-//    	video.encode();
-      	
+		video.encode();
+//		publisher = new RtmpPublisher(reader, 1, 1, false, false);
+//		publisher.start(channel, seekTimeRequested, messages)
+//		publisher.start(channel, seekTime, playLength, messages)
+		
+		
     	return 0;
     }
     
