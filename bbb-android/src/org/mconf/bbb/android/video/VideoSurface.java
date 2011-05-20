@@ -2,6 +2,7 @@ package org.mconf.bbb.android.video;
 
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.android.BigBlueButton;
+import org.mconf.bbb.android.Client;
 import org.mconf.bbb.video.IVideoListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 
 public class VideoSurface extends GLSurfaceView {
+	
 	private class VideoHandler extends IVideoListener {
 
 		public VideoHandler(int userId, BigBlueButtonClient context) {
@@ -32,13 +34,19 @@ public class VideoSurface extends GLSurfaceView {
 	private static final Logger log = LoggerFactory.getLogger(VideoSurface.class);
 	private VideoRenderer mRenderer;		
 	private VideoHandler videoHandler;
+	private int userId;
+	private boolean inDialog;
+	private boolean showing = false;
 	private static final float defaultAspectRatio = 4 / (float) 3;
 	
 	public VideoSurface(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 	
-	public void start(int userId, boolean inDialog) {		
+	public void start(int userId, boolean inDialog) {
+		this.userId = userId;
+		this.inDialog = inDialog;
+		
 		LayoutParams layoutParams = getLayoutParams();
 		DisplayMetrics metrics = getDisplayMetrics(getContext());
 		log.debug("Maximum display resolution: {} X {}\n", metrics.widthPixels, metrics.heightPixels);
@@ -68,17 +76,34 @@ public class VideoSurface extends GLSurfaceView {
 		videoHandler = new VideoHandler(userId, bbb);
 		videoHandler.start();
 		bbb.addVideoListener(videoHandler);
+		
+		showing = true;
+	}
+	
+	public void stop() {
+		BigBlueButtonClient bbb = ((BigBlueButton) getContext().getApplicationContext()).getHandler();
+		bbb.removeVideoListener(videoHandler);
+		videoHandler.stop();
+		
+		endDrawer();
+		
+		showing = false;
 	}
 	
 	@Override
 	public void onPause() {
 		super.onPause();
 		
-		BigBlueButtonClient bbb = ((BigBlueButton) getContext().getApplicationContext()).getHandler();
-		bbb.removeVideoListener(videoHandler);
-		videoHandler.stop();
+		if (showing)
+			stop();
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
 		
-		endDrawer();
+		if (showing)
+			start(userId, inDialog);
 	}
 	
 	static public DisplayMetrics getDisplayMetrics(Context context){

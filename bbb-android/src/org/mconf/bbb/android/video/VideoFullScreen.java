@@ -21,11 +21,13 @@
 
 package org.mconf.bbb.android.video;
 
+import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
@@ -33,34 +35,31 @@ public class VideoFullScreen extends Activity {
 	private static final Logger log = LoggerFactory.getLogger(VideoFullScreen.class);
 	
 	private VideoSurface videoWindow;
+
+	private int userId;
+
+	private String name;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		Bundle extras = getIntent().getExtras();
-		int userId = extras.getInt("userId");
-		String name = extras.getString("name");
+		if (extras != null) {
+			userId = extras.getInt("userId");
+			name = extras.getString("name");
+		}
 
 		setContentView(R.layout.video_window);
 		
 		videoWindow = (VideoSurface) findViewById(R.id.video_window);
 		videoWindow.start(userId, false);
 	}
-	
+
 	@Override
-	protected void onStop() {
-		super.onStop();
+	protected void onDestroy() {
+		videoWindow.stop();
 		
-		videoWindow.onPause();
-	}
-	
-	@Override
-	public void onConfigurationChanged(final Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		
-		if(newConfig.orientation==Configuration.ORIENTATION_PORTRAIT){
-			finish();
-		}	
+		super.onDestroy();
 	}
 }
