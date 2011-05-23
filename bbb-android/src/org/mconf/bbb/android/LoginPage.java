@@ -66,7 +66,8 @@ public class LoginPage extends BigBlueButtonActivity {
 	private static final Logger log = LoggerFactory.getLogger(LoginPage.class);
 
 	public static final String SERVER_CHOSED ="org.mconf.bbb.android.Client.SERVER_CHOSED";
-
+	public static final int MENU_QR_CODE = Menu.FIRST;
+	
 	SharedPreferences preferencesFile;
 	Map<String,String> storedPreferences;
 
@@ -185,25 +186,7 @@ public class LoginPage extends BigBlueButtonActivity {
 			}
 		});
         
-        final Button QRcode = (Button) findViewById(R.id.QRcode);       
-		QRcode.setOnClickListener( new OnClickListener()
-		{
-			@Override
-			public void onClick(View viewParam)
-			{
-				
-				Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-		        intent.setPackage("com.google.zxing.client.android");
-		        intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
-		        try {
-			        startActivityForResult(intent, 0);
-		          } catch (ActivityNotFoundException e) {
-		        	  showDownloadDialog();
-		          }
-
-
-			}
-		});
+      
 
         
 		final Button join = (Button) findViewById(R.id.login_button_join);       
@@ -376,16 +359,26 @@ public class LoginPage extends BigBlueButtonActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(Menu.NONE, Client.MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
+		menu.add(Menu.NONE, LoginPage.MENU_QR_CODE, Menu.NONE, R.string.qrcode).setIcon(R.drawable.qrcode_icon);
 		return super.onCreateOptionsMenu(menu);
 	}
 
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public boolean onOptionsItemSelected(MenuItem item) { 
 		switch (item.getItemId()) {
 		case Client.MENU_ABOUT:
 			new AboutDialog(this).show();
 			return true;
+		case LoginPage.MENU_QR_CODE: 
+			Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+	        intent.setPackage("com.google.zxing.client.android");
+	        intent.putExtra("SCAN_MODE", "QR_CODE_MODE"); 
+	        try {
+		        startActivityForResult(intent, 0);
+	          } catch (ActivityNotFoundException e) {
+	        	  showDownloadDialog();
+	          }
 		default:			
 			return super.onOptionsItemSelected(item);
 		}
