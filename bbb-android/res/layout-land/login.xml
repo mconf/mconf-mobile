@@ -75,9 +75,6 @@
 			<RadioButton android:textColor="#000000" android:checked="true"
 				android:layout_height="wrap_content" android:id="@+id/login_role_viewer"
 				android:layout_width="wrap_content" android:text="@string/viewer"></RadioButton>
-				<Button android:id="@+id/QRcode" android:text="@string/qrcode"
-			android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="0.3"
-			></Button>
 		</RadioGroup>
 	</RelativeLayout>
 
