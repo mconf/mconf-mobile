@@ -31,6 +31,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.Bundle;
 
 public class VideoFullScreen extends Activity {	
@@ -70,14 +71,13 @@ public class VideoFullScreen extends Activity {
 		setContentView(R.layout.video_window);
 		
 		videoWindow = (VideoSurface) findViewById(R.id.video_window);
-//		videoWindow.start(userId, false);
 	}
 	
 	@Override
-	protected void onPause() {
-		super.onPause();
-		
+	protected void onPause() {	
 		videoWindow.stop();
+		
+		super.onPause();		
 	}
 	
 	@Override
@@ -89,9 +89,16 @@ public class VideoFullScreen extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		videoWindow.stop();
 		unregisterReceiver(closeVideo);
 		
 		super.onDestroy();
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		// TODO Auto-generated method stub
+		super.onConfigurationChanged(newConfig);
+		videoWindow.stop();
+		videoWindow.start(userId, false);
 	}
 }

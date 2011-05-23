@@ -20,10 +20,11 @@ private:
 		videoW, videoH,
 		displayAreaW, displayAreaH,
 		displayPositionX, displayPositionY;
-	bool firstFrame, stopThread;
+	bool firstFrame, stopThread, rendering;
 
 public:
-	VideoDrawer(int screenWidth, int screenHeight) {
+	VideoDrawer(int screenWidth, int screenHeight)
+			: rendering(false) {
 		Log("VideoDrawer() begin");
 
 		screenW = screenWidth;
@@ -56,11 +57,13 @@ public:
 	~VideoDrawer() {
 		Log("~VideoDrawer() begin");
 
-		// \todo syncronize the finalize of the renderer to solve the end problem!
-		Seconds(1).sleep();
-
 		stopThread = true;
 		queue_broadcast(decoded_video);
+
+		// \todo syncronize the finalize of the renderer to solve the end problem!
+		while (rendering) {
+			Milliseconds(100).sleep();
+		}
 
 		video_dec->stop();
 		queue_unregisterConsumer(&consumer);
@@ -83,6 +86,7 @@ public:
 
 	int renderFrame() {
 //		Log("threadFunction() begin");
+		rendering = true;
 
 		uint32_t timestamp, bufferSize;
 		uint8_t* buffer;
@@ -96,6 +100,7 @@ public:
 		}
 		if (stopThread) {
 //			Log("renderFrame() returning");
+			rendering = false;
 			return 0;
 		}
 
@@ -140,7 +145,7 @@ public:
 //		Log("threadFunction() consumer free");
 
 //		Log("threadFunction() end");
-
+		rendering = false;
 		return ret;
 	}
 	

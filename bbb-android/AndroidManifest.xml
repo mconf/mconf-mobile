@@ -25,7 +25,7 @@
 		</activity>
 		<activity android:name=".PrivateChat" android:launchMode="singleInstance" android:configChanges="orientation|keyboardHidden" > 
 		</activity>
-		<activity android:name=".video.VideoFullScreen" android:configChanges="keyboardHidden" android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>		
+		<activity android:name=".video.VideoFullScreen" android:configChanges="orientation|keyboardHidden" android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>		
 
 	</application>
 	<supports-screens  android:smallScreens="true" android:normalScreens="true" android:largeScreens="true" />
