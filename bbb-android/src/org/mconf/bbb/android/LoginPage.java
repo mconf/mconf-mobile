@@ -359,7 +359,7 @@ public class LoginPage extends BigBlueButtonActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(Menu.NONE, Client.MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
-		menu.add(Menu.NONE, LoginPage.MENU_QR_CODE, Menu.NONE, R.string.qrcode).setIcon(R.drawable.qrcode_icon);
+		menu.add(Menu.NONE, LoginPage.MENU_QR_CODE, Menu.NONE, R.string.qrcode).setIcon(R.drawable.ic_menu_qrcode);
 		return super.onCreateOptionsMenu(menu);
 	}
 
