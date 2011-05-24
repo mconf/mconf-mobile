@@ -796,6 +796,10 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				contactAdapter.notifyDataSetChanged();
 				CustomListview contactListView = (CustomListview) findViewById(R.id.contacts_list);
 				contactListView.setHeight();
+				Intent kickedUser = new Intent(PrivateChat.KICKED_USER);
+				kickedUser.putExtra("userId", p.getUserId());
+				sendBroadcast(kickedUser);
+				
 			}
 		});
 	}
