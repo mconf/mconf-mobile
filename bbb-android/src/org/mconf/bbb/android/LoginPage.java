@@ -355,7 +355,7 @@ public class LoginPage extends BigBlueButtonActivity {
 		progressDialog.show();
 		updateThread.start();		
 	}
-
+ 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(Menu.NONE, Client.MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
@@ -369,7 +369,7 @@ public class LoginPage extends BigBlueButtonActivity {
 		switch (item.getItemId()) {
 		case Client.MENU_ABOUT:
 			new AboutDialog(this).show();
-			return true;
+			return true; 
 		case LoginPage.MENU_QR_CODE: 
 			Intent intent = new Intent("com.google.zxing.client.android.SCAN");
 	        intent.setPackage("com.google.zxing.client.android");
