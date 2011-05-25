@@ -101,6 +101,7 @@ public class ChatAdapter extends BaseAdapter {
 	}
 
 	public void add(ChatMessage message) {
+		System.out.println("ESCREVEU"+message.getMessage());
 		list.add(message);
 	}
 
