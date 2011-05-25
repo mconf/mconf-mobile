@@ -12,6 +12,7 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.SurfaceHolder;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 
@@ -71,28 +72,36 @@ public class VideoSurface extends GLSurfaceView {
 		if (showing)
 			stop();
 		
+		updateLayoutParams(inDialog);		
+
+		BigBlueButtonClient bbb = ((BigBlueButton) getContext().getApplicationContext()).getHandler();
+		videoHandler = new VideoHandler(userId, bbb);
+		videoHandler.start();
+		bbb.addVideoListener(videoHandler);
+		
+		showing = true;
+	}
+	
+	public void updateLayoutParams (boolean inDialog) {
 		LayoutParams layoutParams = getLayoutParams();
 		DisplayMetrics metrics = getDisplayMetrics(getContext());
 		log.debug("Maximum display resolution: {} X {}\n", metrics.widthPixels, metrics.heightPixels);
 		if(inDialog){
 			metrics.widthPixels -= 40;
 			metrics.heightPixels -= 40;
-		}
-		
+		}		
 		int[] params = new int[2];
 		params = getDisplayParameters(metrics.widthPixels, metrics.heightPixels);
 		layoutParams.width = params[0];
 		layoutParams.height = params[1];
-		setLayoutParams(layoutParams);		
-
-		initDrawer(metrics.widthPixels, metrics.heightPixels, params[0], params[1], 0, 0);
-
-        BigBlueButtonClient bbb = ((BigBlueButton) getContext().getApplicationContext()).getHandler();
-		videoHandler = new VideoHandler(userId, bbb);
-		videoHandler.start();
-		bbb.addVideoListener(videoHandler);
+		setLayoutParams(layoutParams);
+		log.debug("UPDATE params[0] = {}, params[1] = {}", params[0], params[1]);
+		log.debug("UPDATE metrics.widthPixels = {}, metrics.heightPixels = {}", metrics.widthPixels, metrics.heightPixels);
 		
-		showing = true;
+		if(showing)
+			nativeResize(metrics.widthPixels, metrics.heightPixels, params[0], params[1], 0, 0);
+		else 
+			initDrawer(metrics.widthPixels, metrics.heightPixels, params[0], params[1], 0, 0);       
 	}
 	
 	public void stop() {
@@ -130,6 +139,7 @@ public class VideoSurface extends GLSurfaceView {
     }
 	
 	private native int initDrawer(int screenW, int screenH, int displayAreaW, int displayAreaH, int displayPositionX, int displayPositionY);
+	private native int nativeResize(int screenW, int screenH, int displayAreaW, int displayAreaH, int displayPositionX, int displayPositionY);
 	private native int endDrawer();
     private native int enqueueFrame(byte[] data, int length);	
 }

@@ -126,6 +126,10 @@ public:
 			firstFrame = false;
 
 			if (videoW * displayAreaH != videoH * displayAreaW) {
+				LogData log;
+				log.clear();
+				log << "videoW * displayAreaH != videoH * displayAreaW" << endl;
+				log.push();
 				float videoAspect = videoW / (float) videoH;
 				float displayAspect = displayAreaW / (float) displayAreaH;
 				if (videoAspect < displayAspect)
@@ -208,12 +212,48 @@ public:
 	int getVideoW() { return videoW; }
 	int getVideoH() { return videoH; }
 	float getAspectRatio() { return videoW / (float) videoH; }
-	void setDisplayAreaW(int w) { displayAreaW = w; }
-	void setDisplayAreaH(int h) { displayAreaH = h; }
-	void setDisplayPositionX(int x) { displayPositionX = x; }
-	void setDisplayPositionY(int y) { displayPositionY = y; }
-	void setScreenW(int w) { screenW = w; }
-	void setScreenH(int h) { screenH = h; }
+	void setDisplayAreaW(int w) {
+		displayAreaW = w;
+		LogData log;
+		log.clear();
+		log << "displayAreaW: " << displayAreaW << endl;
+		log.push();
+	}
+	void setDisplayAreaH(int h) {
+		displayAreaH = h;
+		LogData log;
+		log.clear();
+		log << "displayAreaH: " << displayAreaH << endl;
+		log.push();
+	}
+	void setDisplayPositionX(int x) {
+		displayPositionX = x;
+		LogData log;
+		log.clear();
+		log << "displayPositionX: " << displayPositionX << endl;
+		log.push();
+	}
+	void setDisplayPositionY(int y) {
+		displayPositionY = y;
+		LogData log;
+		log.clear();
+		log << "displayPositionY: " << displayPositionY << endl;
+		log.push();
+	}
+	void setScreenW(int w) {
+		screenW = w;
+		LogData log;
+		log.clear();
+		log << "screenW: " << screenW << endl;
+		log.push();
+	}
+	void setScreenH(int h) {
+		screenH = h;
+		LogData log;
+		log.clear();
+		log << "screenH: " << screenH << endl;
+		log.push();
+	}
 	void setFirstFrameFlag(bool first) { firstFrame = first; }
 };
 
