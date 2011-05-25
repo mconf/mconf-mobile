@@ -104,11 +104,12 @@ public class PrivateChat extends BigBlueButtonActivity {
 		@Override
 		public void onParticipantLeft(final IParticipant p) {
 			//se o participante que saiu é o que está sendo mostrado o chat
-			if(p.getUserId()==userId && getParticipantByViewId(flipper.getDisplayedChild()).getUserId()==userId)
+			if(p.getUserId()==userId && getParticipantByViewId(flipper.getDisplayedChild()).getUserId()==userId && !movedToBack)
 			{
-				System.out.println("first");
+				
 				showPartcicipantLeftDialog();//works fine
 			} 
+			
 			//se o participante saiu, mas está por trás nas abas de chat
 			else if(p.getUserId()==userId && getParticipantByViewId(flipper.getDisplayedChild()).getUserId()!=userId)
 			{
@@ -116,7 +117,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 
 					@Override
 					public void run() {
-						System.out.println("second");
+						
 						removeParticipant(p.getUserId());
 					}
 				});
@@ -136,6 +137,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 
 				@Override
 				public void run() {
+					
 					chatAdapter.add(message);
 					chatAdapter.notifyDataSetChanged();
 				}
@@ -193,6 +195,9 @@ public class PrivateChat extends BigBlueButtonActivity {
 	//	private Animation RightOut;
 	private ViewFlipper flipper; 
 	private Context context= this;
+	
+	public boolean movedToBack=false;
+	
 
 	public static boolean hasUserOnPrivateChat(int userId)
 	{
@@ -236,11 +241,14 @@ public class PrivateChat extends BigBlueButtonActivity {
 		} 
 	};
 
+	
+
 	private BroadcastReceiver moveToBack = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
 		{ 
 			log.debug("sent to back");
 			PrivateChat.this.moveTaskToBack(true); 
+			movedToBack=true;
 		} 
 	};
 
@@ -252,6 +260,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 			int userId = extras.getInt("userId");
 			if(hasUserOnPrivateChat(userId))
 				removeParticipant(userId);
+			
 		} 
 	};
 
@@ -289,6 +298,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 	//get the participant key associated with a viewFlipper view
 	private Integer getParticipantKeyByViewId(int viewId) {
 		for (RemoteParticipant p : participants.values()) {
+			
 			if (p.getViewId() == viewId)
 				return p.getUserId();
 		}
@@ -320,7 +330,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 				p.onPrivateChatMessage(message);
 			}
 		}
-
+		
 
 
 		final ListView chatListView = (ListView) flipper.getChildAt(p.getViewId()).findViewById(R.id.messages);
@@ -330,7 +340,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 				return gestureDetector.onTouchEvent(event);
 			}
 		});
-		
+		chatListView.setAdapter(p.getChatAdapter()); 
 
 		getBigBlueButton().addListener(p); 
 		Button send = (Button) flipper.getChildAt(p.getViewId()).findViewById(R.id.sendMessage);
@@ -386,7 +396,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 			{
 				for (ChatMessage message : messages) {
 					p.onPrivateChatMessage(message);
-				}
+				} 
 			}
 
 			final ListView chatListView = (ListView) flipper.getChildAt(p.getViewId()).findViewById(R.id.messages);
@@ -484,6 +494,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		log.debug("ON NEW INTENT");
 		System.out.println(flipper.getChildCount());
 		displayView(intent.getExtras());
+		movedToBack=false;
 
 	}
 
@@ -540,6 +551,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
 			bringBackClient.setAction(Client.BACK_TO_CLIENT);
+			movedToBack=true;
 			startActivity(bringBackClient);
 			return true;
 		}
@@ -610,9 +622,12 @@ public class PrivateChat extends BigBlueButtonActivity {
 		sendBroadcast(chatClosed);
 		if(participants.size()>1)
 		{
-			flipper.showPrevious();
+			do{
+				flipper.showPrevious();
+			}while(flipper.getChildAt(flipper.getDisplayedChild()).getId()==INVALIDATED);
 			removeParticipant(getParticipantKeyByViewId(viewID));
 			viewID=flipper.getDisplayedChild();
+			
 			setTitle(getResources().getString(R.string.private_chat_title) + getParticipantByViewId(viewID).getUsername());
 		}
 		else 
