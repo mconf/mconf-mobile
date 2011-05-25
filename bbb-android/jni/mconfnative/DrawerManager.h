@@ -10,6 +10,7 @@ extern "C"{
 jint Java_org_mconf_bbb_android_video_VideoSurface_initDrawer(JNIEnv *env, jobject obj, jint screenW, jint screenH, jint displayAreaW, jint displayAreaH, jint displayPositionX, jint displayPositionY);
 jint Java_org_mconf_bbb_android_video_VideoSurface_enqueueFrame(JNIEnv *env, jobject obj, jbyteArray data, jint length);
 jint Java_org_mconf_bbb_android_video_VideoRenderer_nativeRender(JNIEnv *env, jobject obj);
+jint Java_org_mconf_bbb_android_video_VideoRenderer_nativeResize(JNIEnv *env, jobject obj, jint screenW, jint screenH, jint displayAreaW, jint displayAreaH, jint displayPositionX, jint displayPositionY);
 jint Java_org_mconf_bbb_android_video_VideoRenderer_getVideoWidth(JNIEnv *env, jobject obj);
 jint Java_org_mconf_bbb_android_video_VideoRenderer_getVideoHeight(JNIEnv *env, jobject obj);
 jint Java_org_mconf_bbb_android_video_VideoSurface_endDrawer(JNIEnv *env, jobject obj);
