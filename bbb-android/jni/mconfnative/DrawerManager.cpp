@@ -2,6 +2,7 @@
 #include "VideoDrawer.h"
 
 VideoDrawer* videoDrawer = NULL;
+Mutex* mutex = new Mutex();
 
 #ifdef __cplusplus
 extern "C"{
@@ -9,6 +10,10 @@ extern "C"{
 
 jint Java_org_mconf_bbb_android_video_VideoSurface_initDrawer(JNIEnv *env, jobject obj, jint screenW, jint screenH, jint displayAreaW, jint displayAreaH, jint displayPositionX, jint displayPositionY) {
 	if (!videoDrawer) {
+		LogData log;
+		log.clear();
+		log << "initDrawer" << endl;
+		log.push();
 		videoDrawer = new VideoDrawer(screenW, screenH);
 		videoDrawer->setDisplayAreaW(displayAreaW);
 		videoDrawer->setDisplayAreaH(displayAreaH);
@@ -28,10 +33,32 @@ jint Java_org_mconf_bbb_android_video_VideoSurface_enqueueFrame(JNIEnv *env, job
 }
 
 jint Java_org_mconf_bbb_android_video_VideoRenderer_nativeRender(JNIEnv *env, jobject obj) {
-	if (videoDrawer)
-		return videoDrawer->renderFrame();
-	else
-		return 0;
+	int ret = 0;
+	mutex->lock();
+	if (videoDrawer){
+		ret = videoDrawer->renderFrame();
+	}
+	mutex->unlock();
+	return ret;
+}
+
+jint Java_org_mconf_bbb_android_video_VideoSurface_nativeResize(JNIEnv *env, jobject obj, jint screenW, jint screenH, jint displayAreaW, jint displayAreaH, jint displayPositionX, jint displayPositionY){
+	mutex->lock();
+	if (videoDrawer) {
+		LogData log;
+		log.clear();
+		log << "nativeResize" << endl;
+		log.push();
+		videoDrawer->setDisplayAreaW(displayAreaW);
+		videoDrawer->setDisplayAreaH(displayAreaH);
+		videoDrawer->setDisplayPositionX(displayPositionX);
+		videoDrawer->setDisplayPositionY(displayPositionY);
+		videoDrawer->setScreenW(screenW);
+		videoDrawer->setScreenH(screenH);
+		videoDrawer->setFirstFrameFlag(true);
+	}
+	mutex->unlock();
+	return 0;
 }
 
 jint Java_org_mconf_bbb_android_video_VideoRenderer_getVideoWidth(JNIEnv *env, jobject obj) {

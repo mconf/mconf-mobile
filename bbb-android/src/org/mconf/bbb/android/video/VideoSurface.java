@@ -12,6 +12,7 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.SurfaceHolder;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 
@@ -46,6 +47,24 @@ public class VideoSurface extends GLSurfaceView {
 		setRenderer(mRenderer);
 	}
 	
+	public static int[] getDisplayParameters(int width, int height){
+		int[] params = new int[2];
+		
+	    int h = 0, w = 0;
+		float displayAspectRatio = width / (float) height;
+		if (displayAspectRatio < defaultAspectRatio) {
+			w = width;
+			h = (int) (w / defaultAspectRatio);
+		} else {
+			h = height;
+			w = (int) (h * defaultAspectRatio);			
+		}
+		
+		params[0] = w;
+		params[1] = h;		
+		return params;		
+	}
+	
 	public void start(int userId, boolean inDialog) {
 		this.userId = userId;
 		this.inDialog = inDialog;
@@ -53,27 +72,7 @@ public class VideoSurface extends GLSurfaceView {
 		if (showing)
 			stop();
 		
-		LayoutParams layoutParams = getLayoutParams();
-		DisplayMetrics metrics = getDisplayMetrics(getContext());
-		log.debug("Maximum display resolution: {} X {}\n", metrics.widthPixels, metrics.heightPixels);
-		int h = 0, w = 0;
-		if(inDialog){
-			metrics.widthPixels -= 40;
-			metrics.heightPixels -= 40;
-		}
-		float displayAspectRatio = metrics.widthPixels / (float) metrics.heightPixels;
-		if (displayAspectRatio < defaultAspectRatio) {
-			w = metrics.widthPixels;
-			h = (int) (w / defaultAspectRatio);
-		} else {
-			h = metrics.heightPixels;
-			w = (int) (h * defaultAspectRatio);			
-		}
-		layoutParams.width = w;
-		layoutParams.height = h;
-		setLayoutParams(layoutParams);		
-		 
-        initDrawer(metrics.widthPixels, metrics.heightPixels, w, h, 0, 0);
+		updateLayoutParams(inDialog);		
 
 		BigBlueButtonClient bbb = ((BigBlueButton) getContext().getApplicationContext()).getHandler();
 		videoHandler = new VideoHandler(userId, bbb);
@@ -81,6 +80,28 @@ public class VideoSurface extends GLSurfaceView {
 		bbb.addVideoListener(videoHandler);
 		
 		showing = true;
+	}
+	
+	public void updateLayoutParams (boolean inDialog) {
+		LayoutParams layoutParams = getLayoutParams();
+		DisplayMetrics metrics = getDisplayMetrics(getContext());
+		log.debug("Maximum display resolution: {} X {}\n", metrics.widthPixels, metrics.heightPixels);
+		if(inDialog){
+			metrics.widthPixels -= 40;
+			metrics.heightPixels -= 40;
+		}		
+		int[] params = new int[2];
+		params = getDisplayParameters(metrics.widthPixels, metrics.heightPixels);
+		layoutParams.width = params[0];
+		layoutParams.height = params[1];
+		setLayoutParams(layoutParams);
+		log.debug("UPDATE params[0] = {}, params[1] = {}", params[0], params[1]);
+		log.debug("UPDATE metrics.widthPixels = {}, metrics.heightPixels = {}", metrics.widthPixels, metrics.heightPixels);
+		
+		if(showing)
+			nativeResize(metrics.widthPixels, metrics.heightPixels, params[0], params[1], 0, 0);
+		else 
+			initDrawer(metrics.widthPixels, metrics.heightPixels, params[0], params[1], 0, 0);       
 	}
 	
 	public void stop() {
@@ -118,6 +139,7 @@ public class VideoSurface extends GLSurfaceView {
     }
 	
 	private native int initDrawer(int screenW, int screenH, int displayAreaW, int displayAreaH, int displayPositionX, int displayPositionY);
+	private native int nativeResize(int screenW, int screenH, int displayAreaW, int displayAreaH, int displayPositionX, int displayPositionY);
 	private native int endDrawer();
     private native int enqueueFrame(byte[] data, int length);	
 }
