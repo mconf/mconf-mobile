@@ -2,7 +2,6 @@ package org.mconf.bbb.android.video;
 
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.android.BigBlueButton;
-import org.mconf.bbb.android.Client;
 import org.mconf.bbb.video.IVideoListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +11,6 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.Display;
-import android.view.SurfaceHolder;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 
@@ -123,17 +121,22 @@ public class VideoSurface extends GLSurfaceView {
 	}
 		
 	static {
-    	System.load("/data/data/org.mconf.bbb.android/lib/libavutil.so");
-    	System.load("/data/data/org.mconf.bbb.android/lib/libswscale.so");
-        System.load("/data/data/org.mconf.bbb.android/lib/libavcodec.so");
-        System.load("/data/data/org.mconf.bbb.android/lib/libavformat.so");
-        System.load("/data/data/org.mconf.bbb.android/lib/libthread.so");
-    	System.load("/data/data/org.mconf.bbb.android/lib/libcommon.so");
-    	System.load("/data/data/org.mconf.bbb.android/lib/libqueue.so");
-    	System.load("/data/data/org.mconf.bbb.android/lib/libdecode.so");
-    	System.load("/data/data/org.mconf.bbb.android/lib/libmconfnative.so");  
-        
-    	log.debug("Video native libraries loaded");    
+		String path = "/data/data/org.mconf.bbb.android/lib/";
+		try {
+			System.load(path + "libavutil.so");
+			System.load(path + "libswscale.so");
+			System.load(path + "libavcodec.so");
+			System.load(path + "libavformat.so");
+			System.load(path + "libthread.so");
+			System.load(path + "libcommon.so");
+			System.load(path + "libqueue.so");
+			System.load(path + "libdecode.so");
+			System.load(path + "libmconfnative.so");
+	        
+	    	log.debug("Native libraries loaded");
+		} catch (SecurityException e) {
+	    	log.debug("Native libraries failed");
+		}
     }
 	
 	private native int initDrawer(int screenW, int screenH, int displayAreaW, int displayAreaH, int displayPositionX, int displayPositionY);
