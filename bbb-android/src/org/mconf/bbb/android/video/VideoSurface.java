@@ -95,8 +95,6 @@ public class VideoSurface extends GLSurfaceView {
 		layoutParams.width = params[0];
 		layoutParams.height = params[1];
 		setLayoutParams(layoutParams);
-		log.debug("UPDATE params[0] = {}, params[1] = {}", params[0], params[1]);
-		log.debug("UPDATE metrics.widthPixels = {}, metrics.heightPixels = {}", metrics.widthPixels, metrics.heightPixels);
 		
 		if(showing)
 			nativeResize(metrics.widthPixels, metrics.heightPixels, params[0], params[1], 0, 0);
@@ -125,15 +123,15 @@ public class VideoSurface extends GLSurfaceView {
 	}
 		
 	static {
-    	System.loadLibrary("avutil");
-    	System.loadLibrary("swscale");
-        System.loadLibrary("avcodec");
-        System.loadLibrary("avformat");
-        System.loadLibrary("thread");
-    	System.loadLibrary("common");
-    	System.loadLibrary("queue");
-    	System.loadLibrary("decode");
-    	System.loadLibrary("mconfnative");  
+    	System.load("/data/data/org.mconf.bbb.android/lib/libavutil.so");
+    	System.load("/data/data/org.mconf.bbb.android/lib/libswscale.so");
+        System.load("/data/data/org.mconf.bbb.android/lib/libavcodec.so");
+        System.load("/data/data/org.mconf.bbb.android/lib/libavformat.so");
+        System.load("/data/data/org.mconf.bbb.android/lib/libthread.so");
+    	System.load("/data/data/org.mconf.bbb.android/lib/libcommon.so");
+    	System.load("/data/data/org.mconf.bbb.android/lib/libqueue.so");
+    	System.load("/data/data/org.mconf.bbb.android/lib/libdecode.so");
+    	System.load("/data/data/org.mconf.bbb.android/lib/libmconfnative.so");  
         
     	log.debug("Video native libraries loaded");    
     }
