@@ -33,7 +33,6 @@ class VideoRenderer implements GLSurfaceView.Renderer {
 	@Override
     public void onDrawFrame(GL10 gl) {
     	if (nativeRender() != 0) {
-    		log.debug("nativeRender() != 0");
 //    		LayoutParams layoutParams = context.getLayoutParams();
 //    		float layoutAspectRatio = layoutParams.width / (float) layoutParams.height;
 //    		float videoAspectRatio = getVideoWidth() / (float) getVideoHeight();
