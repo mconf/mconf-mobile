@@ -113,7 +113,7 @@ public class ServerChoosing extends Activity  {
 		}
 		// always insert the prav servers to the list
 		addServer("http://mconf.inf.ufrgs.br");
-		addServer("http://mconfdev.inf.ufrgs.br");
+//		addServer("http://mconfdev.inf.ufrgs.br");
 		this.storedServers = (Map<String, String>) serverFile.getAll();
 	}
 	
