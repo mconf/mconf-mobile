@@ -222,11 +222,12 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					//					if (getGlobalContext().getLaunchedBy() == BigBlueButton.LAUNCHED_BY_APPLICATION) {
-					//						Intent login = new Intent(getGlobalContext(), LoginPage.class);
-					//						startActivity(login);
-					//					}
-					//					finish();
+//					if (getGlobalContext().getLaunchedBy() == BigBlueButton.LAUNCHED_BY_APPLICATION) {
+//						Intent login = new Intent(getGlobalContext(), LoginPage.class);
+//						startActivity(login);
+//					}
+					if (getGlobalContext().getLaunchedBy() == BigBlueButton.LAUNCHED_BY_BROWSER)
+						finish();
 				}
 			});
 		}
@@ -234,16 +235,17 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 
 	private boolean joinAndConnect() {
-		//		if (isNetworkDown()) {
-		//			openProperties();
-		//			return false;
-		//		}
+//		if (isNetworkDown()) {
+//			openProperties();
+//			return false;
+//		}
 
 		if (getIntent().hasCategory("android.intent.category.BROWSABLE")
 				&& getIntent().getScheme().equals(getResources().getString(R.string.protocol))) {
 			getGlobalContext().setLaunchedBy(BigBlueButton.LAUNCHED_BY_BROWSER);
 
 			String joinUrl = getIntent().getData().toString().replace(getResources().getString(R.string.protocol) + "://", "http://");
+			log.debug("Joining: " + joinUrl);
 			serverUrl = joinUrl.substring(0, joinUrl.indexOf("/bigbluebutton/api/"));
 			if (getBigBlueButton().getJoinService().join(serverUrl, joinUrl)) {
 				username = getBigBlueButton().getJoinService().getJoinedMeeting().getFullname();
@@ -252,6 +254,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				moderator = getBigBlueButton().getJoinService().getJoinedMeeting().getRole().equals("MODERATOR");
 				meetingId = getBigBlueButton().getJoinService().getJoinedMeeting().getMeetingID();
 			} else {
+				String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
+				log.debug("Joining error message: " + error);
 				new JoinFailDialog(this).show();
 				return false;
 			}
@@ -266,9 +270,10 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 			if (!getBigBlueButton().getJoinService().join(meetingId, username, moderator)) {
 				String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
-				if (error != null && error.equals("null"))
-					new JoinFailDialog(this, error).show();
-				else
+				log.debug("Joining error message: " + error);
+//				if (error != null && !error.equals("null"))
+//					new JoinFailDialog(this, error).show();
+//				else
 					new JoinFailDialog(this).show();
 				return false;
 			}
@@ -300,8 +305,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		// UI elements registration and setting of adapters
 		final ListView chatListView = (ListView) findViewById(R.id.messages);
 		chatListView.setAdapter(chatAdapter);
-	
-
 
 		final CustomListview contactListView = (CustomListview) findViewById(R.id.contacts_list); 
 		contactListView.setAdapter(contactAdapter);
@@ -334,7 +337,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				return getVoiceModule().isMuted();
 			}
 		});
-
 
 		final SlidingDrawer slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);	
 		if (slidingDrawer != null) { 
