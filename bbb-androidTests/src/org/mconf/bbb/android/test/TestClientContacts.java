@@ -65,21 +65,15 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		solo.assertCurrentActivity("not on Client", Client.class);
 		solo.clickOnMenuItem(solo.getString(R.string.quit));
 		
-		assertFalse(solo.getCurrentActivity()==client); //?? how to know that it's over
+		assertFalse(solo.getCurrentActivity()==client); //TODO?? how to know that it's over
 		//assertation failed error
 	}
 	
-	public void tPublicChat()
+	public void testPublicChat()
 	{
 		String test = "testing chat";
 		loginAsModerator(0);
 		solo.assertCurrentActivity("not on Client", Client.class);
-//		solo.setActivityOrientation(Solo.LANDSCAPE);
-//		solo.clearEditText(0);
-//		solo.enterText(0, test);
-//		solo.clickOnButton(solo.getString(R.string.send_message));
-//		solo.clearEditText(0);
-//		assertTrue(solo.searchText(test));
 		test="portrait testing";
 		solo.setActivityOrientation(Solo.PORTRAIT);
 		solo.clickOnText(solo.getString(R.string.public_chat));
@@ -107,7 +101,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		loginAsModerator(0);
 		solo.assertCurrentActivity("not on Client", Client.class);
 		solo.clickOnMenuItem(solo.getString(R.string.raise_hand));
-		//como testar?
+		//TODO como testar?
 	}
 	
 	void Kick(int num)
@@ -121,10 +115,10 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		assertFalse(solo.searchText(name));
 	}
 	
-	public void tKick()
+	public void testKick()
 	{
-		for(int i=0; i<3; i++)
-			Kick(i);
+		int num =2;
+		Kick(num);
 		
 	}
 	

@@ -82,7 +82,7 @@ public class TestServers extends ActivityInstrumentationTestCase2<LoginPage>  {
 		solo.assertCurrentActivity("didn't go to Serveres", ServerChoosing.class);
 	}
 	
-	public void  Type()
+	public void  testType()
 	{
 		goToServers();
 		
@@ -91,7 +91,7 @@ public class TestServers extends ActivityInstrumentationTestCase2<LoginPage>  {
 		
 	}
 	
-	public void testDelete()
+	public void Delete()
 	{
 		goToServers();
 		solo.assertCurrentActivity("didn't go to Serveres", ServerChoosing.class);

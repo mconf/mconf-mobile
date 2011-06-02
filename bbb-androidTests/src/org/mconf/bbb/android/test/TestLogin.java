@@ -43,9 +43,12 @@ public class TestLogin extends ActivityInstrumentationTestCase2<LoginPage>  {
 		solo.clickOnText(solo.getString(R.string.create));
 		solo.enterText(0, room);
 		solo.clickOnButton(0);
+		solo.clickOnText(room);
+		solo.clickOnView(solo.getView(R.id.login_button_join));
+		solo.assertCurrentActivity("didn't go to client", Client.class);
 	}
 	
-	public void  about()
+	public void  testAbout()
 	{
 		solo.clickOnMenuItem(solo.getString(R.string.menu_about));
 		solo.assertCurrentActivity("didn't open the dialog", AboutDialog.class);

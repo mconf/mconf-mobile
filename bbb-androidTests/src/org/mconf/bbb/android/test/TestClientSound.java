@@ -63,7 +63,7 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 	{
 		startVoice();
 
-		String name = getListenersName(solo, num);
+		String name = getListenerName(solo, num);
 		solo.clickLongOnText(name);
 		solo.clickOnText(solo.getString(R.string.kick));
 		assertFalse(solo.searchText(name));
@@ -72,29 +72,31 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 	void muteListener(int num)
 	{
 		startVoice();
-		String name = getListenersName(solo, num);
+		String name = getListenerName(solo, num);
 		solo.clickLongOnText(name);
 		solo.clickOnText(solo.getString(R.string.mute));
 		//como testar?
 	}
 
-	void tapToSpeak(){}
+	void tapToSpeak(){
+		//TODO como testar?
+	}
 
 	void voiceButton()
 	{
 		startVoice();
 		solo.clickOnButton(solo.getString(R.string.lockspeak));	
-		//como testar?
+		//TODO como testar?
 	}
 
 	void menuSpeaker()
 	{
 		startVoice();
 		solo.clickOnMenuItem(solo.getString(R.string.speaker));
-		//como testar?
+		//TODO como testar?
 	}
 
-	void menuStopVoice()
+	void testMenuStopVoice()
 	{
 		startVoice();
 		solo.clickOnMenuItem(solo.getString(R.string.stop_voice));
@@ -108,7 +110,8 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 		startVoice();
 		solo.clickOnMenuItem(solo.getString(R.string.audio_config));
 		solo.waitForText(solo.getString(R.string.audio_config));
-		
+		//como mudar os parâmetros?
+		//TODO como testar?
 	}
 
 	void menuEarphone()
@@ -116,6 +119,8 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 		startVoice();
 		solo.clickOnMenuItem(solo.getString(R.string.audio_config));
 		solo.waitForText(solo.getString(R.string.audio_config));
+		//como mudar os parâmetros?
+		//TODO como testar?
 	}
 
 	void menuSpeakerSound()
@@ -124,9 +129,10 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 		solo.clickOnMenuItem(solo.getString(R.string.audio_config));
 		solo.waitForText(solo.getString(R.string.audio_config));
 		//como mudar os parâmetros?
+		//TODO como testar?
 	}
 	
-	private String getListenersName(Solo solo, int num)
+	private String getListenerName(Solo solo, int num)
 	{
 		solo.waitForText(solo.getString(R.string.list_listeners));
 		CustomListview listeners = (CustomListview) solo.getView(R.id.listeners_list);

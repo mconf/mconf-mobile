@@ -45,11 +45,12 @@ public class TestPrivateChat extends ActivityInstrumentationTestCase2<LoginPage>
 		solo.clickInList(num);
 		solo.assertCurrentActivity("didn't open the second chat", PrivateChat.class);
 		second = solo.getCurrentActivity().getTitle().toString();
+		//TODO can't swipe between chats
 		
 		
 	}
 	
-	public void CloseCurrentChat()
+	public void testCloseCurrentChat()
 	{
 		int num =1;
 		TestClientContacts.openPrivateChat(solo, num);
@@ -57,7 +58,7 @@ public class TestPrivateChat extends ActivityInstrumentationTestCase2<LoginPage>
 		solo.assertCurrentActivity("didn't close the chat", Client.class);
 	}
 	
-	public void writeMessage()
+	public void testWriteMessage()
 	{
 		String test = "testing message";
 		int num =1;
