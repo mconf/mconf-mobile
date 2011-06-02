@@ -96,9 +96,8 @@ public class VideoFullScreen extends Activity {
 	
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
-		// TODO Auto-generated method stub
 		super.onConfigurationChanged(newConfig);
-		videoWindow.stop();
-		videoWindow.start(userId, false);
+
+		videoWindow.updateLayoutParams(false);
 	}
 }

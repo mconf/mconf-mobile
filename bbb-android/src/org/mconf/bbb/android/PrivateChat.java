@@ -298,6 +298,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 	//get the participant key associated with a viewFlipper view
 	private Integer getParticipantKeyByViewId(int viewId) {
 		for (RemoteParticipant p : participants.values()) {
+			
 			if (p.getViewId() == viewId)
 				return p.getUserId();
 		}
@@ -621,9 +622,12 @@ public class PrivateChat extends BigBlueButtonActivity {
 		sendBroadcast(chatClosed);
 		if(participants.size()>1)
 		{
-			flipper.showPrevious();
+			do{
+				flipper.showPrevious();
+			}while(flipper.getChildAt(flipper.getDisplayedChild()).getId()==INVALIDATED);
 			removeParticipant(getParticipantKeyByViewId(viewID));
 			viewID=flipper.getDisplayedChild();
+			
 			setTitle(getResources().getString(R.string.private_chat_title) + getParticipantByViewId(viewID).getUsername());
 		}
 		else 

@@ -20,7 +20,7 @@ private:
 		videoW, videoH,
 		displayAreaW, displayAreaH,
 		displayPositionX, displayPositionY;
-	bool firstFrame, stopThread, rendering;
+	bool firstFrame, stopThread, rendering, textureCreated;
 
 public:
 	VideoDrawer(int screenWidth, int screenHeight)
@@ -34,6 +34,7 @@ public:
 
 		firstFrame = true;
 		stopThread = false;
+		textureCreated = false;
 
 		encoded_video = queue_create();
 		decoded_video = queue_create();
@@ -119,7 +120,8 @@ public:
 		if (firstFrame) {
 //			Log("threadFunction() firstFrame");
 //			Log("threadFunction() gl initialized");
-			createTexture(videoW, videoH);
+			if(!textureCreated)
+				createTexture(videoW, videoH);
 
 			firstFrame = false;
 
@@ -160,10 +162,10 @@ public:
 
 	void createTexture(int width, int height) {
 		LogData log;
-		log << "GL_VENDOR = " <<  glGetString(GL_VENDOR) << endl;
-		log << "GL_RENDERER = " << glGetString(GL_RENDERER) << endl;
+//		log << "GL_VENDOR = " <<  glGetString(GL_VENDOR) << endl;
+//		log << "GL_RENDERER = " << glGetString(GL_RENDERER) << endl;
 		log << "GL_VERSION = " << glGetString(GL_VERSION) << endl;
-		log << "GL_EXTENSIONS = " << glGetString(GL_EXTENSIONS);
+//		log << "GL_EXTENSIONS = " << glGetString(GL_EXTENSIONS);
 		log.push();
 
 		GLint crop[4] = { 0, height, width, -height };
@@ -188,6 +190,8 @@ public:
 		free(tmpBuffer);
 //		Log("threadFunction() buffer released");	
 
+		textureCreated = true;
+
 		log.clear();
 		log << "video resolution: " << videoW << "x" << videoH << endl;
 		log << "first texture resolution: " << tmpW << "x" << tmpH << endl;
@@ -204,12 +208,25 @@ public:
 	int getVideoW() { return videoW; }
 	int getVideoH() { return videoH; }
 	float getAspectRatio() { return videoW / (float) videoH; }
-	void setDisplayAreaW(int w) { displayAreaW = w; }
-	void setDisplayAreaH(int h) { displayAreaH = h; }
-	void setDisplayPositionX(int x) { displayPositionX = x; }
-	void setDisplayPositionY(int y) { displayPositionY = y; }
-	void setScreenW(int w) { screenW = w; }
-	void setScreenH(int h) { screenH = h; }
+	void setDisplayAreaW(int w) {
+		displayAreaW = w;
+	}
+	void setDisplayAreaH(int h) {
+		displayAreaH = h;
+	}
+	void setDisplayPositionX(int x) {
+		displayPositionX = x;
+	}
+	void setDisplayPositionY(int y) {
+		displayPositionY = y;
+	}
+	void setScreenW(int w) {
+		screenW = w;
+	}
+	void setScreenH(int h) {
+		screenH = h;
+	}
+	void setFirstFrameFlag(bool first) { firstFrame = first; }
 };
 
 #endif

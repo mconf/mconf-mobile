@@ -24,6 +24,7 @@ package org.mconf.bbb.android;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Color;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
@@ -36,7 +37,7 @@ public class AboutDialog extends AlertDialog {
 	public AboutDialog(Context context) {
 		super(context);
 		
-		final SpannableString s = new SpannableString(context.getText(R.string.about));
+		final SpannableString s = new SpannableString(context.getText(R.string.about).toString().replace("${VERSION}", getVersion(context)));
 		Linkify.addLinks(s, Linkify.WEB_URLS);
 
 		final TextView message = new TextView(context);
@@ -61,5 +62,24 @@ public class AboutDialog extends AlertDialog {
 				AboutDialog.this.cancel();
 			}
 		});
+	}
+
+	public static String getVersion(Context context) {
+	    final String unknown = "Unknown";
+	
+	    if (context == null) {
+	            return unknown;
+	    }
+	
+	    try {
+		    String ret = context.getPackageManager()
+		               .getPackageInfo(context.getPackageName(), 0)
+		               .versionName;
+		    if (ret.contains(" + "))
+		            ret = ret.substring(0,ret.indexOf(" + "))+"b";
+		    return ret;
+		    } catch(NameNotFoundException ex) {}
+	
+	    return unknown;
 	}
 }

@@ -73,6 +73,7 @@
 	<string name="show_video">Show video</string>
 	<string name="about">
 BBB-Android is an Android implementation of the BigBlueButton client.
+\nVersion ${VERSION}
 \n
 \nIt was developed by PRAV Labs as part of the GT-Mconf project (http://inf.ufrgs.br/prav/gtmconf).
 \n

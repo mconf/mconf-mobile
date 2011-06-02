@@ -32,8 +32,8 @@
 	<string name="speaker">Speaker</string>
 	<string name="start_voice">Iniciar voz</string>
 	<string name="stop_voice">Parar voz</string>
-	<string name="quit">Sair</string>
-	<string name="logout">Fechar sala</string>
+	<string name="quit">Fechar</string>
+	<string name="logout">Sair da sala</string>
 	<string name="raise_hand">Levantar a mão</string>
 	<string name="open_private_chat">Abrir o chat privado</string>
 	<string name="lower_hand">Abaixar a mão</string>
@@ -73,6 +73,7 @@
 	<string name="show_video">Exibir vídeo</string>
 	<string name="about">
 		BBB-Android é uma implementação do cliente BigBlueButton para Android.
+		\nVersão ${VERSION}
 		\n
 		\nFoi desenvolvido pelo Laboratório do PRAV como parte do projeto GT-Mconf
 		(http://inf.ufrgs.br/prav/gtmconf).
