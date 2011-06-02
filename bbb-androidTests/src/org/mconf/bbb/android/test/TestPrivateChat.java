@@ -49,7 +49,7 @@ public class TestPrivateChat extends ActivityInstrumentationTestCase2<LoginPage>
 		
 	}
 	
-	public void testCloseCurrentChat()
+	public void CloseCurrentChat()
 	{
 		int num =1;
 		TestClientContacts.openPrivateChat(solo, num);

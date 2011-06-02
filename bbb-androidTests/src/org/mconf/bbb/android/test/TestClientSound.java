@@ -59,7 +59,7 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 		assertTrue(solo.searchText(TestLogin.NAME, 2));
 	}
 
-	void testKickListener(int num)
+	void KickListener(int num)
 	{
 		startVoice();
 

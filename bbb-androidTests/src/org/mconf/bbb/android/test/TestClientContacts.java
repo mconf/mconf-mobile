@@ -8,6 +8,7 @@ import org.mconf.bbb.android.LoginPage;
 import org.mconf.bbb.android.PrivateChat;
 import org.mconf.bbb.android.R;
 
+import android.app.Activity;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.jayway.android.robotium.solo.Solo;
@@ -48,7 +49,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	}
 	
 	
-	public	void closeRoom()
+	public	void testCloseRoom()
 	{
 		loginAsModerator(0);
 		solo.assertCurrentActivity("not on Client", Client.class);
@@ -57,16 +58,18 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		
 	}
 	
-	public void Quit()
+	public void testQuit()
 	{
 		loginAsModerator(0);
+		Activity client = solo.getCurrentActivity();
 		solo.assertCurrentActivity("not on Client", Client.class);
 		solo.clickOnMenuItem(solo.getString(R.string.quit));
-
-		solo.assertCurrentActivity("quitted", Client.class); //?? how to know that it's over
+		
+		assertFalse(solo.getCurrentActivity()==client); //?? how to know that it's over
+		//assertation failed error
 	}
 	
-	public void PublicChat()
+	public void tPublicChat()
 	{
 		String test = "testing chat";
 		loginAsModerator(0);
@@ -89,7 +92,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 				
 	}
 	
-	public void About()
+	public void testAbout()
 	{
 		loginAsModerator(0);
 		solo.assertCurrentActivity("not on Client", Client.class);
@@ -99,7 +102,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		solo.assertCurrentActivity("didn't close the About", Client.class);
 	}
 	
-	void raiseHand()
+	void RaiseHand()
 	{
 		loginAsModerator(0);
 		solo.assertCurrentActivity("not on Client", Client.class);
@@ -107,17 +110,25 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		//como testar?
 	}
 	
-	void kick(int num)
+	void Kick(int num)
 	{
 		loginAsModerator(0);
 		solo.assertCurrentActivity("not on Client", Client.class);
 		String name= getContactName(num, solo);
+		assertFalse(name.equals(TestLogin.NAME));
 		solo.clickLongInList(num);
 		solo.clickOnMenuItem(solo.getString(R.string.kick));
 		assertFalse(solo.searchText(name));
 	}
 	
-	public void OpenChatLongPress()
+	public void tKick()
+	{
+		for(int i=0; i<3; i++)
+			Kick(i);
+		
+	}
+	
+	public void testOpenChatLongPress()
 	{
 		int num =0;
 		loginAsModerator(0);
@@ -127,7 +138,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		solo.assertCurrentActivity("didn't open private chat", PrivateChat.class);
 		String title = solo.getCurrentActivity().getTitle().toString();
 		assertTrue(title.contains(name));
-		//servidor não está ajudando
+		
 	}
 	
 	void assignPresenter(int num)
