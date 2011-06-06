@@ -108,6 +108,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public static final String SEND_TO_BACK = "bbb.android.action.SEND_TO_BACK";
 
 	public static final int ID_DIALOG_RECONNECT = 111000;
+	
+	public static int myID;
 
 
 
@@ -169,6 +171,9 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
+		myID=getBigBlueButton().getMyUserId(); //testDrivenDevelopment
+		
+		
 		IntentFilter filter = new IntentFilter(PrivateChat.CHAT_CLOSED);
 		registerReceiver(chatClosed, filter);
 		
@@ -775,6 +780,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 						log.error("Can't reconnect. Check internet connection");
 						return;
 					} else {
+						myID=getBigBlueButton().getMyUserId(); //testDrivenDevelopment
 						log.error("successfully reconnected");
 
 						runOnUiThread(new Runnable() { 

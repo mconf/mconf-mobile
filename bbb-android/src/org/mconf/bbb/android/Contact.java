@@ -52,5 +52,12 @@ public class Contact extends Participant {
 		String name = this.getName();
 		return name;
 	}
+	public boolean isRaiseHand() {
+		return getStatus().isRaiseHand();
+	}
+	
+	public boolean isPresenter() {
+		return getStatus().isPresenter();
+	}
 
 }

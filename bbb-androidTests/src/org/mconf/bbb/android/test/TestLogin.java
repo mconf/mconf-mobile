@@ -14,6 +14,7 @@ import android.widget.Spinner;
 public class TestLogin extends ActivityInstrumentationTestCase2<LoginPage>  {
 
 	public static String NAME = "MyName";
+	public static String TEST_ROOM = "TestAndroid";
 	private Solo solo;
 	
 	public TestLogin() {
@@ -79,24 +80,32 @@ public class TestLogin extends ActivityInstrumentationTestCase2<LoginPage>  {
 	
 	public void testLogin(){
 		solo.assertCurrentActivity("hhhh", LoginPage.class);
-		connectOnMeeting(solo, 3,0);//moderator
+		connectOnMeeting(solo, 0);//moderator
 		solo.assertCurrentActivity("didn't go to Client", Client.class);
 	}
 	
-	public static void connectOnMeeting(Solo solo, int num, int role)
+	public static void connectOnMeeting(Solo solo, int role)
 	{
 		TestServers.typeServerConnect(solo);
 		solo.waitForText(solo.getString(R.string.login_name));
-		Spinner spinner = (Spinner) solo.getView(R.id.login_spinner);
-		solo.clickOnView(spinner);
-		solo.waitForDialogToClose(1000);
-		String room = spinner.getItemAtPosition(num).toString();
-		solo.clickOnText(room);
-		assertTrue(solo.searchText(room));
+		solo.clickOnView(solo.getView(R.id.login_spinner));
+		solo.clickOnText(solo.getString(R.string.create));
+		solo.enterText(0, TEST_ROOM);
+		solo.clickOnButton(0);
+		solo.clickOnText(TEST_ROOM);
+		assertTrue(solo.searchText(TEST_ROOM));
 		solo.clickOnRadioButton(role);
 		solo.clearEditText(0);
 		solo.enterText(0, NAME);
 		solo.clickOnButton(solo.getString(R.string.login_button_join));
+		solo.assertCurrentActivity("didn't go to client", Client.class);
+		addContactsToMeeting();
+		
+	}
+	
+	public static void addContactsToMeeting()
+	{
+		
 	}
 	
 	

@@ -16,6 +16,7 @@ import com.jayway.android.robotium.solo.Solo;
 public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPage>  {
 
 	private Solo solo;
+	public static int LINE_NUMBER = 2;
 	
 	public TestClientContacts() {
 		super("org.mconf.bbb.android", LoginPage.class);
@@ -25,6 +26,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	protected void setUp() throws Exception {
 		super.setUp();
 		this.solo = new Solo(getInstrumentation(), getActivity());
+		loginAsModerator();
 	}
 	
 	@Override
@@ -38,20 +40,21 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 			super.tearDown();
 			}
 	
-	public	void loginAsModerator(int num)
+	
+	public	void loginAsModerator()
 	{
-		TestLogin.connectOnMeeting(solo, num, 0);
+		TestLogin.connectOnMeeting(solo, 0);
 	}
 	
-	void loginAsViewer(int num)
+	void loginAsViewer()
 	{
-		TestLogin.connectOnMeeting(solo, num, 1);
+		TestLogin.connectOnMeeting(solo,  1);
 	}
 	
 	
 	public	void testCloseRoom()
 	{
-		loginAsModerator(0);
+
 		solo.assertCurrentActivity("not on Client", Client.class);
 		solo.clickOnMenuItem(solo.getString(R.string.logout));
 		solo.assertCurrentActivity("didn't logout", LoginPage.class);
@@ -60,7 +63,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	
 	public void testQuit()
 	{
-		loginAsModerator(0);
+
 		Activity client = solo.getCurrentActivity();
 		solo.assertCurrentActivity("not on Client", Client.class);
 		solo.clickOnMenuItem(solo.getString(R.string.quit));
@@ -72,7 +75,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	public void testPublicChat()
 	{
 		String test = "testing chat";
-		loginAsModerator(0);
+
 		solo.assertCurrentActivity("not on Client", Client.class);
 		test="portrait testing";
 		solo.setActivityOrientation(Solo.PORTRAIT);
@@ -88,7 +91,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	
 	public void testAbout()
 	{
-		loginAsModerator(0);
+
 		solo.assertCurrentActivity("not on Client", Client.class);
 		solo.clickOnMenuItem(solo.getString(R.string.menu_about));
 		solo.scrollDown();
@@ -96,17 +99,18 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		solo.assertCurrentActivity("didn't close the About", Client.class);
 	}
 	
-	void RaiseHand()
+	public void testRaiseHand()
 	{
-		loginAsModerator(0);
+
 		solo.assertCurrentActivity("not on Client", Client.class);
+		assertFalse(isMyHandRaised(solo));
 		solo.clickOnMenuItem(solo.getString(R.string.raise_hand));
-		//TODO como testar?
+		assertTrue(isMyHandRaised(solo));
 	}
 	
 	void Kick(int num)
 	{
-		loginAsModerator(0);
+
 		solo.assertCurrentActivity("not on Client", Client.class);
 		String name= getContactName(num, solo);
 		assertFalse(name.equals(TestLogin.NAME));
@@ -117,15 +121,14 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	
 	public void testKick()
 	{
-		int num =2;
-		Kick(num);
+		Kick(LINE_NUMBER);
 		
 	}
 	
 	public void testOpenChatLongPress()
 	{
 		int num =0;
-		loginAsModerator(0);
+
 		String name= getContactName(num, solo);
 		solo.clickLongInList(num);
 		solo.clickOnText(solo.getString(R.string.open_private_chat));
@@ -135,18 +138,23 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		
 	}
 	
-	void assignPresenter(int num)
+	public void assignPresenter(int num)
 	{
-		loginAsModerator(0);
-		String name= getContactName(num, solo);
+
+		assertFalse(isPresenterAssigned(num, solo));
 		solo.clickLongInList(num);
 		solo.clickOnText(solo.getString(R.string.assign_presenter));
-		//como testar?
+		assertTrue(isPresenterAssigned(num, solo));
+	}
+	
+	public void testAssignPresenter()
+	{
+		assignPresenter(LINE_NUMBER);
 	}
 	
 	public void testOpenChat()
 	{
-		loginAsModerator(0);
+
 		int num = 0;
 		
 		String name = getContactName(num, solo);
@@ -159,7 +167,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	
 	public static void openPrivateChat(Solo solo, int num)
 	{
-		TestLogin.connectOnMeeting(solo, num, 0);
+		TestLogin.connectOnMeeting(solo, 0);
 		
 		String name = getContactName(num, solo);
 		
@@ -177,5 +185,26 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		Contact contact = contactAdapter.getUserById(contactAdapter.getUserId(num));
 		return contact.getContactName();
 	}
+	
+	private static boolean isMyHandRaised(Solo solo)
+	{
+		solo.waitForText(solo.getString(R.string.list_participants));
+		CustomListview contacts = (CustomListview) solo.getView(R.id.contacts_list);
+		ContactAdapter contactAdapter = (ContactAdapter) contacts.getAdapter();
+		Contact contact = contactAdapter.getUserById(Client.myID);
+		return contact.isRaiseHand();
+	}
+	
+	private static boolean isPresenterAssigned(int num, Solo solo)
+	{
+		solo.waitForText(solo.getString(R.string.list_participants));
+		CustomListview contacts = (CustomListview) solo.getView(R.id.contacts_list);
+		ContactAdapter contactAdapter = (ContactAdapter) contacts.getAdapter();
+		Contact contact = contactAdapter.getUserById(contactAdapter.getUserId(num));
+		return contact.isPresenter();
+	}
+	
+	
+	
 	
 }

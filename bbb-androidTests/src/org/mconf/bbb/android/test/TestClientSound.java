@@ -25,6 +25,7 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 	protected void setUp() throws Exception {
 		super.setUp();
 		this.solo = new Solo(getInstrumentation(), getActivity());
+		loginAsModerator();
 	}
 
 	@Override
@@ -38,21 +39,21 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 		super.tearDown();
 	}
 
-	public	void loginAsModerator(int num)
+	public	void loginAsModerator()
 	{
-		TestLogin.connectOnMeeting(solo, num, 0);
+		TestLogin.connectOnMeeting(solo, 0);
 	}
 
 	void loginAsViewer(int num)
 	{
-		TestLogin.connectOnMeeting(solo, num, 1);
+		TestLogin.connectOnMeeting(solo, 1);
 	}
 
 	
 
 	void startVoice()
 	{
-		loginAsModerator(0);
+		
 		solo.assertCurrentActivity("didn't go to client", Client.class);
 		solo.clickOnMenuItem(solo.getString(R.string.start_voice));
 		assertTrue(solo.searchButton(solo.getString(R.string.taptospeak)));
