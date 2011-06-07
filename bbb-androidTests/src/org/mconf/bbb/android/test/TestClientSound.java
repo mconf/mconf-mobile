@@ -16,7 +16,8 @@ import com.jayway.android.robotium.solo.Solo;
 public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>  {
 
 	private Solo solo;
-
+	private static int LINE_NUMBER=1;
+	
 	public TestClientSound() {
 		super("org.mconf.bbb.android", LoginPage.class);
 	}
@@ -37,6 +38,8 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 		}
 		getActivity().finish();
 		super.tearDown();
+		
+		TestLogin.removeContactsFromMeeting();
 	}
 
 	public	void loginAsModerator()
@@ -44,7 +47,7 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 		TestLogin.connectOnMeeting(solo, 0);
 	}
 
-	void loginAsViewer(int num)
+	void loginAsViewer()
 	{
 		TestLogin.connectOnMeeting(solo, 1);
 	}
@@ -60,23 +63,25 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 		assertTrue(solo.searchText(TestLogin.NAME, 2));
 	}
 
-	void KickListener(int num)
+	void KickListener()
 	{
+		//TODO make user i put on the conference have audio
 		startVoice();
 
-		String name = getListenerName(solo, num);
+		String name = getListenerName(solo, LINE_NUMBER);
 		solo.clickLongOnText(name);
 		solo.clickOnText(solo.getString(R.string.kick));
 		assertFalse(solo.searchText(name));
 	}
 
-	void muteListener(int num)
+	void muteListener()
 	{
 		startVoice();
-		String name = getListenerName(solo, num);
+		assertFalse(isListenerMuted(LINE_NUMBER, solo));
+		String name = getListenerName(solo, LINE_NUMBER);
 		solo.clickLongOnText(name);
 		solo.clickOnText(solo.getString(R.string.mute));
-		//como testar?
+		assertTrue(isListenerMuted(LINE_NUMBER, solo));
 	}
 
 	void tapToSpeak(){
@@ -140,5 +145,14 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 		ListenerAdapter listAdapter = (ListenerAdapter) listeners.getAdapter();
 		ListenerContact listener = listAdapter.getListener(num);
 		return listener.getListenerName();
+	}
+	
+	private static boolean isListenerMuted(int num, Solo solo)
+	{
+		solo.waitForText(solo.getString(R.string.list_listeners));
+		CustomListview listeners = (CustomListview) solo.getView(R.id.listeners_list);
+		ListenerAdapter listenerAdapter = (ListenerAdapter) listeners.getAdapter();
+		ListenerContact listener = listenerAdapter.getListener(num);
+		return listener.isMuted();
 	}
 }
