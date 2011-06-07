@@ -11,7 +11,8 @@ import android.test.ActivityInstrumentationTestCase2;
 public class TestClientVideo extends ActivityInstrumentationTestCase2<LoginPage> {
 	
 	private Solo solo;
-
+	public static int LINE_NUMBER = 2;
+	
 	public TestClientVideo() {
 		super("org.mconf.bbb.android", LoginPage.class);
 	}
@@ -32,6 +33,8 @@ public class TestClientVideo extends ActivityInstrumentationTestCase2<LoginPage>
 		}
 		getActivity().finish();
 		super.tearDown();
+		
+		TestLogin.removeContactsFromMeeting();
 	}
 
 	public	void loginAsModerator()
@@ -44,19 +47,16 @@ public class TestClientVideo extends ActivityInstrumentationTestCase2<LoginPage>
 		TestLogin.connectOnMeeting(solo,  1);
 	}
 	
-	public void showVideo(int contactNum)
+	public void testShowVideo()
 	{
-		solo.clickLongInList(contactNum);
+		//TODO make user i put on the conference have video
+		solo.clickLongInList(LINE_NUMBER);
 		solo.clickOnText(solo.getString(R.string.show_video));
 		solo.setActivityOrientation(Solo.LANDSCAPE);
 		solo.assertCurrentActivity("where's the video?", VideoFullScreen.class);
 	}
 	
-	public void testShowVideo()
-	{
-		int contactNum=0;
-		showVideo(contactNum);
-	}
+	
 	
 	
 }

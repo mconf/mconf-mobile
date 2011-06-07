@@ -11,7 +11,7 @@ import com.jayway.android.robotium.solo.Solo;
 
 public class TestServers extends ActivityInstrumentationTestCase2<LoginPage>  {
 
-	private static String server = "http://mconfdev.inf.ufrgs.br/";
+	public static String server = "http://mconfdev.inf.ufrgs.br/";
 	private Solo solo;
 	
 	public TestServers() {

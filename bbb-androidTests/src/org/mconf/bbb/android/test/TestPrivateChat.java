@@ -21,6 +21,7 @@ public class TestPrivateChat extends ActivityInstrumentationTestCase2<LoginPage>
 	protected void setUp() throws Exception {
 		super.setUp();
 		this.solo = new Solo(getInstrumentation(), getActivity());
+		TestClientContacts.openPrivateChat(solo, 1);
 	}
 	
 	@Override
@@ -32,13 +33,14 @@ public class TestPrivateChat extends ActivityInstrumentationTestCase2<LoginPage>
 			}
 			getActivity().finish();
 			super.tearDown();
+			TestLogin.removeContactsFromMeeting();
 			}
 	
 	public void changeChat()
 	{
 		int num =1;
 		String first, second;
-		TestClientContacts.openPrivateChat(solo, num);
+		
 		first = solo.getCurrentActivity().getTitle().toString();
 		num=2;
 		solo.goBack();
@@ -53,7 +55,7 @@ public class TestPrivateChat extends ActivityInstrumentationTestCase2<LoginPage>
 	public void testCloseCurrentChat()
 	{
 		int num =1;
-		TestClientContacts.openPrivateChat(solo, num);
+
 		solo.clickOnMenuItem(solo.getString(R.string.close_chat));
 		solo.assertCurrentActivity("didn't close the chat", Client.class);
 	}
@@ -62,7 +64,7 @@ public class TestPrivateChat extends ActivityInstrumentationTestCase2<LoginPage>
 	{
 		String test = "testing message";
 		int num =1;
-		TestClientContacts.openPrivateChat(solo, num);
+
 
 		solo.clearEditText(0);
 		solo.enterText(0, test);

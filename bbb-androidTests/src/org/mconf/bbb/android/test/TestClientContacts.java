@@ -38,6 +38,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 			}
 			getActivity().finish();
 			super.tearDown();
+			TestLogin.removeContactsFromMeeting();
 			}
 	
 	
