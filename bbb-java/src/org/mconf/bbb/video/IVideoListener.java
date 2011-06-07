@@ -35,6 +35,7 @@ public abstract class IVideoListener {
 	private static final Logger log = LoggerFactory.getLogger(IVideoListener.class);
 
 	private int userId;
+	private String streamName;
 	private VideoRtmpConnection videoConnection;
 	
 	public IVideoListener(int userId, BigBlueButtonClient context) {
@@ -45,8 +46,7 @@ public abstract class IVideoListener {
 		opt.setHost(context.getJoinService().getServerUrl().toLowerCase().replace("http://", ""));
 		opt.setAppName("video/" + context.getJoinService().getJoinedMeeting().getConference());
 		
-		String streamName = null;
-		
+		streamName = null;
 		for (Participant p : context.getParticipants()) {
 			if (p.getUserId() == userId && p.hasStream()) {
 				streamName = p.getStatus().getStreamName();
@@ -76,5 +76,21 @@ public abstract class IVideoListener {
 	
 	public int getUserId() {
 		return userId;
-	}	
+	}
+	
+	public String getStreamName() {
+		return streamName;
+	}
+	
+	public float getAspectRatio() {
+		String userIdStr = Integer.toString(userId);
+		if (streamName != null && streamName.contains(userIdStr)) {
+			String resStr = streamName.substring(0, streamName.indexOf(userIdStr));
+			String[] res = resStr.split("x");
+			int width = Integer.parseInt(res[0]), 
+				height = Integer.parseInt(res[1]);
+			return width / (float) height;
+		}		
+		return -1;
+	}
 }

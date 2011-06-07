@@ -37,11 +37,11 @@ public class VideoDialog extends Dialog {
 	private int userId;
 	private String name;
 	
-	public VideoDialog(Context context, int userIdLocal, String nameLocal) {
+	public VideoDialog(Context context, int userId, String name) {
 		super(context);
 		
-		setVideoId(userIdLocal);
-		setVideoName(nameLocal);
+		this.userId = userId;
+		this.name = name;
 		
 		requestWindowFeature(Window.FEATURE_NO_TITLE); //Removes the title from the Dialog
 		setContentView(R.layout.video_window);
