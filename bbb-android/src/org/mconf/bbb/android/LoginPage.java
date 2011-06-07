@@ -67,6 +67,7 @@ public class LoginPage extends BigBlueButtonActivity {
 
 	public static final String SERVER_CHOSED ="org.mconf.bbb.android.Client.SERVER_CHOSED";
 	public static final int MENU_QR_CODE = Menu.FIRST;
+	public static final int MENU_ABOUT = Menu.FIRST + 1;
 	
 	SharedPreferences preferencesFile;
 	Map<String,String> storedPreferences;
@@ -358,8 +359,8 @@ public class LoginPage extends BigBlueButtonActivity {
  
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(Menu.NONE, Client.MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
-		menu.add(Menu.NONE, LoginPage.MENU_QR_CODE, Menu.NONE, R.string.qrcode).setIcon(R.drawable.ic_menu_qrcode);
+		menu.add(Menu.NONE, MENU_QR_CODE, Menu.NONE, R.string.qrcode).setIcon(R.drawable.ic_menu_qrcode);
+		menu.add(Menu.NONE, MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
 		return super.onCreateOptionsMenu(menu);
 	}
 
