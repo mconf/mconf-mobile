@@ -54,7 +54,7 @@ public class TestPrivateChat extends ActivityInstrumentationTestCase2<LoginPage>
 	
 	public void testCloseCurrentChat()
 	{
-		int num =1;
+
 
 		solo.clickOnMenuItem(solo.getString(R.string.close_chat));
 		solo.assertCurrentActivity("didn't close the chat", Client.class);
@@ -63,7 +63,6 @@ public class TestPrivateChat extends ActivityInstrumentationTestCase2<LoginPage>
 	public void testWriteMessage()
 	{
 		String test = "testing message";
-		int num =1;
 
 
 		solo.clearEditText(0);

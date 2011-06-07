@@ -88,6 +88,7 @@ public class TestLogin extends ActivityInstrumentationTestCase2<LoginPage>  {
 		solo.assertCurrentActivity("hhhh", LoginPage.class);
 		connectOnMeeting(solo, 0);//moderator
 		solo.assertCurrentActivity("didn't go to Client", Client.class);
+		removeContactsFromMeeting();
 	}
 
 	public static void connectOnMeeting(Solo solo, int role)

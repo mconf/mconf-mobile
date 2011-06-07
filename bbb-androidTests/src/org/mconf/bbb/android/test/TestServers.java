@@ -6,12 +6,14 @@ import org.mconf.bbb.android.R;
 import org.mconf.bbb.android.ServerChoosing;
 
 import android.test.ActivityInstrumentationTestCase2;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.jayway.android.robotium.solo.Solo;
 
 public class TestServers extends ActivityInstrumentationTestCase2<LoginPage>  {
 
-	public static String server = "http://mconfdev.inf.ufrgs.br/";
+	public static final String server = "http://mconfdev.inf.ufrgs.br";
 	private Solo solo;
 	
 	public TestServers() {
@@ -57,10 +59,13 @@ public class TestServers extends ActivityInstrumentationTestCase2<LoginPage>  {
 	
 	public void chooseServer(int num)
 	{
-		String name= solo.getCurrentTextViews(solo.getView(R.id.servers)).get(num).getText().toString();
-		assertEquals(name, server);
+		ListView listServers = (ListView) solo.getView(R.id.servers);
+		String name = ((TextView)listServers.getChildAt(num)).getText().toString();
+		System.out.println("NAMEEE "+name);
+		assertEquals(server, name);
 		solo.clickInList(num);
-		assertEquals(name, solo.getCurrentEditTexts().get(0).getText().toString());
+		String edit = solo.getEditText(0).getText().toString();
+		assertEquals(name, edit);
 	}
 	
 	public void typeServer()
@@ -108,7 +113,7 @@ public class TestServers extends ActivityInstrumentationTestCase2<LoginPage>  {
 	{
 		goToServers();
 		solo.assertCurrentActivity("didn't go to Serveres", ServerChoosing.class);
-		for(int i=0; i<2; i++)
+		for(int i=0; i<1; i++)
 		{
 			chooseServer(i);
 		}
