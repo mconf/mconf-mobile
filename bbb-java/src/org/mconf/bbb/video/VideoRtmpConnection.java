@@ -164,10 +164,24 @@ public class VideoRtmpConnection extends RtmpConnection {
         		          
         		Video video = (Video) message;
         		//System.out.println(video.getWidth() + " " + video.getHeight());
-        		//log.debug(video.toString());
-        		log.debug("stream id = {}",video.getHeader());
-        		log.debug("stream id = {}",video.getHeader().getStreamId());
-
+        		log.debug("video.toString()={}",video.toString());
+        		log.debug("video.getBody().toString()={}", video.getBody().toString());
+        		log.debug("video.getBody().length={}", video.getBody().length);
+        		log.debug("video.getCodec()={}", video.getCodec());
+        		log.debug("video.getFrameType()={}", video.getFrameType());
+        		log.debug("video.getHeader().getChannelId()={}", video.getHeader().getChannelId());
+        		log.debug("video.getHeader().getDeltaTime()={}", video.getHeader().getDeltaTime());
+        		log.debug("video.getHeader().getHeaderType().name()={}", video.getHeader().getHeaderType().name());
+        		log.debug("video.getHeader().getMessageType().name()={}", video.getHeader().getMessageType().name());
+        		log.debug("video.getHeader().getSize()={}", video.getHeader().getSize());
+        		log.debug("video.getHeader().getStreamId()={}", video.getHeader().getStreamId());
+        		log.debug("video.getHeader().getTime()={}", video.getHeader().getTime());
+        		log.debug("video.getHeader().getTinyHeader().toString()={}", video.getHeader().getTinyHeader().toString());
+        		log.debug("video.getHeader().getTinyHeader().length={}", video.getHeader().getTinyHeader().length);
+        		log.debug("video.getFrameType={}", video.getWidth());
+        		log.debug("video.getHeight()={}", video.getHeight());
+        		log.debug("video.getMessageType().name()={}", video.getMessageType().name());
+        		
         		context.onVideo(video.getBody());        		
         		        		
         		break;

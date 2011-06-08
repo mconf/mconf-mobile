@@ -93,6 +93,23 @@ public:
 		return 0;
 	}
 
+	int getFrameType(int *frametypeManager){
+		(*frametypeManager)++;
+		switch (*frametypeManager) {
+		  case 1:
+		  	  return 18; //0x12
+		  case 2:
+		  case 4:
+		  	  return 50; //0x32
+		  case 3:
+		  case 5:
+			  return 34; //0x22
+		  default:
+			*frametypeManager = 1;
+		    return 18;
+		}
+	}
+
 	void senderLoop(JNIEnv *env, jobject obj){
 		if(assignBuffers(env, obj) != 0){
 			Log("Error initializing the JNI objects");
@@ -106,6 +123,10 @@ public:
 		consumer = queue_registerConsumer(encoded_video);
 		if (consumer)
 			Log("consumer registered");
+
+		bool firstFrameIDetected = false;
+		int frametypeManager = 0;
+		sharedBuffer[0] = 18;
 		stopThread = false;
 		while (!stopThread) {
 			if (queue_dequeueCond(consumer, &buffer, &bufferSize, &timestamp, &extraData) != E_OK) {
@@ -118,9 +139,10 @@ public:
 			// See if it is possible to do this without losing the link.
 			// If it is not possible, then check if it is possible to avoid the memcpy by linking them again.
 			memcpy(&sharedBuffer[1], buffer, bufferSize);
-			sharedBuffer[0] = 18;
-			sharedBuffer[0] = 34;
-			sharedBuffer[0] = 50;
+
+			if(firstFrameIDetected){
+				sharedBuffer[0] = getFrameType(&frametypeManager);
+			}
 //			logBuffer(0,100);
 			// The shared buffer has a new encoded frame. Lets callback java to sinalize it
 			env->CallIntMethod( JavaSenderClass, JavaOnReadyFrame, (jint)(bufferSize+1), (jint)timestamp );
