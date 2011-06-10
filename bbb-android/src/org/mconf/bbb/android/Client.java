@@ -274,11 +274,14 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			meetingId = extras.getString("meetingId");
 
 			if (!getBigBlueButton().getJoinService().join(meetingId, username, moderator)) {
-				String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
-				log.debug("Joining error message: " + error);
-//				if (error != null && !error.equals("null"))
-//					new JoinFailDialog(this, error).show();
-//				else
+				if (getBigBlueButton().getJoinService().getJoinedMeeting() != null) {
+					String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
+					log.debug("Joining error message: " + error);
+					if (error != null && !error.equals("null"))
+						new JoinFailDialog(this, error).show();
+					else
+						new JoinFailDialog(this).show();
+				} else
 					new JoinFailDialog(this).show();
 				return false;
 			}
@@ -536,10 +539,10 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		menu.clear();
 		if (getBigBlueButton().isConnected()) {
 			if (getVoiceModule().isOnCall()) {
-				//				if (getVoiceModule().isMuted())
-				//					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.unmute).setIcon(android.R.drawable.ic_lock_silent_mode_off);
-				//				else
-				//					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.mute).setIcon(android.R.drawable.ic_lock_silent_mode);
+//				if (getVoiceModule().isMuted())
+//					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.unmute).setIcon(android.R.drawable.ic_lock_silent_mode_off);
+//				else
+//					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.mute).setIcon(android.R.drawable.ic_lock_silent_mode);
 				if (getVoiceModule().getSpeaker() == AudioManager.MODE_NORMAL)
 					menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, R.string.speaker).setIcon(android.R.drawable.button_onoff_indicator_on);
 				else
@@ -565,8 +568,10 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 			menu.add(Menu.NONE, MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
 			//test purposes only
-			//			menu.add(Menu.NONE, MENU_DISCONNECT, Menu.NONE, "Disconnect").setIcon(android.R.drawable.ic_dialog_alert);
+//			menu.add(Menu.NONE, MENU_DISCONNECT, Menu.NONE, "Disconnect").setIcon(android.R.drawable.ic_dialog_alert);
 		} else {
+			if (getGlobalContext().getLaunchedBy() == BigBlueButton.LAUNCHED_BY_APPLICATION)
+				menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, R.string.logout).setIcon(android.R.drawable.ic_menu_revert);
 			menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 			menu.add(Menu.NONE, MENU_RECONNECT, Menu.NONE, R.string.reconnect).setIcon(android.R.drawable.ic_menu_rotate);
 		}
@@ -808,12 +813,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			}
 		}).start();
 
-	}
-
-	private boolean isNetworkDown() {
-		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		return !(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED 
-				||  connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED);
 	}
 
 	// so the app won't crash if the phone is rotated while the dialog is being shown

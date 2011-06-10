@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import org.mconf.bbb.api.JoinService;
 import org.mconf.bbb.api.Meeting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +39,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -272,39 +271,48 @@ public class LoginPage extends BigBlueButtonActivity {
 			this.moderator = false;
 	}
 
+	private void showToast(final int resource) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Toast.makeText(getApplicationContext(), resource, Toast.LENGTH_SHORT).show();
+			}
+		});
+	}
+	
 	private void updateMeetingsList() {
+		if (serverUrl.length() < 1) {
+			showToast(R.string.choose_a_server_to_login);
+			return;
+		}
+		
+		if (isNetworkDown()) {
+			NetworkPropertiesDialog networkProperties = new NetworkPropertiesDialog(LoginPage.this);
+			networkProperties.show();
+			return;
+		}
+
 		final ProgressDialog progressDialog = new ProgressDialog(this);
 		progressDialog.setTitle(R.string.wait);
 		progressDialog.setMessage(getResources().getString(R.string.login_updating));
 
 		final Thread updateThread = new Thread(new Runnable() {
 			@Override
-			public void run() {			        
-				if (!getBigBlueButton().getJoinService().load(serverUrl)) {
-					progressDialog.dismiss();
-					runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							ConnectivityManager connectivityManager =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-							
-							
-							if(serverUrl.length()<1)
-								Toast.makeText(getApplicationContext(), R.string.choose_a_server_to_login, Toast.LENGTH_SHORT).show();
-							else if(connectivityManager.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED 
-									||  connectivityManager.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED)
-							{
-								//create dialog to connection properties
-								NetworkPropertiesDialog networkProperties = new NetworkPropertiesDialog(LoginPage.this);
-								networkProperties.show();
-							}
-							else
-								Toast.makeText(getApplicationContext(), R.string.login_cant_contact_server, Toast.LENGTH_SHORT).show();
-						}
-					});
-					log.error("Can't contact the server. Try it later");
-					return;
+			public void run() {
+				int r = getBigBlueButton().getJoinService().load(serverUrl);
+				switch (r) {
+					case JoinService.E_LOAD_HTTP_REQUEST:
+						progressDialog.dismiss();
+						showToast(R.string.login_cant_contact_server);
+						return;
+					case JoinService.E_LOAD_PARSE_MEETINGS:
+						progressDialog.dismiss();
+						showToast(R.string.login_unsupported_server);
+						return;
+	
+					default:
+						break;
 				}
-
 				if (Thread.interrupted())
 					return;
 
