@@ -400,9 +400,9 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		case MENU_START_VIDEO:
 			int orientation = getResources().getConfiguration().orientation;
 			if(orientation==Configuration.ORIENTATION_PORTRAIT)
-				showCapture(true);
+				showCapture(true, bbb.getMyUserId());
 			else 
-				showCapture(false);			
+				showCapture(false, bbb.getMyUserId());			
 			return true;			
 
 		case MENU_MUTE:
@@ -775,12 +775,13 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 		}
 	}
 	
-	private void showCapture(boolean inDialog){
+	private void showCapture(boolean inDialog, int userId){
 		if(inDialog){
-			mCaptureDialog = new CaptureDialog(this);
+			mCaptureDialog = new CaptureDialog(this, userId);
 			mCaptureDialog.show();
 		} else {
 			Intent intent = new Intent(getApplicationContext(), CaptureFullScreen.class);
+			intent.putExtra("userId", userId);
 			startActivity(intent);
 		}
 	}
@@ -826,9 +827,10 @@ public class Client extends Activity implements IBigBlueButtonClientListener {
 						showVideo(false, videoId, videoName);
 					}
 					if(mCaptureDialog != null && mCaptureDialog.isShowing()){
+						int videoId = mCaptureDialog.getVideoId();
 						mCaptureDialog.dismiss();
 						mCaptureDialog=null;
-						showCapture(false);
+						showCapture(false, videoId);
 					}
 				}
 

@@ -24,6 +24,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     boolean usingHidden;
     boolean usingSlow;
     VideoPublish mVideoPublish;
+    int userId;
     
     public VideoCapture(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -97,7 +98,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         PixelFormat pixelFormat = new PixelFormat();
 		PixelFormat.getPixelFormatInfo(parameters.getPreviewFormat(),pixelFormat);
 		final int bufSize = (widthCaptureResolution*heightCaptureResolution*pixelFormat.bitsPerPixel)/8;
-		mVideoPublish = new VideoPublish(bufSize, widthCaptureResolution, heightCaptureResolution, frameRate); 
+		mVideoPublish = new VideoPublish(userId, bufSize, widthCaptureResolution, heightCaptureResolution, frameRate); 
         
         //java reflection (idea from http://code.google.com/p/android/issues/detail?id=2794):
         //This kind of java reflection is safe to be used as explained in the official android documentation
@@ -291,5 +292,9 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	log.debug("Video native libraries loaded");    
     }
     
-	private native int enqueueFrame(byte[] data, int length);	
+	private native int enqueueFrame(byte[] data, int length);
+
+	public void setUserId(int videoId) {
+		this.userId = videoId;
+	}	
 }

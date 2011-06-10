@@ -33,9 +33,12 @@ public class CaptureDialog extends Dialog {
 	private static final Logger log = LoggerFactory.getLogger(CaptureDialog.class);
 		
 	private VideoCapture videoWindow;
+	private int videoId;
 		
-	public CaptureDialog(Context context) {
+	public CaptureDialog(Context context, int userId) {
 		super(context);
+		
+		this.videoId = userId;
 		
 		requestWindowFeature(Window.FEATURE_NO_TITLE); //Removes the title from the Dialog
 		setContentView(R.layout.video_capture);
@@ -47,9 +50,14 @@ public class CaptureDialog extends Dialog {
 		getWindow().setAttributes(windowAttributes);
 		
 		videoWindow = (VideoCapture) findViewById(R.id.video_capture);
+		videoWindow.setUserId(this.videoId);
 		videoWindow.centerPreview(true);
 		
 		setTitle("Camera preview");
 		setCancelable(true);		
+	}
+
+	public int getVideoId() {
+		return videoId;
 	}
 }
