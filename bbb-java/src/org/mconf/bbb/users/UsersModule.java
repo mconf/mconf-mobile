@@ -226,7 +226,7 @@ public class UsersModule extends Module implements ISharedObjectListener {
 	}
 	
 	public void addStream(String streamName) {
-    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), streamName);
+    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "streamName", streamName);
     	handler.writeCommandExpectingResult(channel, cmd);
     	
     	cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "hasStream", true);

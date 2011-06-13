@@ -1,5 +1,8 @@
 package org.mconf.bbb.android.video;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.MessageEvent;
 import org.mconf.bbb.BigBlueButtonClient;
@@ -31,8 +34,16 @@ public class VideoPublish extends Thread implements RtmpReader {
    
     private byte[] sharedBuffer;
     
+    private boolean isCapturing;
+    
     private int firstTimeStamp = 0;
 	private int lastTimeStamp = 0;
+	private String streamId;
+	private int userId;
+	
+	private final List<Video> framesList = new ArrayList<Video>();
+	
+	private Video[] startMessages;
 	
 	private VideoPublishHandler videoPublishHandler;
 	        
@@ -40,8 +51,11 @@ public class VideoPublish extends Thread implements RtmpReader {
     	sharedBuffer = new byte[bufSize]; //the encoded frame will never be bigger than the not encoded
     	initEncoder(widthCaptureResolution, heightCaptureResolution, frameRate);
     	
-    	String streamId = widthCaptureResolution+"x"+heightCaptureResolution+userId; 
-    		
+    	this.userId = userId;    	
+    	streamId = widthCaptureResolution+"x"+heightCaptureResolution+userId; 
+    }
+    
+    public void startPublisher(){
     	videoPublishHandler = new VideoPublishHandler(userId, streamId, this, Client.bbb);
     	videoPublishHandler.start();
     }
@@ -49,6 +63,7 @@ public class VideoPublish extends Thread implements RtmpReader {
     /** Runs it in a new Thread. */
     @Override
     public void run() {
+    	isCapturing = true;
     	initSenderLoop();
     }
        
@@ -110,15 +125,18 @@ public class VideoPublish extends Thread implements RtmpReader {
 //		RtmpEncoder mRtmpEncoder = new RtmpEncoder();
 //		mRtmpEncoder.encode(video);		
 		
-		if(this.videoPublishHandler.videoConnection.channel != null && this.videoPublishHandler.videoConnection.publisher != null){
-			RtmpPublisher publisher = this.videoPublishHandler.videoConnection.publisher;
-			publisher.writeToStream(this.videoPublishHandler.videoConnection.channel, video);
-		}
+//		if(this.videoPublishHandler.videoConnection.channel != null && this.videoPublishHandler.videoConnection.publisher != null){
+//			RtmpPublisher publisher = this.videoPublishHandler.videoConnection.publisher;
+//			publisher.writeToStream(this.videoPublishHandler.videoConnection.channel, video);
+//		}
+		 
+		framesList.add(video);
 		
     	return 0;
     }
     
     public int endEncoding(){
+    	isCapturing = false;
     	videoPublishHandler.stop(Client.bbb);
     	
     	endEncoder();
@@ -146,10 +164,15 @@ public class VideoPublish extends Thread implements RtmpReader {
 	}
 
 	@Override
-	public RtmpMessage[] getStartMessages() {
-		return new RtmpMessage[] {
-	        new Video(),
-	    };
+	public Video[] getStartMessages() {
+//		while(startMessages == null) {
+//			
+//            startMessages = framesList.toArray(new Video[framesList.size()]);
+//        }
+		startMessages = new Video[0];
+        return startMessages;
+		
+//		return null;
 	}
 
 	@Override
@@ -160,14 +183,24 @@ public class VideoPublish extends Thread implements RtmpReader {
 
 	@Override
 	public boolean hasNext() {
-		// TODO Auto-generated method stub
-		return false;
+		while(framesList.isEmpty() && isCapturing){
+			try {
+				this.wait(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		if(isCapturing){
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
-	public RtmpMessage next() {
-		// TODO Auto-generated method stub
-		return null;
+	public Video next() {
+		return framesList.remove(0);
 	}
 
 	@Override

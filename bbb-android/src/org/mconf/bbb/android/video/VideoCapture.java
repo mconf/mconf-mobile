@@ -144,6 +144,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         
         mCamera.startPreview();
         mVideoPublish.start();
+        mVideoPublish.startPublisher();
     }
 
     @Override

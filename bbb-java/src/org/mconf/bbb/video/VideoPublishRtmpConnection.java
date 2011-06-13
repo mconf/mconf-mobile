@@ -244,6 +244,7 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
                             publisher = new RtmpPublisher(reader, streamId, options.getBuffer(), false, false) {
                                 @Override protected RtmpMessage[] getStopMessages(long timePosition) {
                                     return new RtmpMessage[]{Command.unpublish(streamId)};
+//                                	return null;
                                 }
                             };   
                             log.debug("channel.write");
@@ -277,12 +278,13 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
                             publisher.start(channel, options.getStart(),
                                     options.getLength(), new ChunkSize(4096));
                             this.channel = channel;
+                    		context.getUsersModule().addStream(options.getStreamName());
                         return;
                     }
                     if (publisher != null && code.equals("NetStream.Unpublish.Success")) {
-//                        logger.info("unpublish success, closing channel");
-//                        ChannelFuture future = channel.write(Command.closeStream(streamId));
-//                        future.addListener(ChannelFutureListener.CLOSE);
+                        logger.info("unpublish success, closing channel");
+                        ChannelFuture future = channel.write(Command.closeStream(streamId));
+                        future.addListener(ChannelFutureListener.CLOSE);
                         return;
                     }
                 } else if(name.equals("close")) {
