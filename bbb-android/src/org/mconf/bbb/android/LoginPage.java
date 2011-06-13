@@ -376,10 +376,10 @@ public class LoginPage extends BigBlueButtonActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) { 
 		switch (item.getItemId()) {
-		case Client.MENU_ABOUT:
+		case MENU_ABOUT:
 			new AboutDialog(this).show();
 			return true; 
-		case LoginPage.MENU_QR_CODE: 
+		case MENU_QR_CODE: 
 			Intent intent = new Intent("com.google.zxing.client.android.SCAN");
 	        intent.setPackage("com.google.zxing.client.android");
 	        intent.putExtra("SCAN_MODE", "QR_CODE_MODE"); 
