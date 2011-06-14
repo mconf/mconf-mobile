@@ -134,7 +134,7 @@ public class VideoSurface extends GLSurfaceView {
 			System.load(path + "libcommon.so");
 			System.load(path + "libqueue.so");
 			System.load(path + "libdecode.so");
-			System.load(path + "mconfnativeshowvideo.so");
+			System.load(path + "libmconfnativeshowvideo.so");
 	        
 	    	log.debug("Native libraries loaded");
 		} catch (SecurityException e) {

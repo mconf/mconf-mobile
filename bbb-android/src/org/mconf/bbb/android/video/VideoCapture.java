@@ -282,17 +282,22 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     }
     
     static {
-    	System.loadLibrary("avutil");
-    	System.loadLibrary("swscale");
-        System.loadLibrary("avcodec");
-        System.loadLibrary("avformat");
-        System.loadLibrary("thread");
-    	System.loadLibrary("common");
-    	System.loadLibrary("queue");
-    	System.loadLibrary("encode");
-    	System.loadLibrary("mconfnativeencodevideo");  
-        
-    	log.debug("Video native libraries loaded");    
+		String path = "/data/data/org.mconf.bbb.android/lib/";
+		try {
+			System.load(path + "libavutil.so");
+			System.load(path + "libswscale.so");
+			System.load(path + "libavcodec.so");
+			System.load(path + "libavformat.so");
+			System.load(path + "libthread.so");
+			System.load(path + "libcommon.so");
+			System.load(path + "libqueue.so");
+			System.load(path + "libencode.so");
+			System.load(path + "libmconfnativeencodevideo.so");
+	        
+	    	log.debug("Native libraries loaded");
+		} catch (SecurityException e) {
+	    	log.debug("Native libraries failed");
+		}
     }
     
 	private native int enqueueFrame(byte[] data, int length);
