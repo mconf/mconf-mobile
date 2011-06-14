@@ -47,8 +47,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.media.AudioManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -109,10 +107,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 	public static final int ID_DIALOG_RECONNECT = 111000;
 	
-	public static int myID;
-
-
-
 	//change the contact status when the private chat is closed
 	private BroadcastReceiver chatClosed = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
@@ -171,9 +165,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-		myID=getBigBlueButton().getMyUserId(); //testDrivenDevelopment
-		
-		
 		IntentFilter filter = new IntentFilter(PrivateChat.CHAT_CLOSED);
 		registerReceiver(chatClosed, filter);
 		
@@ -785,7 +776,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 						log.error("Can't reconnect. Check internet connection");
 						return;
 					} else {
-						myID=getBigBlueButton().getMyUserId(); //testDrivenDevelopment
 						log.error("successfully reconnected");
 
 						runOnUiThread(new Runnable() { 

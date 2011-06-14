@@ -89,7 +89,15 @@ public class ContactAdapter extends BaseAdapter {
 	}
 
 	public long getItemId(int position) {
-		return listContact.get(position).getUserId();
+		return getUserId(position);
+	}
+	
+	public int getPositionById(int userId) {
+		for (int i = 0; i < listContact.size(); ++i) {
+			if (listContact.get(i).getUserId() == userId)
+				return i;
+		}
+		return -1;
 	}
 
 	public Contact getUserById(int id) {
