@@ -8,6 +8,7 @@ import org.mconf.bbb.android.ListenerAdapter;
 import org.mconf.bbb.android.ListenerContact;
 import org.mconf.bbb.android.LoginPage;
 import org.mconf.bbb.android.R;
+import org.mconf.bbb.android.test.Common;
 
 import android.test.ActivityInstrumentationTestCase2;
 
@@ -26,6 +27,7 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 	protected void setUp() throws Exception {
 		super.setUp();
 		this.solo = new Solo(getInstrumentation(), getActivity());
+		Common.addContactsToMeeting(solo, 10);
 		loginAsModerator();
 	}
 
@@ -37,19 +39,18 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 			e.printStackTrace();
 		}
 		getActivity().finish();
+		Common.removeContactsFromMeeting();
 		super.tearDown();
-		
-		TestLogin.removeContactsFromMeeting();
 	}
 
 	public	void loginAsModerator()
 	{
-		TestLogin.connectOnMeeting(solo, 0);
+//		TestLogin.connectOnMeeting(solo, 0);
 	}
 
 	void loginAsViewer()
 	{
-		TestLogin.connectOnMeeting(solo, 1);
+//		TestLogin.connectOnMeeting(solo, 1);
 	}
 
 	
@@ -60,7 +61,7 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 		solo.assertCurrentActivity("didn't go to client", Client.class);
 		solo.clickOnMenuItem(solo.getString(R.string.start_voice));
 		assertTrue(solo.searchButton(solo.getString(R.string.taptospeak)));
-		assertTrue(solo.searchText(TestLogin.NAME, 2));
+		assertTrue(solo.searchText(Common.DEFAULT_NAME, 2));
 	}
 
 	void KickListener()
@@ -107,7 +108,7 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 		startVoice();
 		solo.clickOnMenuItem(solo.getString(R.string.stop_voice));
 		assertFalse(solo.searchButton(solo.getString(R.string.taptospeak)));
-		assertFalse(solo.searchText(TestLogin.NAME, 2));
+		assertFalse(solo.searchText(Common.DEFAULT_NAME, 2));
 		
 	}
 
@@ -116,7 +117,7 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 		startVoice();
 		solo.clickOnMenuItem(solo.getString(R.string.audio_config));
 		solo.waitForText(solo.getString(R.string.audio_config));
-		//como mudar os parâmetros?
+		//como mudar os parï¿½metros?
 		//TODO como testar?
 	}
 
@@ -125,7 +126,7 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 		startVoice();
 		solo.clickOnMenuItem(solo.getString(R.string.audio_config));
 		solo.waitForText(solo.getString(R.string.audio_config));
-		//como mudar os parâmetros?
+		//como mudar os parï¿½metros?
 		//TODO como testar?
 	}
 
@@ -134,7 +135,7 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 		startVoice();
 		solo.clickOnMenuItem(solo.getString(R.string.audio_config));
 		solo.waitForText(solo.getString(R.string.audio_config));
-		//como mudar os parâmetros?
+		//como mudar os parï¿½metros?
 		//TODO como testar?
 	}
 	

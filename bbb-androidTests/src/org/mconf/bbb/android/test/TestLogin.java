@@ -1,25 +1,18 @@
 package org.mconf.bbb.android.test;
 
+import java.util.Random;
 
-
-import org.mconf.bbb.BigBlueButtonClient;
-import org.mconf.bbb.android.AboutDialog;
 import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.LoginPage;
 import org.mconf.bbb.android.R;
-import com.jayway.android.robotium.solo.Solo;
+import org.mconf.bbb.android.ServerChoosing;
+import org.mconf.bbb.android.test.Common;
 
 import android.test.ActivityInstrumentationTestCase2;
 
-public class TestLogin extends ActivityInstrumentationTestCase2<LoginPage>  {
+import com.jayway.android.robotium.solo.Solo;
 
-	public static final String NAME = "MyName";
-	public final static String TEST_ROOM = "TestAndroid";
-
-	private static BigBlueButtonClient user1;
-	private static BigBlueButtonClient user2;
-	private static BigBlueButtonClient user3;
-
+public class TestLogin extends ActivityInstrumentationTestCase2<LoginPage> {
 	private Solo solo;
 
 	public TestLogin() {
@@ -30,12 +23,28 @@ public class TestLogin extends ActivityInstrumentationTestCase2<LoginPage>  {
 	protected void setUp() throws Exception {
 		super.setUp();
 		this.solo = new Solo(getInstrumentation(), getActivity());
+
+		// select the server
+		solo.assertCurrentActivity("wrong activity", LoginPage.class);
+		if (!solo.searchText(Common.DEFAULT_SERVER)) {
+			solo.clickOnView(solo.getView(R.id.server));
+			solo.assertCurrentActivity("wrong activity", ServerChoosing.class);
+			solo.enterText(0, Common.DEFAULT_SERVER);
+			assertTrue(solo.searchText(Common.DEFAULT_SERVER));
+			solo.clickOnButton(solo.getString(R.string.connect));
+			solo.assertCurrentActivity("wrong activity", LoginPage.class);
+		}
+		// enter the name
+		if (!solo.getEditText(0).getText().toString().equals(Common.DEFAULT_NAME)) {
+			solo.clearEditText(0);
+			solo.enterText(0, Common.DEFAULT_NAME);
+		}
 	}
 
 	@Override
-	protected void tearDown() throws Exception{
+	protected void tearDown() throws Exception {
 		try {
-			this.solo.finalize();
+			solo.finalize();
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
@@ -43,114 +52,35 @@ public class TestLogin extends ActivityInstrumentationTestCase2<LoginPage>  {
 		super.tearDown();
 	}
 
-	public void testCreateRoom()
-	{
-		TestServers.typeServerConnect(solo);
-		solo.assertCurrentActivity("didn't close the about dialog", LoginPage.class);
+	public void testCreateRoom() throws Exception {
+		// generate a random meeting name
+		String meeting = Common.DEFAULT_TEST_ROOM + " " + new Random().nextInt(4096);	
 		solo.clickOnView(solo.getView(R.id.login_spinner));
-		solo.clickOnText(solo.getString(R.string.create));
-		solo.enterText(0, TEST_ROOM);
-		solo.clickOnButton(0);
-		solo.clickOnText(TEST_ROOM);
+		solo.clickOnText(solo.getString(R.string.new_meeting));
+		solo.clearEditText(0);
+		solo.enterText(0, meeting);
+		solo.clickOnButton(solo.getString(R.string.create));
+		assertTrue(solo.searchText(Common.exactly(meeting)));
+		solo.clickOnText(Common.exactly(meeting));
 		solo.clickOnView(solo.getView(R.id.login_button_join));
-		solo.assertCurrentActivity("didn't go to client", Client.class);
+		solo.assertCurrentActivity("wrong activity", Client.class);
+		assertTrue(solo.searchText(Common.DEFAULT_NAME));
 	}
 
-	public void  testAbout()
-	{
+	public void testAbout() throws Exception {
+		solo.assertCurrentActivity("wrong activity", LoginPage.class);
 		solo.clickOnMenuItem(solo.getString(R.string.menu_about));
 		solo.scrollDown();
-		solo.clickOnButton(0);
-		solo.assertCurrentActivity("didn't close the about dialog", LoginPage.class);
+		solo.clickOnButton(solo.getString(R.string.close));
+		solo.assertCurrentActivity("wrong activity", LoginPage.class);
 	}
 
-
-
-	public void roleModerator()
-	{
-		solo.clickOnRadioButton(0);
+	public void testLoginModerator() throws Exception {
+		Common.loginAsModerator(solo);
 	}
-
-	public void roleViewer()
-	{
-		solo.clickOnRadioButton(1);
-	}
-
-	public void changeName(String name)
-	{
-		solo.clearEditText(0);
-		solo.enterText(0, name);
-
-	}
-
-
-	public void testLogin(){
-		solo.assertCurrentActivity("hhhh", LoginPage.class);
-		connectOnMeeting(solo, 0);//moderator
-		solo.assertCurrentActivity("didn't go to Client", Client.class);
-	}
-
-	public static void connectOnMeeting(Solo solo, int role)
-	{
-		TestServers.typeServerConnect(solo);
-		
-		solo.assertCurrentActivity("not on Login", LoginPage.class);
-		
-		solo.clickOnView(solo.getView(R.id.login_spinner));
-		solo.waitForText(solo.getString(R.string.create));
-		solo.clickOnText(solo.getString(R.string.create));
-		solo.enterText(0, TEST_ROOM);
-		solo.clickOnButton(0);
-		solo.waitForText(TEST_ROOM);
-		solo.clickOnText(TEST_ROOM);
-		assertTrue(solo.searchText(TEST_ROOM));
-		solo.clickOnRadioButton(role);
-		solo.clearEditText(0); 
-		solo.enterText(0, NAME);
-		solo.clickOnButton(solo.getString(R.string.login_button_join));
-		solo.assertCurrentActivity("didn't go to client", Client.class);
-		//ok so far 
-		
-		addContactsToMeeting(solo);
-
-	}
-//TODO java.lang.IllegalAccessError: Class ref in pre-verified class resolved to unexpected implementation
-
-	public static void addContactsToMeeting(Solo solo)
-	{
-		user1 = new BigBlueButtonClient();
-		user1.getJoinService().load(TestServers.server);
-
-		user1.getJoinService().join(TEST_ROOM, "TestFirst", false);
-		if (user1.getJoinService().getJoinedMeeting() != null) {
-			user1.connectBigBlueButton();
-			
-		}
-
-		user2= new BigBlueButtonClient();
-		user2.getJoinService().load(TestServers.server);
-
-		user2.getJoinService().join(TEST_ROOM, "TestSecond", false);
-		if (user2.getJoinService().getJoinedMeeting() != null) {
-			user2.connectBigBlueButton();
-
-
-		}
-		user3 = new BigBlueButtonClient();
-		user3.getJoinService().load(TestServers.server);
-
-		user3.getJoinService().join(TEST_ROOM, "TestThird", false);
-		if (user3.getJoinService().getJoinedMeeting() != null) {
-			user3.connectBigBlueButton();
-		}
-		assertTrue(solo.searchText("TestThird"));
-	}
-
-	public static void removeContactsFromMeeting()
-	{
-		user1.disconnect();
-		user2.disconnect();
-		user3.disconnect();
+	
+	public void testLoginViewer() throws Exception {
+		Common.loginAsViewer(solo);
 	}
 
 }

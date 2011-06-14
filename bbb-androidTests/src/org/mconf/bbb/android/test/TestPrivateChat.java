@@ -5,7 +5,9 @@ import org.mconf.bbb.android.LoginPage;
 import org.mconf.bbb.android.PrivateChat;
 import org.mconf.bbb.android.R;
 
+import android.app.Activity;
 import android.test.ActivityInstrumentationTestCase2;
+import android.view.View;
 
 import com.jayway.android.robotium.solo.Solo;
 
@@ -21,20 +23,23 @@ public class TestPrivateChat extends ActivityInstrumentationTestCase2<LoginPage>
 	protected void setUp() throws Exception {
 		super.setUp();
 		this.solo = new Solo(getInstrumentation(), getActivity());
-		TestClientContacts.openPrivateChat(solo, 1);
+		Common.addContactsToMeeting(solo, 5);
+		Common.loginAsModerator(solo);
+		solo.clickInList(2);
+		solo.assertCurrentActivity("didn't open private chat", PrivateChat.class);
 	}
 	
 	@Override
 	protected void tearDown() throws Exception{
 		try {
 			this.solo.finalize();
-			} catch (Throwable e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
-			}
-			getActivity().finish();
-			super.tearDown();
-			TestLogin.removeContactsFromMeeting();
-			}
+		}
+		getActivity().finish();
+		Common.removeContactsFromMeeting();
+		super.tearDown();
+	}
 	
 	public void changeChat()
 	{
