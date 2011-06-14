@@ -199,7 +199,7 @@ public class BigBlueButtonClient {
 
 	public static void main(String[] args) {
 		BigBlueButtonClient client = new BigBlueButtonClient();
-		client.getJoinService().load("http://mconfdev.inf.ufrgs.br/");
+		client.getJoinService().load("http://mconfdev.inf.ufrgs.br");
 		
 		client.getJoinService().join("Demo Meeting", "Eclipse", false);
 		if (client.getJoinService().getJoinedMeeting() != null) {

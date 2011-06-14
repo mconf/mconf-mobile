@@ -38,7 +38,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		Common.addContactsToMeeting(solo, 5);
 		Common.loginAsModerator(solo);
 	}
-	
+
 	@Override
 	protected void tearDown() throws Exception{
 		try {
@@ -57,10 +57,10 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		solo.assertCurrentActivity("not on Client", Client.class);
 		solo.clickOnMenuItem(solo.getString(R.string.logout));
 		solo.assertCurrentActivity("didn't logout", LoginPage.class);
-		
+
 	}
-	
-	public void testQuit()
+
+	public void Quit()
 	{
 		assertFalse(solo.getCurrentViews().isEmpty());
 		solo.assertCurrentActivity("not on Client", Client.class);
@@ -83,9 +83,9 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		solo.clearEditText(0);
 		assertTrue(solo.searchText(test));
 		solo.clickOnText(solo.getString(R.string.public_chat));
-				
+
 	}
-	
+
 	public void testAbout()
 	{
 		solo.assertCurrentActivity("not on Client", Client.class);
@@ -94,7 +94,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		solo.clickOnButton(solo.getString(R.string.close));
 		solo.assertCurrentActivity("didn't close the About", Client.class);
 	}
-	
+
 	public void testRaiseHand()
 	{
 		solo.assertCurrentActivity("not on Client", Client.class);
@@ -144,7 +144,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		solo.assertCurrentActivity("didn't open private chat", PrivateChat.class);
 		String title = solo.getCurrentActivity().getTitle().toString();
 		assertTrue(title.contains(name));
-		
+
 	}
 	
 	public void testAssignPresenter()
@@ -183,7 +183,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 				return contact;
 		}
 	}
-	
+
 	public void testOpenChat()
 	{
 
@@ -211,15 +211,24 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		Common.loginAsModerator(solo);
 		
 		String name = getContactName(num, solo);
+
+		if(!name.equals(Common.DEFAULT_NAME))
+
+			solo.clickInList(num);
+		else{
+			name = getContactName(num+1, solo);
+			solo.clickInList(num+1);
+			
+		}
 		
-		solo.clickInList(num);
 		solo.assertCurrentActivity("didn't open private chat", PrivateChat.class);
 		String title = solo.getCurrentActivity().getTitle().toString();
 		assertTrue(title.contains(name));
 	}
-	
+
 	private static String getContactName(int num, Solo solo)
 	{
+		
 		solo.waitForText(solo.getString(R.string.list_participants));
 		CustomListview contacts = (CustomListview) solo.getView(R.id.contacts_list);
 		ContactAdapter contactAdapter = (ContactAdapter) contacts.getAdapter();
