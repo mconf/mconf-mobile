@@ -206,23 +206,19 @@ public class UsersModule extends Module implements ISharedObjectListener {
     	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "raiseHand", value);
     	handler.writeCommandExpectingResult(channel, cmd);
 	}
-	
-	public void setPresenter(int userId, boolean value) {
-    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, userId, "presenter", value);
-    	handler.writeCommandExpectingResult(channel, cmd);
-	}
-	
+
+	/*
+	 * \TODO should be moved to the presentation module in the near future
+	 */
 	public void assignPresenter(int userId) {
-		for (Participant p : participants.values()) {
-			if (p.isPresenter()) {
-				if (p.getUserId() == userId)
-					return;
-				else
-					setPresenter(p.getUserId(), false);
-			}
+		// as it's implemented on bigbluebutton-client/src/org/bigbluebutton/modules/present/business/PresentSOService.as:353
+		Participant p = participants.get(userId);
+		if (p == null) {
+			log.debug("Inconsistent state here");
+			return;
 		}
-		
-		setPresenter(userId, true);
+    	Command cmd = new CommandAmf0("presentation.assignPresenter", null, userId, p.getName(), 1);
+    	handler.writeCommandExpectingResult(channel, cmd);
 	}
 	
 	public void addStream(String streamName) {

@@ -43,87 +43,42 @@ public class ContactAdapter extends BaseAdapter {
 	//adapter on the contacts list
 	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger(ContactAdapter.class);
-	private Context context;
-	View view;
 
 	//list of contacts on the meeting
 	private List<IParticipant> listContact = new ArrayList<IParticipant>();
 
-	public ContactAdapter(Context context) {
-		this.context = context;
+	private int myUserId = -1;
+
+	public ContactAdapter() {
+	}
+	
+	/**
+	 * Used to show the participant's name userId different from the others
+	 * "Your name (you)" in bold font style
+	 * @param userId
+	 */
+	public void setMyUserId(int userId) {
+		this.myUserId  = userId;
 	}
 
 	public void addSection(IParticipant participant) {
 		Contact contact = new Contact(participant);
-		listContact.add(contact);
+		if (getUserById(contact.getUserId()) == null) // only add if the user is not on the list
+			listContact.add(contact);
 	}
 
-	public void removeSection(IParticipant participant){
+	public void removeSection(IParticipant participant) {
 		Contact contact = getUserById(participant.getUserId());
 		if (contact != null)
 			listContact.remove(contact);
 	}
 
-	public void setPrivateChat(Contact contact)
-	{
-		ImageView privateChat = (ImageView) view.findViewById(R.id.private_chat);
-		if(contact.getChatStatus()==Contact.CONTACT_ON_PRIVATE_MESSAGE)
-		{
-			privateChat.setImageDrawable(this.context.getResources().getDrawable(R.drawable.balloon2));
-			privateChat.setVisibility(ImageView.VISIBLE);
-		}
-		else
-			privateChat.setVisibility(ImageView.INVISIBLE);
-	}
-
-	public void setPresenterStatus(Contact changedStatus)
-	{
-		ImageView presenter = (ImageView) view.findViewById(R.id.presenter);
-		if(changedStatus.isPresenter())
-		{
-			presenter.setImageDrawable(this.context.getResources().getDrawable(R.drawable.presenter));
-			presenter.setVisibility(ImageView.VISIBLE);
-		}
-		else
-			presenter.setVisibility(ImageView.INVISIBLE);
-
-	}
-
-	public void setStreamStatus( Contact changedStatus)
-	{
-		ImageView stream = (ImageView) view.findViewById(R.id.stream);
-		if(changedStatus.hasStream())
-		{
-			stream.setImageDrawable(this.context.getResources().getDrawable(R.drawable.webcam));
-			stream.setVisibility(ImageView.VISIBLE);
-		}
-		else
-			stream.setVisibility(ImageView.INVISIBLE);
-	}
-
-	public void setRaiseHandStatus(Contact changedStatus)
-	{
-		ImageView raiseHand = (ImageView) view.findViewById(R.id.raise_hand);
-		if(changedStatus.isRaiseHand())
-		{
-			raiseHand.setImageDrawable(this.context.getResources().getDrawable(R.drawable.raisehand));
-			raiseHand.setVisibility(ImageView.VISIBLE);
-		}
-		else
-			raiseHand.setVisibility(ImageView.INVISIBLE);
-
-	}
-
-	public void resetAllChatStatus()
-	{
-		for (IParticipant contact : listContact)
-		{
+	public void resetAllChatStatus() {
+		for (IParticipant contact : listContact) {
 			Contact entry = new Contact(contact);
 			entry.setChatStatus(Contact.CONTACT_NORMAL);
-			
 		}
 	}
-
 
 	public int getCount() {
 		return listContact.size();
@@ -134,7 +89,15 @@ public class ContactAdapter extends BaseAdapter {
 	}
 
 	public long getItemId(int position) {
-		return listContact.get(position).getUserId();
+		return getUserId(position);
+	}
+	
+	public int getPositionById(int userId) {
+		for (int i = 0; i < listContact.size(); ++i) {
+			if (listContact.get(i).getUserId() == userId)
+				return i;
+		}
+		return -1;
 	}
 
 	public Contact getUserById(int id) {
@@ -149,38 +112,63 @@ public class ContactAdapter extends BaseAdapter {
 		Contact entry = (Contact) listContact.get(position);
 
 		if (convertView == null) {
-			LayoutInflater inflater = (LayoutInflater) context
-			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater inflater = (LayoutInflater) viewGroup.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = inflater.inflate(R.layout.contact, null);
 		}
-		view = convertView;
-
 
 		String name = entry.getName();
 		TextView contactName = (TextView) convertView.findViewById(R.id.contact_name);
-		//indicates who you are on the list
-		if (entry.getUserId() == Client.bbb.getMyUserId()) {
-			name += " (" + context.getResources().getString(R.string.you) + ")";
-			contactName.setTextAppearance(context, R.style.MyNameStyle);
+		// indicates who you are on the list
+		if (entry.getUserId() == myUserId) {
+			name += " (" + viewGroup.getContext().getResources().getString(R.string.you) + ")";
+			contactName.setTextAppearance(viewGroup.getContext(), R.style.MyNameStyle);
 		} else
-			contactName.setTextAppearance(context, R.style.ParticipantNameStyle);
+			contactName.setTextAppearance(viewGroup.getContext(), R.style.ParticipantNameStyle);
 		contactName.setText(name);
 		contactName.setTag(name);
 
-		//puts the correct images of moderator, presenter, etc
-		ImageView moderator = (ImageView) convertView.findViewById(R.id.moderator);
-		if(entry.isModerator()) {
-			moderator.setImageDrawable(this.context.getResources().getDrawable(R.drawable.administrator));
+		// puts the correct images of moderator, presenter, etc
+		final ImageView moderator = (ImageView) convertView.findViewById(R.id.moderator);
+		if (entry.isModerator()) {
+			moderator.setImageDrawable(viewGroup.getContext().getResources().getDrawable(R.drawable.administrator));
 			moderator.setVisibility(ImageView.VISIBLE);
 		}
 		else
 			moderator.setVisibility(ImageView.INVISIBLE);
 
-		setPresenterStatus(entry);
-		setStreamStatus(entry);
-		setRaiseHandStatus(entry);
-		setPrivateChat(entry);
+		
+		final ImageView privateChat = (ImageView) convertView.findViewById(R.id.private_chat);
+		if (entry.getChatStatus()==Contact.CONTACT_ON_PRIVATE_MESSAGE) {
+			privateChat.setImageDrawable(viewGroup.getContext().getResources().getDrawable(R.drawable.balloon2));
+			privateChat.setVisibility(ImageView.VISIBLE);
+		}
+		else
+			privateChat.setVisibility(ImageView.INVISIBLE);
 
+		final ImageView presenter = (ImageView) convertView.findViewById(R.id.presenter);
+		if (entry.isPresenter()) {
+			presenter.setImageDrawable(viewGroup.getContext().getResources().getDrawable(R.drawable.presenter));
+			presenter.setVisibility(ImageView.VISIBLE);
+		}
+		else
+			presenter.setVisibility(ImageView.INVISIBLE);
+
+		final ImageView stream = (ImageView) convertView.findViewById(R.id.stream);
+		if (entry.hasStream()) {
+			stream.setImageDrawable(viewGroup.getContext().getResources().getDrawable(R.drawable.webcam));
+			stream.setVisibility(ImageView.VISIBLE);
+		}
+		else
+			stream.setVisibility(ImageView.INVISIBLE);
+
+		final ImageView raiseHand = (ImageView) convertView.findViewById(R.id.raise_hand);
+		if (entry.isRaiseHand()) {
+			raiseHand.setImageDrawable(viewGroup.getContext().getResources().getDrawable(R.drawable.raisehand));
+			raiseHand.setVisibility(ImageView.VISIBLE);
+		}
+		else
+			raiseHand.setVisibility(ImageView.INVISIBLE);		
+		
 //		int color;
 //		//change the background of people on the private chat
 //		switch (entry.getChatStatus()) {
@@ -194,9 +182,7 @@ public class ContactAdapter extends BaseAdapter {
 //		convertView.setBackgroundResource(color);
 		
 		//selector doesn't work if seResourceBackground is called
-		//need to find another way to show yhat a user is on private chat
-	
-
+		//need to find another way to show what a user is on private chat
 
 		return convertView;
 
@@ -207,14 +193,12 @@ public class ContactAdapter extends BaseAdapter {
 			getUserById(userId).setChatStatus(chatStatus);
 	}
 
-	public int getChatStatus(int position)
-	{
+	public int getChatStatus(int position) {
 		int userId = listContact.get(position).getUserId();
 		return getUserById(userId).getChatStatus();
 	}
 
-	public int getUserId (int position)
-	{
+	public int getUserId (int position) {
 		return listContact.get(position).getUserId();
 	}
 
@@ -245,6 +229,10 @@ public class ContactAdapter extends BaseAdapter {
 			}
 		}); 
 
+	}
+
+	public void clearList() {
+		listContact.clear();
 	}
 
 }

@@ -20,10 +20,11 @@ private:
 		videoW, videoH,
 		displayAreaW, displayAreaH,
 		displayPositionX, displayPositionY;
-	bool firstFrame, stopThread;
+	bool firstFrame, stopThread, rendering, textureCreated;
 
 public:
-	VideoDrawer(int screenWidth, int screenHeight) {
+	VideoDrawer(int screenWidth, int screenHeight)
+			: rendering(false) {
 		Log("VideoDrawer() begin");
 
 		screenW = screenWidth;
@@ -33,6 +34,7 @@ public:
 
 		firstFrame = true;
 		stopThread = false;
+		textureCreated = false;
 
 		encoded_video = queue_create();
 		decoded_video = queue_create();
@@ -56,13 +58,14 @@ public:
 	~VideoDrawer() {
 		Log("~VideoDrawer() begin");
 
-		// \todo syncronize the finalize of the renderer to solve the end problem!
-		Seconds(1).sleep();
-
 		stopThread = true;
 		queue_broadcast(decoded_video);
 
-		//TODO Check if video_dec was created before we can stop it?
+		// \todo syncronize the finalize of the renderer to solve the end problem!
+		while (rendering) {
+			Milliseconds(100).sleep();
+		}
+
 		video_dec->stop();
 		queue_unregisterConsumer(&consumer);
 
@@ -84,6 +87,7 @@ public:
 
 	int renderFrame() {
 //		Log("threadFunction() begin");
+		rendering = true;
 
 		uint32_t timestamp, bufferSize;
 		uint8_t* buffer;
@@ -97,6 +101,7 @@ public:
 		}
 		if (stopThread) {
 //			Log("renderFrame() returning");
+			rendering = false;
 			return 0;
 		}
 
@@ -115,7 +120,8 @@ public:
 		if (firstFrame) {
 //			Log("threadFunction() firstFrame");
 //			Log("threadFunction() gl initialized");
-			createTexture(videoW, videoH);
+			if(!textureCreated)
+				createTexture(videoW, videoH);
 
 			firstFrame = false;
 
@@ -141,7 +147,7 @@ public:
 //		Log("threadFunction() consumer free");
 
 //		Log("threadFunction() end");
-
+		rendering = false;
 		return ret;
 	}
 	
@@ -156,10 +162,10 @@ public:
 
 	void createTexture(int width, int height) {
 		LogData log;
-		log << "GL_VENDOR = " <<  glGetString(GL_VENDOR) << endl;
-		log << "GL_RENDERER = " << glGetString(GL_RENDERER) << endl;
+//		log << "GL_VENDOR = " <<  glGetString(GL_VENDOR) << endl;
+//		log << "GL_RENDERER = " << glGetString(GL_RENDERER) << endl;
 		log << "GL_VERSION = " << glGetString(GL_VERSION) << endl;
-		log << "GL_EXTENSIONS = " << glGetString(GL_EXTENSIONS);
+//		log << "GL_EXTENSIONS = " << glGetString(GL_EXTENSIONS);
 		log.push();
 
 		GLint crop[4] = { 0, height, width, -height };
@@ -184,6 +190,8 @@ public:
 		free(tmpBuffer);
 //		Log("threadFunction() buffer released");	
 
+		textureCreated = true;
+
 		log.clear();
 		log << "video resolution: " << videoW << "x" << videoH << endl;
 		log << "first texture resolution: " << tmpW << "x" << tmpH << endl;
@@ -192,7 +200,7 @@ public:
 	}
 
 	void updateFrame(uint8_t* buffer, int width, int height) {
-		glClear(GL_COLOR_BUFFER_BIT); CHECK_GL_ERROR();
+		//glClear(GL_COLOR_BUFFER_BIT); CHECK_GL_ERROR();
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, buffer); CHECK_GL_ERROR();
 		glDrawTexiOES(displayPositionX, displayPositionY, 0, displayAreaW, displayAreaH); CHECK_GL_ERROR();
 	}
@@ -200,12 +208,25 @@ public:
 	int getVideoW() { return videoW; }
 	int getVideoH() { return videoH; }
 	float getAspectRatio() { return videoW / (float) videoH; }
-	void setDisplayAreaW(int w) { displayAreaW = w; }
-	void setDisplayAreaH(int h) { displayAreaH = h; }
-	void setDisplayPositionX(int x) { displayPositionX = x; }
-	void setDisplayPositionY(int y) { displayPositionY = y; }
-	void setScreenW(int w) { screenW = w; }
-	void setScreenH(int h) { screenH = h; }
+	void setDisplayAreaW(int w) {
+		displayAreaW = w;
+	}
+	void setDisplayAreaH(int h) {
+		displayAreaH = h;
+	}
+	void setDisplayPositionX(int x) {
+		displayPositionX = x;
+	}
+	void setDisplayPositionY(int y) {
+		displayPositionY = y;
+	}
+	void setScreenW(int w) {
+		screenW = w;
+	}
+	void setScreenH(int h) {
+		screenH = h;
+	}
+	void setFirstFrameFlag(bool first) { firstFrame = first; }
 };
 
 #endif

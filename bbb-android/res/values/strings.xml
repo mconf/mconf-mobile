@@ -2,6 +2,7 @@
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 	<string name="app_name">BigBlueButton</string>
+	<string name="protocol">bigbluebutton</string>
 	<string name="login_name">Name:</string>
 	<string name="login_button_join">Join</string>
 	<string name="login_empty_name">Empty username</string>
@@ -9,6 +10,7 @@
 	<string name="login_cant_join">Can\'t join the meeting</string>
 	<string name="login_updating">Updating meeting list</string>
 	<string name="login_cant_contact_server">Can\'t contact the server. Try it later</string>
+	<string name="login_unsupported_server">The server doesn\'t provide mobile access</string>
 	<string name="wait">Please wait</string>
 	<string name="welcome">Welcome</string>
 	<string name="cancel">Cancel</string>
@@ -46,11 +48,34 @@
 	<string name="connection_established">Connection established</string>
 	<string name="connection_closed">Connection closed</string>
 	<string name="connection_refused">Connection refused</string>
+	<string name="error">Error</string>
+	<string name="invalid_number">isn\'t a valid VoIP number</string>
 	<string name="no_options">No options avaiable</string>
 	<string name="not_moderator">You don\'t have enough permission</string>
+	<string name="cant_reconnect">Can\'t reconnect. Check your internet connection</string>
+	<string name="reconnected">Successfully reconnected</string>
+	<string name="reconnect">Reconnect</string>
+	<string name="no_connection">No internet connection</string>
+	<string name="open_properties">Open network properties?</string>
+	<string name="choose_a_server_to_login">Choose a server to login</string>
+	<string name="kicked">You have been kicked</string>
+	<string name="new_meeting">Create new meeting</string>
+	<string name="create">Create</string>
+	<string name="taptospeak">Tap to speak</string>
+	<string name="lockspeak">Lock speak</string>
+	<string name="ok">Ok</string>
+	<string name="participant_left">User has disconnected. Closing the chat</string>
+	<string name="user_disconnected">User has disconnected</string>
+	<string name="mute_room">Mute room</string>
+	<string name="unmute_room">Unmute room</string>
+	<string name="qrcode">QR code</string>
+	<string name="login_in">Login in</string>
+	<string name="install_bar_code">Install Barcode Scanner?</string>
+	<string name="bar_code_no_found">Barcode Scanner not found, install?</string>
 	<string name="show_video">Show video</string>
 	<string name="about">
 BBB-Android is an Android implementation of the BigBlueButton client.
+\nVersion ${VERSION}
 \n
 \nIt was developed by PRAV Labs as part of the GT-Mconf project (http://inf.ufrgs.br/prav/gtmconf).
 \n
@@ -68,7 +93,7 @@ BBB-Android is an Android implementation of the BigBlueButton client.
 	<string name="audio_config">Audio configuration</string>
 	<string name="speaker_volume">Speaker volume</string>
 	<string name="earphone_volume">Earphone volume</string>
-	<string name="mic_gain">Mic gain</string>
+	<string name="mic_gain">Microphone gain</string>
 
 <!--
  * Copyright (C) 2009 The Sipdroid Open Source Project

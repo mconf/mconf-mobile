@@ -1,35 +1,44 @@
 package org.mconf.bbb.android;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.MotionEvent;
-import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.ScrollView;
 
-public class CustomListview extends ListView{
-//creates a list view with scrolling disabled
+// creates a list view with scrolling disabled
+public class CustomListview extends ListView {
+
+	public static final int ROW_HEIGHT = 42;
+
 	public CustomListview(Context context, AttributeSet attrs) {
 		super(context,attrs);
-		// TODO Auto-generated constructor stub
 	}
 	
 	@Override
-	public boolean dispatchTouchEvent(final MotionEvent ev)
-	{
+	public boolean dispatchTouchEvent(final MotionEvent ev) {
 		
-		if(ev.getAction()==MotionEvent.ACTION_POINTER_DOWN || ev.getAction()==MotionEvent.ACTION_POINTER_UP  )
-		{
+		if (ev.getAction()==MotionEvent.ACTION_POINTER_DOWN || ev.getAction()==MotionEvent.ACTION_POINTER_UP) {
 			System.out.println("cancelled");
 			ev.setAction(MotionEvent.ACTION_CANCEL);
+			return true;
 		}
-		super.dispatchTouchEvent(ev);
-		return true;
-
+		
+		return super.dispatchTouchEvent(ev);
 	}
 	
-	
-	
-
+	//calculates the size of the contacts and listeners lists
+	public void setHeight() {
+		int totalHeight = 0;
+		Resources r = getResources();
+		int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, ROW_HEIGHT, r.getDisplayMetrics());
+		totalHeight= getCount()*(px+1);
+		ViewGroup.LayoutParams params = getLayoutParams();
+		params.height = totalHeight + (getDividerHeight() * (getCount() - 1));
+		setLayoutParams(params); 
+		requestLayout();
+	}
 
 }

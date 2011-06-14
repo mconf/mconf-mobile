@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<org.mconf.bbb.android.voip.AudioBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/audio_bar"
+	android:layout_width="fill_parent"
+	android:layout_height="0dip"
+	android:visibility="visible"		
+	android:layout_alignParentBottom="true"
+	android:weightSum="0.50"
+	android:background="@color/background"
+>
+	
+	<!-- Button android:id="@+id/audioconfig"
+		android:layout_weight="0.25"
+		android:gravity="center_horizontal|bottom"
+		android:layout_width="0dip"
+		android:layout_height="fill_parent"
+		android:drawableTop="@android:drawable/ic_menu_preferences"
+		android:text="Config"
+	/-->
+	
+	<Button android:id="@+id/lockspeak"
+		android:layout_weight="0.25"
+		android:gravity="center_horizontal|bottom"
+		android:layout_width="0dip"
+		android:layout_height="fill_parent"
+		android:drawableTop="@android:drawable/button_onoff_indicator_off"
+		android:paddingTop="20dip"
+		android:text="@string/lockspeak"
+	/>
+	
+	<Button android:id="@+id/taptospeak"
+		android:layout_weight="0.25"
+		android:gravity="center_horizontal|bottom"
+		android:layout_width="0dip"
+		android:layout_height="fill_parent"
+		android:drawableTop="@android:drawable/ic_btn_speak_now"
+		android:text="@string/taptospeak"
+	/>
+</org.mconf.bbb.android.voip.AudioBarLayout>

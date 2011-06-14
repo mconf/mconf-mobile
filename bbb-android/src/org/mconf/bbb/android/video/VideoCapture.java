@@ -3,6 +3,7 @@ package org.mconf.bbb.android.video;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
+import org.mconf.bbb.android.BigBlueButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     
     public VideoCapture(Context context, AttributeSet attrs) {
         super(context, attrs);
-        
+
         // Install a SurfaceHolder.Callback so we get notified when the
         // underlying surface is created and destroyed.
         mHolder = getHolder();
@@ -98,7 +99,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         PixelFormat pixelFormat = new PixelFormat();
 		PixelFormat.getPixelFormatInfo(parameters.getPreviewFormat(),pixelFormat);
 		final int bufSize = (widthCaptureResolution*heightCaptureResolution*pixelFormat.bitsPerPixel)/8;
-		mVideoPublish = new VideoPublish(userId, bufSize, widthCaptureResolution, heightCaptureResolution, frameRate); 
+		mVideoPublish = new VideoPublish(((BigBlueButton) getContext().getApplicationContext()).getHandler(), userId, bufSize, widthCaptureResolution, heightCaptureResolution, frameRate); 
         
         //java reflection (idea from http://code.google.com/p/android/issues/detail?id=2794):
         //This kind of java reflection is safe to be used as explained in the official android documentation
@@ -114,14 +115,15 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         //In mconf we want compatibility with API levels lower than 8.
         //The setPreviewCallbackWithBuffer method is implemented on a Debug class on API levels lower than 8.
         //In order to use it, we need to use Java Reflection.      
-		if (Integer.parseInt(Build.VERSION.SDK) >= 8){ //if(2.2 or higher){
-			log.debug("Using fast preview callback");
-			usingHidden = false;
-			usingSlow = false;
-			byte[] buffer = new byte[bufSize];
-			mCamera.addCallbackBuffer(buffer);
-			mCamera.setPreviewCallbackWithBuffer(this);
-	    } else if(HiddenCallbackWithBuffer()) { //} else if(has the methods hidden){
+		// \TODO review needed here!!!
+//		if (Integer.parseInt(Build.VERSION.SDK) >= 8){ //if(2.2 or higher){
+//			log.debug("Using fast preview callback");
+//			usingHidden = false;
+//			usingSlow = false;
+//			byte[] buffer = new byte[bufSize];
+//			mCamera.addCallbackBuffer(buffer);
+//			mCamera.setPreviewCallbackWithBuffer(this);
+//	    } else if(HiddenCallbackWithBuffer()) { //} else if(has the methods hidden){
 	    	log.debug("Using fast but hidden preview callback");
 	        usingHidden = true;
 			usingSlow = false;
@@ -134,12 +136,12 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	        buffer = new byte[bufSize];
 	        addCallbackBuffer_Android2p2(buffer);
 	        setPreviewCallbackWithBuffer_Android2p2();
-	    } else {
-	    	log.debug("Using slow preview callback");
-	    	usingHidden = false;
-	    	usingSlow = true;
-	    	mCamera.setPreviewCallback(this);        
-	    }
+//	    } else {
+//	    	log.debug("Using slow preview callback");
+//	    	usingHidden = false;
+//	    	usingSlow = true;
+//	    	mCamera.setPreviewCallback(this);        
+//	    }
 		//TODO Gian do more tests with the 3 possibilities above
         
         mCamera.startPreview();

@@ -7,8 +7,15 @@
 	<property name="echo" value="/bin/echo"/>
 
 	<target name="init">
-		<copy toDir="obj/local/armeabi/" preservelastmodified="true" failonerror="false">
-			<fileset dir="libs/armeabi/" includes="*.so"/>
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="libs/armeabi/tmp"/>
+		</delete>
+		<mkdir dir="libs/armeabi/tmp"/>
+		<copy toDir="libs/armeabi/tmp" failonerror="false">
+			<fileset dir="libs/armeabi" includes="*.so"/>
+		</copy>
+		<copy toDir="obj/local/armeabi" failonerror="false" overwrite="false">
+			<fileset dir="libs/armeabi/tmp" includes="*.so"/>
 		</copy>
 	</target>
 
@@ -27,7 +34,10 @@
                 <arg value="APP_OPTIM := release\n" />
                 <arg value="APP_CFLAGS := -O3" />
 			</exec>
-			<exec executable="${ndk.build}"/>
+			<exec executable="${ndk.build}">
+				<arg value="-j" />
+				<arg value="8" />
+			</exec>
 		</sequential>
 	</macrodef>
 	
@@ -41,26 +51,25 @@
 		<antcall target="install"/>
 	</target>
 	
-	<target name="ffmpeg" depends="init">
-		<build target="avutil avformat avcodec swscale"/>
-		<antcall target="install"/>
-	</target>
-	
     <target name="iva" depends="init">
         <build target="thread common queue decode encode"/>
         <antcall target="install"/>
     </target>
     
     <target name="sipdroid" depends="init">
-        <build target="OSNetworkSystem speex_jni bv16_jni silkcommon silk8_jni silk16_jni silk24_jni g722_jni gsm_jni"/>
+        <!--build target="OSNetworkSystem speex_jni bv16_jni silkcommon silk8_jni silk16_jni silk24_jni g722_jni gsm_jni"/-->
+        <build target="OSNetworkSystem speex_jni"/>
         <antcall target="install"/>
     </target>
     
 	<target name="install">
-		<copy toDir="libs/armeabi/" preservelastmodified="true">
-			<fileset dir="obj/local/armeabi/" includes="*.so"/>
+		<copy toDir="libs/armeabi/tmp" overwrite="true">
+			<fileset dir="libs/armeabi" includes="*.so"/>
+		</copy>
+		<copy toDir="libs/armeabi" overwrite="true">
+			<fileset dir="libs/armeabi/tmp" includes="*.so"/>
 		</copy>
 	</target>
 	
-	<target name="all" depends="ffmpeg,iva,mconfnativeshowvideo,mconfnativeencodevideo,sipdroid"/>
+	<target name="all" depends="iva,mconfnativeshowvideo,mconfnativeencodevideo,sipdroid"/>
 </project>

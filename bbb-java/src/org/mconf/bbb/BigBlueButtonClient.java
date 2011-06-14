@@ -28,7 +28,6 @@ import java.util.Set;
 
 import org.jboss.netty.channel.Channel;
 import org.mconf.bbb.api.JoinService;
-import org.mconf.bbb.api.JoinedMeeting;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.chat.ChatModule;
 import org.mconf.bbb.listeners.ListenersModule;
@@ -46,7 +45,7 @@ public class BigBlueButtonClient {
 	
 	private static final Logger log = LoggerFactory.getLogger(BigBlueButtonClient.class);
 	
-	private MainRtmpConnection mainConnection;
+	private MainRtmpConnection mainConnection = null;
 
 	private JoinService joinService = new JoinService();
 	
@@ -63,6 +62,11 @@ public class BigBlueButtonClient {
     	log.info("My userID is {}", myUserId);
 	}
 
+	public MainRtmpConnection getConnection()
+	{
+		return mainConnection;
+	}
+	
 	public int getMyUserId() {
 		return myUserId;
 	}
@@ -129,7 +133,8 @@ public class BigBlueButtonClient {
 		return joinService;
 	}
 
-	public void connectBigBlueButton() {
+	public boolean connectBigBlueButton() {
+		
 		ClientOptions opt = new ClientOptions();
 		opt.setClientVersionToUse(Utils.fromHex("00000000"));
 		opt.setHost(joinService.getServerUrl().toLowerCase().replace("http://", ""));
@@ -137,7 +142,7 @@ public class BigBlueButtonClient {
 		log.debug(opt.toString());
 		
 		mainConnection = new MainRtmpConnection(opt, this);
-		mainConnection.connect();
+		return mainConnection.connect();
 	}
 	
 	@SuppressWarnings("unused")
@@ -146,13 +151,11 @@ public class BigBlueButtonClient {
 	}
 	
 	public void disconnect() {
-		mainConnection.disconnect();
+		if (mainConnection != null)
+			mainConnection.disconnect();
+		joinService = new JoinService();
 	}
-	
-//	public MainRtmpConnection getHandler() {
-//		return mainConnection;
-//	}
-	
+
 	public Collection<Participant> getParticipants() {
 		return getUsersModule().getParticipants().values();
 	}
@@ -188,10 +191,15 @@ public class BigBlueButtonClient {
 	public void muteUnmuteListener(int listenerId, boolean value){
 		getListenersModule().doMuteUnmuteUser(listenerId,value);
 	}
+	
+	public void muteUnmuteRoom(boolean value)
+	{
+		getListenersModule().doMuteAllUsers(value);
+	}
 
 	public static void main(String[] args) {
 		BigBlueButtonClient client = new BigBlueButtonClient();
-		client.getJoinService().load("http://devbbb-mconf.no-ip.org");
+		client.getJoinService().load("http://mconfdev.inf.ufrgs.br");
 		
 		client.getJoinService().join("Demo Meeting", "Eclipse", false);
 		if (client.getJoinService().getJoinedMeeting() != null) {
@@ -213,6 +221,13 @@ public class BigBlueButtonClient {
 			l.onVideo(aux);
 		}
 		return true;
+	}
+
+	public boolean isConnected() {
+		if (mainConnection == null)
+			return false;
+		else
+			return mainConnection.isConnected();
 	}
 
 }
