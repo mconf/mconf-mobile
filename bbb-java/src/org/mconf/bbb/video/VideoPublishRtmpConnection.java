@@ -133,30 +133,22 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
     	} else
     		return false;
     }
-    
-    public Channel channel = null;
-        
+           
     @Override
     public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent me) {
-    	logger.debug("messageReceived");
-        if(publisher != null && publisher.handle(me)) {
-        	logger.debug("messageReceived2");
+    	if(publisher != null && publisher.handle(me)) {
         	return;
         }
-        logger.debug("messageReceived3");
         final Channel channel = me.getChannel();
         final RtmpMessage message = (RtmpMessage) me.getMessage();
         switch(message.getHeader().getMessageType()) {
             case CHUNK_SIZE: // handled by decoder
-            	logger.debug("CHUNKSIZE");
-                break;
+            	break;
             case CONTROL:
-            	logger.debug("CONTROL");
-                Control control = (Control) message;
+            	Control control = (Control) message;
                 logger.debug("control: {}", control);
                 switch(control.getType()) {
                     case PING_REQUEST:
-                    	logger.debug("PING");
                         final int time = control.getTime();
                         logger.debug("server ping: {}", time);
                         Control pong = Control.pingResponse(time);
@@ -164,7 +156,6 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
                         channel.write(pong);
                         break;
                     case SWFV_REQUEST:
-                    	logger.debug("SWFV");
                         if(swfvBytes == null) {
                             logger.warn("swf verification not initialized!" 
                                 + " not sending response, server likely to stop responding / disconnect");
@@ -175,9 +166,7 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
                         }
                         break;
                     case STREAM_BEGIN:
-                    	logger.debug("STREAMBEGIN");
                         if(publisher != null && !publisher.isStarted()) {
-                        	logger.debug("SBIF");
                             publisher.start(channel, options.getStart(),
                                     options.getLength(), new ChunkSize(4096));
                             return;
@@ -192,8 +181,7 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
                 break;
             case METADATA_AMF0:
             case METADATA_AMF3:
-            	logger.debug("MAMF");
-                Metadata metadata = (Metadata) message;
+            	Metadata metadata = (Metadata) message;
                 if(metadata.getName().equals("onMetaData")) {
                     logger.debug("writing 'onMetaData': {}", metadata);
                     writer.write(message);
@@ -204,8 +192,7 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
             case AUDIO:
             case VIDEO:
             case AGGREGATE:      
-            	logger.debug("AUDIOVIDEOAGGREGATE");
-                writer.write(message);
+            	writer.write(message);
                 bytesRead += message.getHeader().getSize();
                 if((bytesRead - bytesReadLastSent) > bytesReadWindow) {
                     logger.debug("sending bytes read ack {}", bytesRead);
@@ -215,8 +202,7 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
                 break;
             case COMMAND_AMF0:
             case COMMAND_AMF3:
-            	logger.debug("CAMF");
-                Command command = (Command) message;                
+            	Command command = (Command) message;                
                 String name = command.getName();
                 logger.debug("server command: {}", name);
                 if(name.equals("_result")) {
@@ -228,26 +214,20 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
                         streamId = ((Double) command.getArg(0)).intValue();
                         logger.debug("streamId to use: {}", streamId);
                         if(options.getPublishType() != null) { // TODO append, record 
-                        	log.debug("reader1");
-                            RtmpReader reader;
+                        	RtmpReader reader;
                             if(options.getFileToPublish() != null) {
-                            	log.debug("reader1.1");
                                 reader = RtmpPublisher.getReader(options.getFileToPublish());
                             } else {
-                            	log.debug("reader1.2");
                                 reader = options.getReaderToPublish();
                             }
                             if(options.getLoop() > 1) {
-                            	log.debug("reader1.3");
                                 reader = new LoopedReader(reader, options.getLoop());
                             }
                             publisher = new RtmpPublisher(reader, streamId, options.getBuffer(), false, false) {
                                 @Override protected RtmpMessage[] getStopMessages(long timePosition) {
                                     return new RtmpMessage[]{Command.unpublish(streamId)};
-//                                	return null;
                                 }
                             };   
-                            log.debug("channel.write");
                             channel.write(Command.publish(streamId, options));
                             return;
                         } else {
@@ -277,8 +257,7 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
                             && publisher != null && !publisher.isStarted()) {
                             publisher.start(channel, options.getStart(),
                                     options.getLength(), new ChunkSize(4096));
-                            this.channel = channel;
-                    		context.getUsersModule().addStream(options.getStreamName());
+                            context.getUsersModule().addStream(options.getStreamName());
                         return;
                     }
                     if (publisher != null && code.equals("NetStream.Unpublish.Success")) {
@@ -300,18 +279,15 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
                 }
                 break;
             case BYTES_READ:
-            	logger.debug("BYTESREAD");
                 logger.info("ack from server: {}", message);
                 break;
             case WINDOW_ACK_SIZE:
-            	logger.debug("WACKSIZE");
                 WindowAckSize was = (WindowAckSize) message;                
                 if(was.getValue() != bytesReadWindow) {
                     channel.write(SetPeerBw.dynamic(bytesReadWindow));
                 }                
                 break;
             case SET_PEER_BW:
-            	logger.debug("PEER");
                 SetPeerBw spb = (SetPeerBw) message;                
                 if(spb.getValue() != bytesWrittenWindow) {
                     channel.write(new WindowAckSize(bytesWrittenWindow));
@@ -319,7 +295,6 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
                 break;
             case SHARED_OBJECT_AMF0:
             case SHARED_OBJECT_AMF3:
-            	logger.debug("SOAMF");
             	onSharedObject(channel, (SharedObjectMessage) message);
             	break;
             default:
@@ -330,162 +305,6 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
         }
     }
     
-//	@Override
-//	public void messageReceived(ChannelHandlerContext ctx, MessageEvent me) {
-//		log.debug("messageReceived");		
-//        final Channel channel = me.getChannel();
-//        final RtmpMessage message = (RtmpMessage) me.getMessage();
-//        switch(message.getHeader().getMessageType()) {
-//	    	case CONTROL:
-//	    		log.debug("CONTROL");
-//	            Control control = (Control) message;
-//	            switch(control.getType()) {
-//	                case PING_REQUEST:
-//	                	log.debug("PING");
-//	                    final int time = control.getTime();
-//	                    Control pong = Control.pingResponse(time);
-//	                    channel.write(pong);
-//	                    break;
-//	                case STREAM_BEGIN:
-//	                	log.debug("STREAM");
-//	                    if(streamId !=0) {
-//	                        channel.write(Control.setBuffer(streamId, options.getBuffer()));
-//	                    }
-//	                    break;
-//	            }
-//	    		break;
-//	    	
-//        	case VIDEO:
-//        		log.debug("VIDEO");
-//	            bytesRead += message.getHeader().getSize();
-//	            if((bytesRead - bytesReadLastSent) > bytesReadWindow) {
-//	                log.debug("sending bytes read ack {}", bytesRead);
-//	                bytesReadLastSent = bytesRead;
-//	                channel.write(new BytesRead(bytesRead));
-//	            }
-//        		          
-//        		Video video = (Video) message;
-//        		//System.out.println(video.getWidth() + " " + video.getHeight());
-////        		log.debug("video.toString()={}",video.toString());
-////        		log.debug("video.getBody().toString()={}", video.getBody().toString());
-////        		log.debug("video.getBody().length={}", video.getBody().length);
-////        		log.debug("video.getCodec()={}", video.getCodec());
-////        		log.debug("video.getFrameType()={}", video.getFrameType());
-////        		log.debug("video.getHeader().getChannelId()={}", video.getHeader().getChannelId());
-////        		log.debug("video.getHeader().getDeltaTime()={}", video.getHeader().getDeltaTime());
-////        		log.debug("video.getHeader().getHeaderType().name()={}", video.getHeader().getHeaderType().name());
-////        		log.debug("video.getHeader().getMessageType().name()={}", video.getHeader().getMessageType().name());
-////        		log.debug("video.getHeader().getSize()={}", video.getHeader().getSize());
-////        		log.debug("video.getHeader().getStreamId()={}", video.getHeader().getStreamId());
-////        		log.debug("video.getHeader().getTime()={}", video.getHeader().getTime());
-////        		log.debug("video.getHeader().getTinyHeader().toString()={}", video.getHeader().getTinyHeader().toString());
-////        		log.debug("video.getHeader().getTinyHeader().length={}", video.getHeader().getTinyHeader().length);
-////        		log.debug("video.getFrameType={}", video.getWidth());
-////        		log.debug("video.getHeight()={}", video.getHeight());
-////        		log.debug("video.getMessageType().name()={}", video.getMessageType().name());
-//        		
-//        		context.onVideo(video.getBody());        		
-//        		        		
-//        		break;
-//	        case COMMAND_AMF0:
-//	        case COMMAND_AMF3:
-//	        	log.debug("AMF");
-//	            Command command = (Command) message;                
-//	            String name = command.getName();
-//	            log.debug("server command: {}", name);
-//	            if(name.equals("_result")) {
-//	                String resultFor = transactionToCommandMap.get(command.getTransactionId());
-//	                if (resultFor == null) {
-//	                	log.warn("result for method without tracked transaction");
-//	                	break;
-//	                }
-//	                log.info("result for method call: {}", resultFor);
-//                    if(resultFor.equals("connect")) {
-//                        writeCommandExpectingResult(channel, Command.createStream());
-//                    } else if(resultFor.equals("createStream")) {
-//                        streamId = ((Double) command.getArg(0)).intValue();
-//                        log.debug("streamId to use: {}", streamId);
-//                        channel.write(Command.play(streamId, options));
-//                        channel.write(Control.setBuffer(streamId, 0));
-//                    } else {
-//                        log.warn("un-handled server result for: {}", resultFor);
-//                    }
-//                } else if(name.equals("onStatus")) {
-//                    final Map<String, Object> temp = (Map) command.getArg(0);
-//                    final String code = (String) temp.get("code");
-//                    log.info("onStatus code: {}", code);
-//                    if (code.equals("NetStream.Failed") // TODO cleanup
-//                            || code.equals("NetStream.Play.Failed")
-//                            || code.equals("NetStream.Play.Stop")
-//                            || code.equals("NetStream.Play.StreamNotFound")) {
-//                        log.info("disconnecting, code: {}, bytes read: {}", code, bytesRead);
-//                        channel.close();
-//                        return;
-//                    } else if(code.equals("NetStream.Play.Start")
-//                    	&& publisher != null && publisher.isStarted()) {
-//                    	log.debug("ACHOU NetStream.Play.Start");
-////                        publisher.start(channel, options.getStart(),
-////                                options.getLength(), new ChunkSize(4096));
-//                        return;
-//                    }
-//                } else if(name.equals("close")) {
-//                    log.info("server called close, closing channel");
-//                    channel.close();
-//                    return;
-//                } else if(name.equals("_error")) {
-//                    log.error("closing channel, server resonded with error: {}", command);
-//                    channel.close();
-//                    return;
-//                } else {
-//                    log.warn("ignoring server command: {}", command);
-//                }
-//                break;
-////	                	String code = connectGetCode(command);
-////	                	if (code.equals("NetConnection.Connect.Success"))
-////	                		doGetMyUserId(channel);
-////	                	else {
-////	                		log.error("method connect result in {}, quitting", code);
-////	                		channel.close();
-////	                	}
-////	                	return;
-////	                } else if (onGetMyUserId(resultFor, command)) {
-////	                	context.createUsersModule(this, channel);
-////	                	break;
-////	                } 
-////	                context.onCommand(resultFor, command);
-////                	break;
-////	            }
-////	            break;
-////	            
-////	        case SHARED_OBJECT_AMF0:
-////	        case SHARED_OBJECT_AMF3:
-////	        	onSharedObject(channel, (SharedObjectMessage) message);
-////	        	break;
-//            case BYTES_READ:
-//            	log.debug("BR");
-//                log.info("ack from server: {}", message);
-//                break;
-//            case WINDOW_ACK_SIZE:
-//            	log.debug("WINDW");
-//                WindowAckSize was = (WindowAckSize) message;                
-//                if(was.getValue() != bytesReadWindow) {
-//                    channel.write(SetPeerBw.dynamic(bytesReadWindow));
-//                }                
-//                break;
-//            case SET_PEER_BW:
-//            	log.debug("PEER");
-//                SetPeerBw spb = (SetPeerBw) message;                
-//                if(spb.getValue() != bytesWrittenWindow) {
-//                    channel.write(new WindowAckSize(bytesWrittenWindow));
-//                }
-//                break;
-//    		default:
-//    			log.debug("DEFAULT");
-//    			log.info("ignoring rtmp message: {}", message);
-//	        	break;
-//        }
-//	}
-	
 	public BigBlueButtonClient getContext() {
 		return context;
 	}

@@ -7,9 +7,9 @@ VideoEncoder* videoEncoder = NULL;
 extern "C"{
 #endif
 
-jint Java_org_mconf_bbb_android_video_VideoPublish_initEncoder(JNIEnv *env, jobject obj, jint width, jint height, jint frameRate) {
+jint Java_org_mconf_bbb_android_video_VideoPublish_initEncoder(JNIEnv *env, jobject obj, jint width, jint height, jint frameRate, jint bitRate, jint GOP) {
 	if (!videoEncoder) {
-		videoEncoder = new VideoEncoder(env, obj, width, height, frameRate);
+		videoEncoder = new VideoEncoder(env, obj, width, height, frameRate, bitRate, GOP);
 	}
 	return 0;
 }

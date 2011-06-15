@@ -7,7 +7,7 @@
 extern "C"{
 #endif
 
-jint Java_org_mconf_bbb_android_video_VideoPublish_initEncoder(JNIEnv *env, jobject obj, jint width, jint height, jint frameRate);
+jint Java_org_mconf_bbb_android_video_VideoPublish_initEncoder(JNIEnv *env, jobject obj, jint width, jint height, jint frameRate, jint bitRate, jint GOP);
 jint Java_org_mconf_bbb_android_video_VideoCapture_enqueueFrame(JNIEnv *env, jobject obj, jbyteArray data, jint length);
 jint Java_org_mconf_bbb_android_video_VideoPublish_endEncoder(JNIEnv *env, jobject obj);
 jint Java_org_mconf_bbb_android_video_VideoPublish_initSenderLoop(JNIEnv *env, jobject obj);

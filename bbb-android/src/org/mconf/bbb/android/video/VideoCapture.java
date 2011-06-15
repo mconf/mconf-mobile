@@ -2,6 +2,7 @@ package org.mconf.bbb.android.video;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +19,27 @@ import android.view.ViewGroup.LayoutParams;
 public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,Camera.PreviewCallback {
 	
 	private static final Logger log = LoggerFactory.getLogger(VideoCapture.class);
+	
     SurfaceHolder mHolder;
     Camera mCamera;
-    boolean isAvailableSprintFFC;
-    boolean usingHidden;
-    boolean usingSlow;
+    boolean usingFaster, usingHidden;
+    boolean forceDefaultParams = true;
     VideoPublish mVideoPublish;
     int userId;
+    
+    private Method mAcb;       // method for adding a pre-allocated buffer 
+    private Object[] mArglist; // list of arguments
+    
+    public static final int DEFAULT_FRAME_RATE = 15;
+    public static final int DEFAULT_WIDTH = 320;
+    public static final int DEFAULT_HEIGHT = 240;
+    public static final int DEFAULT_BIT_RATE = 512000;
+    public static final int DEFAULT_GOP = 5;
+    private int frameRate = DEFAULT_FRAME_RATE;
+    private int width = DEFAULT_WIDTH;
+    private int height = DEFAULT_HEIGHT;
+    private int bitRate = DEFAULT_BIT_RATE;
+    private int GOP = DEFAULT_GOP;
     
     public VideoCapture(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -35,20 +50,44 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         mHolder.addCallback(this);
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
+ 
+    public void setFrameRate(int fr){
+    	frameRate = fr;
+    }
     
-    public void centerPreview(boolean inDialog) {
+    public void setWidth(int w){
+    	width = w;
+    }
+    
+    public void setHeight(int h){
+    	height = h;
+    }
+    
+    public void setBitRate(int br){
+    	bitRate = br;
+    }
+    
+    public void setGOP(int g){
+    	GOP = g;
+    }
+    
+    public void setUserId(int videoId) {
+		this.userId = videoId;
+	}	
+    
+    public void centerPreview(boolean inDialog) {// \TODO Gian change the screen centering. Do it like the received video centering 
     	// Centers the preview on the screen
     	LayoutParams layoutParams = VideoCentering.getVideoLayoutParams(VideoCentering.getDisplayMetrics(this.getContext(), inDialog), this.getLayoutParams());
 		setLayoutParams(layoutParams);   	
 	}
     
-    private void checkForSpecificHTCFFCCamera()
+    private boolean isAvailableSprintFFC()
     {
         try {
             Class.forName("android.hardware.HtcFrontFacingCamera");
-            isAvailableSprintFFC = true;
+            return true;
         } catch (Exception ex) {
-            isAvailableSprintFFC = false;
+            return false;
         }
     }
     
@@ -57,18 +96,23 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     public void surfaceCreated(SurfaceHolder holder) {
         // The Surface has been created, acquire the camera and tell it where
         // to draw.       
-        checkForSpecificHTCFFCCamera();
-        if (isAvailableSprintFFC) {
+        if (isAvailableSprintFFC()) {
         	try {
                 Method method = Class.forName("android.hardware.HtcFrontFacingCamera").getDeclaredMethod("getCamera", null);
                 mCamera = (Camera) method.invoke(null, null);
             } catch (Exception ex) {
                 log.debug(ex.toString());
-                // TODO Gian better error handling here?
+                
+                mCamera.release();
+                mCamera = null;
+                mCamera = Camera.open();
+                Camera.Parameters parameters = mCamera.getParameters();
+                parameters.set("camera-id", 2);
+                mCamera.setParameters(parameters);
             }
         } else {
             mCamera = Camera.open();
-            Camera.Parameters parameters = mCamera.getParameters();
+            Camera.Parameters parameters = mCamera.getParameters();            
             parameters.set("camera-id", 2);
             mCamera.setParameters(parameters);
         }    
@@ -76,29 +120,27 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         try {
             mCamera.setPreviewDisplay(mHolder);
         } catch (IOException exception) {
-            mCamera.release();
+        	log.debug(exception.toString());
+        	
+        	mCamera.release();
             mCamera = null;
-            // TODO Gian better error handling here?
+         
+            return;
        	}
         
         // Set up the camera parameters, init the native side and begin
         // the preview. 
     	Camera.Parameters parameters = mCamera.getParameters();
-//        Log.v("Java", String.format("PICTURE FORMAT %d\n",parameters.getPictureFormat()));
-//        Log.v("Java", String.format("PREVIEW FORMAT %d\n",parameters.getPreviewFormat()));
-//        Log.v("Java", String.format("PREVIEW FRAMERATE %d\n",parameters.getPreviewFrameRate()));
-		final int frameRate = 10;        
-		final int widthCaptureResolution = 320;
-	    final int heightCaptureResolution = 240;
-        parameters.setPreviewFrameRate(frameRate);        
-        parameters.setPreviewSize(widthCaptureResolution, heightCaptureResolution);        
+    	log.debug("Setting the capture frame rate to {}", frameRate);
+    	parameters.setPreviewFrameRate(frameRate);
+    	log.debug("Setting the capture size to {}x{}", width, height);
+        parameters.setPreviewSize(width, height);         
         mCamera.setParameters(parameters);
-//        Log.v("Java", String.format("PREVIEW FRAMERATE %d\n",parameters.getPreviewFrameRate()));
         
         PixelFormat pixelFormat = new PixelFormat();
 		PixelFormat.getPixelFormatInfo(parameters.getPreviewFormat(),pixelFormat);
-		final int bufSize = (widthCaptureResolution*heightCaptureResolution*pixelFormat.bitsPerPixel)/8;
-		mVideoPublish = new VideoPublish(userId, bufSize, widthCaptureResolution, heightCaptureResolution, frameRate); 
+		final int bufSize = width*height*pixelFormat.bitsPerPixel/8;
+		mVideoPublish = new VideoPublish(userId, bufSize, width, height, frameRate, bitRate, GOP); 
         
         //java reflection (idea from http://code.google.com/p/android/issues/detail?id=2794):
         //This kind of java reflection is safe to be used as explained in the official android documentation
@@ -113,18 +155,20 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         //avoiding the GC to perform.
         //In mconf we want compatibility with API levels lower than 8.
         //The setPreviewCallbackWithBuffer method is implemented on a Debug class on API levels lower than 8.
-        //In order to use it, we need to use Java Reflection.      
+        //In order to use it on API levels lower than 8, we need to use Java Reflection.      
 		if (Integer.parseInt(Build.VERSION.SDK) >= 8){ //if(2.2 or higher){
 			log.debug("Using fast preview callback");
+			usingFaster = true;
 			usingHidden = false;
-			usingSlow = false;
 			byte[] buffer = new byte[bufSize];
+			mCamera.addCallbackBuffer(buffer);
+			buffer = new byte[bufSize];
 			mCamera.addCallbackBuffer(buffer);
 			mCamera.setPreviewCallbackWithBuffer(this);
 	    } else if(HiddenCallbackWithBuffer()) { //} else if(has the methods hidden){
 	    	log.debug("Using fast but hidden preview callback");
+	        usingFaster = true;
 	        usingHidden = true;
-			usingSlow = false;
 			 //Must call this before calling addCallbackBuffer to get all the
 	        // reflection variables setup
 	        initForACB();
@@ -136,8 +180,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	        setPreviewCallbackWithBuffer_Android2p2();
 	    } else {
 	    	log.debug("Using slow preview callback");
+	    	usingFaster = false;
 	    	usingHidden = false;
-	    	usingSlow = true;
 	    	mCamera.setPreviewCallback(this);        
 	    }
 		//TODO Gian do more tests with the 3 possibilities above
@@ -152,7 +196,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         // Surface will be destroyed when we return, so stop the preview.
         // Because the CameraDevice object is not a shared resource, it's very
         // important to release it when the activity is paused.
-    	if(usingSlow){
+    	if(!usingFaster){
     		mCamera.setPreviewCallback(null); //this is needed to avoid a crash (http://code.google.com/p/android/issues/detail?id=6201)
     	}
     	mCamera.stopPreview();
@@ -192,9 +236,6 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 			return false;
 		}
     }
-    
-    Method mAcb;       // method for adding a pre-allocated buffer 
-    Object[] mArglist; // list of arguments
 
     private void initForACB(){
     	try {
@@ -218,9 +259,9 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     private void addCallbackBuffer_Android2p2(byte[] b){ //  this function is native since Android 2.2
     	//Check to be sure initForACB has been called to setup
     	// mAcb and mArglist
-    	if(mArglist == null){
-    		initForACB();
-    	}
+//    	if(mArglist == null){
+//    		initForACB();
+//    	}
 
     	mArglist[0] = b;
     	try {
@@ -273,29 +314,34 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     @Override
     public void onPreviewFrame (byte[] _data, Camera camera)
     {
-       	if(usingHidden){
-       		addCallbackBuffer_Android2p2(_data);
-       	}
-       	enqueueFrame(_data,_data.length);
+    	if(mVideoPublish.isCapturing){
+    		if(usingHidden){ 
+    			addCallbackBuffer_Android2p2(_data);
+    		} else if(usingFaster){
+    			mCamera.addCallbackBuffer(_data);
+    		}
+    		enqueueFrame(_data,_data.length);
+    	}
     }
     
     static {
-    	System.loadLibrary("avutil");
-    	System.loadLibrary("swscale");
-        System.loadLibrary("avcodec");
-        System.loadLibrary("avformat");
-        System.loadLibrary("thread");
-    	System.loadLibrary("common");
-    	System.loadLibrary("queue");
-    	System.loadLibrary("encode");
-    	System.loadLibrary("mconfnativeencodevideo");  
+    	String path = "/data/data/org.mconf.bbb.android/lib/";
+    	try {
+	    	System.load(path + "libavutil.so");
+	    	System.load(path + "libswscale.so");
+	        System.load(path + "libavcodec.so");
+	        System.load(path + "libavformat.so");
+	        System.load(path + "libthread.so");
+	    	System.load(path + "libcommon.so");
+	    	System.load(path + "libqueue.so");
+	    	System.load(path + "libencode.so");
+	    	System.load(path + "libmconfnativeencodevideo.so");  
         
-    	log.debug("Video native libraries loaded");    
+	    	log.debug("Native libraries loaded");    
+    	} catch (SecurityException e) {
+    		log.debug("Native libraries failed");  
+    	}
     }
     
-	private native int enqueueFrame(byte[] data, int length);
-
-	public void setUserId(int videoId) {
-		this.userId = videoId;
-	}	
+	private native int enqueueFrame(byte[] data, int length);	
 }

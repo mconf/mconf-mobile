@@ -46,32 +46,11 @@ public abstract class IVideoPublishListener {
 		ClientOptions opt = new ClientOptions();
 		opt.setClientVersionToUse(Utils.fromHex("00000000"));
 		opt.setHost(context.getJoinService().getServerUrl().toLowerCase().replace("http://", ""));
-//		opt.setHost("192.168.0.189");
 		opt.setAppName("video/" + context.getJoinService().getJoinedMeeting().getConference());
-//		opt.setAppName("oflaDemo/" + context.getJoinService().getJoinedMeeting().getConference());
-//		opt.setAppName("oflaDemo");
 		opt.setPublishType(com.flazr.rtmp.server.ServerStream.PublishType.LIVE);
-		opt.setStreamName(streamName);
-//		opt.setStreamName("red5StreamDemo");
-//		opt.setStreamName("320x240162");
-		
-		
-		
-		
-		
+		opt.setStreamName(streamName);		
 		opt.setReaderToPublish(reader);
-		log.debug(opt.toString());
-							
-//		for (Participant p : context.getParticipants()) {
-//			if (p.getUserId() == userId) {
-//				log.debug("setou participante");
-//				p.setHasStream(true);
-//				p.getStatus().setHasStream(true);
-//				p.getStatus().setStreamName(streamName);
-//				break;
-//			}
-//		}
-		
+									
 		this.context = context;
 		this.streamName = streamName;
 				

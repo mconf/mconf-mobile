@@ -77,8 +77,8 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
     protected long bytesReadLastSent;    
     protected int bytesWrittenWindow = 2500000;
     
-    public RtmpPublisher publisher;
-    protected int streamId;    
+    protected RtmpPublisher publisher;
+    public int streamId;    
 
 	/**
 	 * Connect to client shared object.
@@ -162,25 +162,19 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
     
     @Override
     public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent me) {
-    	logger.debug("messageReceived");
-        if(publisher != null && publisher.handle(me)) {
-        	logger.debug("messageReceived2");
-        	return;
+    	if(publisher != null && publisher.handle(me)) {
+           	return;
         }
-        logger.debug("messageReceived3");
         final Channel channel = me.getChannel();
         final RtmpMessage message = (RtmpMessage) me.getMessage();
         switch(message.getHeader().getMessageType()) {
             case CHUNK_SIZE: // handled by decoder
-            	logger.debug("CHUNKSIZE");
                 break;
             case CONTROL:
-            	logger.debug("CONTROL");
                 Control control = (Control) message;
                 logger.debug("control: {}", control);
                 switch(control.getType()) {
                     case PING_REQUEST:
-                    	logger.debug("PING");
                         final int time = control.getTime();
                         logger.debug("server ping: {}", time);
                         Control pong = Control.pingResponse(time);
@@ -188,7 +182,6 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
                         channel.write(pong);
                         break;
                     case SWFV_REQUEST:
-                    	logger.debug("SWFV");
                         if(swfvBytes == null) {
                             logger.warn("swf verification not initialized!" 
                                 + " not sending response, server likely to stop responding / disconnect");
@@ -199,9 +192,7 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
                         }
                         break;
                     case STREAM_BEGIN:
-                    	logger.debug("STREAMBEGIN");
                         if(publisher != null && !publisher.isStarted()) {
-                        	logger.debug("SBIF");
                             publisher.start(channel, options.getStart(),
                                     options.getLength(), new ChunkSize(4096));
                             return;
@@ -216,7 +207,6 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
                 break;
             case METADATA_AMF0:
             case METADATA_AMF3:
-            	logger.debug("MAMF");
                 Metadata metadata = (Metadata) message;
                 if(metadata.getName().equals("onMetaData")) {
                     logger.debug("writing 'onMetaData': {}", metadata);
@@ -228,7 +218,6 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
             case AUDIO:
             case VIDEO:
             case AGGREGATE:      
-            	logger.debug("AUDIOVIDEOAGGREGATE");
                 writer.write(message);
                 bytesRead += message.getHeader().getSize();
                 if((bytesRead - bytesReadLastSent) > bytesReadWindow) {
@@ -239,7 +228,6 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
                 break;
             case COMMAND_AMF0:
             case COMMAND_AMF3:
-            	logger.debug("CAMF");
                 Command command = (Command) message;                
                 String name = command.getName();
                 logger.debug("server command: {}", name);
@@ -316,18 +304,15 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
                 }
                 break;
             case BYTES_READ:
-            	logger.debug("BYTESREAD");
                 logger.info("ack from server: {}", message);
                 break;
             case WINDOW_ACK_SIZE:
-            	logger.debug("WACKSIZE");
                 WindowAckSize was = (WindowAckSize) message;                
                 if(was.getValue() != bytesReadWindow) {
                     channel.write(SetPeerBw.dynamic(bytesReadWindow));
                 }                
                 break;
             case SET_PEER_BW:
-            	logger.debug("PEER");
                 SetPeerBw spb = (SetPeerBw) message;                
                 if(spb.getValue() != bytesWrittenWindow) {
                     channel.write(new WindowAckSize(bytesWrittenWindow));
