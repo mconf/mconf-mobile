@@ -24,6 +24,7 @@ package org.sipdroid.media;
 import java.io.IOException;
 import java.net.SocketException;
 
+import org.mconf.bbb.android.BigBlueButton;
 import org.mconf.bbb.android.R;
 import org.sipdroid.net.RtpPacket;
 import org.sipdroid.net.RtpSocket;
@@ -567,7 +568,8 @@ public class RtpStreamReceiver extends Thread {
 				}
 				rtp_socket.getDatagramSocket().disconnect();
 				if (++timeout > 60) {
-					Receiver.engine(Receiver.mContext).rejectcall();
+//					Receiver.engine(Receiver.mContext).rejectcall();
+					((BigBlueButton) Receiver.mContext).getVoiceModule().hang();
 					break;
 				}
 			}

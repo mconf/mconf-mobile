@@ -14,7 +14,9 @@
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:textAppearance="@style/ParticipantNameStyle"
 		android:layout_marginLeft="5dp" android:layout_toRightOf="@+id/muted"
+		android:layout_toLeftOf="@+id/talking"
 		android:text="Test test" android:lines="1" android:scrollHorizontally="true" />
+		
 	<ImageView android:layout_height="wrap_content" android:src="@drawable/sound"
 		android:layout_marginLeft="5dp" android:layout_marginRight="10dp" android:id="@+id/talking"
 		android:layout_width="wrap_content" android:minWidth="24dp"

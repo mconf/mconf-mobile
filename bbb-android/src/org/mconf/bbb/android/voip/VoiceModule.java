@@ -21,10 +21,11 @@
 
 package org.mconf.bbb.android.voip;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import org.mconf.bbb.android.R;
 import org.sipdroid.codecs.Codec;
 import org.sipdroid.codecs.Codecs;
 import org.sipdroid.media.JAudioLauncher;
@@ -53,11 +54,9 @@ import org.zoolu.sip.provider.SipStack;
 import org.zoolu.tools.LogLevel;
 import org.zoolu.tools.Parser;
 
-import android.app.Activity;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Build;
-import android.widget.Toast;
 
 public class VoiceModule implements ExtendedCallListener {
 	private static final Logger log = LoggerFactory.getLogger(VoiceModule.class);
@@ -68,16 +67,16 @@ public class VoiceModule implements ExtendedCallListener {
 	protected SessionDescriptor local_sdp;
 	protected KeepAliveSip keep_alive;
 
-	private MediaLauncher audio_app = null;
+	protected MediaLauncher audio_app = null;
 
-	private int speakerMode;
+	protected boolean mute;
+	protected OnCallListener listener;
 
-	private boolean mute;
-
-	final private Context context;
+	public static final int E_OK = 0;
+	public static final int E_INVALID_NUMBER = 1; 
 
 	public VoiceModule(Context context, String username, String url) {
-		this.context = context;
+		Receiver.mContext = context;
 		
 		SipStack.init();
 		Sipdroid.release = false;
@@ -90,6 +89,13 @@ public class VoiceModule implements ExtendedCallListener {
 		
 		SipStack.ua_info = "BigBlueButton/" + Build.MODEL;
 		SipStack.server_info = SipStack.ua_info;
+		
+		// there's no need to handle the exception because "UTF-8" is a supported encoder
+		try {
+			username = URLEncoder.encode(username, "UTF-8").replace("+", "%20");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		
 		user_profile = new UserAgentProfile();
 		user_profile.username = username;
@@ -106,9 +112,17 @@ public class VoiceModule implements ExtendedCallListener {
 		keep_alive = new KeepAliveSip(sip_provider, 100000);
 	}
 	
-	public void call(String number) {
+	public int call(String number) {
 		if (isOnCall())
-			return;
+			return E_OK;
+
+		log.debug("Trying to call number {}", number);
+		
+		try{
+			Integer.parseInt(number);
+		} catch (NumberFormatException e) {
+			return E_INVALID_NUMBER;
+		}
 		
 		local_sdp = new SessionDescriptor(user_profile.from_url,
 				sip_provider.getViaAddress());
@@ -148,6 +162,8 @@ public class VoiceModule implements ExtendedCallListener {
 		call.call(target_url, 
 				local_sdp.toString(),
 				/*"\"urn%3Aurn-7%3A3gpp-service.ims.icsi.mmtel\""*/ null);
+		
+		return E_OK;
 	}
 	
 	public boolean isOnCall() {
@@ -155,10 +171,19 @@ public class VoiceModule implements ExtendedCallListener {
 	}
 	
 	public void hang() {
-		if (call != null && isOnCall()) {
+		if (call != null && call.isOnCall())
 			call.hangup();
-			call = null;
-		}
+	}
+	
+	private void onHang() {
+		// if the network get down, the user can't send "bye" after the receiver timeout, so if it tries to call "hang()" before continue
+		hang();
+		call = null;
+		
+		mute = true;
+		closeMediaApplication();
+		Receiver.call_state = UserAgent.UA_STATE_IDLE;
+		listener.onCallFinished();
 	}
 	
 	protected String getContactURL(String username,SipProvider sip_provider) {
@@ -170,8 +195,8 @@ public class VoiceModule implements ExtendedCallListener {
 		}
 
 		return username + "@" + IpAddress.localIpAddress
-		+ (sip_provider.getPort() != 0?":"+sip_provider.getPort():"")
-		+ ";transport=" + sip_provider.getDefaultTransport();		
+				+ (sip_provider.getPort() != 0?":"+sip_provider.getPort():"")
+				+ ";transport=" + sip_provider.getDefaultTransport();		
 	}
 		
 	@Override
@@ -207,10 +232,13 @@ public class VoiceModule implements ExtendedCallListener {
 		log.debug("===========> onCallAccepted");
 		
 		Receiver.call_state = UserAgent.UA_STATE_INCALL;
-		makeToast(R.string.connection_established);
 		RtpStreamReceiver.good = RtpStreamReceiver.lost = RtpStreamReceiver.loss = RtpStreamReceiver.late = 0;
-		mute = false;
-		speakerMode = AudioManager.MODE_IN_CALL;
+		// on each new call, the mute state is reset to "true"
+		mute = true;
+		
+		if (getSpeaker() != AudioManager.MODE_IN_CALL &&
+				getSpeaker() != AudioManager.MODE_NORMAL)
+			setSpeaker(AudioManager.MODE_IN_CALL);
 		
 		SessionDescriptor remote_sdp = new SessionDescriptor(sdp);
 		SessionDescriptor new_sdp = new SessionDescriptor(local_sdp.getOrigin(),
@@ -223,6 +251,7 @@ public class VoiceModule implements ExtendedCallListener {
 		call.setLocalSessionDescriptor(local_sdp.toString());
 
 		Codecs.Map codecs = Codecs.getCodec(local_sdp);
+		@SuppressWarnings("unused")
 		int local_audio_port = 0,
 			local_video_port = 0,
 			dtmf_pt = 0,
@@ -265,8 +294,9 @@ public class VoiceModule implements ExtendedCallListener {
 				audio_out, codecs.codec.samp_rate(),
 				user_profile.audio_sample_size,
 				codecs.codec.frame_size(), null, codecs, dtmf_pt);
-		audio_app.startMedia();		
-		setSpeaker(speakerMode);
+		audio_app.startMedia();
+		
+		listener.onCallStarted();
 	}
 
 	@Override
@@ -274,22 +304,20 @@ public class VoiceModule implements ExtendedCallListener {
 		log.debug("===========> onCallCanceling");
 	}
 
+	// called when the user hangs the call
 	@Override
 	public void onCallClosed(Call call, Message resp) {
 		log.debug("===========> onCallClosed");
 
-		Receiver.call_state = UserAgent.UA_STATE_IDLE;
-		makeToast(R.string.connection_closed);
-		
-		if (audio_app != null) {
-			audio_app.stopMedia();
-			audio_app = null;
-		}
+		onHang();
 	}
 
+	// called when the user is kicked from the conference
 	@Override
 	public void onCallClosing(Call call, Message bye) {
 		log.debug("===========> onCallClosing");
+		
+		onHang();
 	}
 
 	@Override
@@ -333,8 +361,8 @@ public class VoiceModule implements ExtendedCallListener {
 	public void onCallRefused(Call call, String reason, Message resp) {
 		log.debug("===========> onCallRefused");
 		
-		Receiver.call_state = UserAgent.UA_STATE_IDLE;	
-		makeToast(R.string.connection_refused);
+		Receiver.call_state = UserAgent.UA_STATE_IDLE;
+		listener.onCallRefused();
 	}
 
 	@Override
@@ -348,6 +376,8 @@ public class VoiceModule implements ExtendedCallListener {
 	}
 
 	public boolean isMuted() {
+		if (!isOnCall())
+			return true;
 		return mute;
 	}
 	
@@ -357,25 +387,26 @@ public class VoiceModule implements ExtendedCallListener {
 			audio_app.muteMedia();
 		}
 	}
+	
+	private void closeMediaApplication() {
+		if (audio_app != null) {
+			audio_app.stopMedia();
+			audio_app = null;
+		}
+	}
 
 	public int getSpeaker() {
-		return speakerMode;
+		return RtpStreamReceiver.speakermode;
 	}
 
 	public void setSpeaker(int mode) {
-		if (audio_app != null) {
-			speakerMode = mode;
-			audio_app.speakerMedia(speakerMode);
-		}
+		if (audio_app != null)
+			audio_app.speakerMedia(mode);
+		RtpStreamReceiver.speakermode = mode;
 	}
 	
-	private void makeToast(final int resId) {
-		((Activity) context).runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				Toast.makeText(context, resId, Toast.LENGTH_SHORT).show();
-			}
-		});
+	public void setListener(OnCallListener listener) {
+		this.listener = listener;
 	}
-	
+
 }

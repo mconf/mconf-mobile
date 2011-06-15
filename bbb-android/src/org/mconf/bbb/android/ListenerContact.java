@@ -15,4 +15,9 @@ public class ListenerContact extends Listener{
 		this.setTalking(listener.isTalking());
 		this.setUserId(listener.getUserId());
 	}
+
+	public String getListenerName()
+	{
+		return this.getCidName();
+	}
 }

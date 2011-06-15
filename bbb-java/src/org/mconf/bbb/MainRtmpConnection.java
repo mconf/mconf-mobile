@@ -83,6 +83,7 @@ import com.flazr.rtmp.message.Control;
 public class MainRtmpConnection extends RtmpConnection {
 
     private static final Logger log = LoggerFactory.getLogger(MainRtmpConnection.class);
+	private boolean connected = false;
     
 	public MainRtmpConnection(ClientOptions options, BigBlueButtonClient context) {
 		super(options, context);
@@ -125,8 +126,26 @@ public class MainRtmpConnection extends RtmpConnection {
         Command connect = new CommandAmf0("connect", object, meeting.getFullname(), meeting.getRole(), meeting.getConference(), meeting.getMode(), meeting.getRoom(), meeting.getVoicebridge(), meeting.getRecord().equals("true"), meeting.getExternUserID());
 
         writeCommandExpectingResult(e.getChannel(), connect);
+        
+		for (IBigBlueButtonClientListener l : context.getListeners()) {
+			l.onConnected();
+		}
+		
+		connected = true;
 	}
 	
+	@Override
+	public void channelDisconnected(ChannelHandlerContext ctx,
+			ChannelStateEvent e) throws Exception {
+		super.channelDisconnected(ctx, e);
+		log.debug("Rtmp Channel Disconnected");
+		for (IBigBlueButtonClientListener l : context.getListeners()) {
+			l.onDisconnected();
+		}
+		
+		connected = false;
+	}
+
     @SuppressWarnings("unchecked")
 	public String connectGetCode(Command command) {
     	return ((Map<String, Object>) command.getArg(0)).get("code").toString();
@@ -205,4 +224,7 @@ public class MainRtmpConnection extends RtmpConnection {
 		return context;
 	}
 	
+	public boolean isConnected() {
+		return connected;
+	}
 }

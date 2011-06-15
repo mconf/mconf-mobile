@@ -46,5 +46,12 @@ public class Contact extends Participant {
 	public int getChatStatus() {
 		return chatStatus;
 	}
+	
+	public String getContactName()
+	{
+		String name = this.getName();
+		return name;
+	}
+	
 
 }

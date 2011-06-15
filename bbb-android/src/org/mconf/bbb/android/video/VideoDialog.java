@@ -37,11 +37,11 @@ public class VideoDialog extends Dialog {
 	private int userId;
 	private String name;
 	
-	public VideoDialog(Context context, int userIdLocal, String nameLocal) {
+	public VideoDialog(Context context, int userId, String name) {
 		super(context);
 		
-		setVideoId(userIdLocal);
-		setVideoName(nameLocal);
+		this.userId = userId;
+		this.name = name;
 		
 		requestWindowFeature(Window.FEATURE_NO_TITLE); //Removes the title from the Dialog
 		setContentView(R.layout.video_window);
@@ -52,11 +52,10 @@ public class VideoDialog extends Dialog {
 //		windowAttributes.flags = android.view.WindowManager.LayoutParams.FLAG_SCALED; //Removes the title from the dialog and removes the border also		 
 		getWindow().setAttributes(windowAttributes);
 		
-		videoWindow = (VideoSurface) findViewById(R.id.video_window);
-		videoWindow.start(userId, true);
-		
 		setTitle(name);
 		setCancelable(true);		
+
+		videoWindow = (VideoSurface) findViewById(R.id.video_window);
 	}
 	
 	private void setVideoId(int userIdLocal){
@@ -76,9 +75,22 @@ public class VideoDialog extends Dialog {
 	}
 	
 	@Override
+	protected void onStart() {
+		super.onStart();
+		resume();
+	}
+	
+	@Override
 	protected void onStop() {
+		pause();
 		super.onStop();
+	}
 
-		videoWindow.onPause();
+	public void pause() {
+		videoWindow.stop();
+	}
+	
+	public void resume() {
+		videoWindow.start(userId, true);
 	}
 }

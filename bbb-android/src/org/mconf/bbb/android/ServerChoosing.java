@@ -52,8 +52,9 @@ public class ServerChoosing extends Activity  {
 					
 					Intent callLogin = new Intent (LoginPage.SERVER_CHOSED);
 					String serverURL=text.getText().toString();
-					if(serverURL.charAt(serverURL.length()-1)=='/')
-			             serverURL=serverURL.substring(0, serverURL.length() - 1);
+					while (serverURL.endsWith("/")) {
+						serverURL = serverURL.substring(0, serverURL.length() - 1);
+					}					
 					
 					addServer(serverURL);
 					callLogin.putExtra("serverURL", serverURL);
@@ -112,8 +113,8 @@ public class ServerChoosing extends Activity  {
 			this.serverFile = this.getSharedPreferences("storedServers", MODE_PRIVATE);
 		}
 		// always insert the prav servers to the list
-		addServer("http://devbbb-mconf.no-ip.org");
-		addServer("http://bbb-mconf.no-ip.org");
+		addServer("http://mconf.inf.ufrgs.br");
+//		addServer("http://mconfdev.inf.ufrgs.br");
 		this.storedServers = (Map<String, String>) serverFile.getAll();
 	}
 	

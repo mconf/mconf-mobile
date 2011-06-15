@@ -1,13 +1,18 @@
 package org.mconf.bbb.api;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 public class JoinService {
 	private static final Logger log = LoggerFactory.getLogger(JoinService.class);
@@ -19,6 +24,11 @@ public class JoinService {
 	public JoinedMeeting getJoinedMeeting() {
 		return joinedMeeting;
 	}
+	
+	public void resetJoinedMeeting()
+	{
+		joinedMeeting=null;
+	}
 
 	public List<Meeting> getMeetings() {
 		return meetings.getMeetings();
@@ -28,7 +38,15 @@ public class JoinService {
 		return serverUrl;
 	}
 
-	public boolean load(String serverUrl) {
+	public static final int E_OK = 0;
+	public static final int E_LOAD_HTTP_REQUEST = 1;
+	public static final int E_LOAD_PARSE_MEETINGS = 2;
+	
+	public int load(String serverUrl) {
+		while (serverUrl.endsWith("/")) {
+			serverUrl = serverUrl.substring(0, serverUrl.length() - 1);
+		}
+		
 		this.serverUrl = serverUrl;
 		
 		String getMeetingsUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?action=getMeetings";
@@ -41,55 +59,65 @@ public class JoinService {
 			method.releaseConnection();
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		
-		if (strMeetings == null) {
 			log.info("Can't connect to {}", serverUrl);
-			return false;
+			return E_LOAD_HTTP_REQUEST;
 		}
 		
-		meetings.parse(strMeetings);
+		try {
+			meetings.parse(strMeetings);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("This server doesn't support mobile access");
+			return E_LOAD_PARSE_MEETINGS;
+		}
 		log.debug(meetings.toString());
 		
-		return true;
+		return E_OK;
 	}
 
-	public JoinedMeeting join(String meetingID, String name, boolean moderator) {
+	public boolean join(String meetingID, String name, boolean moderator) {
 		for (Meeting m : meetings.getMeetings()) {
 			log.info(m.getMeetingID());
 			if (m.getMeetingID().equals(meetingID)) {
 				return join(m, name, moderator);
 			}
 		}
-		return null;
+		return false;
 	}
 	
-//	public boolean createMeeting(Meeting meeting) {
-//		String create = api.createMeeting(meeting.getMeetingID(), 
-//				"Welcome message", 
-//				meeting.getModeratorPW(), 
-//				meeting.getAttendeePW(), 
-//				0, 
-//				serverUrl);
-//		log.debug("createMeeting: {}", create);
-//		return create.equals(meeting.getMeetingID()); 
-//	}
-	
-	public JoinedMeeting join(Meeting meeting, String name, boolean moderator) {
-//		if (api.isMeetingRunning(meeting.getMeetingID()).equals("false")) {
-//			if (!createMeeting(meeting)) {
-//				log.error("The meeting {} is not running", meeting.getMeetingID());
-//				return null;
-//			}
-//		}
+	public boolean createMeeting(String meetingID) {
+		String createUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?action=create"
+			+ "&meetingID=" + urlEncode(meetingID);
+		log.debug(createUrl);
 		
+		String response = "Unknown error";
+		try {
+			HttpClient client = new HttpClient();
+			HttpMethod method = new GetMethod(createUrl);
+			client.executeMethod(method);
+			response = method.getResponseBodyAsString().trim();
+			method.releaseConnection();
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("Can't create the meeting {}", meetingID);
+		}
+		
+		if (meetingID.equals(response))
+			return true;
+		else {
+			log.error(response);
+			return false;
+		}
+	}
+	
+	public boolean join(Meeting meeting, String name, boolean moderator) {
 		String joinUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?action=join"
 			+ "&meetingID=" + urlEncode(meeting.getMeetingID())
 			+ "&fullName=" + urlEncode(name)
 			+ "&password=" + urlEncode(moderator? meeting.getModeratorPW(): meeting.getAttendeePW());
 		log.debug(joinUrl);
 		
-		JoinedMeeting joinedMeeting = new JoinedMeeting();
+		joinedMeeting = new JoinedMeeting();
 		try {
 			HttpClient client = new HttpClient();
 			HttpMethod method = new GetMethod(joinUrl);
@@ -100,16 +128,46 @@ public class JoinService {
 			e.printStackTrace();
 			log.error("Can't join the meeting {}", meeting.getMeetingID());
 			
-			return null;
+			return false;
 		}
 		
 		if (joinedMeeting.getReturncode().equals("SUCCESS")) {
-			this.joinedMeeting = joinedMeeting;
+			return true;
 		} else {
 			log.error(joinedMeeting.getMessage());
+			return false;
+		}
+	}
+	
+	public boolean join(String serverUrl, String joinUrl) {
+		this.serverUrl = serverUrl;
+		String enterUrl = serverUrl + "/bigbluebutton/api/enter";
+			
+		joinedMeeting = new JoinedMeeting();
+		try {
+			HttpClient client = new HttpClient();
+			HttpMethod method = new GetMethod(joinUrl);
+			client.executeMethod(method);
+//			log.info(method.getResponseBodyAsString().trim());
+			method.releaseConnection();
+
+			method = new GetMethod(enterUrl);
+			client.executeMethod(method);
+			joinedMeeting.parse(method.getResponseBodyAsString().trim());
+			method.releaseConnection();
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("Can't join the url {}", joinUrl);
+			
+			return false;
 		}
 		
-		return joinedMeeting;
+		if (joinedMeeting.getReturncode().equals("SUCCESS")) {
+			return true;
+		} else {
+			log.error(joinedMeeting.getMessage());
+			return false;
+		}
 	}
 
 	public static String urlEncode(String s) {	
