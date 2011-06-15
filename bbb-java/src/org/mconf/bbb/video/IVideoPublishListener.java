@@ -22,7 +22,6 @@
 package org.mconf.bbb.video;
 
 import org.mconf.bbb.BigBlueButtonClient;
-import org.mconf.bbb.users.Participant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mconf.bbb.BigBlueButtonClient;
-import org.mconf.bbb.android.Client;
 import org.mconf.bbb.video.IVideoPublishListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +35,11 @@ public class VideoPublish extends Thread implements RtmpReader {
 	private final List<Video> framesList = new ArrayList<Video>();
 	
 	private VideoPublishHandler videoPublishHandler;
+	
+	private BigBlueButtonClient context;
 	        
-    public VideoPublish(int userId, int bufSize, int widthCaptureResolution, int heightCaptureResolution, int frameRate, int bitRate, int GOP) {
+    public VideoPublish(BigBlueButtonClient context, int userId, int bufSize, int widthCaptureResolution, int heightCaptureResolution, int frameRate, int bitRate, int GOP) {
+    	this.context = context;
     	sharedBuffer = new byte[bufSize]; //the encoded frame will never be bigger than the not encoded
     	initEncoder(widthCaptureResolution, heightCaptureResolution, frameRate, bitRate, GOP);
     	
@@ -46,7 +48,7 @@ public class VideoPublish extends Thread implements RtmpReader {
     }
     
     public void startPublisher(){
-    	videoPublishHandler = new VideoPublishHandler(userId, streamId, this, Client.bbb);
+    	videoPublishHandler = new VideoPublishHandler(userId, streamId, this, context);
     	videoPublishHandler.start();
     }
     
@@ -85,7 +87,7 @@ public class VideoPublish extends Thread implements RtmpReader {
     
     public int endEncoding(){
     	isCapturing = false;
-    	videoPublishHandler.stop(Client.bbb);
+    	videoPublishHandler.stop(context);
     	
     	endEncoder();
     	return 0;

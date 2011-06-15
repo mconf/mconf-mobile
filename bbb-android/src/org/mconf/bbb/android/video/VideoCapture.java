@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.mconf.bbb.android.BigBlueButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,7 +141,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         PixelFormat pixelFormat = new PixelFormat();
 		PixelFormat.getPixelFormatInfo(parameters.getPreviewFormat(),pixelFormat);
 		final int bufSize = width*height*pixelFormat.bitsPerPixel/8;
-		mVideoPublish = new VideoPublish(userId, bufSize, width, height, frameRate, bitRate, GOP); 
+		mVideoPublish = new VideoPublish(((BigBlueButton) getContext().getApplicationContext()).getHandler(), userId, bufSize, width, height, frameRate, bitRate, GOP); 
         
         //java reflection (idea from http://code.google.com/p/android/issues/detail?id=2794):
         //This kind of java reflection is safe to be used as explained in the official android documentation
