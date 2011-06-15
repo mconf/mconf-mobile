@@ -57,6 +57,7 @@ public class TestPrivateChat extends ActivityInstrumentationTestCase2<LoginPage>
 
 
 		solo.clickOnMenuItem(solo.getString(R.string.close_chat));
+		solo.waitForText(solo.getString(R.string.list_listeners));
 		solo.assertCurrentActivity("didn't close the chat", Client.class);
 	}
 	

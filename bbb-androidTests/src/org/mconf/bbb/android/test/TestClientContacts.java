@@ -51,6 +51,11 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		TestLogin.connectOnMeeting(solo,  1);
 	}
 
+//	public void testDisconnected()
+//	{
+//		
+//	}
+	//TODO how?
 
 	public	void testCloseRoom()
 	{

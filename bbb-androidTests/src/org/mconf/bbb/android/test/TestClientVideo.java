@@ -47,7 +47,7 @@ public class TestClientVideo extends ActivityInstrumentationTestCase2<LoginPage>
 		TestLogin.connectOnMeeting(solo,  1);
 	}
 	
-	public void howVideo()
+	public void testShowVideo()
 	{
 		//TODO make user i put on the conference have video
 		solo.clickLongInList(LINE_NUMBER);

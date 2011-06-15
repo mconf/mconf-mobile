@@ -90,6 +90,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public static final int MENU_RECONNECT = Menu.FIRST + 10;
 	public static final int MENU_MUTE_ROOM = Menu.FIRST + 11;
 	public static final int MENU_UNMUTE_ROOM = Menu.FIRST + 12;
+	public static final int MENU_MEETING_INF = Menu.FIRST + 13;
 
 	public static final int POPUP_MENU_KICK_USER = Menu.FIRST;
 	public static final int POPUP_MENU_MUTE_LISTENER = Menu.FIRST + 1;
@@ -564,6 +565,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, R.string.logout).setIcon(android.R.drawable.ic_menu_revert);
 			menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 			menu.add(Menu.NONE, MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
+			menu.add(Menu.NONE, MENU_MEETING_INF, Menu.NONE, R.string.meeting_information).setIcon(android.R.drawable.ic_menu_info_details);
 			//test purposes only
 			//			menu.add(Menu.NONE, MENU_DISCONNECT, Menu.NONE, "Disconnect").setIcon(android.R.drawable.ic_dialog_alert);
 		} else {
@@ -651,8 +653,14 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		case MENU_UNMUTE_ROOM:
 			getBigBlueButton().muteUnmuteRoom(false);
 			return true;
+		case MENU_MEETING_INF:
+			MeetingInfDialog meeting = new MeetingInfDialog(this);
+			meeting.show();
+			meeting.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.hurricane_transparent);
+			return true;
 		default:			
 			return super.onOptionsItemSelected(item);
+			
 		}
 	}
 
