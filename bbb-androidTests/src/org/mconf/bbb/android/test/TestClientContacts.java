@@ -1,5 +1,8 @@
 package org.mconf.bbb.android.test;
 
+import java.util.Random;
+
+import org.mconf.bbb.android.BigBlueButton;
 import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.Contact;
 import org.mconf.bbb.android.ContactAdapter;
@@ -7,25 +10,33 @@ import org.mconf.bbb.android.CustomListview;
 import org.mconf.bbb.android.LoginPage;
 import org.mconf.bbb.android.PrivateChat;
 import org.mconf.bbb.android.R;
+import org.mconf.bbb.users.IParticipant;
 
-import android.app.Activity;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.jayway.android.robotium.solo.Solo;
 
+/*
+ * \TODO implement some test cases as a viewer
+ * \TODO better implement the test case for the longpress menu items
+ * \TODO remove the static stuff, or move it to the Common class
+ * \TODO don't use a fixed listview id on tests - try to randomize between the existent users
+ * \TODO implement video test
+ */
 public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPage>  {
 
 	private Solo solo;
-	public static int LINE_NUMBER = 2;
+	
 	public TestClientContacts() {
 		super("org.mconf.bbb.android", LoginPage.class);
 	}
-
+	
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		this.solo = new Solo(getInstrumentation(), getActivity());
-		loginAsModerator();
+		Common.addContactsToMeeting(solo, 5);
+		Common.loginAsModerator(solo);
 	}
 
 	@Override
@@ -36,28 +47,11 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 			e.printStackTrace();
 		}
 		getActivity().finish();
+		Common.removeContactsFromMeeting();
 		super.tearDown();
-		TestLogin.removeContactsFromMeeting();
 	}
-
-
-	public	void loginAsModerator()
-	{
-		TestLogin.connectOnMeeting(solo, 0);
-	}
-
-	void loginAsViewer()
-	{
-		TestLogin.connectOnMeeting(solo,  1);
-	}
-
-//	public void testDisconnected()
-//	{
-//		
-//	}
-	//TODO how?
-
-	public	void testCloseRoom()
+	
+	public void testCloseRoom()
 	{
 
 		solo.assertCurrentActivity("not on Client", Client.class);
@@ -68,15 +62,13 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 
 	public void Quit()
 	{
-
-		Activity client = solo.getCurrentActivity();
+		assertFalse(solo.getCurrentViews().isEmpty());
 		solo.assertCurrentActivity("not on Client", Client.class);
 		solo.clickOnMenuItem(solo.getString(R.string.quit));
-
-		assertFalse(solo.getCurrentActivity()==client); //TODO?? how to know that it's over
-		//assertation failed error
+		// current activity is not visible anymore
+		assertTrue(solo.getCurrentViews().isEmpty());
 	}
-
+	
 	public void testPublicChat()
 	{
 		String test = "testing chat";
@@ -96,106 +88,131 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 
 	public void testAbout()
 	{
-
 		solo.assertCurrentActivity("not on Client", Client.class);
 		solo.clickOnMenuItem(solo.getString(R.string.menu_about));
 		solo.scrollDown();
-		solo.clickOnButton(0);
+		solo.clickOnButton(solo.getString(R.string.close));
 		solo.assertCurrentActivity("didn't close the About", Client.class);
 	}
 
 	public void testRaiseHand()
 	{
-
 		solo.assertCurrentActivity("not on Client", Client.class);
-		assertFalse(isMyHandRaised(solo));
+
+		CustomListview contacts = (CustomListview) solo.getView(R.id.contacts_list);
+		ContactAdapter contactAdapter = (ContactAdapter) contacts.getAdapter();
+		int myUserId = ((BigBlueButton) solo.getCurrentActivity().getApplication()).getHandler().getMyUserId();
+		Contact contact = (Contact) contactAdapter.getUserById(myUserId);
+		assertFalse(contact.isRaiseHand());
+
 		solo.clickOnMenuItem(solo.getString(R.string.raise_hand));
-		assertTrue(isMyHandRaised(solo));
+		int myPosition = contactAdapter.getPositionById(myUserId);
+		solo.waitForView(contacts.getChildAt(myPosition).findViewById(R.id.raise_hand).getClass());	
+		assertTrue(contact.isRaiseHand());
 	}
-
-	void Kick(int num)
-	{
-
-		solo.assertCurrentActivity("not on Client", Client.class);
-		String name= getContactName(num, solo);
-		if(!name.equals(TestLogin.NAME))
-
-			solo.clickLongInList(num);
-		else{
-			solo.clickLongInList(num+1);
-			name= getContactName(num+1, solo);
-		}
-
-		solo.clickOnText(solo.getString(R.string.kick));
-		System.out.println(name);
-		assertFalse(solo.searchText(name));
-	}
-
+	
 	public void testKick()
 	{
-		Kick(LINE_NUMBER);
-
+		solo.assertCurrentActivity("not on Client", Client.class);
+		
+		CustomListview contacts = (CustomListview) solo.getView(R.id.contacts_list);
+		assertFalse(contacts == null);
+		assertTrue(solo.getCurrentViews().contains(contacts));
+		
+		ContactAdapter contactAdapter = (ContactAdapter) contacts.getAdapter();
+		
+		for (int i = 0; i < contactAdapter.getCount(); ++i) {
+			IParticipant contact = (IParticipant) contactAdapter.getItem(i);
+			String name = contact.getName();
+			// look for a user different than me
+			if (!name.startsWith(Common.DEFAULT_NAME)) {
+				solo.clickLongOnText(name);
+				solo.clickOnText(solo.getString(R.string.kick));
+				assertFalse(solo.searchText(name));
+				break;
+			}
+		}
 	}
-
+	
 	public void testOpenChatLongPress()
 	{
+		int num = 2;
 
-
-		String name= getContactName(LINE_NUMBER, solo);
-		if(!name.equals(TestLogin.NAME))
-
-			solo.clickLongInList(LINE_NUMBER);
-		else{
-			solo.clickLongInList(LINE_NUMBER+1);
-			name= getContactName(LINE_NUMBER+1, solo);
-		}
+		String name= getContactName(num, solo);
+		solo.clickLongInList(num);
 		solo.clickOnText(solo.getString(R.string.open_private_chat));
 		solo.assertCurrentActivity("didn't open private chat", PrivateChat.class);
 		String title = solo.getCurrentActivity().getTitle().toString();
 		assertTrue(title.contains(name));
 
 	}
-
-	public void assignPresenter(int num)
-	{
-
-		assertFalse(isPresenterAssigned(num, solo));
-		solo.clickLongInList(num);
-		solo.clickOnText(solo.getString(R.string.assign_presenter));
-		assertTrue(isPresenterAssigned(num, solo));
-	}
-
+	
 	public void testAssignPresenter()
 	{
-		assignPresenter(LINE_NUMBER);
+		CustomListview contacts = (CustomListview) solo.getView(R.id.contacts_list);
+		assertNotNull(contacts);
+		assertTrue(solo.getCurrentViews().contains(contacts));
+		
+		ContactAdapter contactAdapter = (ContactAdapter) contacts.getAdapter();
+		
+		for (int i = 0; i < contactAdapter.getCount(); ++i) {
+			IParticipant contact = (IParticipant) contactAdapter.getItem(i);
+			
+			if (!contact.getStatus().isPresenter()) {
+				solo.clickLongInList(i);
+				solo.clickOnText(solo.getString(R.string.assign_presenter));
+				solo.waitForView(contacts.getChildAt(i).findViewById(R.id.presenter).getClass());
+				assertTrue(contact.getStatus().isPresenter());
+				assertTrue(contacts.getChildAt(i).findViewById(R.id.presenter).isShown());
+				break;
+			}
+		}
+	}
+
+	// different than me
+	public IParticipant getRandomUser() {
+		CustomListview contacts = (CustomListview) solo.getView(R.id.contacts_list);
+		assertFalse(contacts == null);
+		assertTrue(solo.getCurrentViews().contains(contacts));
+		
+		ContactAdapter contactAdapter = (ContactAdapter) contacts.getAdapter();
+		
+		while (true) {
+			IParticipant contact = (IParticipant) contactAdapter.getItem(new Random().nextInt(contactAdapter.getCount()));
+			if (!contact.getName().startsWith(Common.DEFAULT_NAME))
+				return contact;
+		}
 	}
 
 	public void testOpenChat()
 	{
 
-
-
-		String name = getContactName(LINE_NUMBER, solo);
-		if(!name.equals(TestLogin.NAME))
-
-			solo.clickInList(LINE_NUMBER);
-		else{
-			name= getContactName(LINE_NUMBER+1, solo);
-			solo.clickInList(LINE_NUMBER+1);
-			
-		}
+		int num = 2;
+		
+		solo.waitForText(Common.startsWith(Common.DEFAULT_NAME));
+		String name = getContactName(num, solo);
+		solo.clickInList(num);
 		solo.assertCurrentActivity("didn't open private chat", PrivateChat.class);
 		String title = solo.getCurrentActivity().getTitle().toString();
 		assertTrue(title.contains(name));
 	}
-
+	
+//	public void testShowVideo()
+//	{
+//		//TODO make user i put on the conference have video
+//		solo.clickLongInList(2);
+//		solo.clickOnText(solo.getString(R.string.show_video));
+//		solo.setActivityOrientation(Solo.LANDSCAPE);
+//		solo.assertCurrentActivity("where's the video?", VideoFullScreen.class);
+//	}
+		
 	public static void openPrivateChat(Solo solo, int num)
 	{
-		TestLogin.connectOnMeeting(solo, 0);
-
+		Common.loginAsModerator(solo);
+		
 		String name = getContactName(num, solo);
 
-		if(!name.equals(TestLogin.NAME))
+		if(!name.equals(Common.DEFAULT_NAME))
 
 			solo.clickInList(num);
 		else{
@@ -215,45 +232,10 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		solo.waitForText(solo.getString(R.string.list_participants));
 		CustomListview contacts = (CustomListview) solo.getView(R.id.contacts_list);
 		ContactAdapter contactAdapter = (ContactAdapter) contacts.getAdapter();
-		Contact contact = contactAdapter.getUserById(contactAdapter.getUserId(num-1));
+		// solo list starts by 1, while Java lists start by 0
+		assertTrue(num <= contactAdapter.getCount());
+		Contact contact = (Contact) contactAdapter.getItem(num - 1);
 		return contact.getContactName();
 	}
-
-	private static boolean isMyHandRaised(Solo solo)
-	{
-		solo.waitForText(solo.getString(R.string.list_participants));
-		CustomListview contacts = (CustomListview) solo.getView(R.id.contacts_list);
-		ContactAdapter contactAdapter = (ContactAdapter) contacts.getAdapter();
-		Contact contact = contactAdapter.getUserById(getMyId(solo));
-		assertNotNull(contact);
-		return contact.isRaiseHand();
-	}
 	
-	private static int getMyId(Solo solo)
-	{
-		solo.waitForText(solo.getString(R.string.list_participants));
-		CustomListview contacts = (CustomListview) solo.getView(R.id.contacts_list);
-		ContactAdapter contactAdapter = (ContactAdapter) contacts.getAdapter();
-		for(int id=0; id<contacts.getCount(); id++)
-		{
-			Contact contact = contactAdapter.getUserById(contactAdapter.getUserId(id));
-			if(contact!=null)
-				if(contact.getName().equals(TestLogin.NAME))
-					return contact.getUserId();
-		}
-		return -1;
-	}
-
-	private static boolean isPresenterAssigned(int num, Solo solo)
-	{
-		solo.waitForText(solo.getString(R.string.list_participants));
-		CustomListview contacts = (CustomListview) solo.getView(R.id.contacts_list);
-		ContactAdapter contactAdapter = (ContactAdapter) contacts.getAdapter();
-		Contact contact = contactAdapter.getUserById(contactAdapter.getUserId(num-1));
-		return contact.isPresenter();
-	}
-
-
-
-
 }

@@ -10,6 +10,7 @@
 	<string name="login_updating">Atualizando lista de salas</string>
 	<string name="login_cant_contact_server">Não foi possível conectar ao servidor. Tente
 		novamente mais tarde</string>
+	<string name="login_unsupported_server">O servidor não possui suporte a dispositivos móveis</string>
 	<string name="wait">Por favor, aguarde</string>
 	<string name="welcome">Seja bem-vindo</string>
 	<string name="cancel">Cancelar</string>

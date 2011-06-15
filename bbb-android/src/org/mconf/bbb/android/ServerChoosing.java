@@ -52,8 +52,9 @@ public class ServerChoosing extends Activity  {
 					
 					Intent callLogin = new Intent (LoginPage.SERVER_CHOSED);
 					String serverURL=text.getText().toString();
-					if(serverURL.charAt(serverURL.length()-1)=='/')
-			             serverURL=serverURL.substring(0, serverURL.length() - 1);
+					while (serverURL.endsWith("/")) {
+						serverURL = serverURL.substring(0, serverURL.length() - 1);
+					}					
 					
 					addServer(serverURL);
 					callLogin.putExtra("serverURL", serverURL);
