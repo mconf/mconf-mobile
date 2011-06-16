@@ -10,6 +10,7 @@
 	<string name="login_cant_join">Can\'t join the meeting</string>
 	<string name="login_updating">Updating meeting list</string>
 	<string name="login_cant_contact_server">Can\'t contact the server. Try it later</string>
+	<string name="login_unsupported_server">The server doesn\'t provide mobile access</string>
 	<string name="wait">Please wait</string>
 	<string name="welcome">Welcome</string>
 	<string name="cancel">Cancel</string>

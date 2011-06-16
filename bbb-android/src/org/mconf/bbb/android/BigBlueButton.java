@@ -4,6 +4,8 @@ import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.android.voip.VoiceModule;
 
 import android.app.Application;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 public class BigBlueButton extends Application {
 	private BigBlueButtonClient handler = null;
@@ -36,6 +38,7 @@ public class BigBlueButton extends Application {
 			voice.hang();
 		voice = null;
 	}
+	
 	/*
 	 *	GETTERS AND SETTERS
 	 */
