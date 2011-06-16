@@ -2,7 +2,6 @@ package org.mconf.bbb.android.video;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.List;
 
 import org.mconf.bbb.android.BigBlueButton;
 import org.slf4j.Logger;
@@ -76,9 +75,12 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 		this.userId = videoId;
 	}	
     
-    public void centerPreview(boolean inDialog) {// \TODO Gian change the screen centering. Do it like the received video centering 
-    	// Centers the preview on the screen
-    	LayoutParams layoutParams = VideoCentering.getVideoLayoutParams(VideoCentering.getDisplayMetrics(this.getContext(), inDialog), this.getLayoutParams());
+	// Centers the preview on the screen keeping the capture aspect ratio.
+    // Remember to call this function after you change the width or height if you want to keep the aspect and the video centered
+    public void centerPreview(boolean inDialog) {
+    	VideoCentering mVideoCentering = new VideoCentering();
+    	mVideoCentering.setAspectRatio(width/(float)height);
+    	LayoutParams layoutParams = mVideoCentering.getVideoLayoutParams(mVideoCentering.getDisplayMetrics(this.getContext(), inDialog), this.getLayoutParams());
 		setLayoutParams(layoutParams);   	
 	}
     

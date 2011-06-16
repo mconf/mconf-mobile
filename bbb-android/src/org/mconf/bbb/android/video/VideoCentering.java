@@ -11,24 +11,25 @@ import android.view.ViewGroup.LayoutParams;
 
 public class VideoCentering {
 	private static final Logger log = LoggerFactory.getLogger(VideoCentering.class);
-	private static final float defaultAspectRatio = 4 / (float) 3;
+	public static final float DEFAULT_ASPECT_RATIO = 4 / (float) 3;
+	private float aspectRatio = DEFAULT_ASPECT_RATIO;
 	
-	public static LayoutParams getVideoLayoutParams(DisplayMetrics metrics, LayoutParams layoutParams) {		
+	public LayoutParams getVideoLayoutParams(DisplayMetrics metrics, LayoutParams layoutParams) {		
 		int h = 0, w = 0;
 		float displayAspectRatio = metrics.widthPixels / (float) metrics.heightPixels;
-		if (displayAspectRatio < defaultAspectRatio) {
+		if (displayAspectRatio < getAspectRatio()) {
 			w = metrics.widthPixels;
-			h = (int) (w / defaultAspectRatio);
+			h = (int) (w / getAspectRatio());
 		} else {
 			h = metrics.heightPixels;
-			w = (int) (h * defaultAspectRatio);			
+			w = (int) (h * getAspectRatio());			
 		}
 		layoutParams.width = w;
 		layoutParams.height = h;
 		return layoutParams;
 	}
 	
-	public static DisplayMetrics getDisplayMetrics(Context context, boolean inDialog){
+	public DisplayMetrics getDisplayMetrics(Context context, boolean inDialog){
 		DisplayMetrics metrics = new DisplayMetrics();
 		Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         display.getMetrics(metrics);
@@ -38,6 +39,14 @@ public class VideoCentering {
 			metrics.heightPixels -= 40;
 		}
         return metrics;
+	}
+
+	public void setAspectRatio(float aspectRatio) {
+		this.aspectRatio = aspectRatio;
+	}
+
+	public float getAspectRatio() {
+		return aspectRatio;
 	}	
 }
 
