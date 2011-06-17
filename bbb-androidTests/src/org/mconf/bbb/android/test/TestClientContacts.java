@@ -91,8 +91,19 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		solo.assertCurrentActivity("not on Client", Client.class);
 		solo.clickOnMenuItem(solo.getString(R.string.menu_about));
 		solo.scrollDown();
+		assertTrue(solo.searchText(solo.getString(R.string.about)));
 		solo.clickOnButton(solo.getString(R.string.close));
 		solo.assertCurrentActivity("didn't close the About", Client.class);
+	}
+	
+	public void testMeetingInformation()
+	{
+		solo.assertCurrentActivity("not on Client", Client.class);
+		solo.clickOnMenuItem(solo.getString(R.string.meeting_information));
+		solo.scrollDown();
+		assertTrue(solo.searchText(solo.getString(R.string.meeting_id)));
+		solo.clickOnButton(solo.getString(R.string.close));
+		solo.assertCurrentActivity("didn't close the Meeting Information", Client.class);
 	}
 
 	public void testRaiseHand()

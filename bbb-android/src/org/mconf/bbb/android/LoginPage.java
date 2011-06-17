@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import org.mconf.bbb.api.IMeeting;
 import org.mconf.bbb.api.JoinService;
 import org.mconf.bbb.api.Meeting;
 import org.slf4j.Logger;
@@ -325,7 +326,7 @@ public class LoginPage extends BigBlueButtonActivity {
 					@Override
 					public void run() {
 						spinnerAdapter.clear();
-						for (Meeting m : meetings) {
+						for (IMeeting m : meetings) {
 							spinnerAdapter.add(m.getMeetingID());
 						}
 

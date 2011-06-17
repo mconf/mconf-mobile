@@ -11,6 +11,8 @@
 <color name="chat_message">#000000</color>
 <color name="chat_time">#afbac0</color>
 <color name="text_link">#000000</color>
+<color name="room_information">#afbac0</color>
+
 <!--/resources-->
 
 <!-- 

@@ -34,4 +34,12 @@
         <item name="android:textColor">@color/chat_time</item>
         <item name="android:typeface">sans</item>
     </style>
+    
+    <style name="UsersOnline" parent="@android:style/TextAppearance.Small">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/room_information</item>
+        <item name="android:typeface">sans</item>
+        <item name="android:textStyle">italic</item>
+    </style>
 </resources>

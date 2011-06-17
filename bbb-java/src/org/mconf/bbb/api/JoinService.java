@@ -38,9 +38,9 @@ public class JoinService {
 		return serverUrl;
 	}
 	
-	public Meeting getMeetingById(String meetingID)
+	public IMeeting getMeetingById(String meetingID)
 	{
-		for(Meeting meeting:getMeetings())
+		for(IMeeting meeting:getMeetings())
 		{
 			if(meeting.getMeetingID().equals(meetingID))
 				return meeting;
@@ -86,7 +86,7 @@ public class JoinService {
 	}
 
 	public boolean join(String meetingID, String name, boolean moderator) {
-		for (Meeting m : meetings.getMeetings()) {
+		for (IMeeting m : meetings.getMeetings()) {
 			log.info(m.getMeetingID());
 			if (m.getMeetingID().equals(meetingID)) {
 				return join(m, name, moderator);
@@ -120,7 +120,7 @@ public class JoinService {
 		}
 	}
 	
-	public boolean join(Meeting meeting, String name, boolean moderator) {
+	public boolean join(IMeeting meeting, String name, boolean moderator) {
 		String joinUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?action=join"
 			+ "&meetingID=" + urlEncode(meeting.getMeetingID())
 			+ "&fullName=" + urlEncode(name)

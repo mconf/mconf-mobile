@@ -24,9 +24,9 @@ package org.mconf.bbb.android;
 
 import java.util.zip.Inflater;
 
+import org.mconf.bbb.api.IMeeting;
 import org.mconf.bbb.api.JoinService;
 import org.mconf.bbb.api.JoinedMeeting;
-import org.mconf.bbb.api.Meeting;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -86,7 +86,7 @@ public class MeetingInfDialog extends Dialog implements OnClickListener{
 		
 		
 
-		RelativeLayout relative = (RelativeLayout)findViewById(R.id.meeting_information);
+		//RelativeLayout relative = (RelativeLayout)findViewById(R.id.meeting_information);
 		CustomListview meetingInfList =(CustomListview)findViewById(R.id.meeting_infs_list);
 		meetingInfList.setAdapter(meetingAdapter);
 		
@@ -113,7 +113,7 @@ public class MeetingInfDialog extends Dialog implements OnClickListener{
 		return meetingID;
 	}
 
-	public Meeting getJoined()
+	public IMeeting getJoined()
 	{
 		JoinService joined = ((BigBlueButton) context.getApplicationContext()).getHandler().getJoinService();
 		String meetingID= joined.getJoinedMeeting().getMeetingID();

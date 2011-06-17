@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:background="@color/background" android:id="@+id/main">
+	<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/Scroll" android:layout_width="fill_parent"
+		android:layout_height="fill_parent" android:background="@color/background"
+		android:layout_above="@+id/audio_bar">
+		<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="fill_parent" android:layout_height="fill_parent">
+			<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="fill_parent" android:layout_height="wrap_content"
+				android:id="@+id/your_room" android:layout_alignParentTop="true">
+				<TextView android:layout_height="wrap_content"
+					android:layout_width="fill_parent" android:id="@+id/label_your"
+					android:layout_alignParentTop="true" android:textAppearance="@style/TitleStyle"
+					android:text="@string/your_room" android:gravity="center"
+					android:background="@color/title_background_onfocus"
+					android:minHeight="42dp" />
+
+				<include layout="@layout/conference" android:id="@+id/your_room" />
+			</RelativeLayout>
+
+			<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="fill_parent" android:layout_height="wrap_content"
+				android:id="@+id/privates" android:layout_below="@+id/your_room">
+
+				<TextView android:layout_height="wrap_content"
+					android:layout_width="fill_parent" android:id="@+id/label_private"
+					android:layout_alignParentTop="true" android:textAppearance="@style/TitleStyle"
+					android:text="@string/private_rooms" android:gravity="center"
+					android:background="@color/title_background_onfocus"
+					android:minHeight="42dp" />
+
+				<LinearLayout android:id="@+id/separator1"
+					xmlns:android="http://schemas.android.com/apk/res/android"
+					android:layout_width="fill_parent" android:layout_height="2dp"
+					android:background="@color/title_background" android:layout_below="@+id/label_private" />
+
+				<view class="org.mconf.bbb.android.CustomListview" android:id="@+id/private_rooms"
+					android:divider="@color/title_background_onfocus"
+					android:dividerHeight="2dp" android:layout_below="@+id/separator1"
+					android:layout_width="fill_parent" android:layout_height="fill_parent" />
+
+
+			</RelativeLayout>
+
+
+
+
+
+			<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="fill_parent" android:layout_height="fill_parent"
+				android:id="@+id/publics" android:layout_below="@+id/privates">
+				<TextView android:layout_width="fill_parent"
+					android:layout_height="wrap_content" android:id="@+id/label_public"
+					android:textAppearance="@style/TitleStyle" android:text="@string/public_rooms"
+					android:background="@color/title_background_onfocus"
+					android:minHeight="42dp" android:gravity="center"
+					android:layout_alignParentTop="true" />
+
+				<LinearLayout android:id="@+id/separator2"
+					xmlns:android="http://schemas.android.com/apk/res/android"
+					android:layout_width="fill_parent" android:layout_height="2dp"
+					android:background="@color/title_background" android:layout_below="@+id/label_public" />
+
+				<view class="org.mconf.bbb.android.CustomListview" android:id="@+id/public_rooms"
+					android:layout_width="fill_parent" android:layout_height="fill_parent"
+					android:divider="@color/title_background_onfocus"
+					android:dividerHeight="2dp" android:layout_below="@+id/separator2" />
+				<LinearLayout android:id="@+id/Bottom_separator"
+					xmlns:android="http://schemas.android.com/apk/res/android"
+					android:layout_width="fill_parent" android:layout_height="42dp"
+					android:background="@color/background" android:layout_below="@+id/public_rooms" />
+
+			</RelativeLayout>
+		</RelativeLayout>
+	</ScrollView>
+
+
+
+
+
+</RelativeLayout>
+

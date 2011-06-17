@@ -21,7 +21,8 @@ public class TestClientVideo extends ActivityInstrumentationTestCase2<LoginPage>
 	protected void setUp() throws Exception {
 		super.setUp();
 		this.solo = new Solo(getInstrumentation(), getActivity());
-		loginAsModerator();
+		Common.addContactsToMeeting(solo, 10);
+		Common.loginAsModerator(solo);
 	}
 
 	@Override
@@ -34,18 +35,10 @@ public class TestClientVideo extends ActivityInstrumentationTestCase2<LoginPage>
 		getActivity().finish();
 		super.tearDown();
 		
-		TestLogin.removeContactsFromMeeting();
+		Common.removeContactsFromMeeting();
 	}
 
-	public	void loginAsModerator()
-	{
-		TestLogin.connectOnMeeting(solo,  0);
-	}
-
-	public void loginAsViewer()
-	{
-		TestLogin.connectOnMeeting(solo,  1);
-	}
+	
 	
 	public void testShowVideo()
 	{

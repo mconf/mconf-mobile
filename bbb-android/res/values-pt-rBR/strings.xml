@@ -78,6 +78,9 @@
 		<string name="start_time">Horário de início</string>
 		<string name="participant_count">Contagem de participantes</string>
 		<string name="moderator_count">Contagem de moderadores</string>
+	<string name="your_room">Your Room</string>
+	<string name="public_rooms">Public Rooms</string>
+	<string name="private_rooms">Private Rooms</string>
 	<string name="about">
 		BBB-Android é uma implementação do cliente BigBlueButton para Android.
 		\nVersão ${VERSION}

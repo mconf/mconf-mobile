@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Meeting {
+public class Meeting implements IMeeting {
 	protected String returncode, 
 		meetingID,
 		attendeePW, 
@@ -44,109 +44,217 @@ public class Meeting {
 		this.attendees = new ArrayList<Attendee>();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#getReturncode()
+	 */
+	@Override
 	public String getReturncode() {
 		return returncode;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#setReturncode(java.lang.String)
+	 */
+	@Override
 	public void setReturncode(String returncode) {
 		this.returncode = returncode;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#getMeetingID()
+	 */
+	@Override
 	public String getMeetingID() {
 		return meetingID;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#setMeetingID(java.lang.String)
+	 */
+	@Override
 	public void setMeetingID(String meetingID) {
 		this.meetingID = meetingID;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#getAttendeePW()
+	 */
+	@Override
 	public String getAttendeePW() {
 		return attendeePW;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#setAttendeePW(java.lang.String)
+	 */
+	@Override
 	public void setAttendeePW(String attendeePW) {
 		this.attendeePW = attendeePW;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#getModeratorPW()
+	 */
+	@Override
 	public String getModeratorPW() {
 		return moderatorPW;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#setModeratorPW(java.lang.String)
+	 */
+	@Override
 	public void setModeratorPW(String moderatorPW) {
 		this.moderatorPW = moderatorPW;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#getMessageKey()
+	 */
+	@Override
 	public String getMessageKey() {
 		return messageKey;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#setMessageKey(java.lang.String)
+	 */
+	@Override
 	public void setMessageKey(String messageKey) {
 		this.messageKey = messageKey;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#getMessage()
+	 */
+	@Override
 	public String getMessage() {
 		return message;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#setMessage(java.lang.String)
+	 */
+	@Override
 	public void setMessage(String message) {
 		this.message = message;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#isRunning()
+	 */
+	@Override
 	public boolean isRunning() {
 		return running;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#setRunning(boolean)
+	 */
+	@Override
 	public void setRunning(boolean running) {
 		this.running = running;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#isHasBeenForciblyEnded()
+	 */
+	@Override
 	public boolean isHasBeenForciblyEnded() {
 		return hasBeenForciblyEnded;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#setHasBeenForciblyEnded(boolean)
+	 */
+	@Override
 	public void setHasBeenForciblyEnded(boolean hasBeenForciblyEnded) {
 		this.hasBeenForciblyEnded = hasBeenForciblyEnded;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#getStartTime()
+	 */
+	@Override
 	public Date getStartTime() {
 		return startTime;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#setStartTime(java.util.Date)
+	 */
+	@Override
 	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#getEndTime()
+	 */
+	@Override
 	public Date getEndTime() {
 		return endTime;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#setEndTime(java.util.Date)
+	 */
+	@Override
 	public void setEndTime(Date endTime) {
 		this.endTime = endTime;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#getParticipantCount()
+	 */
+	@Override
 	public int getParticipantCount() {
 		return participantCount;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#setParticipantCount(int)
+	 */
+	@Override
 	public void setParticipantCount(int participantCount) {
 		this.participantCount = participantCount;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#getModeratorCount()
+	 */
+	@Override
 	public int getModeratorCount() {
 		return moderatorCount;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#setModeratorCount(int)
+	 */
+	@Override
 	public void setModeratorCount(int moderatorCount) {
 		this.moderatorCount = moderatorCount;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#getAttendees()
+	 */
+	@Override
 	public List<Attendee> getAttendees() {
 		return attendees;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#setAttendees(java.util.List)
+	 */
+	@Override
 	public void setAttendees(List<Attendee> attendees) {
 		this.attendees = attendees;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.mconf.bbb.api.IMeeting#toString()
+	 */
 
 	@Override
 	public String toString() {

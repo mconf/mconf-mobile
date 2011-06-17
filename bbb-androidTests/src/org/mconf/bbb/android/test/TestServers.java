@@ -44,7 +44,7 @@ public class TestServers extends ActivityInstrumentationTestCase2<LoginPage>  {
 	
 	public void testConnect()
 	{
-		if (solo.searchText(Common.exactly(Common.DEFAULT_SERVER)))
+		if (!solo.searchText(Common.exactly(Common.DEFAULT_SERVER)))
 			solo.enterText(0, Common.DEFAULT_SERVER);
 		else
 			solo.clickOnText(Common.exactly(Common.DEFAULT_SERVER));

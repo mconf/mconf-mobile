@@ -5,6 +5,7 @@ import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.CustomListview;
 import org.mconf.bbb.android.LoginPage;
 import org.mconf.bbb.android.R;
+import org.mconf.bbb.android.ServerChoosing;
 
 import com.jayway.android.robotium.solo.Solo;
 
@@ -51,6 +52,15 @@ public class Common {
 	}
 
 	private static void login(Solo solo, int role) {
+		
+		solo.assertCurrentActivity("wrong activity", LoginPage.class);
+		solo.clickOnView(solo.getView(R.id.server));
+		solo.assertCurrentActivity("wrong activity", ServerChoosing.class);
+		if (!solo.searchText(Common.exactly(Common.DEFAULT_SERVER)))
+			solo.enterText(0, Common.DEFAULT_SERVER);
+		else
+			solo.clickOnText(Common.exactly(Common.DEFAULT_SERVER));
+		solo.clickOnButton(solo.getString(R.string.connect));
 		solo.assertCurrentActivity("wrong activity", LoginPage.class);
 		solo.clickOnView(solo.getView(R.id.login_spinner));
 		if (!solo.searchText(Common.exactly(Common.DEFAULT_TEST_ROOM))) {
