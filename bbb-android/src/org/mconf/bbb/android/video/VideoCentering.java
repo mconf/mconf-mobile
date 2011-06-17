@@ -11,18 +11,17 @@ import android.view.ViewGroup.LayoutParams;
 
 public class VideoCentering {
 	private static final Logger log = LoggerFactory.getLogger(VideoCentering.class);
-	public static final float DEFAULT_ASPECT_RATIO = 4 / (float) 3;
-	private float aspectRatio = DEFAULT_ASPECT_RATIO;
+	private float aspectRatio = 4 / (float) 3;
 	
 	public LayoutParams getVideoLayoutParams(DisplayMetrics metrics, LayoutParams layoutParams) {		
 		int h = 0, w = 0;
 		float displayAspectRatio = metrics.widthPixels / (float) metrics.heightPixels;
-		if (displayAspectRatio < getAspectRatio()) {
+		if (displayAspectRatio < aspectRatio) {
 			w = metrics.widthPixels;
-			h = (int) (w / getAspectRatio());
+			h = (int) (w / aspectRatio);
 		} else {
 			h = metrics.heightPixels;
-			w = (int) (h * getAspectRatio());			
+			w = (int) (h * aspectRatio);			
 		}
 		layoutParams.width = w;
 		layoutParams.height = h;

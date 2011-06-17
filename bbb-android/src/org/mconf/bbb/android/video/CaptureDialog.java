@@ -50,14 +50,36 @@ public class CaptureDialog extends Dialog {
 		getWindow().setAttributes(windowAttributes);
 		
 		videoWindow = (VideoCapture) findViewById(R.id.video_capture);
-		videoWindow.setUserId(this.videoId);
-		videoWindow.centerPreview(true);
 		
 		setTitle("Camera preview");
-		setCancelable(true);		
+		setCancelable(true);
 	}
 
 	public int getVideoId() {
 		return videoId;
+	}
+	
+	public void setVideoId(int Id) {
+		this.videoId = Id;
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		resume();
+	}
+	
+	@Override
+	protected void onStop() {
+		pause();
+		super.onStop();
+	}
+
+	public void pause() {
+	}
+	
+	public void resume() {
+		videoWindow.setUserId(this.videoId);
+		videoWindow.centerPreview(true);
 	}
 }
