@@ -53,7 +53,7 @@ import android.widget.TextView;
 
 public class MeetingInfDialog extends Dialog implements OnClickListener{
 
-	public static final int ROW_HEIGHT = 42;
+	public static final int ROW_HEIGHT = 60;
 	
 	private MeetingInfAdapter meetingAdapter = new MeetingInfAdapter();
 	private String meetingID;
@@ -97,7 +97,11 @@ public class MeetingInfDialog extends Dialog implements OnClickListener{
 		meetingAdapter.addSection(context.getResources().getString(R.string.participant_count), Integer.toString(participantCount));
 		
 		
-		meetingInfList.setHeight();
+		ViewGroup.LayoutParams  params = relative.getLayoutParams();
+		int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, ROW_HEIGHT, context.getResources().getDisplayMetrics());
+		params.height= (meetingAdapter.getCount()+1)*px+(meetingInfList.getDividerHeight() * (meetingAdapter.getCount() - 1));
+		relative.setLayoutParams(params);
+		relative.requestLayout();
 		
 	}
 	
