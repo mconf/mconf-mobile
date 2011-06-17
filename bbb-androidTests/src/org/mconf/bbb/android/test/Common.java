@@ -1,10 +1,17 @@
 package org.mconf.bbb.android.test;
 
+import java.util.Random;
+import junit.framework.Assert.*;
+
 import org.mconf.bbb.BigBlueButtonClient;
+import org.mconf.bbb.android.BigBlueButton;
 import org.mconf.bbb.android.Client;
+import org.mconf.bbb.android.ContactAdapter;
 import org.mconf.bbb.android.CustomListview;
 import org.mconf.bbb.android.LoginPage;
 import org.mconf.bbb.android.R;
+import org.mconf.bbb.android.ServerChoosing;
+import org.mconf.bbb.users.IParticipant;
 
 import com.jayway.android.robotium.solo.Solo;
 
@@ -52,6 +59,7 @@ public class Common {
 
 	private static void login(Solo solo, int role) {
 		solo.assertCurrentActivity("wrong activity", LoginPage.class);
+		prepareToLogin(solo);
 		solo.clickOnView(solo.getView(R.id.login_spinner));
 		if (!solo.searchText(Common.exactly(Common.DEFAULT_TEST_ROOM))) {
 			solo.clickOnText(solo.getString(R.string.new_meeting));
@@ -69,6 +77,24 @@ public class Common {
 		junit.framework.Assert.assertTrue(solo.searchText(Common.DEFAULT_NAME));
 	}
 	
+	public static void prepareToLogin(Solo solo) {
+		// select the server
+		solo.assertCurrentActivity("wrong activity", LoginPage.class);
+		if (!solo.searchText(Common.DEFAULT_SERVER)) {
+			solo.clickOnView(solo.getView(R.id.server));
+			solo.assertCurrentActivity("wrong activity", ServerChoosing.class);
+			solo.enterText(0, Common.DEFAULT_SERVER);
+			junit.framework.Assert.assertTrue(solo.searchText(Common.DEFAULT_SERVER));
+			solo.clickOnButton(solo.getString(R.string.connect));
+			solo.assertCurrentActivity("wrong activity", LoginPage.class);
+		}
+		// enter the name
+		if (!solo.getEditText(0).getText().toString().equals(Common.DEFAULT_NAME)) {
+			solo.clearEditText(0);
+			solo.enterText(0, Common.DEFAULT_NAME);
+		}
+	}
+	
 	public static void loginAsModerator(Solo solo) {
 		login(solo, R.string.moderator);
 		CustomListview contacts = (CustomListview) solo.getView(R.id.contacts_list);
@@ -80,5 +106,33 @@ public class Common {
 		CustomListview contacts = (CustomListview) solo.getView(R.id.contacts_list);
 		junit.framework.Assert.assertFalse(contacts.getChildAt(0).findViewById(R.id.moderator).isShown());
 	}
-
+	
+	public static CustomListview getParticipantsListView(Solo solo) {
+		solo.assertCurrentActivity("wrong activity", Client.class);
+		CustomListview participantsListView = (CustomListview) solo.getView(R.id.contacts_list);
+		junit.framework.Assert.assertNotNull(participantsListView);
+		junit.framework.Assert.assertTrue(solo.getCurrentViews().contains(participantsListView));
+		return participantsListView;
+	}
+	
+	public static ContactAdapter getParticipantsList(Solo solo) {
+		solo.assertCurrentActivity("wrong activity", Client.class);
+		ContactAdapter participantsList = (ContactAdapter) getParticipantsListView(solo).getAdapter();
+		junit.framework.Assert.assertFalse(participantsList.isEmpty());
+		return participantsList;
+	}
+	
+	public static int getMyUserId(Solo solo) {
+		return ((BigBlueButton) solo.getCurrentActivity().getApplication()).getHandler().getMyUserId();		
+	}
+	
+	public static IParticipant getRandomUser(Solo solo, boolean includeMe) {
+		ContactAdapter participantsList = getParticipantsList(solo);
+		while (true) {
+			IParticipant p = (IParticipant) participantsList.getItem(new Random().nextInt(participantsList.getCount()));
+			if (includeMe || !p.getName().startsWith(Common.DEFAULT_NAME))
+				return p;
+		}
+	}
+	
 }
