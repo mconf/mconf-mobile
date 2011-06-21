@@ -72,6 +72,8 @@
 	<string name="install_bar_code">Install Barcode Scanner?</string>
 	<string name="bar_code_no_found">Barcode Scanner not found, install?</string>
 	<string name="show_video">Show video</string>
+	<string name="application_on_background">Mconf BBB</string>
+	<string name="application_on_background_text">Application still running</string>
 	
 		<string name="meeting_information">Meeting information</string>
 		<string name="meeting_id">Meeting ID</string>
