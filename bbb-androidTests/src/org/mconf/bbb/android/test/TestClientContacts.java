@@ -14,6 +14,7 @@ import org.mconf.bbb.users.IParticipant;
 
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.ImageView;
 
 import com.jayway.android.robotium.solo.Solo;
@@ -62,6 +63,26 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		Common.removeContactsFromMeeting();
 		super.tearDown();
 	}
+	
+	public void testCloseDialogPutInBackground() {
+		solo.sendKey(KeyEvent.KEYCODE_BACK);
+		assertTrue(solo.searchText(solo.getString(R.string.quit_dialog)));
+		solo.clickOnButton(solo.getString(R.string.no));
+		//assertTrue(solo.getCurrentViews().isEmpty());
+		assertTrue(solo.searchText(solo.getString(R.string.application_on_background_text)));
+		
+		
+		
+	}
+	
+	public void testCloseDialogQuit() {
+		solo.sendKey(KeyEvent.KEYCODE_BACK);
+		assertTrue(solo.searchText(solo.getString(R.string.quit_dialog)));
+		solo.clickOnButton(solo.getString(R.string.yes));
+		assertTrue(solo.getCurrentViews().isEmpty());
+		assertFalse(solo.searchText(solo.getString(R.string.application_on_background_text)));
+	}
+	
 	
 	public void testCloseRoom() {
 		solo.clickOnMenuItem(solo.getString(R.string.logout));

@@ -105,10 +105,12 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public static final String ACTION_TO_FOREGROUND = "org.mconf.bbb.android.Client.ACTION_TO_FOREGROUND";
 	public static final String BACK_TO_CLIENT = "org.mconf.bbb.android.Client.BACK_TO_CLIENT";
 	public static final String FINISH = "bbb.android.action.FINISH";
+	public static final String QUIT = "bbb.android.action.QUIT";
 	public static final String CLOSE_VIDEO = "org.mconf.bbb.android.Video.CLOSE";
 	public static final String SEND_TO_BACK = "bbb.android.action.SEND_TO_BACK";
 
 	public static final int ID_DIALOG_RECONNECT = 111000;
+	public static final int ID_DIALOG_QUIT = 222000;
 	
 	//change the contact status when the private chat is closed
 	private BroadcastReceiver chatClosed = new BroadcastReceiver(){ 
@@ -125,6 +127,17 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 				contactAdapter.notifyDataSetChanged();
 			}
+
+		} 
+	};
+	
+	private BroadcastReceiver quit = new BroadcastReceiver(){ 
+		public void onReceive(Context context, Intent intent)
+		{ 
+			quit();
+			lastReadNum=-1;
+			sendBroadcast(new Intent(FINISH));
+			finish();
 
 		} 
 	};
@@ -173,6 +186,9 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		
 		IntentFilter closeVideoFilter = new IntentFilter(CLOSE_VIDEO);
 		registerReceiver(closeVideo, closeVideoFilter);
+		
+		IntentFilter quitDialogFilter = new IntentFilter(QUIT);
+		registerReceiver(quit, quitDialogFilter);
 
 		initListeners();
 
@@ -693,12 +709,13 @@ public void showBackgroundNotification()
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
-			Intent intent = new Intent(SEND_TO_BACK);
-			sendBroadcast(intent);
+//			Intent intent = new Intent(SEND_TO_BACK);
+//			sendBroadcast(intent);
 			log.debug("KEYCODE_BACK");
+			CloseDialog close = new CloseDialog(Client.this);
+			close.show();
+			//moveTaskToBack(true);
 			
-			moveTaskToBack(true);
-			showBackgroundNotification();
 			return true;
 			//    		case KeyEvent.KEYCODE_VOLUME_DOWN:
 			//    		case KeyEvent.KEYCODE_VOLUME_UP:

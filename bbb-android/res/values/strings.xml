@@ -74,6 +74,8 @@
 	<string name="show_video">Show video</string>
 	<string name="application_on_background">Mconf BBB</string>
 	<string name="application_on_background_text">Application still running</string>
+	<string name="quit_dialog">Are you sure you want to quit the application?</string>
+	<string name="if_no_send_to_back">If you hit no, the app will be sent to back</string>
 	
 		<string name="meeting_information">Meeting information</string>
 		<string name="meeting_id">Meeting ID</string>

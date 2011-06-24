@@ -91,7 +91,7 @@ public class MeetingInfDialog extends Dialog implements OnClickListener{
 		meetingInfList.setAdapter(meetingAdapter);
 		
 		meetingAdapter.addSection(context.getResources().getString(R.string.meeting_id), meetingID);
-		//meetingAdapter.addSection(context.getResources().getString(R.string.meeting_message), message);
+		meetingAdapter.addSection(context.getResources().getString(R.string.meeting_message), message);
 		//meetingAdapter.addSection(context.getResources().getString(R.string.start_time), startTime);
 		meetingAdapter.addSection(context.getResources().getString(R.string.moderator_count), Integer.toString(moderatorCount));
 		meetingAdapter.addSection(context.getResources().getString(R.string.participant_count), Integer.toString(participantCount));
