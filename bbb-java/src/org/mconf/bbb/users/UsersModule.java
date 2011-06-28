@@ -30,6 +30,7 @@ import org.jboss.netty.channel.Channel;
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.Module;
 import org.mconf.bbb.MainRtmpConnection;
+import org.mconf.bbb.api.Meeting;
 import org.red5.server.api.IAttributeStore;
 import org.red5.server.api.so.IClientSharedObject;
 import org.red5.server.api.so.ISharedObjectBase;
@@ -42,17 +43,24 @@ import com.flazr.rtmp.message.CommandAmf0;
 
 public class UsersModule extends Module implements ISharedObjectListener {
 	private static final Logger log = LoggerFactory.getLogger(UsersModule.class);
-	
+
 	private final IClientSharedObject participantsSO;
-	
+
 	private Map<Integer, Participant> participants = new ConcurrentHashMap<Integer, Participant>();
+	private String meetingID;
+	private Meeting meeting;
 
 	public UsersModule(MainRtmpConnection handler, Channel channel) {
 		super(handler, channel);
-		
+
 		participantsSO = handler.getSharedObject("participantsSO", false);
 		participantsSO.addSharedObjectListener(this);
 		participantsSO.connect(channel);
+
+		meetingID = handler.getContext().getJoinService().getJoinedMeeting().getMeetingID();
+		meeting = handler.getContext().getJoinService().getMeetingById(meetingID);
+		meeting.setModeratorCount(0);
+		meeting.setParticipantCount(0);
 	}
 
 	@Override
@@ -81,7 +89,7 @@ public class UsersModule extends Module implements ISharedObjectListener {
 	public void onSharedObjectSend(ISharedObjectBase so, 
 			String method, List<?> params) {
 		log.debug("onSharedObjectSend");
-		
+
 		if (so.equals(participantsSO)) {
 			if (method.equals("kickUserCallback")) {
 				int userId = ((Double) params.get(0)).intValue();
@@ -98,8 +106,15 @@ public class UsersModule extends Module implements ISharedObjectListener {
 				for (IBigBlueButtonClientListener l : handler.getContext().getListeners()) {
 					l.onParticipantLeft(p);
 				}
+
+				if(p.getRole().equals("MODERATOR"))
+					meeting.setModeratorCount(meeting.getModeratorCount()-1);
+				else
+					meeting.setParticipantCount(meeting.getParticipantCount()-1);
+
 				log.debug("participantLeft: {}", p);
 				participants.remove(p.getUserId());
+
 				return;
 			}
 			if (method.equals("participantJoined")) {
@@ -137,10 +152,10 @@ public class UsersModule extends Module implements ISharedObjectListener {
 	 * {@link} https://github.com/bigbluebutton/bigbluebutton/blob/master/bigbluebutton-client/src/org/bigbluebutton/modules/chat/services/PrivateChatSharedObjectService.as#L142
 	 */
 	public void doQueryParticipants() {
-    	Command cmd = new CommandAmf0("participants.getParticipants", null);
-    	handler.writeCommandExpectingResult(channel, cmd);
+		Command cmd = new CommandAmf0("participants.getParticipants", null);
+		handler.writeCommandExpectingResult(channel, cmd);
 	}
-	
+
 	/**
 	 * example:
 	 * [MAP {count=2.0, participants={112={status={raiseHand=false, hasStream=false, presenter=false}, name=Eclipse, userid=112.0, role=VIEWER}, 97={status={raiseHand=false, hasStream=false, presenter=true}, name=Felipe, userid=97.0, role=MODERATOR}}}]
@@ -150,14 +165,14 @@ public class UsersModule extends Module implements ISharedObjectListener {
 	public boolean onQueryParticipants(String resultFor, Command command) {
 		if (resultFor.equals("participants.getParticipants")) {
 			Map<String, Object> args = (Map<String, Object>) command.getArg(0);
-			
+
 			participants.clear();
-			
+
 			@SuppressWarnings("unused")
 			int count = ((Double) args.get("count")).intValue();
-			
+
 			Map<String, Object> participantsMap = (Map<String, Object>) args.get("participants");
-			
+
 			for (Map.Entry<String, Object> entry : participantsMap.entrySet()) {
 				Participant p = new Participant((Map<String, Object>) entry.getValue());
 				onParticipantJoined(p);
@@ -166,19 +181,23 @@ public class UsersModule extends Module implements ISharedObjectListener {
 		}
 		return false;
 	}
-	
+
 	public Map<Integer, Participant> getParticipants() {
 		return participants;
 	}
-	
+
 	public void onParticipantJoined(Participant p) {
 		for (IBigBlueButtonClientListener l : handler.getContext().getListeners()) {
 			l.onParticipantJoined(p);
 		}				
 		log.info("new participant: {}", p.toString());
-		participants.put(p.getUserId(), p);			
+		participants.put(p.getUserId(), p);	
+		if(p.isModerator())
+			meeting.setModeratorCount(meeting.getModeratorCount()+1);
+		else
+			meeting.setParticipantCount(meeting.getParticipantCount()+1);
 	}
-	
+
 	private void onParticipantStatusChange(Participant p, String key,
 			Object value) {
 		log.debug("participantStatusChange: " + p.getName() + " status: " + key + " value: " + value.toString());
@@ -201,10 +220,10 @@ public class UsersModule extends Module implements ISharedObjectListener {
 			}
 		}
 	}
-	
+
 	public void raiseHand(boolean value) {
-    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "raiseHand", value);
-    	handler.writeCommandExpectingResult(channel, cmd);
+		Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "raiseHand", value);
+		handler.writeCommandExpectingResult(channel, cmd);
 	}
 
 	/*
@@ -217,26 +236,26 @@ public class UsersModule extends Module implements ISharedObjectListener {
 			log.debug("Inconsistent state here");
 			return;
 		}
-    	Command cmd = new CommandAmf0("presentation.assignPresenter", null, userId, p.getName(), 1);
-    	handler.writeCommandExpectingResult(channel, cmd);
+		Command cmd = new CommandAmf0("presentation.assignPresenter", null, userId, p.getName(), 1);
+		handler.writeCommandExpectingResult(channel, cmd);
 	}
-	
+
 	public void addStream(String streamName) {
-    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), streamName);
-    	handler.writeCommandExpectingResult(channel, cmd);
-    	
-    	cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "hasStream", true);
-    	handler.writeCommandExpectingResult(channel, cmd);
+		Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), streamName);
+		handler.writeCommandExpectingResult(channel, cmd);
+
+		cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "hasStream", true);
+		handler.writeCommandExpectingResult(channel, cmd);
 	}
-	
+
 	public void removeStream(String streamName) {
-    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "");
-    	handler.writeCommandExpectingResult(channel, cmd);
-    	
-    	cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "hasStream", false);
-    	handler.writeCommandExpectingResult(channel, cmd);
+		Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "");
+		handler.writeCommandExpectingResult(channel, cmd);
+
+		cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "hasStream", false);
+		handler.writeCommandExpectingResult(channel, cmd);
 	}
-	
+
 	public void kickUser(int userId) {
 		if (handler.getContext().getUsersModule().getParticipants().get(handler.getContext().getMyUserId()).isModerator()) {
 			List<Object> list = new ArrayList<Object>();
@@ -254,5 +273,5 @@ public class UsersModule extends Module implements ISharedObjectListener {
 		} else
 			return false;
 	}
-	
+
 }

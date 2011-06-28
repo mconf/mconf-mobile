@@ -22,6 +22,7 @@
 package org.mconf.bbb.android;
 
 
+import java.util.Date;
 import java.util.zip.Inflater;
 
 import org.mconf.bbb.api.JoinService;
@@ -58,7 +59,7 @@ public class MeetingInfDialog extends Dialog implements OnClickListener{
 	private MeetingInfAdapter meetingAdapter = new MeetingInfAdapter();
 	private String meetingID;
 	private String message;
-	private String startTime;
+	private Date startTime;
 	private int participantCount;
 	private int moderatorCount;
 	
@@ -73,7 +74,7 @@ public class MeetingInfDialog extends Dialog implements OnClickListener{
 		setMessage();
 		setStartTime();
 		setParticipantCount();
-		setModeratorCount();
+		setModeratorCount();  
 		
 		setTitle(R.string.meeting_information);
 		requestWindowFeature(Window.FEATURE_LEFT_ICON);
@@ -85,14 +86,14 @@ public class MeetingInfDialog extends Dialog implements OnClickListener{
 		ok.setOnClickListener(this);
 		
 		
-
+ 
 		RelativeLayout relative = (RelativeLayout)findViewById(R.id.meeting_information);
 		CustomListview meetingInfList =(CustomListview)findViewById(R.id.meeting_infs_list);
 		meetingInfList.setAdapter(meetingAdapter);
 		
 		meetingAdapter.addSection(context.getResources().getString(R.string.meeting_id), meetingID);
 		meetingAdapter.addSection(context.getResources().getString(R.string.meeting_message), message);
-		//meetingAdapter.addSection(context.getResources().getString(R.string.start_time), startTime);
+		meetingAdapter.addSection(context.getResources().getString(R.string.start_time), startTime.toLocaleString());
 		meetingAdapter.addSection(context.getResources().getString(R.string.moderator_count), Integer.toString(moderatorCount));
 		meetingAdapter.addSection(context.getResources().getString(R.string.participant_count), Integer.toString(participantCount));
 		
@@ -101,7 +102,7 @@ public class MeetingInfDialog extends Dialog implements OnClickListener{
 		int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, ROW_HEIGHT, context.getResources().getDisplayMetrics());
 		params.height= (meetingAdapter.getCount()+1)*px+(meetingInfList.getDividerHeight() * (meetingAdapter.getCount() - 1));
 		relative.setLayoutParams(params);
-		relative.requestLayout();
+		relative.requestLayout();  
 		
 	}
 	
@@ -138,12 +139,14 @@ public class MeetingInfDialog extends Dialog implements OnClickListener{
 		this.message = getJoined().getMessage();
 	}
 
-	public String getStartTime() {
+	public Date getStartTime() {
 		return startTime;
 	}
 
 	public void setStartTime() {
-		this.startTime = "not now";//TODO
+		this.startTime = getJoined().getStartTime();
+		if(startTime==null)
+			System.out.println("damn");
 	}
 
 	public int getParticipantCount() {

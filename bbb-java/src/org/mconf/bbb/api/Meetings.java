@@ -24,9 +24,13 @@ package org.mconf.bbb.api;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -34,29 +38,30 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class Meetings {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(Meetings.class);
-	
+
 	private List<Meeting> meetings = new ArrayList<Meeting>();
-	
+
 	public void setMeetings(List<Meeting> meetings) {
 		this.meetings = meetings;
 	}
-	
+
 	public List<Meeting> getMeetings() {
 		return meetings;
 	}
-	
+
 	public Meetings() {
-		
+
 	}
-	
+
 	/*
 	 * bbb.getMeetings()
 	 * 
@@ -105,9 +110,9 @@ public class Meetings {
 	 * 	</meeting>
 	 * </meetings>
 	 */
-	public boolean parse(String str) throws ParserConfigurationException, UnsupportedEncodingException, SAXException, IOException {
+	public boolean parse(String str) throws ParserConfigurationException, UnsupportedEncodingException, SAXException, IOException, DOMException, ParseException {
 		meetings.clear();
-		
+
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db = dbf.newDocumentBuilder();
 		Document doc = db.parse(new ByteArrayInputStream(str.getBytes("UTF-8")));
@@ -119,45 +124,58 @@ public class Meetings {
 		log.debug("nodeMeetings.getLength() = {}", nodeMeetings.getLength());
 		for (int i = 0; i < nodeMeetings.getLength(); ++i) {
 			Element elementMeeting = (Element) nodeMeetings.item(i);
-			
-			SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM d hh:mm:ss z yyyy");
-			
-			Meeting meeting = new Meeting();
-			
+
+			DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy", Locale.UK);
+			//used Locale to avoid unparseable date exception. apparently the locale doesn't affect the time
+			Meeting meeting = new Meeting(); 
+ 
 			meeting.setReturncode(elementMeeting.getElementsByTagName("returncode").item(0).getFirstChild().getNodeValue());
-			
+
 			if (!meeting.getReturncode().equals("SUCCESS"))
 				continue;
-			
+
 			meeting.setMeetingID(elementMeeting.getElementsByTagName("meetingID").item(0).getFirstChild().getNodeValue());
 			meeting.setAttendeePW(elementMeeting.getElementsByTagName("attendeePW").item(0).getFirstChild().getNodeValue());
 			meeting.setModeratorPW(elementMeeting.getElementsByTagName("moderatorPW").item(0).getFirstChild().getNodeValue());
 			meeting.setRunning(Boolean.parseBoolean(elementMeeting.getElementsByTagName("running").item(0).getFirstChild().getNodeValue()));
 			meeting.setHasBeenForciblyEnded(Boolean.parseBoolean(elementMeeting.getElementsByTagName("hasBeenForciblyEnded").item(0).getFirstChild().getNodeValue()));
-			
-//				if (!elementMeeting.getElementsByTagName("startTime").item(0).getFirstChild().getNodeValue().equals("null"))
-//					meeting.setStartTime(dateFormat.parse(elementMeeting.getElementsByTagName("startTime").item(0).getFirstChild().getNodeValue()));
-//				if (!elementMeeting.getElementsByTagName("endTime").item(0).getFirstChild().getNodeValue().equals("null"))
-//					meeting.setEndTime(dateFormat.parse(elementMeeting.getElementsByTagName("endTime").item(0).getFirstChild().getNodeValue()));
-			
+			// TODO dates parsing
+
+			//removed "UTC" due to android bug http://code.google.com/p/android/issues/detail?id=14963
+			String startTime = elementMeeting.getElementsByTagName("startTime").item(0).getFirstChild().getNodeValue();
+			if (!startTime.equals("null"))
+			{
+				startTime = startTime.replace("UTC ", "");
+				meeting.setStartTime(dateFormat.parse(startTime));
+				log.debug("StartTimeOK");
+			}
+
+			String endTime = elementMeeting.getElementsByTagName("endTime").item(0).getFirstChild().getNodeValue();
+			if (!endTime.equals("null"))
+			{	
+				endTime = startTime.replace("UTC ", "");
+				meeting.setEndTime(dateFormat.parse(endTime));
+				log.debug("EndTimeOK");
+			}
+
 			meeting.setParticipantCount(Integer.parseInt(elementMeeting.getElementsByTagName("participantCount").item(0).getFirstChild().getNodeValue()));
 			meeting.setModeratorCount(Integer.parseInt(elementMeeting.getElementsByTagName("moderatorCount").item(0).getFirstChild().getNodeValue()));
-			
+
 			NodeList nodeAttendees = elementMeeting.getElementsByTagName("attendees");
-			
+
 			if (meeting.getParticipantCount() + meeting.getModeratorCount() > 0)
 				for (int j = 0; j < nodeAttendees.getLength(); ++j) {
 					Element elementAttendee = (Element) nodeAttendees.item(j);
-					
+
 					Attendee attendee = new Attendee();
-					
+
 					attendee.setUserID(elementAttendee.getElementsByTagName("userID").item(0).getFirstChild().getNodeValue());
 					attendee.setFullName(elementAttendee.getElementsByTagName("fullName").item(0).getFirstChild().getNodeValue());
 					attendee.setRole(elementAttendee.getElementsByTagName("role").item(0).getFirstChild().getNodeValue());
-					
+
 					meeting.getAttendees().add(attendee);
 				}
-			
+
 			meetings.add(meeting);				
 		}
 
