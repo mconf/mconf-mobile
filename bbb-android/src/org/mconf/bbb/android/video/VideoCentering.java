@@ -47,5 +47,11 @@ public class VideoCentering {
 	public float getAspectRatio() {
 		return aspectRatio;
 	}	
+	
+	public LayoutParams hidePreview(LayoutParams layoutParams){
+		layoutParams.width = 1;
+		layoutParams.height = 1;
+		return layoutParams;
+	}
 }
 

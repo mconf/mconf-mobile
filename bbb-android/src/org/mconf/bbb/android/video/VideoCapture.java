@@ -84,6 +84,12 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 		setLayoutParams(layoutParams);   	
 	}
     
+    public void hidePreview() {
+		VideoCentering mVideoCentering = new VideoCentering();
+		LayoutParams layoutParams = mVideoCentering.hidePreview(this.getLayoutParams());   	
+		setLayoutParams(layoutParams);
+	}	
+    
     private boolean isAvailableSprintFFC()
     {
         try {
@@ -187,7 +193,6 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	    	usingHidden = false;
 	    	mCamera.setPreviewCallback(this);        
 	    }
-		//TODO Gian do more tests with the 3 possibilities above
         
         mCamera.startPreview();
         mVideoPublish.start();

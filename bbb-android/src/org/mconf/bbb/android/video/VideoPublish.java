@@ -74,7 +74,7 @@ public class VideoPublish extends Thread implements RtmpReader {
     	lastTimeStamp = timeStamp;
     	
     	byte[] aux = new byte[bufferSize];
-    	System.arraycopy(sharedBuffer, 0, aux, 0, bufferSize);//TODO Gian this copy is probably unncecessary
+    	System.arraycopy(sharedBuffer, 0, aux, 0, bufferSize);//TODO see if we can avoid this copy
     	
        	Video video = new Video(timeStamp, aux, bufferSize);
    	    video.getHeader().setDeltaTime(interval);

@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Window;
 
 public class CaptureDialog extends Dialog {	
@@ -34,6 +36,8 @@ public class CaptureDialog extends Dialog {
 		
 	private VideoCapture videoWindow;
 	private int videoId;
+	public boolean isPreviewHidden = true;
+	public boolean wasPreviewHidden = false;
 		
 	public CaptureDialog(Context context, int userId) {
 		super(context);
@@ -43,16 +47,44 @@ public class CaptureDialog extends Dialog {
 		requestWindowFeature(Window.FEATURE_NO_TITLE); //Removes the title from the Dialog
 		setContentView(R.layout.video_capture);
 		
-		android.view.WindowManager.LayoutParams windowAttributes = getWindow().getAttributes();		
-		windowAttributes.flags = android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON; //Makes the video brigth
-//		windowAttributes.flags = android.view.WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE; //Makes it possible to interact with the window behind, but the video should be closed properly when the screen changes
-//		windowAttributes.flags = android.view.WindowManager.LayoutParams.FLAG_SCALED; //Removes the title from the dialog and removes the border also		 
-		getWindow().setAttributes(windowAttributes);
+		videoWindow = (VideoCapture) findViewById(R.id.video_capture);		
 		
-		videoWindow = (VideoCapture) findViewById(R.id.video_capture);
-		
+		videoWindow.setUserId(this.videoId);
+		showPreview(true);
+			
 		setTitle("Camera preview");
-		setCancelable(true);
+		setCancelable(false);
+	}
+
+	public void hidePreview() { //hides the preview but keeps capturing
+		if(!isPreviewHidden){   	
+			android.view.WindowManager.LayoutParams windowAttributes = getWindow().getAttributes();	  
+		    windowAttributes.flags = android.view.WindowManager.LayoutParams.FLAG_SCALED
+		    					| android.view.WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+		    					| android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+		    ;	  
+		    getWindow().setAttributes(windowAttributes);
+		  
+		    if(videoWindow != null){
+			    videoWindow.hidePreview();
+		    }
+		  
+		    isPreviewHidden = true;
+		}
+	}
+	
+	public void showPreview(boolean center) { //if the preview is hidden, show it
+		if(isPreviewHidden){			
+			android.view.WindowManager.LayoutParams windowAttributes = getWindow().getAttributes();		
+			windowAttributes.flags = android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON; //Makes the video brigth
+			getWindow().setAttributes(windowAttributes);
+			
+			if(videoWindow != null && center){
+				videoWindow.centerPreview(true);
+			}
+			
+			isPreviewHidden = false;
+		}
 	}
 
 	public int getVideoId() {
@@ -76,10 +108,29 @@ public class CaptureDialog extends Dialog {
 	}
 
 	public void pause() {
+		if(isPreviewHidden){
+			showPreview(false); //this is needed to avoid a crash when closing the dialog
+			wasPreviewHidden = true;
+		} else {
+			wasPreviewHidden = false;
+		}
 	}
 	
 	public void resume() {
-		videoWindow.setUserId(this.videoId);
-		videoWindow.centerPreview(true);
+		if(wasPreviewHidden){ //if the preview was hidden before the onStop,
+							  //then lets hide it again after the Dialog is resumed
+			hidePreview();
+		}
+	}
+	
+	@Override
+	public boolean onKeyDown (int keyCode, KeyEvent event){
+		super.onKeyDown(keyCode, event);
+		
+		if(keyCode == KeyEvent.KEYCODE_BACK){
+			hidePreview();
+        }
+		
+		return true;
 	}
 }

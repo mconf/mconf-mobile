@@ -140,7 +140,7 @@ public:
 				continue;
 			}
 			queue_free(consumer);
-			// TODO Gian we could avoid this memcpy if we passed the "&sharedBuffer" in the queue_dequeueCond
+			// TODO we could avoid this memcpy if we passed the "&sharedBuffer" in the queue_dequeueCond
 			// function in the place of the "&buffer". However, if we do that, the C++ buffer loses its link
 			// with the Java buffer.
 			// See if it is possible to do this without losing the link.

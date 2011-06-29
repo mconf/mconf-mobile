@@ -191,6 +191,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	protected void onPause() {
 		if (mVideoDialog != null && mVideoDialog.isShowing())
 			mVideoDialog.pause();
+		if (mCaptureDialog != null && mCaptureDialog.isShowing())
+			mCaptureDialog.pause();
 		
 		super.onPause();
 	}
@@ -201,6 +203,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				
 		if (mVideoDialog != null && mVideoDialog.isShowing())
 			mVideoDialog.resume();
+		if (mCaptureDialog != null && mCaptureDialog.isShowing())
+			mCaptureDialog.resume();
 	}
 	
 	private class JoinFailDialog extends AlertDialog.Builder {
@@ -1140,8 +1144,14 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	
 	private void showCapture(boolean inDialog, int userId){
 		if(inDialog){
-			mCaptureDialog = new CaptureDialog(this, userId);
-			mCaptureDialog.show();
+			if(mCaptureDialog != null && mCaptureDialog.isShowing() 
+				&& mCaptureDialog.isPreviewHidden){ //then it means that the video is being captured but
+													//the preview is hidden
+				mCaptureDialog.showPreview(true); //show the preview to the user
+			} else {
+				mCaptureDialog = new CaptureDialog(this, userId);
+				mCaptureDialog.show();
+			}
 		} else {
 			Intent intent = new Intent(getApplicationContext(), CaptureFullScreen.class);
 			intent.putExtra("userId", userId);
