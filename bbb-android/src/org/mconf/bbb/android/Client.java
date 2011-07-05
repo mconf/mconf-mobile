@@ -92,6 +92,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public static final int MENU_MUTE_ROOM = Menu.FIRST + 11;
 	public static final int MENU_UNMUTE_ROOM = Menu.FIRST + 12;
 	public static final int MENU_START_VIDEO = Menu.FIRST + 13;
+	public static final int MENU_STOP_VIDEO = Menu.FIRST + 14;
 
 	public static final int POPUP_MENU_KICK_USER = Menu.FIRST;
 	public static final int POPUP_MENU_MUTE_LISTENER = Menu.FIRST + 1;
@@ -418,6 +419,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		if (newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE
 				&& mCaptureDialog != null && mCaptureDialog.isShowing()) {
 			int videoId = mCaptureDialog.getVideoId();
+			mCaptureDialog.pause();
 			mCaptureDialog.dismiss();
 			mCaptureDialog=null;
 			showCapture(false, videoId);
@@ -517,11 +519,20 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			case POPUP_MENU_SHOW_VIDEO:
 			{
 				Contact contact = (Contact) contactAdapter.getItem(info.position);
-				int orientation = getResources().getConfiguration().orientation;
-				if(orientation==Configuration.ORIENTATION_PORTRAIT)
-					showVideo(true, contact.getUserId(), contact.getName());
-				else 
-					showVideo(false, contact.getUserId(), contact.getName());
+				if(getBigBlueButton().getMyUserId() == contact.getUserId()){//shows the preview instead
+																			//of showing the received video
+																			//to save resources
+					if(getResources().getConfiguration().orientation==Configuration.ORIENTATION_PORTRAIT){
+						if(mCaptureDialog != null && mCaptureDialog.isShowing()){
+							mCaptureDialog.showPreview(true);
+						}
+					}						
+				} else {
+					if(getResources().getConfiguration().orientation==Configuration.ORIENTATION_PORTRAIT)
+						showVideo(true, contact.getUserId(), contact.getName());
+					else 
+						showVideo(false, contact.getUserId(), contact.getName());
+				}
 				return true;
 			}
 		}
@@ -567,7 +578,11 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			} else {
 				menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, R.string.start_voice).setIcon(android.R.drawable.ic_btn_speak_now);
 			}
-			menu.add(Menu.NONE, MENU_START_VIDEO, Menu.NONE, R.string.start_video).setIcon(android.R.drawable.ic_btn_speak_now);
+			if (mCaptureDialog != null && mCaptureDialog.isShowing()){
+				menu.add(Menu.NONE, MENU_STOP_VIDEO, Menu.NONE, R.string.stop_video).setIcon(android.R.drawable.ic_btn_speak_now); //\TODO choose a icon
+			} else {
+				menu.add(Menu.NONE, MENU_START_VIDEO, Menu.NONE, R.string.start_video).setIcon(android.R.drawable.ic_btn_speak_now); //\TODO choose a icon
+			}
 			if (getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isRaiseHand())
 				menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.lower_hand).setIcon(android.R.drawable.ic_menu_myplaces);
 			else
@@ -604,12 +619,21 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			return true;
 			
 		case MENU_START_VIDEO:
-			int orientation = getResources().getConfiguration().orientation;
-			if(orientation==Configuration.ORIENTATION_PORTRAIT)
+			if(getResources().getConfiguration().orientation==Configuration.ORIENTATION_PORTRAIT)
 				showCapture(true, getBigBlueButton().getMyUserId());
 			else 
 				showCapture(false, getBigBlueButton().getMyUserId());			
-			return true;			
+			return true;	
+			
+		case MENU_STOP_VIDEO:
+			if(getResources().getConfiguration().orientation==Configuration.ORIENTATION_PORTRAIT){
+				if(mCaptureDialog != null && mCaptureDialog.isShowing()){
+					mCaptureDialog.pause();
+					mCaptureDialog.dismiss();
+					mCaptureDialog = null;
+				}
+			}
+			return true;	
 
 		case MENU_MUTE:
 			getVoiceModule().muteCall(!getVoiceModule().isMuted());

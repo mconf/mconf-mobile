@@ -36,9 +36,10 @@ public class CaptureDialog extends Dialog {
 		
 	private VideoCapture videoWindow;
 	private int videoId;
-	public boolean isPreviewHidden = false;
-	public boolean wasPreviewHidden = true;
-		
+	private boolean startsHidden = true; //true=capture starts without preview. false=capture starts with preview.
+	public boolean isPreviewHidden;
+	private boolean wasPreviewHidden;
+	
 	public CaptureDialog(Context context, int userId) {
 		super(context);
 		
@@ -50,7 +51,16 @@ public class CaptureDialog extends Dialog {
 		videoWindow = (VideoCapture) findViewById(R.id.video_capture);		
 		
 		videoWindow.setUserId(this.videoId);
-		hidePreview();
+		
+		if(startsHidden){
+			isPreviewHidden = false;
+			wasPreviewHidden = true;
+			hidePreview();
+		} else {
+			isPreviewHidden = true;
+			wasPreviewHidden = false;
+			showPreview(true);
+		}
 			
 		setTitle("Camera preview");
 		setCancelable(false);
