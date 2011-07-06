@@ -50,8 +50,7 @@
 	<string name="not_moderator">Sem permissão para executar essa operação</string>
 	<string name="lost_connection">Conexão perdida</string>
 	<string name="attempting_to_reconnect">Reconectando...</string>
-	<string name="cant_reconnect">Impossível reconectar. Verifique sua conexão
-	</string>
+	<string name="cant_reconnect">Impossível reconectar. Verifique sua conexão</string>
 	<string name="reconnected">Reconectado com sucesso</string>
 	<string name="reconnect">Reconectar</string>
 	<string name="error">Erro</string>
@@ -75,6 +74,7 @@
 	<string name="application_on_background">Mconf BBB</string>
 	<string name="application_on_background_text">Programa ainda rodando</string>
 	<string name="meeting_information">Informações da sala</string>
+	<string name="server_password">Digite a senha do servidor</string>
 		<string name="meeting_id">Identificação da sala</string>
 		<string name="meeting_message">Mensagem</string>
 		<string name="start_time">Horário de início</string>

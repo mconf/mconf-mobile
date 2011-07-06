@@ -147,7 +147,7 @@ public class Meetings {
 			{
 				startTime = startTime.replace("UTC ", "");
 				meeting.setStartTime(dateFormat.parse(startTime));
-				log.debug("StartTimeOK");
+				
 			}
 
 			String endTime = elementMeeting.getElementsByTagName("endTime").item(0).getFirstChild().getNodeValue();
@@ -155,7 +155,7 @@ public class Meetings {
 			{	
 				endTime = startTime.replace("UTC ", "");
 				meeting.setEndTime(dateFormat.parse(endTime));
-				log.debug("EndTimeOK");
+				
 			}
 
 			meeting.setParticipantCount(Integer.parseInt(elementMeeting.getElementsByTagName("participantCount").item(0).getFirstChild().getNodeValue()));

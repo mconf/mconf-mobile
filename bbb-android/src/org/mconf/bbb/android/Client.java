@@ -111,7 +111,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 	public static final int ID_DIALOG_RECONNECT = 111000;
 	public static final int ID_DIALOG_QUIT = 222000;
-	
+
 	//change the contact status when the private chat is closed
 	private BroadcastReceiver chatClosed = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
@@ -130,7 +130,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 		} 
 	};
-	
+
 	private BroadcastReceiver quit = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
 		{ 
@@ -141,7 +141,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 		} 
 	};
-	
+
 	private BroadcastReceiver closeVideo = new BroadcastReceiver() {
 
 		@Override
@@ -155,7 +155,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				mVideoDialog = null;
 			}
 		}
-		
+
 	};
 
 	protected ContactAdapter contactAdapter = new ContactAdapter();
@@ -173,7 +173,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	private boolean kicked=false;
 
 	private VideoDialog mVideoDialog;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -183,10 +183,10 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 		IntentFilter filter = new IntentFilter(PrivateChat.CHAT_CLOSED);
 		registerReceiver(chatClosed, filter);
-		
+
 		IntentFilter closeVideoFilter = new IntentFilter(CLOSE_VIDEO);
 		registerReceiver(closeVideo, closeVideoFilter);
-		
+
 		IntentFilter quitDialogFilter = new IntentFilter(QUIT);
 		registerReceiver(quit, quitDialogFilter);
 
@@ -205,18 +205,18 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	protected void onPause() {
 		if (mVideoDialog != null && mVideoDialog.isShowing())
 			mVideoDialog.pause();
-		
+
 		super.onPause();
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
-				
+
 		if (mVideoDialog != null && mVideoDialog.isShowing())
 			mVideoDialog.resume();
 	}
-	
+
 	private class JoinFailDialog extends AlertDialog.Builder {
 
 		public JoinFailDialog(Context context) {
@@ -237,10 +237,10 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-//					if (getGlobalContext().getLaunchedBy() == BigBlueButton.LAUNCHED_BY_APPLICATION) {
-//						Intent login = new Intent(getGlobalContext(), LoginPage.class);
-//						startActivity(login);
-//					}
+					//					if (getGlobalContext().getLaunchedBy() == BigBlueButton.LAUNCHED_BY_APPLICATION) {
+					//						Intent login = new Intent(getGlobalContext(), LoginPage.class);
+					//						startActivity(login);
+					//					}
 					if (getGlobalContext().getLaunchedBy() == BigBlueButton.LAUNCHED_BY_BROWSER)
 						finish();
 				}
@@ -250,10 +250,12 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 
 	private boolean joinAndConnect() {
-//		if (isNetworkDown()) {
-//			openProperties();
-//			return false;
-//		}
+		//		if (isNetworkDown()) {
+		//			openProperties();
+		//			return false;
+		//		}
+
+
 
 		if (getIntent().hasCategory("android.intent.category.BROWSABLE")
 				&& getIntent().getScheme().equals(getResources().getString(R.string.protocol))) {
@@ -262,16 +264,24 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			String joinUrl = getIntent().getData().toString().replace(getResources().getString(R.string.protocol) + "://", "http://");
 			log.debug("Joining: " + joinUrl);
 			serverUrl = joinUrl.substring(0, joinUrl.indexOf("/bigbluebutton/api/"));
-			if (getBigBlueButton().getJoinService().join(serverUrl, joinUrl)) {
-				username = getBigBlueButton().getJoinService().getJoinedMeeting().getFullname();
-				// can't access the moderator information from the user module because at this point, the user isn't connect to the meeting yet
-				// moderator = getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isModerator();
-				moderator = getBigBlueButton().getJoinService().getJoinedMeeting().getRole().equals("MODERATOR");
-				meetingId = getBigBlueButton().getJoinService().getJoinedMeeting().getMeetingID();
-			} else {
-				String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
-				log.debug("Joining error message: " + error);
-				new JoinFailDialog(this).show();
+
+			if(getBigBlueButton().getJoinService().getTimestamp()){
+				if (getBigBlueButton().getJoinService().join(serverUrl, joinUrl)) {
+					username = getBigBlueButton().getJoinService().getJoinedMeeting().getFullname();
+					// can't access the moderator information from the user module because at this point, the user isn't connected to the meeting yet
+					// moderator = getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isModerator();
+					moderator = getBigBlueButton().getJoinService().getJoinedMeeting().getRole().equals("MODERATOR");
+					meetingId = getBigBlueButton().getJoinService().getJoinedMeeting().getMeetingID();
+				} else {
+					String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
+					log.debug("Joining error message: " + error);
+					new JoinFailDialog(this).show();
+					return false;
+				}
+			}
+			else
+			{
+				log.debug("Error getting the timestamp");
 				return false;
 			}
 		} else if (getIntent().getExtras() != null) {
@@ -434,7 +444,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		quit();
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notificationManager.cancelAll();
-		
+
 		unregisterReceiver(chatClosed);
 		unregisterReceiver(closeVideo);
 
@@ -482,50 +492,50 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 
 		switch (item.getItemId()) {
-			case POPUP_MENU_KICK_USER:
-			{
-				Contact contact = (Contact) contactAdapter.getItem(info.position);
-				getBigBlueButton().kickUser(contact.getUserId());
-				//closes private chat with the user if he is kicked
-				Intent kickedUser = new Intent(PrivateChat.KICKED_USER);
-				kickedUser.putExtra("userId", contact.getUserId());
-				sendBroadcast(kickedUser);
-				return true;
-			}
-			case POPUP_MENU_SET_PRESENTER:
-			{
-				Contact contact = (Contact) contactAdapter.getItem(info.position);
-				getBigBlueButton().assignPresenter(contact.getUserId());
-				return true;
-			}
-			case POPUP_MENU_MUTE_LISTENER:
-			{
-				Listener listener = (Listener) listenerAdapter.getItem(info.position);
-				getBigBlueButton().muteUnmuteListener(listener.getUserId(), !listener.isMuted());
-				return true;
-			}
-			case POPUP_MENU_KICK_LISTENER: 
-			{
-				Listener listener = (Listener) listenerAdapter.getItem(info.position);
-				getBigBlueButton().kickListener(listener.getUserId());
-				return true;
-			}
-			case POPUP_MENU_OPEN_PRIVATE_CHAT:
-			{
-				Contact contact = (Contact) contactAdapter.getItem(info.position);
-				startPrivateChat(contact);
-				return true;
-			}
-			case POPUP_MENU_SHOW_VIDEO:
-			{
-				Contact contact = (Contact) contactAdapter.getItem(info.position);
-				int orientation = getResources().getConfiguration().orientation;
-				if(orientation==Configuration.ORIENTATION_PORTRAIT)
-					showVideo(true, contact.getUserId(), contact.getName());
-				else 
-					showVideo(false, contact.getUserId(), contact.getName());
-				return true;
-			}
+		case POPUP_MENU_KICK_USER:
+		{
+			Contact contact = (Contact) contactAdapter.getItem(info.position);
+			getBigBlueButton().kickUser(contact.getUserId());
+			//closes private chat with the user if he is kicked
+			Intent kickedUser = new Intent(PrivateChat.KICKED_USER);
+			kickedUser.putExtra("userId", contact.getUserId());
+			sendBroadcast(kickedUser);
+			return true;
+		}
+		case POPUP_MENU_SET_PRESENTER:
+		{
+			Contact contact = (Contact) contactAdapter.getItem(info.position);
+			getBigBlueButton().assignPresenter(contact.getUserId());
+			return true;
+		}
+		case POPUP_MENU_MUTE_LISTENER:
+		{
+			Listener listener = (Listener) listenerAdapter.getItem(info.position);
+			getBigBlueButton().muteUnmuteListener(listener.getUserId(), !listener.isMuted());
+			return true;
+		}
+		case POPUP_MENU_KICK_LISTENER: 
+		{
+			Listener listener = (Listener) listenerAdapter.getItem(info.position);
+			getBigBlueButton().kickListener(listener.getUserId());
+			return true;
+		}
+		case POPUP_MENU_OPEN_PRIVATE_CHAT:
+		{
+			Contact contact = (Contact) contactAdapter.getItem(info.position);
+			startPrivateChat(contact);
+			return true;
+		}
+		case POPUP_MENU_SHOW_VIDEO:
+		{
+			Contact contact = (Contact) contactAdapter.getItem(info.position);
+			int orientation = getResources().getConfiguration().orientation;
+			if(orientation==Configuration.ORIENTATION_PORTRAIT)
+				showVideo(true, contact.getUserId(), contact.getName());
+			else 
+				showVideo(false, contact.getUserId(), contact.getName());
+			return true;
+		}
 		}
 		return super.onContextItemSelected(item);
 	}
@@ -549,10 +559,10 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		menu.clear();
 		if (getBigBlueButton().isConnected()) {
 			if (getVoiceModule().isOnCall()) {
-//				if (getVoiceModule().isMuted())
-//					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.unmute).setIcon(android.R.drawable.ic_lock_silent_mode_off);
-//				else
-//					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.mute).setIcon(android.R.drawable.ic_lock_silent_mode);
+				//				if (getVoiceModule().isMuted())
+				//					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.unmute).setIcon(android.R.drawable.ic_lock_silent_mode_off);
+				//				else
+				//					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.mute).setIcon(android.R.drawable.ic_lock_silent_mode);
 				if (getVoiceModule().getSpeaker() == AudioManager.MODE_NORMAL)
 					menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, R.string.speaker).setIcon(android.R.drawable.button_onoff_indicator_on);
 				else
@@ -579,7 +589,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			menu.add(Menu.NONE, MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
 			menu.add(Menu.NONE, MENU_MEETING_INF, Menu.NONE, R.string.meeting_information).setIcon(android.R.drawable.ic_menu_info_details);
 			//test purposes only
-//			menu.add(Menu.NONE, MENU_DISCONNECT, Menu.NONE, "Disconnect").setIcon(android.R.drawable.ic_dialog_alert);
+			//			menu.add(Menu.NONE, MENU_DISCONNECT, Menu.NONE, "Disconnect").setIcon(android.R.drawable.ic_dialog_alert);
 		} else {
 			if (getGlobalContext().getLaunchedBy() == BigBlueButton.LAUNCHED_BY_APPLICATION)
 				menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, R.string.logout).setIcon(android.R.drawable.ic_menu_revert);
@@ -660,7 +670,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				openProperties();
 			}
 			return true;
-			
+
 		case MENU_MUTE_ROOM:
 			getBigBlueButton().muteUnmuteRoom(true);
 			return true;
@@ -674,7 +684,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			return true;
 		default:			
 			return super.onOptionsItemSelected(item);
-			
+
 		}
 	}
 
@@ -683,46 +693,46 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		networkProperties.show();
 	}
 
-protected void onUserLeaveHint() {
-	showBackgroundNotification();
-}
+	protected void onUserLeaveHint() {
+		showBackgroundNotification();
+	}
 
-public void showBackgroundNotification()
-{
-	String contentTitle = getResources().getString(R.string.application_on_background);
-	String contentText = getResources().getString(R.string.application_on_background_text);
-	
-	NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-	Notification notification = new Notification(R.drawable.icon_bbb, contentTitle, 0);
-	Intent notificationIntent = new Intent(getApplicationContext(), Client.class);
-	notificationIntent.setAction(ACTION_TO_FOREGROUND);
-	
-	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
-	notification.flags=Notification.FLAG_ONGOING_EVENT;
-	notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
-	
-	Toast.makeText(getApplicationContext(), contentText, Toast.LENGTH_SHORT).show();
-	notificationManager.notify(BACKGROUND_NOTIFICATION_ID, notification);	
-	
-}
+	public void showBackgroundNotification()
+	{
+		String contentTitle = getResources().getString(R.string.application_on_background);
+		String contentText = getResources().getString(R.string.application_on_background_text);
+
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		Notification notification = new Notification(R.drawable.icon_bbb, contentTitle, 0);
+		Intent notificationIntent = new Intent(getApplicationContext(), Client.class);
+		notificationIntent.setAction(ACTION_TO_FOREGROUND);
+
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+		notification.flags=Notification.FLAG_ONGOING_EVENT;
+		notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
+
+		Toast.makeText(getApplicationContext(), contentText, Toast.LENGTH_SHORT).show();
+		notificationManager.notify(BACKGROUND_NOTIFICATION_ID, notification);	
+
+	}
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
-//			Intent intent = new Intent(SEND_TO_BACK);
-//			sendBroadcast(intent);
+			//			Intent intent = new Intent(SEND_TO_BACK);
+			//			sendBroadcast(intent);
 			log.debug("KEYCODE_BACK");
 			CloseDialog close = new CloseDialog(Client.this);
 			close.show();
 			//moveTaskToBack(true);
-			
+
 			return true;
 			//    		case KeyEvent.KEYCODE_VOLUME_DOWN:
 			//    		case KeyEvent.KEYCODE_VOLUME_UP:
 			//				Dialog dialog = new AudioControlDialog(this);
 			//				dialog.show();
 			//				return true;
-		
+
 		default:
 			return super.onKeyDown(keyCode, event);
 		}    		
@@ -914,7 +924,7 @@ public void showBackgroundNotification()
 				Intent kickedUser = new Intent(PrivateChat.KICKED_USER);
 				kickedUser.putExtra("userId", p.getUserId());
 				sendBroadcast(kickedUser);
-				
+
 			}
 		});
 	}
@@ -948,7 +958,7 @@ public void showBackgroundNotification()
 			for (int i=0; i<contactAdapter.getCount(); i++)
 				if(contactAdapter.getChatStatus(i)==Contact.CONTACT_ON_PRIVATE_MESSAGE)
 					((Contact) contactAdapter.getItem(i)).setChatStatus(Contact.CONTACT_NORMAL);
-			
+
 
 			contactAdapter.notifyDataSetChanged();
 		}
@@ -956,7 +966,7 @@ public void showBackgroundNotification()
 		{
 			NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 			notificationManager.cancel(Client.BACKGROUND_NOTIFICATION_ID);
-			
+
 		} else if (intent.getAction().equals(ACTION_OPEN_SLIDER)) {
 			SlidingDrawer slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
 			if (slidingDrawer != null && (!slidingDrawer.isShown() || !slidingDrawer.isOpened())) {
@@ -1061,12 +1071,12 @@ public void showBackgroundNotification()
 
 	private void sendBroadcastCloseVideo(final IParticipant p) {
 		log.debug("Client.sendBroadcastCloseVideo()");
-		
+
 		Intent intent= new Intent(CLOSE_VIDEO);
 		intent.putExtra("userId", p.getUserId());
 		sendBroadcast(intent);
 	}
-	
+
 	@Override
 	public void onParticipantStatusChangeHasStream(final IParticipant p) {
 		if (!p.getStatus().isHasStream())
@@ -1174,7 +1184,7 @@ public void showBackgroundNotification()
 			startActivity(intent);
 		}
 	}
-	
+
 	private void makeToast(final int resId) {
 		makeToast(getResources().getString(resId));
 	}
@@ -1218,7 +1228,7 @@ public void showBackgroundNotification()
 		return kicked;
 	}
 
-	
+
 
 }
 
