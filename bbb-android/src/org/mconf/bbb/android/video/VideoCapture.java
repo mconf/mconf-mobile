@@ -77,10 +77,10 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     
 	// Centers the preview on the screen keeping the capture aspect ratio.
     // Remember to call this function after you change the width or height if you want to keep the aspect and the video centered
-    public void centerPreview(boolean inDialog) {
+    public void centerPreview() {
     	VideoCentering mVideoCentering = new VideoCentering();
     	mVideoCentering.setAspectRatio(width/(float)height);
-    	LayoutParams layoutParams = mVideoCentering.getVideoLayoutParams(mVideoCentering.getDisplayMetrics(this.getContext(), inDialog), this.getLayoutParams());
+    	LayoutParams layoutParams = mVideoCentering.getVideoLayoutParams(mVideoCentering.getDisplayMetrics(this.getContext()), this.getLayoutParams());
 		setLayoutParams(layoutParams);   	
 	}
     

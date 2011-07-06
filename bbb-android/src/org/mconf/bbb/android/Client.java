@@ -23,7 +23,6 @@ package org.mconf.bbb.android;
 
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.android.video.CaptureDialog;
-import org.mconf.bbb.android.video.CaptureFullScreen;
 import org.mconf.bbb.android.video.VideoCapture;
 import org.mconf.bbb.android.video.VideoDialog;
 import org.mconf.bbb.android.video.VideoFullScreen;
@@ -408,6 +407,14 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 		initListeners();
 
+		if(mCaptureDialog != null && mCaptureDialog.isShowing()){
+			if(mCaptureDialog.isPreviewHidden){
+				mCaptureDialog.pause();
+				mCaptureDialog.resume();
+			} else {
+				mCaptureDialog.centerPreview();
+			}
+		}
 		if (newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE
 				&& mVideoDialog != null && mVideoDialog.isShowing()) {
 			int videoId = mVideoDialog.getVideoId();
@@ -416,15 +423,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			mVideoDialog=null;
 			showVideo(false, videoId, videoName);
 		}
-		if (newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE
-				&& mCaptureDialog != null && mCaptureDialog.isShowing()) {
-			int videoId = mCaptureDialog.getVideoId();
-			mCaptureDialog.pause();
-			mCaptureDialog.dismiss();
-			mCaptureDialog=null;
-			showCapture(false, videoId);
-		}
-
 	}
 
 	@Override
@@ -522,10 +520,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				if(getBigBlueButton().getMyUserId() == contact.getUserId()){//shows the preview instead
 																			//of showing the received video
 																			//to save resources
-					if(getResources().getConfiguration().orientation==Configuration.ORIENTATION_PORTRAIT){
-						if(mCaptureDialog != null && mCaptureDialog.isShowing()){
-							mCaptureDialog.showPreview(true);
-						}
+					if(mCaptureDialog != null && mCaptureDialog.isShowing()){
+						mCaptureDialog.showPreview(true);
 					}						
 				} else {
 					if(getResources().getConfiguration().orientation==Configuration.ORIENTATION_PORTRAIT)
@@ -619,19 +615,14 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			return true;
 			
 		case MENU_START_VIDEO:
-			if(getResources().getConfiguration().orientation==Configuration.ORIENTATION_PORTRAIT)
-				showCapture(true, getBigBlueButton().getMyUserId());
-			else 
-				showCapture(false, getBigBlueButton().getMyUserId());			
+			showCapture(getBigBlueButton().getMyUserId());
 			return true;	
 			
 		case MENU_STOP_VIDEO:
-			if(getResources().getConfiguration().orientation==Configuration.ORIENTATION_PORTRAIT){
-				if(mCaptureDialog != null && mCaptureDialog.isShowing()){
-					mCaptureDialog.pause();
-					mCaptureDialog.dismiss();
-					mCaptureDialog = null;
-				}
+			if(mCaptureDialog != null && mCaptureDialog.isShowing()){
+				mCaptureDialog.pause();
+				mCaptureDialog.dismiss();
+				mCaptureDialog = null;
 			}
 			return true;	
 
@@ -1166,21 +1157,9 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		}
 	}
 	
-	private void showCapture(boolean inDialog, int userId){
-		if(inDialog){
-			if(mCaptureDialog != null && mCaptureDialog.isShowing() 
-				&& mCaptureDialog.isPreviewHidden){ //then it means that the video is being captured but
-													//the preview is hidden
-				mCaptureDialog.showPreview(true); //show the preview to the user
-			} else {
-				mCaptureDialog = new CaptureDialog(this, userId);
-				mCaptureDialog.show();
-			}
-		} else {
-			Intent intent = new Intent(getApplicationContext(), CaptureFullScreen.class);
-			intent.putExtra("userId", userId);
-			startActivity(intent);
-		}
+	private void showCapture(int userId){
+		mCaptureDialog = new CaptureDialog(this, userId);
+		mCaptureDialog.show();
 	}
 
 	private void makeToast(final int resId) {

@@ -38,7 +38,7 @@ public class CaptureDialog extends Dialog {
 	private int videoId;
 	private boolean startsHidden = true; //true=capture starts without preview. false=capture starts with preview.
 	public boolean isPreviewHidden;
-	private boolean wasPreviewHidden;
+	private boolean wasPreviewHidden = false;
 	
 	public CaptureDialog(Context context, int userId) {
 		super(context);
@@ -54,11 +54,9 @@ public class CaptureDialog extends Dialog {
 		
 		if(startsHidden){
 			isPreviewHidden = false;
-			wasPreviewHidden = true;
 			hidePreview();
 		} else {
 			isPreviewHidden = true;
-			wasPreviewHidden = false;
 			showPreview(true);
 		}
 			
@@ -90,10 +88,16 @@ public class CaptureDialog extends Dialog {
 			getWindow().setAttributes(windowAttributes);
 			
 			if(videoWindow != null && center){
-				videoWindow.centerPreview(true);
+				centerPreview();
 			}
 			
 			isPreviewHidden = false;
+		}
+	}
+	
+	public void centerPreview(){
+		if(videoWindow != null){
+			videoWindow.centerPreview();
 		}
 	}
 

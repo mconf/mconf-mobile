@@ -28,16 +28,14 @@ public class VideoCentering {
 		return layoutParams;
 	}
 	
-	public DisplayMetrics getDisplayMetrics(Context context, boolean inDialog){
+	public DisplayMetrics getDisplayMetrics(Context context){
 		DisplayMetrics metrics = new DisplayMetrics();
 		Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         display.getMetrics(metrics);
         log.debug("Maximum display resolution: {} X {}\n", metrics.widthPixels, metrics.heightPixels);
-        if(inDialog){
-			metrics.widthPixels -= 40;
-			metrics.heightPixels -= 40;
-		}
-        return metrics;
+        metrics.widthPixels -= 40;
+		metrics.heightPixels -= 40;
+		return metrics;
 	}
 
 	public void setAspectRatio(float aspectRatio) {
