@@ -209,50 +209,47 @@ public class JoinService {
 			+ "&meetingID=" + urlEncode(meeting.getMeetingID())
 			+ "&fullName=" + urlEncode(name)
 			+ "&password=" + urlEncode(moderator? meeting.getModeratorPW(): meeting.getAttendeePW())
-			+"&timestamp=" +timestamp;
-		String joinUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?"+parameters+"&checksum="+checksum(parameters+salt);
+			+ "&timestamp=" + timestamp;
+		String joinUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?" + parameters + "&checksum=" + checksum(parameters + salt);
 
 		log.debug(joinUrl);
-
-		return join(serverUrl, joinUrl); //??
-
-		//		joinedMeeting = new JoinedMeeting();
-		//		try {
-		//			HttpClient client = new HttpClient();
-		//			HttpMethod method = new GetMethod(joinUrl);
-		//			client.executeMethod(method);
-		//			joinedMeeting.parse(method.getResponseBodyAsString().trim());
-		//			method.releaseConnection();
-		//		} catch (Exception e) {
-		//			e.printStackTrace();
-		//			log.error("Can't join the meeting {}", meeting.getMeetingID());
-		//			
-		//			return false;
-		//		}
-		//		
-		//		if (joinedMeeting.getReturncode().equals("SUCCESS")) {
-		//			return true;
-		//		} else {
-		//			log.error(joinedMeeting.getMessage());
-		//			return false;
-		//		}
-	}
-
-	public boolean join(String serverUrl, String joinUrl) {
-		this.serverUrl = serverUrl;
-		String enterUrl = serverUrl + "/bigbluebutton/api/enter";
 
 		joinedMeeting = new JoinedMeeting();
 		try {
 			HttpClient client = new HttpClient();
 			HttpMethod method = new GetMethod(joinUrl);
 			client.executeMethod(method);
-			//			log.info(method.getResponseBodyAsString().trim());
+			joinedMeeting.parse(method.getResponseBodyAsString().trim());
+			method.releaseConnection();
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("Can't join the meeting {}", meeting.getMeetingID());
+			
+			return false;
+		}
+		
+		if (joinedMeeting.getReturncode().equals("SUCCESS")) {
+			return true;
+		} else {
+			log.error(joinedMeeting.getMessage());
+			return false;
+		}
+	}
+
+	public boolean join(String serverUrl, String joinUrl) {
+		this.serverUrl = serverUrl;
+		String enterUrl = serverUrl + "/bigbluebutton/api/enter";
+		
+		joinedMeeting = new JoinedMeeting();
+		try {
+			HttpClient client = new HttpClient();
+			HttpMethod method = new GetMethod(joinUrl);
+			client.executeMethod(method);
 			method.releaseConnection();
 
 			method = new GetMethod(enterUrl);
 			client.executeMethod(method);
-			joinedMeeting.parse(method.getResponseBodyAsString().trim()); //\TODO returning all fields null
+			joinedMeeting.parse(method.getResponseBodyAsString().trim());
 			method.releaseConnection();
 		} catch (Exception e) {
 			e.printStackTrace();
