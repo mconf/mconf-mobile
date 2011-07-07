@@ -119,16 +119,10 @@ public class LoginPage extends BigBlueButtonActivity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					if(getBigBlueButton().getJoinService().getTimestamp()){
-						updateMeetingsList();
-						return true;
-					}
-					else
-					{
-						showToast(R.string.login_cant_contact_server);
-						log.debug("Error getting the timestamp");
-						return false;
-					}
+
+					updateMeetingsList();
+					return true;
+
 				} 
 				return false;
 			}
@@ -203,43 +197,39 @@ public class LoginPage extends BigBlueButtonActivity {
 			@Override
 			public void onClick(View viewParam)
 			{
-				if(getBigBlueButton().getJoinService().getTimestamp()){
-					EditText usernameEditText = (EditText) findViewById(R.id.login_edittext_name);
-					username = usernameEditText.getText().toString();
 
-					if (username.length() < 1) {
-						Toast.makeText(getApplicationContext(), R.string.login_empty_name, Toast.LENGTH_SHORT).show();  
-						return;
-					}
+				EditText usernameEditText = (EditText) findViewById(R.id.login_edittext_name);
+				username = usernameEditText.getText().toString();
 
-					if (spinner.getSelectedItemPosition() == Spinner.INVALID_POSITION) {
-						Toast.makeText(getApplicationContext(), R.string.login_select_meeting, Toast.LENGTH_SHORT).show();
-						return;
-					}
-
-					String meetingId = (String) spinner.getSelectedItem();
-					//				if (!getBigBlueButton().getJoinService().join(meetingId, username, moderator)) {
-					//                	Toast.makeText(getApplicationContext(), getResources().getString(R.string.login_cant_join) + ": " + getBigBlueButton().getJoinService().getJoinedMeeting().getMessage(), Toast.LENGTH_SHORT).show();
-					//                	return;
-					//                }
-
-					updatePreferences(username, serverUrl);
-
-					Intent myIntent = new Intent(getApplicationContext(), Client.class);
-					myIntent.putExtra("username", username);
-					myIntent.putExtra("moderator", moderator);
-					myIntent.putExtra("serverUrl", serverUrl);
-					myIntent.putExtra("meetingId", meetingId);
-					startActivity(myIntent);
-
-					finish();
+				if (username.length() < 1) {
+					Toast.makeText(getApplicationContext(), R.string.login_empty_name, Toast.LENGTH_SHORT).show();  
+					return;
 				}
-				else
-				{
-					showToast(R.string.login_cant_contact_server);
-					log.debug("Error getting the timestamp");
+
+				if (spinner.getSelectedItemPosition() == Spinner.INVALID_POSITION) {
+					Toast.makeText(getApplicationContext(), R.string.login_select_meeting, Toast.LENGTH_SHORT).show();
+					return;
 				}
+
+				String meetingId = (String) spinner.getSelectedItem();
+				//				if (!getBigBlueButton().getJoinService().join(meetingId, username, moderator)) {
+				//                	Toast.makeText(getApplicationContext(), getResources().getString(R.string.login_cant_join) + ": " + getBigBlueButton().getJoinService().getJoinedMeeting().getMessage(), Toast.LENGTH_SHORT).show();
+				//                	return;
+				//                }
+
+				updatePreferences(username, serverUrl);
+
+				Intent myIntent = new Intent(getApplicationContext(), Client.class);
+				myIntent.putExtra("username", username);
+				myIntent.putExtra("moderator", moderator);
+				myIntent.putExtra("serverUrl", serverUrl);
+				myIntent.putExtra("meetingId", meetingId);
+				startActivity(myIntent);
+
+				finish();
 			}
+
+
 		}
 		);
 		//button to change the server

@@ -265,25 +265,20 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			log.debug("Joining: " + joinUrl);
 			serverUrl = joinUrl.substring(0, joinUrl.indexOf("/bigbluebutton/api/"));
 
-			if(getBigBlueButton().getJoinService().getTimestamp()){
-				if (getBigBlueButton().getJoinService().join(serverUrl, joinUrl)) {
-					username = getBigBlueButton().getJoinService().getJoinedMeeting().getFullname();
-					// can't access the moderator information from the user module because at this point, the user isn't connected to the meeting yet
-					// moderator = getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isModerator();
-					moderator = getBigBlueButton().getJoinService().getJoinedMeeting().getRole().equals("MODERATOR");
-					meetingId = getBigBlueButton().getJoinService().getJoinedMeeting().getMeetingID();
-				} else {
-					String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
-					log.debug("Joining error message: " + error);
-					new JoinFailDialog(this).show();
-					return false;
-				}
-			}
-			else
-			{
-				log.debug("Error getting the timestamp");
+
+			if (getBigBlueButton().getJoinService().join(serverUrl, joinUrl)) {
+				username = getBigBlueButton().getJoinService().getJoinedMeeting().getFullname();
+				// can't access the moderator information from the user module because at this point, the user isn't connected to the meeting yet
+				// moderator = getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isModerator();
+				moderator = getBigBlueButton().getJoinService().getJoinedMeeting().getRole().equals("MODERATOR");
+				meetingId = getBigBlueButton().getJoinService().getJoinedMeeting().getMeetingID();
+			} else {
+				String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
+				log.debug("Joining error message: " + error);
+				new JoinFailDialog(this).show();
 				return false;
 			}
+
 		} else if (getIntent().getExtras() != null) {
 			getGlobalContext().setLaunchedBy(BigBlueButton.LAUNCHED_BY_APPLICATION);
 
