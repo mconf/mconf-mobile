@@ -74,44 +74,43 @@ public class JoinService {
 	public int load(String serverUrl) {
 
 		this.serverUrl = serverUrl;
-		if(getTimestamp()){
-
-			while (serverUrl.endsWith("/")) {
-				serverUrl = serverUrl.substring(0, serverUrl.length() - 1);
-			}
-
-
-
-			String parameters = "action=getMeetings"+"&timestamp=" +timestamp;
-			String getMeetingsUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?" + parameters + "&checksum=" + checksum(parameters + salt);
-
-			String strMeetings = null;
-			try {
-				HttpClient client = new HttpClient();
-				HttpMethod method = new GetMethod(getMeetingsUrl);
-				client.executeMethod(method);
-				strMeetings = method.getResponseBodyAsString().trim();
-				method.releaseConnection();
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("Can't connect to {}", serverUrl);
-				return E_LOAD_HTTP_REQUEST;
-			}
-			try {
-				meetings.parse(strMeetings);
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.info("This server doesn't support mobile access");
-				return E_LOAD_PARSE_MEETINGS;
-			}
-			log.debug(meetings.toString());
-
-			return E_OK;
-		}
-		else{
-			log.debug("Can't get timestamp from {}", serverUrl);
+		if(!getTimestamp()){
 			return E_GET_TIMESTAMP;
 		}
+
+
+		while (serverUrl.endsWith("/")) {
+			serverUrl = serverUrl.substring(0, serverUrl.length() - 1);
+		}
+
+
+
+		String parameters = "action=getMeetings"+"&timestamp=" +timestamp;
+		String getMeetingsUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?" + parameters + "&checksum=" + checksum(parameters + salt);
+
+		String strMeetings = null;
+		try {
+			HttpClient client = new HttpClient();
+			HttpMethod method = new GetMethod(getMeetingsUrl);
+			client.executeMethod(method);
+			strMeetings = method.getResponseBodyAsString().trim();
+			method.releaseConnection();
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("Can't connect to {}", serverUrl);
+			return E_LOAD_HTTP_REQUEST;
+		}
+		try {
+			meetings.parse(strMeetings);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("This server doesn't support mobile access");
+			return E_LOAD_PARSE_MEETINGS;
+		}
+		log.debug(meetings.toString());
+
+		return E_OK;
+
 	}
 
 	public boolean join(String meetingID, String name, boolean moderator) {
@@ -168,7 +167,6 @@ public class JoinService {
 
 		String parameters = "action=getTimestamp";
 		String timestampUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?" + parameters + "&checksum=" + checksum(parameters + salt);
-		log.debug(timestampUrl);
 		String response = "Unknown error";
 		try {
 			HttpClient client = new HttpClient();
@@ -191,7 +189,7 @@ public class JoinService {
 		String parameters= "action=create"+"&meetingID=" + urlEncode(meetingID) +"&timestamp=" +timestamp;
 		String createUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?"+parameters
 		+ checksum(parameters+salt);
-		log.debug(createUrl);
+
 
 		String response = "Unknown error";
 		try {
@@ -214,15 +212,16 @@ public class JoinService {
 	}
 
 	public boolean join(Meeting meeting, String name, boolean moderator) {
-
+		if(!getTimestamp())
+		{
+			return false;
+		}
 		String parameters = "action=join"
 			+ "&meetingID=" + urlEncode(meeting.getMeetingID())
 			+ "&fullName=" + urlEncode(name)
 			+ "&password=" + urlEncode(moderator? meeting.getModeratorPW(): meeting.getAttendeePW())
 			+ "&timestamp=" + timestamp;
 		String joinUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?" + parameters + "&checksum=" + checksum(parameters + salt);
-
-		log.debug(joinUrl);
 
 		joinedMeeting = new JoinedMeeting();
 		try {
@@ -234,10 +233,10 @@ public class JoinService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("Can't join the meeting {}", meeting.getMeetingID());
-			
+
 			return false;
 		}
-		
+
 		if (joinedMeeting.getReturncode().equals("SUCCESS")) {
 			return true;
 		} else {
@@ -245,12 +244,17 @@ public class JoinService {
 			return false;
 		}
 
+
 	}
 
 	public boolean join(String serverUrl, String joinUrl) {
+		if (!getTimestamp()) {
+			return false;
+		}
+
 		this.serverUrl = serverUrl;
 		String enterUrl = serverUrl + "/bigbluebutton/api/enter";
-		
+
 		joinedMeeting = new JoinedMeeting();
 		try {
 			HttpClient client = new HttpClient();
@@ -262,22 +266,19 @@ public class JoinService {
 			client.executeMethod(method);
 			joinedMeeting.parse(method.getResponseBodyAsString().trim());
 			method.releaseConnection();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("Can't join the url {}", joinUrl);
-
-			if (joinedMeeting.getReturncode().equals("SUCCESS")) {
-				return true;
-			} else {
-				log.error(joinedMeeting.getMessage());
-				return false;
-			}
 		}
-		else
-		{
-			log.debug("Can't get timestamp from {}", serverUrl);
+		if (joinedMeeting.getReturncode().equals("SUCCESS")) {
+			return true;
+		} else {
+			log.error(joinedMeeting.getMessage());
 			return false;
+
 		}
+
 	}
 
 	public static String urlEncode(String s) {	

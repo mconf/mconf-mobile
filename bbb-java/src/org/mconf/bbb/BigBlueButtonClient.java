@@ -200,12 +200,12 @@ public class BigBlueButtonClient {
 	public static void main(String[] args) {
 		BigBlueButtonClient client = new BigBlueButtonClient();
 		client.getJoinService().setSalt("03b07");
-		if(client.getJoinService().getTimestamp("http://mconfdev.inf.ufrgs.br")){
-			client.getJoinService().load();
-			if (client.getJoinService().join("Demo Meeting", "Eclipse", false)
-					&& (client.getJoinService().getJoinedMeeting() != null)) {
-				client.connectBigBlueButton();
-			}
+
+		client.getJoinService().load("http://mconfdev.inf.ufrgs.br");
+		if (client.getJoinService().join("Demo Meeting", "Eclipse", false)
+				&& (client.getJoinService().getJoinedMeeting() != null)) {
+			client.connectBigBlueButton();
+
 		}
 
 	}

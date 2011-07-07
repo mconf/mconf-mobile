@@ -4,9 +4,11 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -26,15 +28,25 @@ import android.widget.Toast;
 //class where the user chooses the server where he wants to connect
 public class ServerChoosing extends BigBlueButtonActivity  {
 	private static final int DELETE_SERVER = 0;
+	private static final int CHANGE_PASSWORD = 1;
+	public static final String PASSWORD_INPUTED ="org.mconf.bbb.android.Client.PASSWORD_INPUTED";
 	ListView servers;
 	private ArrayAdapter<String> listViewAdapter;
 	SharedPreferences serverFile;
 	Map<String,String> storedServers;
 	Context context = this;
-	EditText password;
 	String serverURL;
 	String serverPassword;
-	AlertDialog.Builder passwordDialog;
+	
+	private BroadcastReceiver passwordInputed = new BroadcastReceiver(){ 
+		public void onReceive(Context context, Intent intent)
+		{ 
+			Bundle extras = intent.getExtras();
+			serverPassword= extras.getString("serverPassword");
+			callLogin();
+			
+		} 
+	};
 	
 	
 	public String getServerPassword() {
@@ -54,7 +66,11 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 		setServerFile();
 		getServers();
 		registerForContextMenu(servers);
-		password = new EditText(context);
+		IntentFilter filter = new IntentFilter(ServerChoosing.PASSWORD_INPUTED);
+		registerReceiver(passwordInputed, filter);
+		
+		
+		
 		//select server on click
 		Button connect = (Button) findViewById(R.id.connect);
 		connect.setOnClickListener(new OnClickListener() {
@@ -65,11 +81,11 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 					
 					serverURL=server.getText().toString();
 
-					createDialog();
+					
 
 					if(storedServers.get(serverURL)==null || storedServers.get(serverURL)=="")
 					{
-						passwordDialog.show();
+						new ServerPasswordDialog(context).show();
 
 					}
 
@@ -93,27 +109,7 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 
 	}
 	
-	private void createDialog()
-	{
-		passwordDialog = new AlertDialog.Builder(context);
-		passwordDialog.setCancelable(false);
-		passwordDialog.setTitle(R.string.server_password);
-		passwordDialog.setView(password);
-		passwordDialog.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int id) {
-				if(password.getText().toString().length()>0)
-				{
-					serverPassword=password.getText().toString();
-					dialog.cancel();
-					callLogin();
-				}
-				else{
-					Toast.makeText(context, R.string.server_password, Toast.LENGTH_SHORT).show();
-					
-				}
-			}
-		});
-	}
+	
 
 	private void callLogin()
 	{
@@ -127,7 +123,7 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 		callLogin.putExtra("serverURL", serverURL);
 		sendBroadcast(callLogin);
 		finish(); 
-		addServer(serverURL, password.getText().toString());
+		addServer(serverURL, serverPassword);
 	}
 
 	@Override
@@ -136,6 +132,7 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 		super.onCreateContextMenu(menu, v, menuInfo);
 
 		menu.add(0, DELETE_SERVER, 0, R.string.delete_server);
+		menu.add(0, CHANGE_PASSWORD, 0, R.string.change_password);
 
 	}
 	//delete server on long press
@@ -148,6 +145,9 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 		case DELETE_SERVER:
 			System.out.println(servers.getItemAtPosition(info.position).toString());
 			deleteServer(servers.getItemAtPosition(info.position).toString());
+			return true;
+		case CHANGE_PASSWORD:	
+			new ServerPasswordDialog(context).show();
 			return true;
 		}
 		return super.onContextItemSelected(item);
