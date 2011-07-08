@@ -75,6 +75,7 @@ public class LoginPage extends BigBlueButtonActivity {
 	private boolean moderator;
 	private String username = "Android";
 	private String serverUrl = "";
+	private String serverPassword = "";
 	private String createdMeeting = "";
 	private Context context = this;
 
@@ -83,6 +84,7 @@ public class LoginPage extends BigBlueButtonActivity {
 		{ 
 			Bundle extras = intent.getExtras();
 			serverUrl=extras.getString("serverURL");
+			serverPassword = extras.getString("serverPassword");
 			Button serverView = (Button) findViewById(R.id.server);
 			serverView.setText(serverUrl);
 		}
@@ -102,7 +104,10 @@ public class LoginPage extends BigBlueButtonActivity {
 		editName.setText(username);
 		Button serverView = (Button) findViewById(R.id.server);
 		if(serverUrl.length()>3)
+		{
+			getBigBlueButton().getJoinService().setSalt(serverPassword);
 			serverView.setText(serverUrl);
+		}
 		else
 			serverView.setText(R.string.choose_a_server);
 
@@ -217,7 +222,7 @@ public class LoginPage extends BigBlueButtonActivity {
 				//                	return;
 				//                }
 
-				updatePreferences(username, serverUrl);
+				updatePreferences(username, serverUrl, serverPassword);
 
 				Intent myIntent = new Intent(getApplicationContext(), Client.class);
 				myIntent.putExtra("username", username);
@@ -407,6 +412,7 @@ public class LoginPage extends BigBlueButtonActivity {
 		{
 			this.username = this.storedPreferences.get("username");
 			this.serverUrl = this.storedPreferences.get("serverURL");
+			this.serverPassword = this.storedPreferences.get("serverPassword");
 		}
 	}
 
@@ -423,7 +429,7 @@ public class LoginPage extends BigBlueButtonActivity {
 		this.storedPreferences = (Map<String, String>) preferencesFile.getAll();
 	}
 
-	public void updatePreferences(String username, String serverURL)
+	public void updatePreferences(String username, String serverURL, String serverPassword)
 	{
 		SharedPreferences.Editor preferenceEditor = preferencesFile.edit();
 		if(!preferencesFile.getString("username", "").equals(username))
@@ -436,6 +442,7 @@ public class LoginPage extends BigBlueButtonActivity {
 		{
 			preferenceEditor.remove("serverURL");
 			preferenceEditor.putString("serverURL", serverURL);
+			preferenceEditor.putString("serverPassword", serverPassword);
 		}
 		preferenceEditor.commit();
 	}

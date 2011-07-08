@@ -41,6 +41,23 @@ public class TestServers extends ActivityInstrumentationTestCase2<LoginPage>  {
         getActivity().finish();
         super.tearDown();
 	}
+	public void testAddChangePassword()
+	{
+		Common.addServers(solo);
+		
+		ArrayList<TextView> servers = solo.getCurrentTextViews(solo.getView(R.id.servers));
+		for (TextView view : servers) {
+			String server = view.getText().toString();
+			if (!server.startsWith(Common.DEFAULT_SERVER + "/test"))
+				continue;
+			solo.clickLongOnView(view);
+			solo.clickOnText(solo.getString(R.string.change_password));
+			assertTrue(solo.searchText(Common.exactly(solo.getString(R.string.server_password))));
+			solo.enterText(0, Common.DEFAULT_PASSWORD+server);
+			solo.clickOnButton(0);
+			assertTrue(solo.searchText(Common.DEFAULT_PASSWORD+server));
+		}
+	}
 	
 	public void testConnect()
 	{
@@ -49,6 +66,11 @@ public class TestServers extends ActivityInstrumentationTestCase2<LoginPage>  {
 		else
 			solo.clickOnText(Common.exactly(Common.DEFAULT_SERVER));
 		solo.clickOnButton(solo.getString(R.string.connect));
+		if(solo.searchText(Common.exactly(solo.getString(R.string.server_password))))
+		{
+			solo.enterText(0, Common.DEFAULT_PASSWORD);
+			solo.clickOnButton(0);
+		}
 		solo.assertCurrentActivity("wrong activity", LoginPage.class);
 	}
 	
@@ -64,16 +86,8 @@ public class TestServers extends ActivityInstrumentationTestCase2<LoginPage>  {
 	}
 	
 	public void testAddRemove() {
-		for (int i = 0; i < 2; ++i) {
-			String server = Common.DEFAULT_SERVER + "/test" + i;
-			solo.enterText(0, server);
-			solo.clickOnButton(solo.getString(R.string.connect));
-			solo.assertCurrentActivity("wrong activity", LoginPage.class);
-			assertTrue(solo.searchText(Common.exactly(server)));
-			solo.clickOnView(solo.getView(R.id.server));
-			solo.assertCurrentActivity("wrong activity", ServerChoosing.class);
-			solo.waitForText(Common.exactly(Common.DEFAULT_SERVER + "/test" + i));
-		}
+		
+		Common.addServers(solo);
 		
 		ArrayList<TextView> servers = solo.getCurrentTextViews(solo.getView(R.id.servers));
 		for (TextView view : servers) {

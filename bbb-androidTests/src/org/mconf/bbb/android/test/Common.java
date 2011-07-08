@@ -23,6 +23,7 @@ public class Common {
 	public final static String DEFAULT_TEST_USERS_NAME = "User []";
 	public final static String DEFAULT_TEST_ROOM = "Test meeting";
 	public final static String DEFAULT_SERVER = "http://mconfdev.inf.ufrgs.br";
+	public final static String DEFAULT_PASSWORD = "03b07";
 
 	public static String exactly(String s) {
 		return "^" + s + "$";
@@ -40,6 +41,7 @@ public class Common {
 		users = new BigBlueButtonClient[numberOfUsers];
 		for (int i = 0; i < numberOfUsers; ++i) {
 			users[i] = new BigBlueButtonClient();
+			users[i].getJoinService().setSalt(Common.DEFAULT_PASSWORD);
 			users[i].getJoinService().load(Common.DEFAULT_SERVER);
 			users[i].getJoinService().join(Common.DEFAULT_TEST_ROOM, Common.DEFAULT_TEST_USERS_NAME.replace("[]", Integer.toString(i + 1)), false);
 			if (users[i].getJoinService().getJoinedMeeting() != null)
@@ -86,6 +88,11 @@ public class Common {
 			solo.enterText(0, Common.DEFAULT_SERVER);
 			junit.framework.Assert.assertTrue(solo.searchText(Common.DEFAULT_SERVER));
 			solo.clickOnButton(solo.getString(R.string.connect));
+			if(solo.searchText(Common.exactly(solo.getString(R.string.server_password))))
+			{
+				solo.enterText(0, Common.DEFAULT_PASSWORD);
+				solo.clickOnButton(0);
+			}
 			solo.assertCurrentActivity("wrong activity", LoginPage.class);
 		}
 		// enter the name
@@ -124,6 +131,24 @@ public class Common {
 	
 	public static int getMyUserId(Solo solo) {
 		return ((BigBlueButton) solo.getCurrentActivity().getApplication()).getHandler().getMyUserId();		
+	}
+	
+	public static void addServers(Solo solo){
+		for (int i = 0; i < 2; ++i) {
+			String server = Common.DEFAULT_SERVER + "/test" + i;
+			solo.enterText(0, server);
+			solo.clickOnButton(solo.getString(R.string.connect));
+			if(solo.searchText(Common.exactly(solo.getString(R.string.server_password))))
+			{
+				solo.enterText(0, Common.DEFAULT_PASSWORD);
+				solo.clickOnButton(0);
+			}
+			solo.assertCurrentActivity("wrong activity", LoginPage.class);
+			junit.framework.Assert.assertTrue(solo.searchText(Common.exactly(server)));
+			solo.clickOnView(solo.getView(R.id.server));
+			solo.assertCurrentActivity("wrong activity", ServerChoosing.class);
+			solo.waitForText(Common.exactly(Common.DEFAULT_SERVER + "/test" + i));
+		}
 	}
 	
 	public static IParticipant getRandomUser(Solo solo, boolean includeMe) {

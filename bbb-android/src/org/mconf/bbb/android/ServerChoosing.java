@@ -30,20 +30,35 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 	private static final int DELETE_SERVER = 0;
 	private static final int CHANGE_PASSWORD = 1;
 	public static final String PASSWORD_INPUTED ="org.mconf.bbb.android.Client.PASSWORD_INPUTED";
+	public static final String PASSWORD_CHANGED ="org.mconf.bbb.android.Client.PASSWORD_CHANGED";
 	ListView servers;
-	private ArrayAdapter<String> listViewAdapter;
+	private ServerAdapter serverAdapter = new ServerAdapter();
 	SharedPreferences serverFile;
 	Map<String,String> storedServers;
 	Context context = this;
 	String serverURL;
-	String serverPassword;
+	public String serverPassword;
+	public static boolean changePassword = false;
 	
-	private BroadcastReceiver passwordInputed = new BroadcastReceiver(){ 
+	private BroadcastReceiver passwordInputedLogin = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
 		{ 
 			Bundle extras = intent.getExtras();
 			serverPassword= extras.getString("serverPassword");
 			callLogin();
+		} 
+	};
+	
+	private BroadcastReceiver passwordChanged = new BroadcastReceiver(){ 
+		public void onReceive(Context context, Intent intent)
+		{ 
+			Bundle extras = intent.getExtras();
+			serverPassword= extras.getString("serverPassword");
+			serverURL= extras.getString("serverURL");
+			changePassword = false;
+			System.out.println("SERVERPASSWORD"+serverPassword);
+			addServer(serverURL, serverPassword);
+			
 			
 		} 
 	};
@@ -59,15 +74,17 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.server_choosing);
-		listViewAdapter = new ArrayAdapter<String>(this, R.layout.server);
+		
 		servers = (ListView) findViewById(R.id.servers);
 		servers.setTextFilterEnabled(true);
-		servers.setAdapter(listViewAdapter);
+		servers.setAdapter(serverAdapter);
 		setServerFile();
 		getServers();
 		registerForContextMenu(servers);
-		IntentFilter filter = new IntentFilter(ServerChoosing.PASSWORD_INPUTED);
-		registerReceiver(passwordInputed, filter);
+		IntentFilter inputed = new IntentFilter(ServerChoosing.PASSWORD_INPUTED);
+		registerReceiver(passwordInputedLogin, inputed);
+		IntentFilter changed = new IntentFilter(ServerChoosing.PASSWORD_CHANGED);
+		registerReceiver(passwordChanged, changed);
 		
 		
 		
@@ -79,14 +96,13 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 				EditText server = (EditText)findViewById(R.id.serverURL);
 				if (server.getText().toString().length() > 0) {
 					
-					serverURL=server.getText().toString();
-
-					
-
+					serverURL=server.getText().toString(); 
+					System.out.println("SERVERPASSWORD"+storedServers.get(serverURL));
 					if(storedServers.get(serverURL)==null || storedServers.get(serverURL)=="")
 					{
-						new ServerPasswordDialog(context).show();
-
+						ServerPasswordDialog serverPassword = new ServerPasswordDialog(context);
+						serverPassword.setCancelable(false);
+						serverPassword.show();
 					}
 
 					else
@@ -100,7 +116,7 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				EditText server = (EditText)findViewById(R.id.serverURL);
-				String serverURL = servers.getItemAtPosition(position).toString();
+				String serverURL = ((Server) serverAdapter.getItem(position)).getUrl();
 				server.setText(serverURL);
 
 			}
@@ -121,6 +137,7 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 
 		final Intent callLogin = new Intent (LoginPage.SERVER_CHOSED);
 		callLogin.putExtra("serverURL", serverURL);
+		callLogin.putExtra("serverPassword", serverPassword);
 		sendBroadcast(callLogin);
 		finish(); 
 		addServer(serverURL, serverPassword);
@@ -143,11 +160,14 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 
 		switch (item.getItemId()) {
 		case DELETE_SERVER:
-			System.out.println(servers.getItemAtPosition(info.position).toString());
-			deleteServer(servers.getItemAtPosition(info.position).toString());
+			System.out.println(((Server) serverAdapter.getItem(info.position)).getUrl());
+			deleteServer(((Server) serverAdapter.getItem(info.position)).getUrl());
 			return true;
 		case CHANGE_PASSWORD:	
-			new ServerPasswordDialog(context).show();
+			changePassword = true;
+			ServerPasswordDialog serverPassword = new ServerPasswordDialog(context);
+			serverPassword.setCancelable(true);
+			serverPassword.show();
 			return true;
 		}
 		return super.onContextItemSelected(item);
@@ -176,18 +196,24 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 	{
 
 		for(String server:storedServers.keySet())
-			listViewAdapter.add(server);
+		{	String password = storedServers.get(server);
+			serverAdapter.addSection(server, password);
+		}
 
 	}
 
 	public void addServer(String newServer, String serverPassword)
 	{
 		SharedPreferences.Editor serverEditor = serverFile.edit();
-		if(!serverFile.contains(newServer))
+		if(!serverFile.contains(newServer)||(serverFile.contains(newServer) && !serverFile.getString(newServer, "").equals(serverPassword)))
 		{
+			serverAdapter.addSection(newServer, serverPassword);
+			serverAdapter.notifyDataSetChanged();
 			serverEditor.putString(newServer, serverPassword);
 			serverEditor.commit();
 		}
+		
+			
 	}
 
 
@@ -203,8 +229,8 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 
 				@Override  
 				public void run() {
-					listViewAdapter.remove(server);
-					listViewAdapter.notifyDataSetChanged();
+					serverAdapter.removeSection(server);
+					serverAdapter.notifyDataSetChanged();
 					setServerFile();
 
 				}
