@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -27,11 +29,27 @@ public class JoinService {
 	private JoinedMeeting joinedMeeting = null;
 	private String salt;
 	private String timestamp;
+	protected boolean validTimestamp=false;
+	Timer timer1 = new Timer();
+	
+	public boolean isValidTimestamp() {
+		return validTimestamp;
+	}
+
+
+
+	public void setValidTimestamp(boolean validTimestamp) {
+		this.validTimestamp = validTimestamp;
+	}
+
+
 
 	public String getSalt() {
 		return salt;
 	}
 
+
+	
 	public void setSalt(String salt) {
 		this.salt = salt;
 	}
@@ -160,10 +178,28 @@ public class JoinService {
 			return false;
 		}
 	}
+	
+	public void setTimestampTimer()
+	{
+		long delay = 60*1000;                   // 60 seconds delay
+
+		// Schedule the two timers to run with different delays.
+		timer1.schedule(InvalidateTimestamp, 0, delay);
+	}
+	
+	TimerTask InvalidateTimestamp = new TimerTask (){
+		@Override
+		public void run() {
+			log.debug("timestamp expired");
+			setValidTimestamp(false);
+		}
+	};
+	
 
 	public boolean getTimestamp()
 	{
-
+		if(validTimestamp)
+			return true;
 
 		String parameters = "action=getTimestamp";
 		String timestampUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?" + parameters + "&checksum=" + checksum(parameters + salt);
@@ -175,6 +211,9 @@ public class JoinService {
 			response = method.getResponseBodyAsString().trim();
 			method.releaseConnection();
 			parse(response);
+			log.debug("timestamp obtained");
+			setTimestampTimer();
+			validTimestamp=true;
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();

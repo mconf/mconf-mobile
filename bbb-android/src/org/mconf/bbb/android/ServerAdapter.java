@@ -43,8 +43,9 @@ public class ServerAdapter extends BaseAdapter{
 
 		for(Server server : listServer)
 		{
-			if(server.getUrl().equals(url))
-				return server;
+			if(server!=null)
+				if(server.getUrl().equals(url))
+					return server;
 		}
 		return null;
 	}

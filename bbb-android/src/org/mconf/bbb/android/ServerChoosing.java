@@ -31,7 +31,7 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 	private static final int CHANGE_PASSWORD = 1;
 	public static final String PASSWORD_INPUTED ="org.mconf.bbb.android.Client.PASSWORD_INPUTED";
 	public static final String PASSWORD_CHANGED ="org.mconf.bbb.android.Client.PASSWORD_CHANGED";
-	ListView servers;
+	ListView servers;  
 	private ServerAdapter serverAdapter = new ServerAdapter();
 	SharedPreferences serverFile;
 	Map<String,String> storedServers;
@@ -39,7 +39,7 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 	String serverURL;
 	public String serverPassword;
 	public static boolean changePassword = false;
-	
+	 
 	private BroadcastReceiver passwordInputedLogin = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
 		{ 
@@ -55,8 +55,7 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 			Bundle extras = intent.getExtras();
 			serverPassword= extras.getString("serverPassword");
 			serverURL= extras.getString("serverURL");
-			changePassword = false;
-			System.out.println("SERVERPASSWORD"+serverPassword);
+			changePassword = false;  
 			addServer(serverURL, serverPassword);
 			
 			
@@ -82,7 +81,7 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 		getServers();
 		registerForContextMenu(servers);
 		IntentFilter inputed = new IntentFilter(ServerChoosing.PASSWORD_INPUTED);
-		registerReceiver(passwordInputedLogin, inputed);
+		registerReceiver(passwordInputedLogin, inputed); 
 		IntentFilter changed = new IntentFilter(ServerChoosing.PASSWORD_CHANGED);
 		registerReceiver(passwordChanged, changed);
 		
@@ -139,8 +138,9 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 		callLogin.putExtra("serverURL", serverURL);
 		callLogin.putExtra("serverPassword", serverPassword);
 		sendBroadcast(callLogin);
-		finish(); 
 		addServer(serverURL, serverPassword);
+		finish(); 
+		
 	}
 
 	@Override
@@ -160,7 +160,6 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 
 		switch (item.getItemId()) {
 		case DELETE_SERVER:
-			System.out.println(((Server) serverAdapter.getItem(info.position)).getUrl());
 			deleteServer(((Server) serverAdapter.getItem(info.position)).getUrl());
 			return true;
 		case CHANGE_PASSWORD:	
@@ -190,6 +189,13 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 		addServer("http://mconf.inf.ufrgs.br", "helloPassword");//\TODO add the right password
 		//		addServer("http://mconfdev.inf.ufrgs.br");
 		this.storedServers = (Map<String, String>) serverFile.getAll();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		unregisterReceiver(passwordChanged);
+		unregisterReceiver(passwordInputedLogin);
+		super.onDestroy();
 	}
 
 	public void getServers()
@@ -224,7 +230,6 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 		{
 			serverEditor.remove(server);
 			serverEditor.commit();
-			System.out.println("deleted");
 			runOnUiThread(new Runnable() {
 
 				@Override  
