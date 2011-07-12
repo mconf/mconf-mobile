@@ -27,8 +27,8 @@ public class JoinService {
 	private String serverUrl;
 	private Meetings meetings = new Meetings();
 	private JoinedMeeting joinedMeeting = null;
-	private String salt;
-	private String timestamp;
+	private static String salt;
+	private static String timestamp;
 	protected boolean validTimestamp=false;
 	Timer timer1 = new Timer();
 	
@@ -122,6 +122,7 @@ public class JoinService {
 			meetings.parse(strMeetings);
 		} catch (Exception e) {
 			e.printStackTrace();
+			log.debug(strMeetings);
 			log.info("This server doesn't support mobile access");
 			return E_LOAD_PARSE_MEETINGS;
 		}
@@ -160,6 +161,7 @@ public class JoinService {
 			doc.getDocumentElement().normalize();
 			Element nodeResponse = (Element) doc.getElementsByTagName("response").item(0);
 			String returncode = nodeResponse.getElementsByTagName("returncode").item(0).getFirstChild().getNodeValue();
+			
 
 			if (returncode.equals("SUCCESS")) {	
 				timestamp = nodeResponse.getElementsByTagName("timestamp").item(0).getFirstChild().getNodeValue();
@@ -184,16 +186,19 @@ public class JoinService {
 		long delay = 60*1000;                   // 60 seconds delay
 
 		// Schedule the two timers to run with different delays.
-		timer1.schedule(InvalidateTimestamp, 0, delay);
+		timer1.schedule(new InvalidateTimestamp(), delay);
 	}
 	
-	TimerTask InvalidateTimestamp = new TimerTask (){
+	class  InvalidateTimestamp extends TimerTask 
+	{
+		
 		@Override
 		public void run() {
 			log.debug("timestamp expired");
 			setValidTimestamp(false);
+
 		}
-	};
+	}
 	
 
 	public boolean getTimestamp()
@@ -210,7 +215,9 @@ public class JoinService {
 			client.executeMethod(method);
 			response = method.getResponseBodyAsString().trim();
 			method.releaseConnection();
-			parse(response);
+			log.debug(response);
+			if(!parse(response))
+				return false;
 			log.debug("timestamp obtained");
 			setTimestampTimer();
 			validTimestamp=true;

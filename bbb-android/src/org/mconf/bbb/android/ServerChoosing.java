@@ -96,7 +96,6 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 				if (server.getText().toString().length() > 0) {
 					
 					serverURL=server.getText().toString(); 
-					System.out.println("SERVERPASSWORD"+storedServers.get(serverURL));
 					if(storedServers.get(serverURL)==null || storedServers.get(serverURL)=="")
 					{
 						ServerPasswordDialog serverPassword = new ServerPasswordDialog(context);
@@ -105,7 +104,11 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 					}
 
 					else
+					{
+						serverPassword=storedServers.get(serverURL);
 						callLogin();
+					}
+						
 				}
 			}
 		});
@@ -128,6 +131,7 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 
 	private void callLogin()
 	{
+		
 		getBigBlueButton().getJoinService().setSalt(serverPassword);
 		
 		while (serverURL.endsWith("/")) {
@@ -186,7 +190,8 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 			this.serverFile = this.getSharedPreferences("storedServers", MODE_PRIVATE);
 		}
 		// always insert the prav servers to the list
-		addServer("http://mconf.inf.ufrgs.br", "helloPassword");//\TODO add the right password
+		addServer("http://mconf.inf.ufrgs.br", "helloPassword");
+		//\TODO add the right password
 		//		addServer("http://mconfdev.inf.ufrgs.br");
 		this.storedServers = (Map<String, String>) serverFile.getAll();
 	}

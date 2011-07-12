@@ -105,7 +105,9 @@ public class LoginPage extends BigBlueButtonActivity {
 		Button serverView = (Button) findViewById(R.id.server);
 		if(serverUrl.length()>3)
 		{
+			log.debug("SERVER PASSWORD {}", serverPassword);
 			getBigBlueButton().getJoinService().setSalt(serverPassword);
+			
 			serverView.setText(serverUrl);
 		}
 		else
@@ -413,6 +415,7 @@ public class LoginPage extends BigBlueButtonActivity {
 			this.username = this.storedPreferences.get("username");
 			this.serverUrl = this.storedPreferences.get("serverURL");
 			this.serverPassword = this.storedPreferences.get("serverPassword");
+			
 		}
 	}
 

@@ -171,6 +171,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	private int addedMessages=0;
 	private boolean dialogShown = false;
 	private boolean kicked=false;
+	private boolean backToLogin = false;
 
 	private VideoDialog mVideoDialog;
 
@@ -440,6 +441,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		notificationManager.cancelAll();
 
+		unregisterReceiver(quit);
 		unregisterReceiver(chatClosed);
 		unregisterReceiver(closeVideo);
 
@@ -623,6 +625,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			Intent login = new Intent(this, LoginPage.class);
 			startActivity(login);
 			lastReadNum=-1;
+			backToLogin=true;
 			sendBroadcast(intent);
 			finish();
 			return true;
@@ -689,7 +692,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 
 	protected void onUserLeaveHint() {
-		showBackgroundNotification();
+		if(!backToLogin)
+			showBackgroundNotification();
 	}
 
 	public void showBackgroundNotification()
