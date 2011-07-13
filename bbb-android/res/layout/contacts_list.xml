@@ -69,7 +69,7 @@
 	</ScrollView>
 	<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="fill_parent" android:layout_height="wrap_content"
-		android:id="@+id/frame2" android:layout_above="@+id/audio_bar"
+		android:id="@+id/frame2" android:layout_above="@+id/video_capture_layout"
 		>
 		<SlidingDrawer android:layout_height="fill_parent"
 			android:handle="@+id/handle" android:content="@+id/chat" android:id="@+id/slide"
@@ -88,7 +88,8 @@
 		</SlidingDrawer>
 	</FrameLayout> 
 	
-	<include layout="@layout/audio_bar" />
+	<include layout="@layout/video_capture" />
+	<include layout="@layout/audio_bar" />	
 
 
 </RelativeLayout>

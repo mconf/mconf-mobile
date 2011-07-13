@@ -22,8 +22,8 @@
 package org.mconf.bbb.android;
 
 import org.mconf.bbb.IBigBlueButtonClientListener;
-import org.mconf.bbb.android.video.CaptureDialog;
 import org.mconf.bbb.android.video.VideoCapture;
+import org.mconf.bbb.android.video.VideoCaptureLayout;
 import org.mconf.bbb.android.video.VideoDialog;
 import org.mconf.bbb.android.video.VideoFullScreen;
 import org.mconf.bbb.android.voip.AudioBarLayout;
@@ -107,6 +107,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public static final String BACK_TO_CLIENT = "org.mconf.bbb.android.Client.BACK_TO_CLIENT";
 	public static final String FINISH = "bbb.android.action.FINISH";
 	public static final String CLOSE_VIDEO = "org.mconf.bbb.android.Video.CLOSE";
+	public static final String CLOSE_VIDEO_CAPTURE = "org.mconf.bbb.android.Video.CLOSE_CAPTURE";
 	public static final String SEND_TO_BACK = "bbb.android.action.SEND_TO_BACK";
 
 	public static final int ID_DIALOG_RECONNECT = 111000;
@@ -145,6 +146,16 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		}
 		
 	};
+	
+	private BroadcastReceiver closeVideoCapture = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
+			mVideoCapture.start(getBigBlueButton().getMyUserId());
+		}
+		
+	};
 
 	protected ContactAdapter contactAdapter = new ContactAdapter();
 	protected ChatAdapter chatAdapter = new ChatAdapter();
@@ -160,9 +171,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	private boolean dialogShown = false;
 	private boolean kicked=false;
 
-	private VideoDialog mVideoDialog;
-	private CaptureDialog mCaptureDialog;
-	
+	private VideoDialog mVideoDialog;	
+		
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -175,7 +185,10 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		
 		IntentFilter closeVideoFilter = new IntentFilter(CLOSE_VIDEO);
 		registerReceiver(closeVideo, closeVideoFilter);
-
+		
+		IntentFilter closeVideoCaptureFilter = new IntentFilter(Client.CLOSE_VIDEO_CAPTURE);
+		registerReceiver(closeVideoCapture, closeVideoCaptureFilter);
+		
 		initListeners();
 
 		if (!getBigBlueButton().isConnected()) {
@@ -191,8 +204,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	protected void onPause() {
 		if (mVideoDialog != null && mVideoDialog.isShowing())
 			mVideoDialog.pause();
-		if (mCaptureDialog != null && mCaptureDialog.isShowing())
-			mCaptureDialog.pause();
 		
 		super.onPause();
 	}
@@ -203,8 +214,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				
 		if (mVideoDialog != null && mVideoDialog.isShowing())
 			mVideoDialog.resume();
-		if (mCaptureDialog != null && mCaptureDialog.isShowing())
-			mCaptureDialog.resume();
 	}
 	
 	private class JoinFailDialog extends AlertDialog.Builder {
@@ -407,14 +416,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 		initListeners();
 
-		if(mCaptureDialog != null && mCaptureDialog.isShowing()){
-			if(mCaptureDialog.isPreviewHidden){
-				mCaptureDialog.pause();
-				mCaptureDialog.resume();
-			} else {
-				mCaptureDialog.centerPreview();
-			}
-		}
 		if (newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE
 				&& mVideoDialog != null && mVideoDialog.isShowing()) {
 			int videoId = mVideoDialog.getVideoId();
@@ -435,6 +436,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		
 		unregisterReceiver(chatClosed);
 		unregisterReceiver(closeVideo);
+		unregisterReceiver(closeVideoCapture);
 
 		super.onDestroy();
 	}
@@ -520,9 +522,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				if(getBigBlueButton().getMyUserId() == contact.getUserId()){//shows the preview instead
 																			//of showing the received video
 																			//to save resources
-					if(mCaptureDialog != null && mCaptureDialog.isShowing()){
-						mCaptureDialog.showPreview(true);
-					}						
+					updateVideoCaptureLayout(true);
 				} else {
 					if(getResources().getConfiguration().orientation==Configuration.ORIENTATION_PORTRAIT)
 						showVideo(true, contact.getUserId(), contact.getName());
@@ -574,7 +574,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			} else {
 				menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, R.string.start_voice).setIcon(android.R.drawable.ic_btn_speak_now);
 			}
-			if (mCaptureDialog != null && mCaptureDialog.isShowing()){
+			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
+			if (mVideoCapture.mVideoPublish != null && mVideoCapture.mVideoPublish.isCapturing){
 				menu.add(Menu.NONE, MENU_STOP_VIDEO, Menu.NONE, R.string.stop_video).setIcon(android.R.drawable.ic_btn_speak_now); //\TODO choose a icon
 			} else {
 				menu.add(Menu.NONE, MENU_START_VIDEO, Menu.NONE, R.string.start_video).setIcon(android.R.drawable.ic_btn_speak_now); //\TODO choose a icon
@@ -615,15 +616,14 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			return true;
 			
 		case MENU_START_VIDEO:
-			showCapture(getBigBlueButton().getMyUserId());
+			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
+			mVideoCapture.start(getBigBlueButton().getMyUserId());
 			return true;	
 			
 		case MENU_STOP_VIDEO:
-			if(mCaptureDialog != null && mCaptureDialog.isShowing()){
-				mCaptureDialog.pause();
-				mCaptureDialog.dismiss();
-				mCaptureDialog = null;
-			}
+			updateVideoCaptureLayout(false);
+			VideoCapture mVideoCapture1 = (VideoCapture) findViewById(R.id.video_capture);
+			mVideoCapture1.stop();			
 			return true;	
 
 		case MENU_MUTE:
@@ -1156,11 +1156,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			startActivity(intent);
 		}
 	}
-	
-	private void showCapture(int userId){
-		mCaptureDialog = new CaptureDialog(this, userId);
-		mCaptureDialog.show();
-	}
 
 	private void makeToast(final int resId) {
 		makeToast(getResources().getString(resId));
@@ -1185,6 +1180,21 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 					audiolayout.show(getVoiceModule().isMuted());
 				else
 					audiolayout.hide();
+			}
+		});
+	}
+	
+	private void updateVideoCaptureLayout(final boolean show) {
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				VideoCaptureLayout videoCaptureLayout = (VideoCaptureLayout) findViewById(R.id.video_capture_layout);
+				if(show){
+					videoCaptureLayout.show();
+				} else {
+					videoCaptureLayout.hide();
+				}
 			}
 		});
 	}

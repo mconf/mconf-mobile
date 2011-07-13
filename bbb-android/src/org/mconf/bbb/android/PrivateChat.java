@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mconf.bbb.IBigBlueButtonClientListener;
+import org.mconf.bbb.android.video.VideoCapture;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.listeners.IListener;
 import org.mconf.bbb.users.IParticipant;
@@ -103,14 +104,14 @@ public class PrivateChat extends BigBlueButtonActivity {
 		public void onParticipantJoined(IParticipant p) {}
 		@Override
 		public void onParticipantLeft(final IParticipant p) {
-			//se o participante que saiu È o que est· sendo mostrado o chat
+			//se o participante que saiu √© o que est√° sendo mostrado o chat
 			if(p.getUserId()==userId && getParticipantByViewId(flipper.getDisplayedChild()).getUserId()==userId && !movedToBack)
 			{
 				
 				showPartcicipantLeftDialog();//works fine
 			} 
 			
-			//se o participante saiu, mas est· por tr·s nas abas de chat
+			//se o participante saiu, mas est√° por tr√°s nas abas de chat
 			else if(p.getUserId()==userId && getParticipantByViewId(flipper.getDisplayedChild()).getUserId()!=userId)
 			{
 				runOnUiThread(new Runnable() {
@@ -198,7 +199,15 @@ public class PrivateChat extends BigBlueButtonActivity {
 	
 	public boolean movedToBack=false;
 	
-
+	private BroadcastReceiver closeVideoCapture = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
+			mVideoCapture.start(getBigBlueButton().getMyUserId());
+		}
+		
+	};
+	
 	public static boolean hasUserOnPrivateChat(int userId)
 	{
 		for(RemoteParticipant part:participants.values())
@@ -454,6 +463,9 @@ public class PrivateChat extends BigBlueButtonActivity {
 		registerFinishedReceiver();
 		registerMoveToBackReceiver();
 		registerKickedUser();
+		
+		IntentFilter closeVideoCaptureFilter = new IntentFilter(Client.CLOSE_VIDEO_CAPTURE);
+		registerReceiver(closeVideoCapture, closeVideoCaptureFilter);
 	}
 
 	private void registerFinishedReceiver(){ 
@@ -477,6 +489,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		unregisterReceiver(finishedReceiver);
 		unregisterReceiver(moveToBack);
 		unregisterReceiver(kickedUser);
+		unregisterReceiver(closeVideoCapture);
 	}
 
 

@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="wrap_content" android:layout_height="wrap_content"
-	android:background="@color/background"
-	android:layout_gravity="center">
+<org.mconf.bbb.android.video.VideoCaptureLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/video_capture_layout"
+	android:layout_width="1dip"
+	android:layout_height="1dip"
+	android:visibility="visible"		
+	android:layout_above="@id/audio_bar"
+	android:weightSum="0.25"
+	android:background="@color/background">
 			<view class="org.mconf.bbb.android.video.VideoCapture" android:id="@+id/video_capture"
-					android:layout_width="wrap_content" android:layout_height="wrap_content"
-					android:isScrollContainer="false" />
+					android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 
-</RelativeLayout>
+</org.mconf.bbb.android.video.VideoCaptureLayout>
 

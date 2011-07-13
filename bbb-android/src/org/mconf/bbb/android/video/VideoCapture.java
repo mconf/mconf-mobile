@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 
 import org.mconf.bbb.android.BigBlueButton;
+import org.mconf.bbb.android.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.os.Build;
@@ -24,8 +26,10 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     Camera mCamera;
     boolean usingFaster, usingHidden;
     boolean forceDefaultParams = true;
-    VideoPublish mVideoPublish;
+    boolean isSurfaceCreated = false;
+    public VideoPublish mVideoPublish;
     int userId;
+    int bufSize;
     
     private Method mAcb;       // method for adding a pre-allocated buffer 
     private Object[] mArglist; // list of arguments
@@ -100,12 +104,14 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         }
     }
     
-    // VideoCapture is started or resumed
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        // The Surface has been created, acquire the camera and tell it where
-        // to draw.       
-        if (isAvailableSprintFFC()) {
+        log.debug("preview surface created");
+        isSurfaceCreated = true;        
+    }
+    
+    private void openCamera(){
+    	if (isAvailableSprintFFC()) {
         	try {
                 Method method = Class.forName("android.hardware.HtcFrontFacingCamera").getDeclaredMethod("getCamera", null);
                 mCamera = (Camera) method.invoke(null, null);
@@ -136,9 +142,9 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
          
             return;
        	}
-        
-        // Set up the camera parameters, init the native side and begin
-        // the preview. 
+    }
+    
+    private void setParameters(){
     	Camera.Parameters parameters = mCamera.getParameters();
     	log.debug("Setting the capture frame rate to {}", frameRate);
     	parameters.setPreviewFrameRate(frameRate);
@@ -148,10 +154,15 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         
         PixelFormat pixelFormat = new PixelFormat();
 		PixelFormat.getPixelFormatInfo(parameters.getPreviewFormat(),pixelFormat);
-		final int bufSize = width*height*pixelFormat.bitsPerPixel/8;
-		mVideoPublish = new VideoPublish(((BigBlueButton) getContext().getApplicationContext()).getHandler(), userId, bufSize, width, height, frameRate, bitRate, GOP); 
-        
-        //java reflection (idea from http://code.google.com/p/android/issues/detail?id=2794):
+		bufSize = width*height*pixelFormat.bitsPerPixel/8;
+    }
+    
+    private void initNativeSide(){
+    	mVideoPublish = new VideoPublish(((BigBlueButton) getContext().getApplicationContext()).getHandler(), userId, bufSize, width, height, frameRate, bitRate, GOP);
+    }
+    
+    private void prepareCallback(){
+		//java reflection (idea from http://code.google.com/p/android/issues/detail?id=2794):
         //This kind of java reflection is safe to be used as explained in the official android documentation
         //on (http://developer.android.com/resources/articles/backward-compatibility.html).
         //Explanation: The method setPreviewCallback exists since Android's API level 1.
@@ -193,30 +204,70 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	    	usingHidden = false;
 	    	mCamera.setPreviewCallback(this);        
 	    }
-        
-        mCamera.startPreview();
-        mVideoPublish.start();
-        mVideoPublish.startPublisher();
     }
-
+    
+    private void beginPreview(){
+    	mCamera.startPreview();
+    	if(!mVideoPublish.isAlive()){
+    		mVideoPublish.start();
+    	}
+	    mVideoPublish.startPublisher();
+    }
+    
+    public void start(int userId){
+    	if(isSurfaceCreated){
+	    	setUserId(userId);
+	    	
+	    	// acquire the camera and tell it where to draw.   
+	    	openCamera();
+		    	
+	    	// set up the camera parameters
+	    	setParameters();     
+		    	
+	        // init the native side 
+		    initNativeSide();
+	    	    	
+	    	// prepare the callback
+	    	prepareCallback();
+	    	
+	    	// resume the preview. 
+	    	beginPreview();
+    	}
+    }
+    
+    public boolean stop(){ //returns true iff it was capturing  
+    	if(mVideoPublish != null && mVideoPublish.isCapturing){
+	    	if(!usingFaster){
+	    		mCamera.setPreviewCallback(null); //this is needed to avoid a crash (http://code.google.com/p/android/issues/detail?id=6201)
+	    	}
+	    	mCamera.stopPreview();   
+	    	    	
+	    	// Because the CameraDevice object is not a shared resource, it's very
+	        // important to release it when it will not be used anymore
+	    	mCamera.release();
+	        mCamera = null;
+	   	            	
+	        mVideoPublish.endEncoding();
+	        return true; 
+    	}
+    	return false;    	
+    }
+    
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        // Surface will be destroyed when we return, so stop the preview.
-        // Because the CameraDevice object is not a shared resource, it's very
-        // important to release it when the activity is paused.
-    	if(!usingFaster){
-    		mCamera.setPreviewCallback(null); //this is needed to avoid a crash (http://code.google.com/p/android/issues/detail?id=6201)
+    	if(stop()){
+	        Intent intent = new Intent(Client.CLOSE_VIDEO_CAPTURE);
+	        // in our case, surface will only be destroyed when activity changes
+	        // so, this broadcast signalizes that the activity changed and the
+	        // camera was being captured
+	        getContext().sendBroadcast(intent);
     	}
-    	mCamera.stopPreview();
-        mCamera.release();
-        mCamera = null;
-        
-        mVideoPublish.endEncoding();
+    	isSurfaceCreated = false;
     }
     
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-    	
+    	log.debug("preview surface changed");
     }
     
     // Checks if addCallbackBuffer and setPreviewCallbackWithBuffer are written but hidden.

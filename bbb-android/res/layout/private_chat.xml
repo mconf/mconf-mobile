@@ -2,6 +2,7 @@
 <LinearLayout android:id="@+id/LinearLayout01"
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
 	xmlns:android="http://schemas.android.com/apk/res/android">
+	<include layout="@layout/video_capture" />
 	<ViewFlipper android:id="@+id/manyPages"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"></ViewFlipper>
 </LinearLayout>
