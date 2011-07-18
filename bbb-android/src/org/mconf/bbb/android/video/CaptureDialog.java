@@ -35,7 +35,6 @@ public class CaptureDialog extends Dialog {
 	private static final Logger log = LoggerFactory.getLogger(CaptureDialog.class);
 		
 	private VideoCapture videoWindow;
-	private int videoId;
 	private boolean startsHidden = true; //true=capture starts without preview. false=capture starts with preview.
 	public boolean isPreviewHidden;
 	private boolean wasPreviewHidden = false;
@@ -43,14 +42,10 @@ public class CaptureDialog extends Dialog {
 	public CaptureDialog(Context context, int userId) {
 		super(context);
 		
-		this.videoId = userId;
-		
 		requestWindowFeature(Window.FEATURE_NO_TITLE); //Removes the title from the Dialog
 		setContentView(R.layout.video_capture);
 		
 		videoWindow = (VideoCapture) findViewById(R.id.video_capture);		
-		
-		videoWindow.setUserId(this.videoId);
 		
 		if(startsHidden){
 			isPreviewHidden = false;
@@ -101,14 +96,6 @@ public class CaptureDialog extends Dialog {
 		}
 	}
 
-	public int getVideoId() {
-		return videoId;
-	}
-	
-	public void setVideoId(int Id) {
-		this.videoId = Id;
-	}
-	
 	@Override
 	protected void onStart() {
 		super.onStart();

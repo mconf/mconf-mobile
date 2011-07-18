@@ -37,7 +37,7 @@ public class BigBlueButton extends Application {
 	
 	public VideoPublish getVideoPublish() {
 		if(mVideoPublish == null) {
-			mVideoPublish = new VideoPublish(getHandler());
+			mVideoPublish = new VideoPublish(getHandler(), getHandler().getMyUserId());
 		}
 		return mVideoPublish;
 	}

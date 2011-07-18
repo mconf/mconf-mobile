@@ -617,7 +617,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			
 		case MENU_START_VIDEO:
 			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
-			mVideoCapture.start(getBigBlueButton().getMyUserId());
+			mVideoCapture.start();
 			return true;	
 			
 		case MENU_STOP_VIDEO:

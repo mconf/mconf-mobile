@@ -28,7 +28,6 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     boolean forceDefaultParams = true;
     boolean isSurfaceCreated = false;
     public VideoPublish mVideoPublish;
-    int userId;
     int bufSize;
     
     private Method mAcb;       // method for adding a pre-allocated buffer 
@@ -39,6 +38,24 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     public static final int DEFAULT_HEIGHT = 240;
     public static final int DEFAULT_BIT_RATE = 512000;
     public static final int DEFAULT_GOP = 5;
+
+	private static final int E_OK = 0;
+	private static final int E_COULD_NOT_OPEN_CAMERA = -1;
+	private static final int E_COULD_NOT_SET_PREVIEW_DISPLAY_R1 = -2;
+	private static final int E_COULD_NOT_SET_PREVIEW_DISPLAY_R2 = -3;
+	private static final int E_COULD_NOT_START_CAPTURE = -4;
+	private static final int E_COULD_NOT_SET_PARAMETERS = -5;
+	private static final int E_COULD_NOT_GET_BUFSIZE = -6;
+	private static final int E_COULD_NOT_PREPARE_CALLBACK_R1 = -7;
+	private static final int E_COULD_NOT_PREPARE_CALLBACK_R2 = -8;
+	private static final int E_COULD_NOT_INIT_NATIVE_SIDE = -9;
+	private static final int E_COULD_NOT_BEGIN_PREVIEW = -10;
+	private static final int E_COULD_NOT_START_PUBLISHER_THREAD_R1 = -11;
+	private static final int E_COULD_NOT_START_PUBLISHER_THREAD_R2 = -12;
+	private static final int E_COULD_NOT_START_PUBLISHER_R1 = -13;
+	private static final int E_COULD_NOT_START_PUBLISHER_R2 = -14;
+	private static final int E_COULD_NOT_RESUME_CAPTURE = -15;			
+	
     private int frameRate = DEFAULT_FRAME_RATE;
     private int width = DEFAULT_WIDTH;
     private int height = DEFAULT_HEIGHT;
@@ -77,10 +94,6 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	GOP = g;
     }
     
-    public void setUserId(int videoId) {
-		this.userId = videoId;
-	}	
-    
 	// Centers the preview on the screen keeping the capture aspect ratio.
     // Remember to call this function after you change the width or height if you want to keep the aspect and the video centered
     public void centerPreview() {
@@ -112,58 +125,100 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         isSurfaceCreated = true;        
     }
     
-    private void openCamera(){
-    	if (isAvailableSprintFFC()) {
-        	try {
+    private int openCameraNormalWay(){
+    	 if(mCamera != null){
+         	mCamera.release();
+         	mCamera = null;
+         }         
+         
+         mCamera = Camera.open();
+         if(mCamera == null){
+        	 log.debug("Error: could not open camera");
+        	 return E_COULD_NOT_OPEN_CAMERA;
+         }
+         Camera.Parameters parameters = mCamera.getParameters();
+         parameters.set("camera-id", 2);
+         mCamera.setParameters(parameters);
+         return E_OK;
+    }
+    
+    private int openCamera(){
+    	int err = E_OK;
+    	
+    	if (isAvailableSprintFFC()) { // this device has the specific HTC camera
+        	try { // try opening the specific HTC camera
                 Method method = Class.forName("android.hardware.HtcFrontFacingCamera").getDeclaredMethod("getCamera", null);
                 mCamera = (Camera) method.invoke(null, null);
-            } catch (Exception ex) {
+            } catch (Exception ex) { // it was not possible to open the specifica HTC camera,
+            						 // so, lets open the camera using the normal way
                 log.debug(ex.toString());
                 
-                mCamera.release();
-                mCamera = null;
-                mCamera = Camera.open();
-                Camera.Parameters parameters = mCamera.getParameters();
-                parameters.set("camera-id", 2);
-                mCamera.setParameters(parameters);
+                err = openCameraNormalWay();
             }
-        } else {
-            mCamera = Camera.open();
-            Camera.Parameters parameters = mCamera.getParameters();            
-            parameters.set("camera-id", 2);
-            mCamera.setParameters(parameters);
-        }    
-        
-        try {
-            mCamera.setPreviewDisplay(mHolder);
-        } catch (IOException exception) {
-        	log.debug(exception.toString());
-        	
-        	mCamera.release();
-            mCamera = null;
+        } else { // this device does not have the specific HTC camera,
+        		 // so, lets open the camera using the normal way        	
+            err = openCameraNormalWay();
+        }         
+    	
+    	return err;
+    }
+    
+    private int setDisplay(){
+    	if(mCamera != null){
+	        try {
+	            mCamera.setPreviewDisplay(mHolder);
+	        } catch (IOException exception) {
+	        	log.debug("Error: could not set preview display"); 
+	         	log.debug(exception.toString());
+	     	
+	         	mCamera.release();
+	         	mCamera = null;
+	      
+	         	return E_COULD_NOT_SET_PREVIEW_DISPLAY_R1;
+	    	}
+    	} else {
+    		log.debug("Error: setDisplay() called without an opened camera");
+    		return E_COULD_NOT_SET_PREVIEW_DISPLAY_R2;
+    	}
          
-            return;
-       	}
+        return E_OK; 
     }
     
-    private void setParameters(){
-    	Camera.Parameters parameters = mCamera.getParameters();
-    	log.debug("Setting the capture frame rate to {}", frameRate);
-    	parameters.setPreviewFrameRate(frameRate);
-    	log.debug("Setting the capture size to {}x{}", width, height);
-        parameters.setPreviewSize(width, height);         
-        mCamera.setParameters(parameters);
-        
-        PixelFormat pixelFormat = new PixelFormat();
-		PixelFormat.getPixelFormatInfo(parameters.getPreviewFormat(),pixelFormat);
-		bufSize = width*height*pixelFormat.bitsPerPixel/8;
+    private int setParameters(){
+    	if(mCamera != null){
+	    	Camera.Parameters parameters = mCamera.getParameters();
+	    	log.debug("Setting the capture frame rate to {}", frameRate);
+	    	parameters.setPreviewFrameRate(frameRate);
+	    	log.debug("Setting the capture size to {}x{}", width, height);
+	        parameters.setPreviewSize(width, height); 
+	       	mCamera.setParameters(parameters);
+	       	return E_OK;
+    	} else {
+    		log.debug("Error: setParameters() called without an opened camera");
+    		return E_COULD_NOT_SET_PARAMETERS;
+    	}
     }
     
-    private void initNativeSide(){    	
-    	mVideoPublish.initNativeEncoder(userId, bufSize, width, height, frameRate, bitRate, GOP);
+    private int getBufferSize(){
+    	if(mCamera != null){
+	    	PixelFormat pixelFormat = new PixelFormat();
+	 		PixelFormat.getPixelFormatInfo(mCamera.getParameters().getPreviewFormat(),pixelFormat);
+	 		return width*height*pixelFormat.bitsPerPixel/8;
+    	} else {
+    		log.debug("Error: getBufferSize() called without an opened camera");
+    		return E_COULD_NOT_GET_BUFSIZE;
+    	}
     }
     
-    private void prepareCallback(){
+    private int prepareCallback(){
+    	if(mCamera == null){
+    		log.debug("Error: prepareCallback() called without an opened camera");
+    		return E_COULD_NOT_PREPARE_CALLBACK_R1;
+    	}
+    	if(bufSize < E_OK || bufSize <= 0){
+    		log.debug("Error: prepareCallback() called without a valid bufSize");
+    		return E_COULD_NOT_PREPARE_CALLBACK_R2;
+    	}
 		//java reflection (idea from http://code.google.com/p/android/issues/detail?id=2794):
         //This kind of java reflection is safe to be used as explained in the official android documentation
         //on (http://developer.android.com/resources/articles/backward-compatibility.html).
@@ -206,77 +261,140 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	    	usingHidden = false;
 	    	mCamera.setPreviewCallback(this);        
 	    }
+		
+		return E_OK;
+    }
+        
+    private int beginPreview(){
+    	if(mCamera != null){
+    		mCamera.startPreview();
+    		return E_OK;
+    	} else {
+    		log.debug("Error: beginPreview() called without an opened camera");
+    		return E_COULD_NOT_BEGIN_PREVIEW;
+    	}
     }
     
-    private void beginPreview(){
-    	mCamera.startPreview();    	
+    private int initNativeSide(){    
+    	if(bufSize < E_OK || bufSize <= 0){
+    		log.debug("Error: initNativeSide() called without a valid bufSize");
+    		return E_COULD_NOT_INIT_NATIVE_SIDE;
+    	}
+    	mVideoPublish.initNativeEncoder(bufSize, width, height, frameRate, bitRate, GOP);
+    	return E_OK;
     }
     
-    private void startPublisherThread(){
-    	if(!mVideoPublish.isAlive()){
-    		mVideoPublish.start();
-    	}	    	
-    }
-    
-    private void startPublisher(){
+    private int startPublisherThread(){
+    	if(!mVideoPublish.nativeEncoderInitialized){
+    		log.debug("Error: startPublisherThread() called but native capture side not initialized");
+    		return E_COULD_NOT_START_PUBLISHER_THREAD_R1;
+    	}
     	if(mVideoPublish.isAlive()){
-    		mVideoPublish.startPublisher();
+    		log.debug("Error: startPublisherThread() called but publisher thread already running");
+    		return E_COULD_NOT_START_PUBLISHER_THREAD_R2;
     	}
+	    mVideoPublish.start();
+	    return E_OK;
     }
     
-    public void start(int userId){
-    	setUserId(userId);
-    	if(isSurfaceCreated){
-	    	// acquire the camera and tell it where to draw.   
-	    	openCamera();
-		    	
-	    	// set up the camera parameters
-	    	setParameters();     
-	    	    	
-	    	// prepare the callback
-	    	prepareCallback();
-	    	
-	    	// init the native side 
-		    initNativeSide();
-	    	
-	    	// begin the preview. 
-	    	beginPreview();
-	    	
-	    	// start the publisher native thread
-	    	startPublisherThread();
-	    	
-	    	// start the publisher handler
-	    	startPublisher();
+    private int startPublisher(){
+    	if(!mVideoPublish.nativeEncoderInitialized){
+    		log.debug("Error: startPublisher() called but native capture side not initialized");
+    		return E_COULD_NOT_START_PUBLISHER_R1;
     	}
+    	if(!mVideoPublish.isAlive()){
+    		log.debug("Error: startPublisher() called but publisher thread not running");
+    		return E_COULD_NOT_START_PUBLISHER_R2;
+    	}
+    	mVideoPublish.startPublisher();
+    	return E_OK;
     }
     
-    public void resume(){
-    	if(isSurfaceCreated){
-	    	// acquire the camera and tell it where to draw.   
-	    	openCamera();
-		    	
-	    	// set up the camera parameters
-	    	setParameters();     
-	    	    	
-	    	// prepare the callback
-	    	prepareCallback();
-	    	
-	    	// init the native side 
-//		    initNativeSide();
-	    	
-	    	// begin the preview. 
-	    	beginPreview();
-	    	
-	    	// start the publisher native thread
-//	    	startPublisherThread();
-	    	
-	    	// start the publisher handler
-//	    	startPublisher();
+    public int start(){
+    	int err = E_OK;
+	
+		err = resume();
+		if(err != E_OK){
+			return err;
+		}
+		
+		err = initNativeSide();
+		if(err != E_OK){
+			return err;
+		}
+    	
+    	// start the publisher native thread and sets isCapturing to true
+    	err = startPublisherThread();
+    	if(err != E_OK){
+    		return err;
     	}
+    	
+    	// start the publisher handler
+    	err = startPublisher();
+    	if(err != E_OK){
+    		return err;
+    	}
+    	
+    	return err;
     }
     
-    public boolean stop(){ //returns true iff it was capturing  
-    	if(mVideoPublish != null && mVideoPublish.isCapturing){
+    public int resume(){
+    	int err = E_OK;
+    	if(!isSurfaceCreated){
+    		err = E_COULD_NOT_RESUME_CAPTURE;
+    		return err;
+       	}
+    	
+		// acquires the camera
+		err = openCamera();
+    	if(err != E_OK){
+    		return err; 
+    	};
+    	
+    	// tells it where to draw (sets display for preview)
+    	err = setDisplay();
+    	if(err != E_OK){
+    		return err;
+    	}
+	    	
+    	// sets up the camera parameters
+    	err = setParameters();
+    	if(err != E_OK){
+    		return err;
+    	}
+    	    	
+    	// gets the size of a not encoded frame
+    	bufSize = getBufferSize();
+    	if(bufSize < E_OK){
+    		return bufSize;
+    	}
+    	
+    	// prepares the callback
+    	err = prepareCallback(); 
+    	if(err != E_OK){
+    		return err;
+    	}
+    	
+    	// begins the preview.
+	    err = beginPreview();
+	    if(err != E_OK){
+	    	return err;
+	    }
+    	
+    	return err;
+    }
+    
+    public void stop(){ 
+    	pause();
+    	
+    	if(mVideoPublish.isCapturing){
+    		mVideoPublish.stopPublisher();
+	    	mVideoPublish.endNativeEncoding();
+    	}	 
+    }
+    
+    public void pause(){
+    	if(mCamera != null){
 	    	if(!usingFaster){
 	    		mCamera.setPreviewCallback(null); //this is needed to avoid a crash (http://code.google.com/p/android/issues/detail?id=6201)
 	    	}
@@ -285,44 +403,23 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	    	// Because the CameraDevice object is not a shared resource, it's very
 	        // important to release it when it will not be used anymore
 	    	mCamera.release();
-	        mCamera = null;
-	   	            	
-	        mVideoPublish.stopPublisher();
-	        mVideoPublish.endNativeEncoding();
-	        
-	        return true; 
+	        mCamera = null;   
     	}
-    	return false;    	
-    }
-    
-    public boolean pause(){
-    	if(mVideoPublish != null && mVideoPublish.isCapturing){
-	    	if(!usingFaster){
-	    		mCamera.setPreviewCallback(null); //this is needed to avoid a crash (http://code.google.com/p/android/issues/detail?id=6201)
-	    	}
-	    	mCamera.stopPreview();   
-	    	    	
-	    	// Because the CameraDevice object is not a shared resource, it's very
-	        // important to release it when it will not be used anymore
-	    	mCamera.release();
-	        mCamera = null;
-	   	            	
-//	        mVideoPublish.stopPublisher();
-//	        mVideoPublish.endNativeEncoding();
-//	        
-	        return true; 
-    	}
-    	return false;
     }
     
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
     	log.debug("preview surface destroyed");
-    	if(pause()){
-	        Intent intent = new Intent(Client.CLOSE_VIDEO_CAPTURE);
-	        // in our case, surface will only be destroyed when activity changes
-	        // so, this broadcast signalizes that the activity changed and the
+    	if(mVideoPublish.isCapturing){ // means that activity changed (because
+    								   // this surface will only be destroyed
+    								   // when the activity changes) and the
+    								   // camera was being captured and published
+    		// pauses the preview and publish
+    		pause();
+    		
+    		// signalizes that the activity has changed and the
 	        // camera was being captured
+    		Intent intent = new Intent(Client.CLOSE_VIDEO_CAPTURE);
 	        getContext().sendBroadcast(intent);
     	}
     	isSurfaceCreated = false;

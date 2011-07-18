@@ -26,6 +26,7 @@ public class VideoPublish extends Thread implements RtmpReader {
     private byte[] sharedBuffer;
     
     public boolean isCapturing = false;
+    public boolean nativeEncoderInitialized = false;
     
     private int firstTimeStamp = 0;
 	private int lastTimeStamp = 0;
@@ -38,16 +39,19 @@ public class VideoPublish extends Thread implements RtmpReader {
 	
 	private BigBlueButtonClient context;
 	        
-    public VideoPublish(BigBlueButtonClient context) {
+    public VideoPublish(BigBlueButtonClient context, int userId) {
     	this.context = context;    	 
+    	this.userId = userId;
     }
     
-    public void initNativeEncoder(int userId, int bufSize, int widthCaptureResolution, int heightCaptureResolution, int frameRate, int bitRate, int GOP){
-    	sharedBuffer = new byte[bufSize]; //the encoded frame will never be bigger than the not encoded
-    	initEncoder(widthCaptureResolution, heightCaptureResolution, frameRate, bitRate, GOP);
+    public void initNativeEncoder(int bufSize, int widthCaptureResolution, int heightCaptureResolution, int frameRate, int bitRate, int GOP){
+    	sharedBuffer = new byte[bufSize]; // the encoded frame will never be bigger than the not encoded
     	
-    	this.userId = userId;    	
+    	initEncoder(widthCaptureResolution, heightCaptureResolution, frameRate, bitRate, GOP);
+    	  	
     	streamId = widthCaptureResolution+"x"+heightCaptureResolution+userId; 
+    	
+    	nativeEncoderInitialized = true;
     }
     
     public void startPublisher(){
@@ -55,10 +59,9 @@ public class VideoPublish extends Thread implements RtmpReader {
     	videoPublishHandler.start();
     }
     
-    /** Runs it in a new Thread. */
     @Override
     public void run() {
-    	isCapturing = true;
+       	isCapturing = true;
     	initSenderLoop();
     }
        
@@ -77,7 +80,7 @@ public class VideoPublish extends Thread implements RtmpReader {
     	lastTimeStamp = timeStamp;
     	
     	byte[] aux = new byte[bufferSize];
-    	System.arraycopy(sharedBuffer, 0, aux, 0, bufferSize);//\TODO see if we can avoid this copy
+    	System.arraycopy(sharedBuffer, 0, aux, 0, bufferSize); //\TODO see if we can avoid this copy
     	
        	Video video = new Video(timeStamp, aux, bufferSize);
    	    video.getHeader().setDeltaTime(interval);
@@ -94,6 +97,7 @@ public class VideoPublish extends Thread implements RtmpReader {
     
     public int endNativeEncoding(){
     	isCapturing = false;
+    	nativeEncoderInitialized = false;
         	
     	endEncoder();
     	return 0;
