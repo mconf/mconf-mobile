@@ -190,9 +190,9 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 			this.serverFile = this.getSharedPreferences("storedServers", MODE_PRIVATE);
 		}
 		// always insert the prav servers to the list
-		addServer("http://mconf.inf.ufrgs.br", "helloPassword");
+		//addServer("http://mconf.inf.ufrgs.br", "helloPassword");
 		//\TODO add the right password
-		//		addServer("http://mconfdev.inf.ufrgs.br");
+		
 		this.storedServers = (Map<String, String>) serverFile.getAll();
 	}
 	
