@@ -38,8 +38,11 @@ public class VideoPublish extends Thread implements RtmpReader {
 	
 	private BigBlueButtonClient context;
 	        
-    public VideoPublish(BigBlueButtonClient context, int userId, int bufSize, int widthCaptureResolution, int heightCaptureResolution, int frameRate, int bitRate, int GOP) {
-    	this.context = context;
+    public VideoPublish(BigBlueButtonClient context) {
+    	this.context = context;    	 
+    }
+    
+    public void initNativeEncoder(int userId, int bufSize, int widthCaptureResolution, int heightCaptureResolution, int frameRate, int bitRate, int GOP){
     	sharedBuffer = new byte[bufSize]; //the encoded frame will never be bigger than the not encoded
     	initEncoder(widthCaptureResolution, heightCaptureResolution, frameRate, bitRate, GOP);
     	
@@ -85,10 +88,13 @@ public class VideoPublish extends Thread implements RtmpReader {
     	return 0;
     }
     
-    public int endEncoding(){
-    	isCapturing = false;
+    public void stopPublisher(){
     	videoPublishHandler.stop(context);
-    	
+    }
+    
+    public int endNativeEncoding(){
+    	isCapturing = false;
+        	
     	endEncoder();
     	return 0;
     }

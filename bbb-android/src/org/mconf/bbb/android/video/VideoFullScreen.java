@@ -21,12 +21,12 @@
 
 package org.mconf.bbb.android.video;
 
+import org.mconf.bbb.android.BigBlueButtonActivity;
 import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -34,7 +34,7 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
-public class VideoFullScreen extends Activity {	
+public class VideoFullScreen extends BigBlueButtonActivity {	
 	private static final Logger log = LoggerFactory.getLogger(VideoFullScreen.class);
 	
 	private VideoSurface videoWindow;
@@ -55,6 +55,15 @@ public class VideoFullScreen extends Activity {
 		
 	};
 	
+	private BroadcastReceiver closeVideoCapture = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
+			mVideoCapture.start(getBigBlueButton().getMyUserId());
+		}
+		
+	};
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -71,6 +80,9 @@ public class VideoFullScreen extends Activity {
 		setContentView(R.layout.video_window);
 		
 		videoWindow = (VideoSurface) findViewById(R.id.video_window);
+		
+		IntentFilter closeVideoCaptureFilter = new IntentFilter(Client.CLOSE_VIDEO_CAPTURE);
+		registerReceiver(closeVideoCapture, closeVideoCaptureFilter);
 	}
 	
 	@Override
@@ -90,6 +102,7 @@ public class VideoFullScreen extends Activity {
 	@Override
 	protected void onDestroy() {
 		unregisterReceiver(closeVideo);
+		unregisterReceiver(closeVideoCapture);
 		
 		super.onDestroy();
 	}

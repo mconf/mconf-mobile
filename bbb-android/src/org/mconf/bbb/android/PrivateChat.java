@@ -203,7 +203,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
-			mVideoCapture.start(getBigBlueButton().getMyUserId());
+			mVideoCapture.resume();
 		}
 		
 	};

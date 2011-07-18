@@ -53,6 +53,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         mHolder = getHolder();
         mHolder.addCallback(this);
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        
+        mVideoPublish = ((BigBlueButton) getContext().getApplicationContext()).getVideoPublish();
     }
  
     public void setFrameRate(int fr){
@@ -157,8 +159,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 		bufSize = width*height*pixelFormat.bitsPerPixel/8;
     }
     
-    private void initNativeSide(){
-    	mVideoPublish = new VideoPublish(((BigBlueButton) getContext().getApplicationContext()).getHandler(), userId, bufSize, width, height, frameRate, bitRate, GOP);
+    private void initNativeSide(){    	
+    	mVideoPublish.initNativeEncoder(userId, bufSize, width, height, frameRate, bitRate, GOP);
     }
     
     private void prepareCallback(){
@@ -207,31 +209,69 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     }
     
     private void beginPreview(){
-    	mCamera.startPreview();
+    	mCamera.startPreview();    	
+    }
+    
+    private void startPublisherThread(){
     	if(!mVideoPublish.isAlive()){
     		mVideoPublish.start();
+    	}	    	
+    }
+    
+    private void startPublisher(){
+    	if(mVideoPublish.isAlive()){
+    		mVideoPublish.startPublisher();
     	}
-	    mVideoPublish.startPublisher();
     }
     
     public void start(int userId){
+    	setUserId(userId);
     	if(isSurfaceCreated){
-	    	setUserId(userId);
-	    	
 	    	// acquire the camera and tell it where to draw.   
 	    	openCamera();
 		    	
 	    	// set up the camera parameters
 	    	setParameters();     
-		    	
-	        // init the native side 
-		    initNativeSide();
 	    	    	
 	    	// prepare the callback
 	    	prepareCallback();
 	    	
-	    	// resume the preview. 
+	    	// init the native side 
+		    initNativeSide();
+	    	
+	    	// begin the preview. 
 	    	beginPreview();
+	    	
+	    	// start the publisher native thread
+	    	startPublisherThread();
+	    	
+	    	// start the publisher handler
+	    	startPublisher();
+    	}
+    }
+    
+    public void resume(){
+    	if(isSurfaceCreated){
+	    	// acquire the camera and tell it where to draw.   
+	    	openCamera();
+		    	
+	    	// set up the camera parameters
+	    	setParameters();     
+	    	    	
+	    	// prepare the callback
+	    	prepareCallback();
+	    	
+	    	// init the native side 
+//		    initNativeSide();
+	    	
+	    	// begin the preview. 
+	    	beginPreview();
+	    	
+	    	// start the publisher native thread
+//	    	startPublisherThread();
+	    	
+	    	// start the publisher handler
+//	    	startPublisher();
     	}
     }
     
@@ -247,15 +287,38 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	    	mCamera.release();
 	        mCamera = null;
 	   	            	
-	        mVideoPublish.endEncoding();
+	        mVideoPublish.stopPublisher();
+	        mVideoPublish.endNativeEncoding();
+	        
 	        return true; 
     	}
     	return false;    	
     }
     
+    public boolean pause(){
+    	if(mVideoPublish != null && mVideoPublish.isCapturing){
+	    	if(!usingFaster){
+	    		mCamera.setPreviewCallback(null); //this is needed to avoid a crash (http://code.google.com/p/android/issues/detail?id=6201)
+	    	}
+	    	mCamera.stopPreview();   
+	    	    	
+	    	// Because the CameraDevice object is not a shared resource, it's very
+	        // important to release it when it will not be used anymore
+	    	mCamera.release();
+	        mCamera = null;
+	   	            	
+//	        mVideoPublish.stopPublisher();
+//	        mVideoPublish.endNativeEncoding();
+//	        
+	        return true; 
+    	}
+    	return false;
+    }
+    
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-    	if(stop()){
+    	log.debug("preview surface destroyed");
+    	if(pause()){
 	        Intent intent = new Intent(Client.CLOSE_VIDEO_CAPTURE);
 	        // in our case, surface will only be destroyed when activity changes
 	        // so, this broadcast signalizes that the activity changed and the
