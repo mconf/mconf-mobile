@@ -172,6 +172,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	private boolean dialogShown = false;
 	private boolean kicked=false;
 	private boolean backToLogin = false;
+	private boolean backToPrivateChat = false;
 
 	private VideoDialog mVideoDialog;
 
@@ -544,11 +545,13 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 
 	private void startPrivateChat(final Contact contact) {
+		backToPrivateChat=true;
 		Intent intent = new Intent(getApplicationContext(), PrivateChat.class);
 		intent.putExtra("username", contact.getName());
 		intent.putExtra("userId", contact.getUserId());
 		intent.putExtra("notified", false);
 		startActivity(intent);
+		
 	}
 
 	@Override
@@ -692,7 +695,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 
 	protected void onUserLeaveHint() {
-		if(!backToLogin)
+		if(!backToLogin&&!backToPrivateChat)
 			showBackgroundNotification();
 	}
 
@@ -954,6 +957,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			return;
 
 		if (intent.getAction().equals(BACK_TO_CLIENT)) {
+			backToPrivateChat=false;
 			for (int i=0; i<contactAdapter.getCount(); i++)
 				if(contactAdapter.getChatStatus(i)==Contact.CONTACT_ON_PRIVATE_MESSAGE)
 					((Contact) contactAdapter.getItem(i)).setChatStatus(Contact.CONTACT_NORMAL);

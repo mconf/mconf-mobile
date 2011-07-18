@@ -31,7 +31,7 @@ public class JoinService {
 	private static String timestamp;
 	protected boolean validTimestamp=false;
 	Timer timer1 = new Timer();
-	
+
 	public boolean isValidTimestamp() {
 		return validTimestamp;
 	}
@@ -49,9 +49,9 @@ public class JoinService {
 	}
 
 
-	
+
 	public void setSalt(String salt) {
-		this.salt = salt;
+		JoinService.salt = salt;
 	}
 
 	public JoinedMeeting getJoinedMeeting() {
@@ -122,7 +122,6 @@ public class JoinService {
 			meetings.parse(strMeetings);
 		} catch (Exception e) {
 			e.printStackTrace();
-			log.debug(strMeetings);
 			log.info("This server doesn't support mobile access");
 			return E_LOAD_PARSE_MEETINGS;
 		}
@@ -161,7 +160,7 @@ public class JoinService {
 			doc.getDocumentElement().normalize();
 			Element nodeResponse = (Element) doc.getElementsByTagName("response").item(0);
 			String returncode = nodeResponse.getElementsByTagName("returncode").item(0).getFirstChild().getNodeValue();
-			
+
 
 			if (returncode.equals("SUCCESS")) {	
 				timestamp = nodeResponse.getElementsByTagName("timestamp").item(0).getFirstChild().getNodeValue();
@@ -180,7 +179,7 @@ public class JoinService {
 			return false;
 		}
 	}
-	
+
 	public void setTimestampTimer()
 	{
 		long delay = 60*1000;                   // 60 seconds delay
@@ -188,10 +187,10 @@ public class JoinService {
 		// Schedule the two timers to run with different delays.
 		timer1.schedule(new InvalidateTimestamp(), delay);
 	}
-	
+
 	class  InvalidateTimestamp extends TimerTask 
 	{
-		
+
 		@Override
 		public void run() {
 			log.debug("timestamp expired");
@@ -199,7 +198,7 @@ public class JoinService {
 
 		}
 	}
-	
+
 
 	public boolean getTimestamp()
 	{
@@ -233,10 +232,11 @@ public class JoinService {
 
 	public boolean createMeeting(String meetingID) {
 		String parameters= "action=create"+"&meetingID=" + urlEncode(meetingID) +"&timestamp=" +timestamp;
-		String createUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?"+parameters
-		+ checksum(parameters+salt);
+		String createUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?"+parameters + "&checksum=" + checksum(parameters + salt);
+		
 
-
+		if(!getTimestamp())
+			return false;
 		String response = "Unknown error";
 		try {
 			HttpClient client = new HttpClient();
@@ -252,7 +252,8 @@ public class JoinService {
 		if (meetingID.equals(response))
 			return true;
 		else {
-			log.error(response);
+			log.error("Can't create the meeting {}",response);
+			
 			return false;
 		}
 	}
