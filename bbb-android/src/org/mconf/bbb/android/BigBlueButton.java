@@ -41,6 +41,11 @@ public class BigBlueButton extends Application {
 		}
 		return mVideoPublish;
 	}
+	
+	public VideoPublish deleteVideoPublish() {
+		mVideoPublish = null;
+		return mVideoPublish;
+	}
 
 	public void invalidateVoiceModule() {
 		if (voice != null)

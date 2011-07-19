@@ -26,9 +26,6 @@ public class VideoPublish extends Thread implements RtmpReader {
 	
 	public Camera mCamera;
 	public int bufSize;
-	public boolean usingFaster, usingHidden;
-	public Method mAcb;       // method for adding a pre-allocated buffer 
-    public Object[] mArglist; // list of arguments
     public static final int DEFAULT_FRAME_RATE = 15;
     public static final int DEFAULT_WIDTH = 320;
     public static final int DEFAULT_HEIGHT = 240;
