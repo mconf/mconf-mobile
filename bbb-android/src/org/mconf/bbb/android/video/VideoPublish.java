@@ -1,5 +1,6 @@
 package org.mconf.bbb.android.video;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,20 @@ public class VideoPublish extends Thread implements RtmpReader {
 	}
 	
 	public Camera mCamera;
+	public int bufSize;
+	public boolean usingFaster, usingHidden;
+	public Method mAcb;       // method for adding a pre-allocated buffer 
+    public Object[] mArglist; // list of arguments
+    public static final int DEFAULT_FRAME_RATE = 15;
+    public static final int DEFAULT_WIDTH = 320;
+    public static final int DEFAULT_HEIGHT = 240;
+    public static final int DEFAULT_BIT_RATE = 512000;
+    public static final int DEFAULT_GOP = 5;
+    public int frameRate = DEFAULT_FRAME_RATE;
+    public int width = DEFAULT_WIDTH;
+    public int height = DEFAULT_HEIGHT;
+    public int bitRate = DEFAULT_BIT_RATE;
+    public int GOP = DEFAULT_GOP;
 	
 	private static final Logger log = LoggerFactory.getLogger(VideoPublish.class);
    
@@ -48,12 +63,12 @@ public class VideoPublish extends Thread implements RtmpReader {
     	this.userId = userId;
     }
     
-    public void initNativeEncoder(int bufSize, int widthCaptureResolution, int heightCaptureResolution, int frameRate, int bitRate, int GOP){
+    public void initNativeEncoder(){
     	sharedBuffer = new byte[bufSize]; // the encoded frame will never be bigger than the not encoded
     	
-    	initEncoder(widthCaptureResolution, heightCaptureResolution, frameRate, bitRate, GOP);
+    	initEncoder(width, height, frameRate, bitRate, GOP);
     	  	
-    	streamId = widthCaptureResolution+"x"+heightCaptureResolution+userId; 
+    	streamId = width+"x"+height+userId; 
     	
     	nativeEncoderInitialized = true;
     }

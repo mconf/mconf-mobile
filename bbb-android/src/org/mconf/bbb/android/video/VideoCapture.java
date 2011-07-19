@@ -23,20 +23,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	private static final Logger log = LoggerFactory.getLogger(VideoCapture.class);
 	
     SurfaceHolder mHolder;
-    boolean usingFaster, usingHidden;
-    boolean forceDefaultParams = true;
     boolean isSurfaceCreated = false;
     public VideoPublish mVideoPublish;
-    int bufSize;
-    
-    private Method mAcb;       // method for adding a pre-allocated buffer 
-    private Object[] mArglist; // list of arguments
-    
-    public static final int DEFAULT_FRAME_RATE = 15;
-    public static final int DEFAULT_WIDTH = 320;
-    public static final int DEFAULT_HEIGHT = 240;
-    public static final int DEFAULT_BIT_RATE = 512000;
-    public static final int DEFAULT_GOP = 5;
 
 	private static final int E_OK = 0;
 	private static final int E_COULD_NOT_OPEN_CAMERA = -1;
@@ -53,13 +41,11 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	private static final int E_COULD_NOT_START_PUBLISHER_THREAD_R2 = -12;
 	private static final int E_COULD_NOT_START_PUBLISHER_R1 = -13;
 	private static final int E_COULD_NOT_START_PUBLISHER_R2 = -14;
-	private static final int E_COULD_NOT_RESUME_CAPTURE = -15;			
-	
-    private int frameRate = DEFAULT_FRAME_RATE;
-    private int width = DEFAULT_WIDTH;
-    private int height = DEFAULT_HEIGHT;
-    private int bitRate = DEFAULT_BIT_RATE;
-    private int GOP = DEFAULT_GOP;
+	private static final int E_COULD_NOT_RESUME_CAPTURE = -15;
+	private static final int E_COULD_NOT_INIT_HIDDEN = -16;
+	private static final int E_COULD_NOT_SET_HIDDEN_R1 = -17;
+	private static final int E_COULD_NOT_SET_HIDDEN_R2 = -18;
+	private static final int E_COULD_NOT_ADD_HIDDEN = -19;			
     
     public VideoCapture(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -74,30 +60,30 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     }
  
     public void setFrameRate(int fr){
-    	frameRate = fr;
+    	mVideoPublish.frameRate = fr;
     }
     
     public void setWidth(int w){
-    	width = w;
+    	mVideoPublish.width = w;
     }
     
     public void setHeight(int h){
-    	height = h;
+    	mVideoPublish.height = h;
     }
     
     public void setBitRate(int br){
-    	bitRate = br;
+    	mVideoPublish.bitRate = br;
     }
     
     public void setGOP(int g){
-    	GOP = g;
+    	mVideoPublish.GOP = g;
     }
     
 	// Centers the preview on the screen keeping the capture aspect ratio.
     // Remember to call this function after you change the width or height if you want to keep the aspect and the video centered
     public void centerPreview() {
     	VideoCentering mVideoCentering = new VideoCentering();
-    	mVideoCentering.setAspectRatio(width/(float)height);
+    	mVideoCentering.setAspectRatio(mVideoPublish.width/(float)mVideoPublish.height);
     	LayoutParams layoutParams = mVideoCentering.getVideoLayoutParams(mVideoCentering.getDisplayMetrics(this.getContext()), this.getLayoutParams());
 		setLayoutParams(layoutParams);   	
 	}
@@ -186,10 +172,10 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     private int setParameters(){
     	if(mVideoPublish.mCamera != null){
 	    	Camera.Parameters parameters = mVideoPublish.mCamera.getParameters();
-	    	log.debug("Setting the capture frame rate to {}", frameRate);
-	    	parameters.setPreviewFrameRate(frameRate);
-	    	log.debug("Setting the capture size to {}x{}", width, height);
-	        parameters.setPreviewSize(width, height); 
+	    	log.debug("Setting the capture frame rate to {}", mVideoPublish.frameRate);
+	    	parameters.setPreviewFrameRate(mVideoPublish.frameRate);
+	    	log.debug("Setting the capture size to {}x{}", mVideoPublish.width, mVideoPublish.height);
+	        parameters.setPreviewSize(mVideoPublish.width, mVideoPublish.height); 
 	       	mVideoPublish.mCamera.setParameters(parameters);
 	       	return E_OK;
     	} else {
@@ -202,20 +188,78 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	if(mVideoPublish.mCamera != null){
 	    	PixelFormat pixelFormat = new PixelFormat();
 	 		PixelFormat.getPixelFormatInfo(mVideoPublish.mCamera.getParameters().getPreviewFormat(),pixelFormat);
-	 		return width*height*pixelFormat.bitsPerPixel/8;
+	 		return mVideoPublish.width*mVideoPublish.height*pixelFormat.bitsPerPixel/8;
     	} else {
     		log.debug("Error: getBufferSize() called without an opened camera");
     		return E_COULD_NOT_GET_BUFSIZE;
     	}
     }
     
+    private void setCallbackBest(){
+		mVideoPublish.usingFaster = true;
+		mVideoPublish.usingHidden = false;
+		
+		 //we call addCallbackBuffer twice to reduce the "Out of buffers, clearing callback!" problem
+		byte[] buffer = new byte[mVideoPublish.bufSize];
+		mVideoPublish.mCamera.addCallbackBuffer(buffer);		
+		buffer = new byte[mVideoPublish.bufSize];
+		mVideoPublish.mCamera.addCallbackBuffer(buffer);
+		
+		mVideoPublish.mCamera.setPreviewCallbackWithBuffer(this);
+		
+		log.debug("Using fast preview callback");
+    }
+    
+    private int setCallbackHidden(){
+    	int err;
+        
+    	mVideoPublish.usingFaster = true;
+        mVideoPublish.usingHidden = true;
+		
+        //Must call this before calling addCallbackBuffer to get all the
+        // reflection variables setup
+        err = initForACB();
+        if(err != E_OK){
+        	return err; 
+        }
+
+        //we call addCallbackBuffer twice to reduce the "Out of buffers, clearing callback!" problem
+        byte[] buffer = new byte[mVideoPublish.bufSize];
+        err = addCallbackBuffer_Android2p2(buffer);
+        if(err != E_OK){
+        	return err; 
+        }        
+        buffer = new byte[mVideoPublish.bufSize];
+        err = addCallbackBuffer_Android2p2(buffer);
+        if(err != E_OK){
+        	return err; 
+        }
+        
+        err = setPreviewCallbackWithBuffer_Android2p2();
+        if(err != E_OK){
+        	return err; 
+        }
+        
+        log.debug("Using fast but hidden preview callback");
+        return E_OK;
+    }
+	
+	private void setCallbackSlow(){
+		mVideoPublish.usingFaster = false;
+    	mVideoPublish.usingHidden = false;
+    	
+    	mVideoPublish.mCamera.setPreviewCallback(this);
+    	
+    	log.debug("Using slow preview callback");
+	}
+    
     private int prepareCallback(){
     	if(mVideoPublish.mCamera == null){
     		log.debug("Error: prepareCallback() called without an opened camera");
     		return E_COULD_NOT_PREPARE_CALLBACK_R1;
     	}
-    	if(bufSize < E_OK || bufSize <= 0){
-    		log.debug("Error: prepareCallback() called without a valid bufSize");
+    	if(mVideoPublish.bufSize < E_OK || mVideoPublish.bufSize <= 0){
+    		log.debug("Error: prepareCallback() called without a valid mVideoPublish.bufSize");
     		return E_COULD_NOT_PREPARE_CALLBACK_R2;
     	}
 		//java reflection (idea from http://code.google.com/p/android/issues/detail?id=2794):
@@ -233,32 +277,13 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         //The setPreviewCallbackWithBuffer method is implemented on a Debug class on API levels lower than 8.
         //In order to use it on API levels lower than 8, we need to use Java Reflection.      
 		if (Integer.parseInt(Build.VERSION.SDK) >= 8){ //if(2.2 or higher){
-			log.debug("Using fast preview callback");
-			usingFaster = true;
-			usingHidden = false;
-			byte[] buffer = new byte[bufSize];
-			mVideoPublish.mCamera.addCallbackBuffer(buffer);
-			buffer = new byte[bufSize];
-			mVideoPublish.mCamera.addCallbackBuffer(buffer);
-			mVideoPublish.mCamera.setPreviewCallbackWithBuffer(this);
+			setCallbackBest();
 	    } else if(HiddenCallbackWithBuffer()) { //} else if(has the methods hidden){
-	    	log.debug("Using fast but hidden preview callback");
-	        usingFaster = true;
-	        usingHidden = true;
-			 //Must call this before calling addCallbackBuffer to get all the
-	        // reflection variables setup
-	        initForACB();
-	        //we call addCallbackBuffer twice to reduce the "Out of buffers, clearing callback!" problem
-	        byte[] buffer = new byte[bufSize];
-	        addCallbackBuffer_Android2p2(buffer);   
-	        buffer = new byte[bufSize];
-	        addCallbackBuffer_Android2p2(buffer);
-	        setPreviewCallbackWithBuffer_Android2p2();
+	    	if(setCallbackHidden() != E_OK){
+	    		setCallbackSlow();
+	    	}
 	    } else {
-	    	log.debug("Using slow preview callback");
-	    	usingFaster = false;
-	    	usingHidden = false;
-	    	mVideoPublish.mCamera.setPreviewCallback(this);        
+	    	setCallbackSlow();     
 	    }
 		
 		return E_OK;
@@ -275,11 +300,11 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     }
     
     private int initNativeSide(){    
-    	if(bufSize < E_OK || bufSize <= 0){
-    		log.debug("Error: initNativeSide() called without a valid bufSize");
+    	if(mVideoPublish.bufSize < E_OK || mVideoPublish.bufSize <= 0){
+    		log.debug("Error: initNativeSide() called without a valid mVideoPublish.bufSize");
     		return E_COULD_NOT_INIT_NATIVE_SIDE;
     	}
-    	mVideoPublish.initNativeEncoder(bufSize, width, height, frameRate, bitRate, GOP);
+    	mVideoPublish.initNativeEncoder();
     	return E_OK;
     }
     
@@ -317,7 +342,19 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	if(err != E_OK){
     		return err; 
     	};
-	
+    	    	
+    	// sets up the camera parameters
+    	err = setParameters();
+    	if(err != E_OK){
+    		return err;
+    	}
+    	
+    	// gets the size of a not encoded frame
+    	mVideoPublish.bufSize = getBufferSize();
+    	if(mVideoPublish.bufSize < E_OK){
+    		return mVideoPublish.bufSize;
+    	}
+    	
 		err = resume();
 		if(err != E_OK){
 			return err;
@@ -355,18 +392,6 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	if(err != E_OK){
     		return err;
     	}
-	    	
-    	// sets up the camera parameters
-    	err = setParameters();
-    	if(err != E_OK){
-    		return err;
-    	}
-    	    	
-    	// gets the size of a not encoded frame
-    	bufSize = getBufferSize();
-    	if(bufSize < E_OK){
-    		return bufSize;
-    	}
     	
     	// prepares the callback
     	err = prepareCallback(); 
@@ -399,7 +424,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     
     public void pause(){
     	if(mVideoPublish.mCamera != null){
-	    	if(!usingFaster){
+	    	if(!mVideoPublish.usingFaster){
 	    		mVideoPublish.mCamera.setPreviewCallback(null); //this is needed to avoid a crash (http://code.google.com/p/android/issues/detail?id=6201)
 	    	}
 	    	mVideoPublish.mCamera.stopPreview(); 
@@ -455,44 +480,48 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 		}
     }
 
-    private void initForACB(){
+    private int initForACB(){
     	try {
 			Class mC = Class.forName("android.hardware.Camera");
 		
 			Class[] mPartypes = new Class[1];
 			// variable that will hold parameters for a function call
 			mPartypes[0] = (new byte[1]).getClass(); //There is probably a better way to do this.
-			mAcb = mC.getMethod("addCallbackBuffer", mPartypes);
+			mVideoPublish.mAcb = mC.getMethod("addCallbackBuffer", mPartypes);
 
-			mArglist = new Object[1];
+			mVideoPublish.mArglist = new Object[1];
 		} catch (Exception e) {
 			log.debug("Problem setting up for addCallbackBuffer: " + e.toString());
+			return E_COULD_NOT_INIT_HIDDEN;
 		}
+		return E_OK;
     }
     
     // This method uses reflection to call the addCallbackBuffer method
     // It allows you to add a byte buffer to the queue of buffers to be used by preview.
     // Real addCallbackBuffer implementation: http://android.git.kernel.org/?p=platform/frameworks/base.git;a=blob;f=core/java/android/hardware/Camera.java;hb=9db3d07b9620b4269ab33f78604a36327e536ce1
     // @param b The buffer to register. Size should be width * height * bitsPerPixel / 8.
-    private void addCallbackBuffer_Android2p2(byte[] b){ //  this function is native since Android 2.2
+    private int addCallbackBuffer_Android2p2(byte[] b){ //  this function is native since Android 2.2
     	//Check to be sure initForACB has been called to setup
-    	// mAcb and mArglist
-//    	if(mArglist == null){
+    	// mVideoPublish.mAcb and mVideoPublish.mArglist
+//    	if(mVideoPublish.mArglist == null){
 //    		initForACB();
 //    	}
 
-    	mArglist[0] = b;
+    	mVideoPublish.mArglist[0] = b;
     	try {
-    		mAcb.invoke(mVideoPublish.mCamera, mArglist);
+    		mVideoPublish.mAcb.invoke(mVideoPublish.mCamera, mVideoPublish.mArglist);
     	} catch (Exception e) {
     		log.debug("invoking addCallbackBuffer failed: " + e.toString());
+    		return E_COULD_NOT_ADD_HIDDEN;
     	}
+    	return E_OK;
     }
     
     // This method uses reflection to call the setPreviewCallbackWithBuffer method
     // Use this method instead of setPreviewCallback if you want to use manually allocated
     // buffers. Assumes that "this" implements Camera.PreviewCallback
-    private void setPreviewCallbackWithBuffer_Android2p2(){ // this function is native since Android 2.2
+    private int setPreviewCallbackWithBuffer_Android2p2(){ // this function is native since Android 2.2
     	try {
 			Class c = Class.forName("android.hardware.Camera");
 			Method spcwb = null;  // sets a preview with buffers
@@ -522,20 +551,22 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 				//Log.i("AR","setPreviewCallbackWithBuffer: Called method");
 			} else {
 				log.debug("setPreviewCallbackWithBuffer: Did not find method");
-			}
-			
+				return E_COULD_NOT_SET_HIDDEN_R1;
+			}			
 		} catch (Exception e) {
 			log.debug("{}",e.toString());
-		}
+			return E_COULD_NOT_SET_HIDDEN_R2;
+    	}
+    	return E_OK;
     }
     
     @Override
     public void onPreviewFrame (byte[] _data, Camera camera)
     {
     	if(mVideoPublish.isCapturing){
-    		if(usingHidden){ 
+    		if(mVideoPublish.usingHidden){ 
     			addCallbackBuffer_Android2p2(_data);
-    		} else if(usingFaster){
+    		} else if(mVideoPublish.usingFaster){
     			mVideoPublish.mCamera.addCallbackBuffer(_data);
     		}
     		enqueueFrame(_data,_data.length);
