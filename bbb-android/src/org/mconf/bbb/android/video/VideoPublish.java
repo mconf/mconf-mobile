@@ -8,6 +8,8 @@ import org.mconf.bbb.video.IVideoPublishListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import android.hardware.Camera;
+
 import com.flazr.rtmp.RtmpReader;
 import com.flazr.rtmp.message.Metadata;
 import com.flazr.rtmp.message.Video;
@@ -20,6 +22,8 @@ public class VideoPublish extends Thread implements RtmpReader {
 		}
 				
 	}
+	
+	public Camera mCamera;
 	
 	private static final Logger log = LoggerFactory.getLogger(VideoPublish.class);
    

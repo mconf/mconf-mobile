@@ -23,7 +23,6 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	private static final Logger log = LoggerFactory.getLogger(VideoCapture.class);
 	
     SurfaceHolder mHolder;
-    Camera mCamera;
     boolean usingFaster, usingHidden;
     boolean forceDefaultParams = true;
     boolean isSurfaceCreated = false;
@@ -126,19 +125,19 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     }
     
     private int openCameraNormalWay(){
-    	 if(mCamera != null){
-         	mCamera.release();
-         	mCamera = null;
+    	 if(mVideoPublish.mCamera != null){
+         	mVideoPublish.mCamera.release();
+         	mVideoPublish.mCamera = null;
          }         
          
-         mCamera = Camera.open();
-         if(mCamera == null){
+         mVideoPublish.mCamera = Camera.open();
+         if(mVideoPublish.mCamera == null){
         	 log.debug("Error: could not open camera");
         	 return E_COULD_NOT_OPEN_CAMERA;
          }
-         Camera.Parameters parameters = mCamera.getParameters();
+         Camera.Parameters parameters = mVideoPublish.mCamera.getParameters();
          parameters.set("camera-id", 2);
-         mCamera.setParameters(parameters);
+         mVideoPublish.mCamera.setParameters(parameters);
          return E_OK;
     }
     
@@ -148,7 +147,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	if (isAvailableSprintFFC()) { // this device has the specific HTC camera
         	try { // try opening the specific HTC camera
                 Method method = Class.forName("android.hardware.HtcFrontFacingCamera").getDeclaredMethod("getCamera", null);
-                mCamera = (Camera) method.invoke(null, null);
+                mVideoPublish.mCamera = (Camera) method.invoke(null, null);
             } catch (Exception ex) { // it was not possible to open the specifica HTC camera,
             						 // so, lets open the camera using the normal way
                 log.debug(ex.toString());
@@ -164,15 +163,15 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     }
     
     private int setDisplay(){
-    	if(mCamera != null){
+    	if(mVideoPublish.mCamera != null){
 	        try {
-	            mCamera.setPreviewDisplay(mHolder);
+	            mVideoPublish.mCamera.setPreviewDisplay(mHolder);
 	        } catch (IOException exception) {
 	        	log.debug("Error: could not set preview display"); 
 	         	log.debug(exception.toString());
 	     	
-	         	mCamera.release();
-	         	mCamera = null;
+	         	mVideoPublish.mCamera.release();
+	         	mVideoPublish.mCamera = null;
 	      
 	         	return E_COULD_NOT_SET_PREVIEW_DISPLAY_R1;
 	    	}
@@ -185,13 +184,13 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     }
     
     private int setParameters(){
-    	if(mCamera != null){
-	    	Camera.Parameters parameters = mCamera.getParameters();
+    	if(mVideoPublish.mCamera != null){
+	    	Camera.Parameters parameters = mVideoPublish.mCamera.getParameters();
 	    	log.debug("Setting the capture frame rate to {}", frameRate);
 	    	parameters.setPreviewFrameRate(frameRate);
 	    	log.debug("Setting the capture size to {}x{}", width, height);
 	        parameters.setPreviewSize(width, height); 
-	       	mCamera.setParameters(parameters);
+	       	mVideoPublish.mCamera.setParameters(parameters);
 	       	return E_OK;
     	} else {
     		log.debug("Error: setParameters() called without an opened camera");
@@ -200,9 +199,9 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     }
     
     private int getBufferSize(){
-    	if(mCamera != null){
+    	if(mVideoPublish.mCamera != null){
 	    	PixelFormat pixelFormat = new PixelFormat();
-	 		PixelFormat.getPixelFormatInfo(mCamera.getParameters().getPreviewFormat(),pixelFormat);
+	 		PixelFormat.getPixelFormatInfo(mVideoPublish.mCamera.getParameters().getPreviewFormat(),pixelFormat);
 	 		return width*height*pixelFormat.bitsPerPixel/8;
     	} else {
     		log.debug("Error: getBufferSize() called without an opened camera");
@@ -211,7 +210,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     }
     
     private int prepareCallback(){
-    	if(mCamera == null){
+    	if(mVideoPublish.mCamera == null){
     		log.debug("Error: prepareCallback() called without an opened camera");
     		return E_COULD_NOT_PREPARE_CALLBACK_R1;
     	}
@@ -238,10 +237,10 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 			usingFaster = true;
 			usingHidden = false;
 			byte[] buffer = new byte[bufSize];
-			mCamera.addCallbackBuffer(buffer);
+			mVideoPublish.mCamera.addCallbackBuffer(buffer);
 			buffer = new byte[bufSize];
-			mCamera.addCallbackBuffer(buffer);
-			mCamera.setPreviewCallbackWithBuffer(this);
+			mVideoPublish.mCamera.addCallbackBuffer(buffer);
+			mVideoPublish.mCamera.setPreviewCallbackWithBuffer(this);
 	    } else if(HiddenCallbackWithBuffer()) { //} else if(has the methods hidden){
 	    	log.debug("Using fast but hidden preview callback");
 	        usingFaster = true;
@@ -259,15 +258,15 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	    	log.debug("Using slow preview callback");
 	    	usingFaster = false;
 	    	usingHidden = false;
-	    	mCamera.setPreviewCallback(this);        
+	    	mVideoPublish.mCamera.setPreviewCallback(this);        
 	    }
 		
 		return E_OK;
     }
         
     private int beginPreview(){
-    	if(mCamera != null){
-    		mCamera.startPreview();
+    	if(mVideoPublish.mCamera != null){
+    		mVideoPublish.mCamera.startPreview();
     		return E_OK;
     	} else {
     		log.debug("Error: beginPreview() called without an opened camera");
@@ -312,6 +311,12 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     
     public int start(){
     	int err = E_OK;
+    	
+    	// acquires the camera
+		err = openCamera();
+    	if(err != E_OK){
+    		return err; 
+    	};
 	
 		err = resume();
 		if(err != E_OK){
@@ -344,12 +349,6 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     		err = E_COULD_NOT_RESUME_CAPTURE;
     		return err;
        	}
-    	
-		// acquires the camera
-		err = openCamera();
-    	if(err != E_OK){
-    		return err; 
-    	};
     	
     	// tells it where to draw (sets display for preview)
     	err = setDisplay();
@@ -387,6 +386,11 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     public void stop(){ 
     	pause();
     	
+    	// Because the CameraDevice object is not a shared resource, it's very
+        // important to release it when it will not be used anymore
+    	mVideoPublish.mCamera.release();
+        mVideoPublish.mCamera = null;
+    	
     	if(mVideoPublish.isCapturing){
     		mVideoPublish.stopPublisher();
 	    	mVideoPublish.endNativeEncoding();
@@ -394,16 +398,11 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     }
     
     public void pause(){
-    	if(mCamera != null){
+    	if(mVideoPublish.mCamera != null){
 	    	if(!usingFaster){
-	    		mCamera.setPreviewCallback(null); //this is needed to avoid a crash (http://code.google.com/p/android/issues/detail?id=6201)
+	    		mVideoPublish.mCamera.setPreviewCallback(null); //this is needed to avoid a crash (http://code.google.com/p/android/issues/detail?id=6201)
 	    	}
-	    	mCamera.stopPreview();   
-	    	    	
-	    	// Because the CameraDevice object is not a shared resource, it's very
-	        // important to release it when it will not be used anymore
-	    	mCamera.release();
-	        mCamera = null;   
+	    	mVideoPublish.mCamera.stopPreview(); 
     	}
     }
     
@@ -484,7 +483,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 
     	mArglist[0] = b;
     	try {
-    		mAcb.invoke(mCamera, mArglist);
+    		mAcb.invoke(mVideoPublish.mCamera, mArglist);
     	} catch (Exception e) {
     		log.debug("invoking addCallbackBuffer failed: " + e.toString());
     	}
@@ -519,7 +518,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 			if(spcwb != null){
 				Object[] arglist = new Object[1];
 				arglist[0] = this; // receives a copy of a preview frame
-				spcwb.invoke(mCamera, arglist);
+				spcwb.invoke(mVideoPublish.mCamera, arglist);
 				//Log.i("AR","setPreviewCallbackWithBuffer: Called method");
 			} else {
 				log.debug("setPreviewCallbackWithBuffer: Did not find method");
@@ -537,7 +536,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     		if(usingHidden){ 
     			addCallbackBuffer_Android2p2(_data);
     		} else if(usingFaster){
-    			mCamera.addCallbackBuffer(_data);
+    			mVideoPublish.mCamera.addCallbackBuffer(_data);
     		}
     		enqueueFrame(_data,_data.length);
     	}

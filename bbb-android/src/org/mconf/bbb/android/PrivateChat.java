@@ -199,15 +199,6 @@ public class PrivateChat extends BigBlueButtonActivity {
 	
 	public boolean movedToBack=false;
 	
-	private BroadcastReceiver closeVideoCapture = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
-			mVideoCapture.resume();
-		}
-		
-	};
-	
 	public static boolean hasUserOnPrivateChat(int userId)
 	{
 		for(RemoteParticipant part:participants.values())
@@ -273,6 +264,15 @@ public class PrivateChat extends BigBlueButtonActivity {
 		} 
 	};
 
+	private BroadcastReceiver closeVideoCapture = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
+			mVideoCapture.resume();
+		}
+		
+	};
+	
 	private int addView() {
 		int index = flipper.getChildCount();
 		flipper.addView(getView(), index);
@@ -463,9 +463,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		registerFinishedReceiver();
 		registerMoveToBackReceiver();
 		registerKickedUser();
-		
-		IntentFilter closeVideoCaptureFilter = new IntentFilter(Client.CLOSE_VIDEO_CAPTURE);
-		registerReceiver(closeVideoCapture, closeVideoCaptureFilter);
+		registerCloseVideoCaptureReceiver();	
 	}
 
 	private void registerFinishedReceiver(){ 
@@ -481,6 +479,11 @@ public class PrivateChat extends BigBlueButtonActivity {
 	private void registerKickedUser(){
 		IntentFilter filter = new IntentFilter(KICKED_USER);
 		registerReceiver(kickedUser, filter);
+	}
+	
+	private void registerCloseVideoCaptureReceiver(){
+		IntentFilter filter = new IntentFilter(Client.CLOSE_VIDEO_CAPTURE);
+		registerReceiver(closeVideoCapture, filter);
 	}
 
 	@Override
