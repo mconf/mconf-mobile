@@ -55,15 +55,6 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 		
 	};
 	
-	private BroadcastReceiver closeVideoCapture = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
-			mVideoCapture.resume(false);
-		}
-		
-	};
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -80,9 +71,6 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 		setContentView(R.layout.video_window);
 		
 		videoWindow = (VideoSurface) findViewById(R.id.video_window);
-		
-		IntentFilter closeVideoCaptureFilter = new IntentFilter(Client.CLOSE_VIDEO_CAPTURE);
-		registerReceiver(closeVideoCapture, closeVideoCaptureFilter);
 	}
 	
 	@Override
@@ -102,7 +90,6 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 	@Override
 	protected void onDestroy() {
 		unregisterReceiver(closeVideo);
-		unregisterReceiver(closeVideoCapture);
 		
 		super.onDestroy();
 	}

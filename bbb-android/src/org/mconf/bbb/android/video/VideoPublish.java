@@ -1,6 +1,5 @@
 package org.mconf.bbb.android.video;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +41,8 @@ public class VideoPublish extends Thread implements RtmpReader {
     private byte[] sharedBuffer;
     
     public boolean isCapturing = false;
+    public boolean isReadyToResume = false;
+    public boolean allowResume = true;
     public boolean nativeEncoderInitialized = false;
     
     private int firstTimeStamp = 0;
@@ -54,11 +55,23 @@ public class VideoPublish extends Thread implements RtmpReader {
 	private VideoPublishHandler videoPublishHandler;
 	
 	private BigBlueButtonClient context;
+	
+	private VideoCapture mVideoCapture;	
 	        
     public VideoPublish(BigBlueButtonClient context, int userId) {
     	this.context = context;    	 
     	this.userId = userId;
     }
+    
+    public void readyToResume(VideoCapture videoCapture) {
+    	mVideoCapture = videoCapture;
+    	isReadyToResume = true;
+	}
+    
+    public void RequestResume() {
+    	mVideoCapture.resume();
+    	isReadyToResume = false;
+	}
     
     public void initNativeEncoder(){
     	sharedBuffer = new byte[bufSize]; // the encoded frame will never be bigger than the not encoded

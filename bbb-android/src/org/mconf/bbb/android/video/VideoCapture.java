@@ -371,14 +371,14 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	return E_OK;
     }
     
-    public int start(){
-    	mVideoPublish = ((BigBlueButton) getContext().getApplicationContext()).getVideoPublish();
-    	if(mVideoPublish == null){
-    		log.debug("Error: could not instantiate a VideoPublisher");
-    		return E_COULD_NOT_GET_PUBLISHER;
-    	}
-    	
+    public int start(){   	
     	int err = E_OK;
+    	if(mVideoPublish == null){
+    		err = getPublisher();
+    		if(err != E_OK){
+    			return err;
+    		}
+    	}
     	
     	// acquires the camera
 		err = openCamera();
@@ -398,7 +398,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     		return mVideoPublish.bufSize;
     	}
     	
-		err = resume(true);
+		err = resume();
 		if(err != E_OK){
 			return err;
 		}
@@ -423,15 +423,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	return err;
     }
     
-    public int resume(boolean fromStart){ // fromStart: only pass true if it is called from the start method
-    	if(!fromStart){
-    		mVideoPublish = ((BigBlueButton) getContext().getApplicationContext()).getVideoPublish();
-    		if(mVideoPublish == null){
-        		log.debug("Error: could not instantiate a VideoPublisher");
-        		return E_COULD_NOT_GET_PUBLISHER;
-        	}
-    	}
-    	
+    public int resume(){
     	int err = E_OK;
     	if(!isSurfaceCreated){
     		err = E_COULD_NOT_RESUME_CAPTURE;
@@ -594,6 +586,15 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	return E_OK;
     }
     
+    private int getPublisher(){
+    	mVideoPublish = ((BigBlueButton) getContext().getApplicationContext()).getVideoPublish();
+		if(mVideoPublish == null){
+    		log.debug("Error: could not get or instantiate a VideoPublisher");
+    		return E_COULD_NOT_GET_PUBLISHER;
+    	}
+		return E_OK;
+    }
+    
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
     	log.debug("preview surface destroyed");
@@ -605,9 +606,12 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     		pause();
     		
     		// signalizes that the activity has changed and the
-	        // camera was being captured
-    		Intent intent = new Intent(Client.CLOSE_VIDEO_CAPTURE);
-	        getContext().sendBroadcast(intent);
+	        // camera was being captured //\TODO Gian improve this comment
+    		if(mVideoPublish.isReadyToResume){
+    			mVideoPublish.RequestResume();
+    		} else {
+    			mVideoPublish.allowResume = true;
+    		}
     	}
     	isSurfaceCreated = false;
     }
@@ -619,8 +623,19 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        log.debug("preview surface created");
-        isSurfaceCreated = true;        
+        log.debug("preview surface created");        
+        
+        if(getPublisher() == E_OK){
+        	isSurfaceCreated = true;
+        	if(mVideoPublish.isCapturing){
+        		if(!mVideoPublish.allowResume){
+        			mVideoPublish.readyToResume(this);
+        		} else {
+        			resume();
+        			mVideoPublish.allowResume = false;
+        		}
+        	}
+    	}
     }
     
     @Override

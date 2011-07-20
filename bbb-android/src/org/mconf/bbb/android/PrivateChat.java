@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.mconf.bbb.IBigBlueButtonClientListener;
-import org.mconf.bbb.android.video.VideoCapture;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.listeners.IListener;
 import org.mconf.bbb.users.IParticipant;
@@ -263,15 +262,6 @@ public class PrivateChat extends BigBlueButtonActivity {
 			
 		} 
 	};
-
-	private BroadcastReceiver closeVideoCapture = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
-			mVideoCapture.resume(false);
-		}
-		
-	};
 	
 	private int addView() {
 		int index = flipper.getChildCount();
@@ -463,7 +453,6 @@ public class PrivateChat extends BigBlueButtonActivity {
 		registerFinishedReceiver();
 		registerMoveToBackReceiver();
 		registerKickedUser();
-		registerCloseVideoCaptureReceiver();	
 	}
 
 	private void registerFinishedReceiver(){ 
@@ -481,18 +470,12 @@ public class PrivateChat extends BigBlueButtonActivity {
 		registerReceiver(kickedUser, filter);
 	}
 	
-	private void registerCloseVideoCaptureReceiver(){
-		IntentFilter filter = new IntentFilter(Client.CLOSE_VIDEO_CAPTURE);
-		registerReceiver(closeVideoCapture, filter);
-	}
-
 	@Override
 	public void onDestroy() { 
 		super.onDestroy(); 
 		unregisterReceiver(finishedReceiver);
 		unregisterReceiver(moveToBack);
 		unregisterReceiver(kickedUser);
-		unregisterReceiver(closeVideoCapture);
 	}
 
 

@@ -107,7 +107,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public static final String BACK_TO_CLIENT = "org.mconf.bbb.android.Client.BACK_TO_CLIENT";
 	public static final String FINISH = "bbb.android.action.FINISH";
 	public static final String CLOSE_VIDEO = "org.mconf.bbb.android.Video.CLOSE";
-	public static final String CLOSE_VIDEO_CAPTURE = "org.mconf.bbb.android.Video.CLOSE_CAPTURE";
 	public static final String SEND_TO_BACK = "bbb.android.action.SEND_TO_BACK";
 
 	public static final int ID_DIALOG_RECONNECT = 111000;
@@ -147,16 +146,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		
 	};
 	
-	private BroadcastReceiver closeVideoCapture = new BroadcastReceiver() {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
-			mVideoCapture.resume(false);
-		}
-		
-	};
-
 	protected ContactAdapter contactAdapter = new ContactAdapter();
 	protected ChatAdapter chatAdapter = new ChatAdapter();
 	protected ListenerAdapter listenerAdapter = new ListenerAdapter();
@@ -185,10 +174,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		
 		IntentFilter closeVideoFilter = new IntentFilter(CLOSE_VIDEO);
 		registerReceiver(closeVideo, closeVideoFilter);
-		
-		IntentFilter closeVideoCaptureFilter = new IntentFilter(Client.CLOSE_VIDEO_CAPTURE);
-		registerReceiver(closeVideoCapture, closeVideoCaptureFilter);
-		
+			
 		initListeners();
 
 		if (!getBigBlueButton().isConnected()) {
@@ -436,7 +422,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		
 		unregisterReceiver(chatClosed);
 		unregisterReceiver(closeVideo);
-		unregisterReceiver(closeVideoCapture);
 
 		super.onDestroy();
 	}
