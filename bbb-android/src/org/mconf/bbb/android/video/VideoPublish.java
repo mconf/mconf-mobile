@@ -42,8 +42,9 @@ public class VideoPublish extends Thread implements RtmpReader {
     
     public boolean isCapturing = false;
     public boolean isReadyToResume = false;
-    public boolean allowResume = true;
+    public boolean allowResume = false;
     public boolean nativeEncoderInitialized = false;
+    public boolean restartWhenResume;
     
     private int firstTimeStamp = 0;
 	private int lastTimeStamp = 0;
@@ -58,9 +59,11 @@ public class VideoPublish extends Thread implements RtmpReader {
 	
 	private VideoCapture mVideoCapture;	
 	        
-    public VideoPublish(BigBlueButtonClient context, int userId) {
+    public VideoPublish(BigBlueButtonClient context, int userId, boolean restart) {
     	this.context = context;    	 
     	this.userId = userId;
+    	
+    	this.restartWhenResume = restart;
     }
     
     public void readyToResume(VideoCapture videoCapture) {

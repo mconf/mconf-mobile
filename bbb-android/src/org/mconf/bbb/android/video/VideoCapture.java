@@ -3,13 +3,12 @@ package org.mconf.bbb.android.video;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
+import org.mconf.bbb.android.BackgroundManager;
 import org.mconf.bbb.android.BigBlueButton;
-import org.mconf.bbb.android.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.os.Build;
@@ -28,7 +27,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     private boolean usingFaster, usingHidden;
 	private Method mAcb;       // method for adding a pre-allocated buffer 
     private Object[] mArglist; // list of arguments
-
+    private Context context;
+	
 	private static final int E_OK = 0;
 	private static final int E_COULD_NOT_OPEN_CAMERA = -1;
 	private static final int E_COULD_NOT_SET_PREVIEW_DISPLAY_R1 = -2;
@@ -58,6 +58,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     
     public VideoCapture(Context context, AttributeSet attrs) {
         super(context, attrs);
+        
+        this.context = context;
         
         // Install a SurfaceHolder.Callback so we get notified when the
         // underlying surface is created and destroyed.
@@ -599,19 +601,27 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     public void surfaceDestroyed(SurfaceHolder holder) {
     	log.debug("preview surface destroyed");
     	if(mVideoPublish != null && mVideoPublish.isCapturing){ // means that activity changed (because
-    								   // this surface will only be destroyed
-    								   // when the activity changes) and the
-    								   // camera was being captured and published
-    		// pauses the preview and publish
-    		pause();
-    		
-    		// signalizes that the activity has changed and the
-	        // camera was being captured //\TODO Gian improve this comment
-    		if(mVideoPublish.isReadyToResume){
-    			mVideoPublish.RequestResume();
-    		} else {
-    			mVideoPublish.allowResume = true;
-    		}
+			   // this surface will only be destroyed
+			   // when the activity changes) and the
+			   // camera was being captured and published    		
+	    	if(BackgroundManager.isApplicationBroughtToBackground(context)){ // means that the next
+	    			// doesn't belong to this application
+	       		// stops the preview, the publish and releases the camera
+	    		// to allow the camera to be used by another application
+	    		mVideoPublish.restartWhenResume = true;
+	    		stop();	    		
+	    	} else {
+	       		// pauses the preview and publish
+	    		pause();
+	    		
+	    		// signalizes that the activity has changed and the
+		        // camera was being captured //\TODO Gian improve this comment
+	    		if(mVideoPublish.isReadyToResume){
+	    			mVideoPublish.RequestResume();
+	    		} else {
+	    			mVideoPublish.allowResume = true;
+	    		}
+	    	}
     	}
     	isSurfaceCreated = false;
     }
@@ -633,6 +643,11 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         		} else {
         			resume();
         			mVideoPublish.allowResume = false;
+        		}
+        	} else {
+        		if(mVideoPublish.restartWhenResume){
+        			start();
+        			mVideoPublish.restartWhenResume = false;
         		}
         	}
     	}

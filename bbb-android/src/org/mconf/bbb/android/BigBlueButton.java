@@ -11,7 +11,8 @@ import android.net.NetworkInfo;
 public class BigBlueButton extends Application {
 	private BigBlueButtonClient handler = null;
 	private VoiceModule voice = null;
-	private VideoPublish mVideoPublish = null; 
+	private VideoPublish mVideoPublish = null;
+	private boolean restartCaptureWhenAppResumes = false;
 	
 	private int launchedBy = LAUNCHED_BY_NON_SPECIFIED;
 	public static final int LAUNCHED_BY_NON_SPECIFIED = 0;
@@ -37,13 +38,16 @@ public class BigBlueButton extends Application {
 	
 	public VideoPublish getVideoPublish() {
 		if(mVideoPublish == null) {
-			mVideoPublish = new VideoPublish(getHandler(), getHandler().getMyUserId());
+			mVideoPublish = new VideoPublish(getHandler(), getHandler().getMyUserId(), restartCaptureWhenAppResumes);
 		}
 		return mVideoPublish;
 	}
 	
 	public VideoPublish deleteVideoPublish() {
-		mVideoPublish = null;
+		if(mVideoPublish != null){
+			restartCaptureWhenAppResumes = mVideoPublish.restartWhenResume;
+			mVideoPublish = null;
+		}
 		return mVideoPublish;
 	}
 
