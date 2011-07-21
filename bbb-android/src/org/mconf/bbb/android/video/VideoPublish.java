@@ -23,20 +23,15 @@ public class VideoPublish extends Thread implements RtmpReader {
 				
 	}
 	
+	private static final Logger log = LoggerFactory.getLogger(VideoPublish.class);
+	
 	public Camera mCamera;
 	public int bufSize;
-    public static final int DEFAULT_FRAME_RATE = 15;
-    public static final int DEFAULT_WIDTH = 320;
-    public static final int DEFAULT_HEIGHT = 240;
-    public static final int DEFAULT_BIT_RATE = 512000;
-    public static final int DEFAULT_GOP = 5;
-    public int frameRate = DEFAULT_FRAME_RATE;
-    public int width = DEFAULT_WIDTH;
-    public int height = DEFAULT_HEIGHT;
-    public int bitRate = DEFAULT_BIT_RATE;
-    public int GOP = DEFAULT_GOP;
-	
-	private static final Logger log = LoggerFactory.getLogger(VideoPublish.class);
+    public int frameRate = CaptureConstants.DEFAULT_FRAME_RATE;
+    public int width = CaptureConstants.DEFAULT_WIDTH;
+    public int height = CaptureConstants.DEFAULT_HEIGHT;
+    public int bitRate = CaptureConstants.DEFAULT_BIT_RATE;
+    public int GOP = CaptureConstants.DEFAULT_GOP;
    
     private byte[] sharedBuffer;
     
@@ -59,11 +54,20 @@ public class VideoPublish extends Thread implements RtmpReader {
 	
 	private VideoCapture mVideoCapture;	
 	        
-    public VideoPublish(BigBlueButtonClient context, int userId, boolean restart) {
+    public VideoPublish(BigBlueButtonClient context, int userId, boolean restartWhenResume) {
     	this.context = context;    	 
     	this.userId = userId;
     	
-    	this.restartWhenResume = restart;
+    	this.restartWhenResume = restartWhenResume;
+    }
+    
+    public void startPublisher(){
+    	videoPublishHandler = new VideoPublishHandler(userId, streamId, this, context);
+    	videoPublishHandler.start();
+    }        	
+    
+    public void stopPublisher(){
+    	videoPublishHandler.stop(context);
     }
     
     public void readyToResume(VideoCapture videoCapture) {
@@ -71,9 +75,14 @@ public class VideoPublish extends Thread implements RtmpReader {
     	isReadyToResume = true;
 	}
     
-    public void RequestResume() {
-    	mVideoCapture.resume();
-    	isReadyToResume = false;
+    public int RequestResume() {
+    	if(mVideoCapture == null){
+    		log.debug("Error: resume requested but there is not a VideoCapture class available");
+    		return CaptureConstants.E_COULD_NOT_REQUEST_RESUME;
+    	}
+    	mVideoCapture.resumeCapture();
+    	mVideoCapture = null;
+    	return CaptureConstants.E_OK;
 	}
     
     public void initNativeEncoder(){
@@ -86,21 +95,24 @@ public class VideoPublish extends Thread implements RtmpReader {
     	nativeEncoderInitialized = true;
     }
     
-    public void startPublisher(){
-    	videoPublishHandler = new VideoPublishHandler(userId, streamId, this, context);
-    	videoPublishHandler.start();
+    public void endNativeEncoder(){
+    	isCapturing = false;
+    	nativeEncoderInitialized = false;
+        	
+    	endEncoder();
     }
     
     @Override
     public void run() {
        	isCapturing = true;
+       	
     	initSenderLoop();
     }
-       
+    
     public byte[] assignJavaBuffer()
 	{
     	return sharedBuffer;
-	}	
+	}
     
     public int onReadyFrame (int bufferSize, int timeStamp)
     {    	
@@ -120,18 +132,6 @@ public class VideoPublish extends Thread implements RtmpReader {
    				 
 		framesList.add(video);
 		
-    	return 0;
-    }
-    
-    public void stopPublisher(){
-    	videoPublishHandler.stop(context);
-    }
-    
-    public int endNativeEncoding(){
-    	isCapturing = false;
-    	nativeEncoderInitialized = false;
-        	
-    	endEncoder();
     	return 0;
     }
 

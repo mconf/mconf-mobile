@@ -560,7 +560,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, R.string.start_voice).setIcon(android.R.drawable.ic_btn_speak_now);
 			}
 			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
-			if (mVideoCapture.mVideoPublish != null && mVideoCapture.mVideoPublish.isCapturing){
+			if (mVideoCapture.isCapturing()){
 				menu.add(Menu.NONE, MENU_STOP_VIDEO, Menu.NONE, R.string.stop_video).setIcon(android.R.drawable.ic_btn_speak_now); //\TODO choose a icon
 			} else {
 				menu.add(Menu.NONE, MENU_START_VIDEO, Menu.NONE, R.string.start_video).setIcon(android.R.drawable.ic_btn_speak_now); //\TODO choose a icon
@@ -602,13 +602,13 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			
 		case MENU_START_VIDEO:
 			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
-			mVideoCapture.start();
+			mVideoCapture.startCapture();
 			return true;	
 			
 		case MENU_STOP_VIDEO:
 			updateVideoCaptureLayout(false);
 			VideoCapture mVideoCapture1 = (VideoCapture) findViewById(R.id.video_capture);
-			mVideoCapture1.stop();			
+			mVideoCapture1.stopCapture();			
 			return true;	
 
 		case MENU_MUTE:
