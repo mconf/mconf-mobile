@@ -24,6 +24,7 @@ public class Common {
 	public final static String DEFAULT_TEST_ROOM = "Test meeting";
 	public final static String DEFAULT_SERVER = "http://mconfdev.inf.ufrgs.br";
 
+	// http://download.oracle.com/javase/tutorial/essential/regex/bounds.html
 	public static String exactly(String s) {
 		return "^" + s + "$";
 	}
