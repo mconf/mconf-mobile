@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
+import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -125,7 +126,8 @@ public class Meetings {
 		for (int i = 0; i < nodeMeetings.getLength(); ++i) {
 			Element elementMeeting = (Element) nodeMeetings.item(i);
 
-			DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy", Locale.UK);
+			DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy", Locale.CANADA);
+			//dateFormat.setTimeZone(TimeZone.getDefault());
 			//used Locale to avoid unparseable date exception. apparently the locale doesn't affect the time
 			Meeting meeting = new Meeting(); 
  

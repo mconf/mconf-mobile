@@ -171,6 +171,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	private int addedMessages=0;
 	private boolean dialogShown = false;
 	private boolean kicked=false;
+	private boolean backToLogin = false;
+	private boolean backToPrivateChat = false;
 
 	private VideoDialog mVideoDialog;
 	
@@ -437,6 +439,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		
 		unregisterReceiver(chatClosed);
 		unregisterReceiver(closeVideo);
+		unregisterReceiver(quit);
 
 		super.onDestroy();
 	}
@@ -503,8 +506,9 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			case POPUP_MENU_LOWER_HAND:
 			{
 				Contact contact = (Contact) contactAdapter.getItem(info.position);
-				//\TODO implement the lower hand in the big blue button
+				// \TODO implement the lower hand in the big blue button
 				//getBigBlueButton().lowerUserHand(contact.getUserId());
+				return true;
 			}
 			case POPUP_MENU_MUTE_LISTENER:
 			{
@@ -545,6 +549,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 
 	private void startPrivateChat(final Contact contact) {
+		backToPrivateChat=true;
 		Intent intent = new Intent(getApplicationContext(), PrivateChat.class);
 		intent.putExtra("username", contact.getName());
 		intent.putExtra("userId", contact.getUserId());
@@ -626,6 +631,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			Intent login = new Intent(this, LoginPage.class);
 			startActivity(login);
 			lastReadNum=-1;
+			backToLogin=true;
 			sendBroadcast(intent);
 			finish();
 			return true;
@@ -692,7 +698,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 
 protected void onUserLeaveHint() {
-	showBackgroundNotification();
+	if(!backToLogin&&!backToPrivateChat)
+		showBackgroundNotification();
 }
 
 public void showBackgroundNotification()
@@ -953,6 +960,7 @@ public void showBackgroundNotification()
 			return;
 
 		if (intent.getAction().equals(BACK_TO_CLIENT)) {
+			backToPrivateChat=false;
 			for (int i=0; i<contactAdapter.getCount(); i++)
 				if(contactAdapter.getChatStatus(i)==Contact.CONTACT_ON_PRIVATE_MESSAGE)
 					((Contact) contactAdapter.getItem(i)).setChatStatus(Contact.CONTACT_NORMAL);
