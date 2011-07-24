@@ -173,9 +173,13 @@ public class BigBlueButtonClient {
 	}
 	
 	public void raiseHand(boolean value) {
-		getUsersModule().raiseHand(value);
+		raiseHand(myUserId, value);
 	}
-
+	
+	public void raiseHand(int userId, boolean value) {
+		getUsersModule().raiseHand(userId, value);
+	}
+	
 	public void assignPresenter(int userId) {
 		getUsersModule().assignPresenter(userId);
 	}

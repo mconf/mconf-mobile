@@ -506,8 +506,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			case POPUP_MENU_LOWER_HAND:
 			{
 				Contact contact = (Contact) contactAdapter.getItem(info.position);
-				// \TODO implement the lower hand in the big blue button
-				//getBigBlueButton().lowerUserHand(contact.getUserId());
+				getBigBlueButton().raiseHand(contact.getUserId(), false);
 				return true;
 			}
 			case POPUP_MENU_MUTE_LISTENER:
