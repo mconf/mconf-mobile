@@ -125,6 +125,22 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		assertTrue(contact.isRaiseHand());
 	}
 	
+	public void testLowerHand() throws InterruptedException{
+		raiseRandomHands(3);
+		Contact p;
+		do{
+			p= getRandomContact(false);
+		}while(!p.isRaiseHand());
+		String name = p.getName();
+		solo.clickLongOnText(name);
+		solo.clickOnText(solo.getString(R.string.lower_hand));
+		solo.clickLongOnText(name);
+		assertFalse(solo.searchText(solo.getString(R.string.lower_hand)));
+
+		
+
+	}
+	
 	public void testKick() {
 		IParticipant p = getRandomUser(false);
 		String name = p.getName();
@@ -132,6 +148,8 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		solo.clickOnText(solo.getString(R.string.kick));
 		assertFalse(solo.searchText(name));
 	}
+	
+	
 	
 	public void testOpenChatLongPress() {
 		IParticipant p = getRandomUser(false);
@@ -179,6 +197,23 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 			IParticipant p = (IParticipant) participantsList.getItem(new Random().nextInt(participantsList.getCount()));
 			if (includeMe || !p.getName().startsWith(Common.DEFAULT_NAME))
 				return p;
+		}
+	}
+	
+	public Contact getRandomContact(boolean includeMe){
+		Contact contact = new Contact(getRandomUser(includeMe));
+		return contact;
+	}
+	
+	public void raiseRandomHands(int howMany){
+		for(int i=0; i<howMany; i++)
+		{
+			Contact contact = getRandomContact(false);
+			int userId=contact.getUserId();
+			if(!contact.isRaiseHand())
+			{
+				Common.getUser(userId).raiseHand(userId, true);
+			}
 		}
 	}
 

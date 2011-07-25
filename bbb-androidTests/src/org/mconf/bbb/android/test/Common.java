@@ -22,8 +22,17 @@ public class Common {
 	public final static String DEFAULT_NAME = "My name";
 	public final static String DEFAULT_TEST_USERS_NAME = "User []";
 	public final static String DEFAULT_TEST_ROOM = "Test meeting";
-	public final static String DEFAULT_SERVER = "http://mconfdev.inf.ufrgs.br";
-
+	public final static String DEFAULT_SERVER = "http://mconfweb.inf.ufrgs.br";
+	
+	public static BigBlueButtonClient getUser(int userId)
+	{
+		for(BigBlueButtonClient user : users)
+		{
+			if(user.getMyUserId()==userId)
+				return user;
+		}
+		return null;
+	}
 	// http://download.oracle.com/javase/tutorial/essential/regex/bounds.html
 	public static String exactly(String s) {
 		return "^" + s + "$";
@@ -43,8 +52,10 @@ public class Common {
 			users[i] = new BigBlueButtonClient();
 			users[i].getJoinService().load(Common.DEFAULT_SERVER);
 			users[i].getJoinService().join(Common.DEFAULT_TEST_ROOM, Common.DEFAULT_TEST_USERS_NAME.replace("[]", Integer.toString(i + 1)), false);
+			
 			if (users[i].getJoinService().getJoinedMeeting() != null)
 				users[i].connectBigBlueButton();
+
 		}
 	}
 
