@@ -454,6 +454,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     		return err;
        	}
     	
+    	mVideoPublish.paused = false;
     	mVideoPublish.allowResume = false;
     	mVideoPublish.isReadyToResume = false;
     	
@@ -481,6 +482,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     public void stopCapture(){ 
     	if(mVideoPublish != null){
 	    	pauseCapture();
+	    	mVideoPublish.paused = false;
 	    	
 	    	// Because the CameraDevice object is not a shared resource, it's very
 	        // important to release it when it may not be used anymore
@@ -499,7 +501,9 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     }
     
     public void pauseCapture(){
-    	if(mVideoPublish != null && mVideoPublish.mCamera != null){
+    	if(mVideoPublish != null && mVideoPublish.mCamera != null && !mVideoPublish.paused){
+    		mVideoPublish.paused = true;
+    		
     		mVideoPublish.mCamera.stopPreview();
     		
     		resetBuffersAndCallbacks();

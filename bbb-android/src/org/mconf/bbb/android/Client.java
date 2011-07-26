@@ -146,6 +146,16 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		
 	};
 	
+	private BroadcastReceiver leaveRoom = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
+			mVideoCapture.stopCapture();
+		}
+		
+	};
+	
 	protected ContactAdapter contactAdapter = new ContactAdapter();
 	protected ChatAdapter chatAdapter = new ChatAdapter();
 	protected ListenerAdapter listenerAdapter = new ListenerAdapter();
@@ -174,6 +184,9 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		
 		IntentFilter closeVideoFilter = new IntentFilter(CLOSE_VIDEO);
 		registerReceiver(closeVideo, closeVideoFilter);
+		
+		IntentFilter leaveRoomFilter = new IntentFilter(FINISH);
+        registerReceiver(leaveRoom, leaveRoomFilter);
 			
 		initListeners();
 
@@ -443,6 +456,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		
 		unregisterReceiver(chatClosed);
 		unregisterReceiver(closeVideo);
+		unregisterReceiver(leaveRoom);
 		
 		endListeners();
 

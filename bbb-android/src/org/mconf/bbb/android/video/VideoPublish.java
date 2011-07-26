@@ -40,6 +40,7 @@ public class VideoPublish extends Thread implements RtmpReader {
     public boolean allowResume = false;
     public boolean nativeEncoderInitialized = false;
     public boolean restartWhenResume;
+    public boolean paused = false; // false when: STOPPED, STARTED or RESUMED. true when: PAUSED
     
     private int firstTimeStamp = 0;
 	private int lastTimeStamp = 0;
