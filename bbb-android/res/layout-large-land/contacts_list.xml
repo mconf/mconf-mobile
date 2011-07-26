@@ -116,6 +116,7 @@
 
 			</RelativeLayout>
 
+			<include layout="@layout/video_capture" />
 			<include layout="@layout/audio_bar" />
 
 		</RelativeLayout>
