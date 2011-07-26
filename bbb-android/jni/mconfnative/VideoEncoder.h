@@ -16,6 +16,7 @@ private:
 
 	bool stopThread, encoding;
 
+	jbyteArray javaBufferJNI;
 	int8_t * sharedBuffer;
 	jobject JavaSenderClass;
 	jmethodID JavaOnReadyFrame;
@@ -81,7 +82,7 @@ public:
 		jclass JavaSenderObject = env->GetObjectClass(JavaSenderClass);
 		JavaOnReadyFrame = env->GetMethodID(JavaSenderObject, "onReadyFrame", "(II)I");
 		jmethodID JavaAssignBuffers = env->GetMethodID(JavaSenderObject, "assignJavaBuffer", "()[B");
-		jbyteArray javaBufferJNI = (_jbyteArray*)env->CallObjectMethod( JavaSenderClass, JavaAssignBuffers );
+		javaBufferJNI = (_jbyteArray*)env->CallObjectMethod( JavaSenderClass, JavaAssignBuffers );
 		jboolean isCopy;
 		// this call assigns the C++ buffer with
 		// the Java buffer that will be the encoded frame
@@ -146,6 +147,8 @@ public:
 			// See if it is possible to do this without losing the link.
 			// If it is not possible, then check if it is possible to avoid the memcpy by linking them again.
 			memcpy(&sharedBuffer[1], buffer, bufferSize);
+			buffer = NULL;
+			free(buffer);
 
 //			if(firstFrameIDetected){
 //				sharedBuffer[0] = getFrameType(&frametypeManager);
@@ -154,6 +157,16 @@ public:
 			// The shared buffer has a new encoded frame. Lets callback java to sinalize it
 			env->CallIntMethod( JavaSenderClass, JavaOnReadyFrame, (jint)(bufferSize+1), (jint)timestamp );
 		}
+
+		env->ReleaseByteArrayElements(javaBufferJNI, sharedBuffer, JNI_ABORT);
+		env->DeleteGlobalRef(JavaSenderClass);
+		sharedBuffer = NULL;
+		free(sharedBuffer);
+		javaBufferJNI = NULL;
+		free(javaBufferJNI);
+		JavaSenderClass = NULL;
+		free(JavaSenderClass);
+
 		encoding = false;
 	}
 

@@ -46,13 +46,14 @@ public class VideoPublish extends Thread implements RtmpReader {
 	private String streamId;
 	private int userId;
 	
-	private final List<Video> framesList = new ArrayList<Video>();
+	private List<Video> framesList = new ArrayList<Video>();
 	
 	private VideoPublishHandler videoPublishHandler;
 	
 	private BigBlueButtonClient context;
 	
 	private VideoCapture mVideoCapture;	
+	private boolean framesListAvailable = false;
 	        
     public VideoPublish(BigBlueButtonClient context, int userId, boolean restartWhenResume) {
     	this.context = context;    	 
@@ -129,14 +130,21 @@ public class VideoPublish extends Thread implements RtmpReader {
        	Video video = new Video(timeStamp, aux, bufferSize);
    	    video.getHeader().setDeltaTime(interval);
 		video.getHeader().setStreamId(this.videoPublishHandler.videoConnection.streamId);
-   				 
-		framesList.add(video);
+		
+		if(framesListAvailable && framesList != null){
+			framesList.add(video);
+		}
 		
     	return 0;
     }
 
 	@Override
 	public void close() {		
+		framesListAvailable = false;
+		if(framesList != null){
+			framesList.clear();
+		}
+		framesList = null;
 	}
 
 	@Override
@@ -146,6 +154,7 @@ public class VideoPublish extends Thread implements RtmpReader {
 
 	@Override
 	public Video[] getStartMessages() {
+		framesListAvailable = true;
 		Video[] startMessages = new Video[0];
         return startMessages;
 	}
@@ -157,14 +166,14 @@ public class VideoPublish extends Thread implements RtmpReader {
 
 	@Override
 	public boolean hasNext() {
-		while(framesList.isEmpty() && isCapturing){
+		while(isCapturing && framesListAvailable && framesList != null && framesList.isEmpty()){
 			try {
 				this.wait(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		if(isCapturing){
+		if(isCapturing && framesListAvailable && framesList != null){
 			return true;
 		} else {
 			return false;
@@ -173,7 +182,12 @@ public class VideoPublish extends Thread implements RtmpReader {
 
 	@Override
 	public Video next() {
-		return framesList.remove(0);
+		if(framesListAvailable && framesList != null){
+			return framesList.remove(0);
+		} else {
+			Video emptyVideo = new Video();
+	        return emptyVideo;
+		}
 	}
 
 	@Override

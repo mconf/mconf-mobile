@@ -264,7 +264,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         	return err; 
         }
         
-        err = setPreviewCallbackWithBuffer_Android2p2();
+        err = setPreviewCallbackWithBuffer_Android2p2(false);
         if(err != CaptureConstants.E_OK){
         	return err; 
         }
@@ -361,6 +361,35 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	}
     	mVideoPublish.startPublisher();
     	return CaptureConstants.E_OK;
+    }
+    
+    private void clearCallbackBest(){
+		mVideoPublish.mCamera.setPreviewCallbackWithBuffer(null);
+    }
+    
+    private int clearCallbackHidden(){
+    	int err;
+		
+        err = setPreviewCallbackWithBuffer_Android2p2(true);
+        if(err != CaptureConstants.E_OK){
+        	return err; 
+        }
+
+        return CaptureConstants.E_OK;
+    }
+	
+	private void clearCallbackSlow(){
+    	mVideoPublish.mCamera.setPreviewCallback(null);
+	}
+    
+    private void resetBuffersAndCallbacks(){
+    	if(usingHidden){ 
+			clearCallbackHidden();
+		} else if(usingFaster){
+			clearCallbackBest();
+		} else {
+			clearCallbackSlow();
+		}
     }
     
     public int startCapture(){   	
@@ -471,10 +500,16 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     
     public void pauseCapture(){
     	if(mVideoPublish != null && mVideoPublish.mCamera != null){
-	    	if(!usingFaster){
-	    		mVideoPublish.mCamera.setPreviewCallback(null); //this is needed to avoid a crash (http://code.google.com/p/android/issues/detail?id=6201)
-	    	}
-	    	mVideoPublish.mCamera.stopPreview(); 
+    		mVideoPublish.mCamera.stopPreview();
+    		
+    		resetBuffersAndCallbacks();
+    		
+    		try {
+				mVideoPublish.mCamera.setPreviewDisplay(null);
+			} catch (IOException e) {
+				log.debug("Warning: error when trying to remove the preview display");
+				e.printStackTrace();
+			}
     	}
     }
     
@@ -545,7 +580,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     // This method uses reflection to call the setPreviewCallbackWithBuffer method
     // Use this method instead of setPreviewCallback if you want to use manually allocated
     // buffers. Assumes that "this" implements Camera.PreviewCallback
-    private int setPreviewCallbackWithBuffer_Android2p2(){ // this function is native since Android 2.2
+    private int setPreviewCallbackWithBuffer_Android2p2(boolean clear){ // this function is native since Android 2.2
     	try {
 			Class c = Class.forName("android.hardware.Camera");
 			Method spcwb = null;  // sets a preview with buffers
@@ -570,7 +605,11 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 			// callback handler
 			if(spcwb != null){
 				Object[] arglist = new Object[1];
-				arglist[0] = this; // receives a copy of a preview frame
+				if(clear){
+					arglist[0] = null;
+				} else {
+					arglist[0] = this; // receives a copy of a preview frame
+				}
 				spcwb.invoke(mVideoPublish.mCamera, arglist);
 				//Log.i("AR","setPreviewCallbackWithBuffer: Called method");
 			} else {

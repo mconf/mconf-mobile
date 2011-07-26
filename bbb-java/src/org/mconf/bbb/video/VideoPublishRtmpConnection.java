@@ -223,7 +223,7 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
                             if(options.getLoop() > 1) {
                                 reader = new LoopedReader(reader, options.getLoop());
                             }
-                            publisher = new RtmpPublisher(reader, streamId, options.getBuffer(), false, false) {
+                            publisher = new RtmpPublisher(reader, streamId, options.getBuffer(), true, false) {
                                 @Override protected RtmpMessage[] getStopMessages(long timePosition) {
                                     return new RtmpMessage[]{Command.unpublish(streamId)};
                                 }

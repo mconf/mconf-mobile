@@ -295,6 +295,25 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		return true;
 	}
 
+	private void endListeners() { // if we have already called setAdapter
+								  // and we want to call setAdapter again 
+								  // we need to call setAdapter(null) before
+								  // or the memory usage will grow.
+								  // This should be also done onDestroy()
+								  // because of a bug on Android.
+								  // see: http://stackoverflow.com/questions/6517295/setadapter-causes-memory-leak-bug-in-development-system
+		final ListView chatListView = (ListView) findViewById(R.id.messages);
+		chatListView.setAdapter(null);
+		
+		final CustomListview contactListView = (CustomListview) findViewById(R.id.contacts_list);
+		contactListView.setAdapter(null);
+		unregisterForContextMenu(contactListView);
+		
+		final CustomListview listenerListView = (CustomListview) findViewById(R.id.listeners_list);
+		listenerListView.setAdapter(null);
+		unregisterForContextMenu(listenerListView);
+	}
+	
 	private void initListeners() {
 		setContentView(R.layout.contacts_list);
 
@@ -398,6 +417,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
+		endListeners();
+		
 		super.onConfigurationChanged(newConfig);
 
 		initListeners();
@@ -422,6 +443,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		
 		unregisterReceiver(chatClosed);
 		unregisterReceiver(closeVideo);
+		
+		endListeners();
 
 		super.onDestroy();
 	}
