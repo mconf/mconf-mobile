@@ -490,8 +490,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	    	}
 	    	
 	    	if(mVideoPublish.isCapturing){
+	    		mVideoPublish.endNativeEncoder();
 	    		mVideoPublish.stopPublisher();
-		    	mVideoPublish.endNativeEncoder();
 	    	}	 
 	    	
 	    	mVideoPublish = ((BigBlueButton) getContext().getApplicationContext()).deleteVideoPublish(); 
