@@ -26,7 +26,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	private Method mAcb;       // method for adding a pre-allocated buffer 
     private Object[] mArglist; // list of arguments
     private Context context;
-    private boolean isSurfaceCreated = false;
+    private boolean isSurfaceCreated = false; // true when: surface is created AND mVideoPublish is correctly set
+    										  // false when: surface is destroyed
     private boolean usingFaster, usingHidden;
 	
 	public VideoCapture(Context context, AttributeSet attrs) {
@@ -161,8 +162,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	
     	if (isAvailableSprintFFC()) { // this device has the specific HTC camera
         	try { // try opening the specific HTC camera
-                Method method = Class.forName("android.hardware.HtcFrontFacingCamera").getDeclaredMethod("getCamera", null);
-                mVideoPublish.mCamera = (Camera) method.invoke(null, null);
+                Method method = Class.forName("android.hardware.HtcFrontFacingCamera").getDeclaredMethod("getCamera", (Class[])null);
+                mVideoPublish.mCamera = (Camera) method.invoke((Object)null, (Object)null);
             } catch (Exception ex) { // it was not possible to open the specifica HTC camera,
             						 // so, lets open the camera using the normal way
                 log.debug(ex.toString());
@@ -523,7 +524,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     private boolean HiddenCallbackWithBuffer(){
     	int exist = 0;    	
     	try {
-			Class c = Class.forName("android.hardware.Camera");
+			Class<?> c = Class.forName("android.hardware.Camera");
 			Method[] m = c.getMethods();
 			for(int i=0; i<m.length; i++){
 				//log.debug("  method:"+m[i].toString());
@@ -545,9 +546,9 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 
     private int initForACB(){
     	try {
-			Class mC = Class.forName("android.hardware.Camera");
+			Class<?> mC = Class.forName("android.hardware.Camera");
 		
-			Class[] mPartypes = new Class[1];
+			Class<?>[] mPartypes = new Class[1];
 			// variable that will hold parameters for a function call
 			mPartypes[0] = (new byte[1]).getClass(); //There is probably a better way to do this.
 			mAcb = mC.getMethod("addCallbackBuffer", mPartypes);
@@ -586,23 +587,23 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     // buffers. Assumes that "this" implements Camera.PreviewCallback
     private int setPreviewCallbackWithBuffer_Android2p2(boolean clear){ // this function is native since Android 2.2
     	try {
-			Class c = Class.forName("android.hardware.Camera");
+			Class<?> c = Class.forName("android.hardware.Camera");
 			Method spcwb = null;  // sets a preview with buffers
-			//This way of finding our method is a bit inefficient, but I would have to waste
-			// some time figuring out the right way to do it.
-			// However, since this method is only called once, this should not cause performance issues			
+			//This way of finding our method is a bit inefficient
+			// However, since this method is only called once, this should not cause performance issues					
+//			Method[] m = c.getMethods(); // get all methods of camera
+//			for(int i=0; i<m.length; i++){
+//				if(m[i].getName().compareTo("setPreviewCallbackWithBuffer") == 0){
+//					spcwb = m[i];
+//					break;
+//				}
+//			}
 			
-			Method[] m = c.getMethods(); // get all methods of camera
-			for(int i=0; i<m.length; i++){
-				if(m[i].getName().compareTo("setPreviewCallbackWithBuffer") == 0){
-					spcwb = m[i];
-					break;
-				}
-			}
-			
-//			Class[] mPartypes = new Class[1];
-//			mPartypes[0] = (new byte[1]).getClass(); //There is probably a better way to do this.
-//			spcwb = c.getMethod("setPreviewCallbackWithBuffer", mPartypes);
+//			This is a faster way to find the hidden method 			
+			Class<?>[] mPartypes = new Class[1];
+//			variable that will hold parameters for a function call
+			mPartypes[0] = (new byte[1]).getClass(); //There is probably a better way to do this.
+			spcwb = c.getMethod("setPreviewCallbackWithBuffer", mPartypes);
 			
 			//If we were able to find the setPreviewCallbackWithBuffer method of Camera, 
 			// we can now invoke it on our Camera instance, setting 'this' to be the
@@ -630,11 +631,13 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
     	log.debug("preview surface destroyed");
+    	
     	isSurfaceCreated = false;
-    	if(mVideoPublish != null && mVideoPublish.isCapturing){ // means that activity changed (because
-			   // this surface will only be destroyed
-			   // when the activity changes) and the
-			   // camera was being captured and published    		
+    	
+    	if(mVideoPublish != null && mVideoPublish.isCapturing){ // means that the activity or the orientation
+    		   // changed and the camera was being captured and published 
+    		   // (because, in the strategy we are using, this surface will only be destroyed
+			   // when the activity or the orientation changes) 	
 	    	if(BackgroundManager.isApplicationBroughtToBackground(context)){ // means that the next
 	    			// activity doesn't belong to this application. So, we need to:
 	    			// 1) stop the capture, because we won't have a surface
@@ -672,6 +675,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         
         if(getPublisher() == CaptureConstants.E_OK){
         	isSurfaceCreated = true;
+        	
         	if(mVideoPublish.isCapturing){ // means that the publish is paused (not stopped)
         		if(!mVideoPublish.allowResume){ // means that the last preview surface used to
         										// capture the video is still active (not destroyed)
