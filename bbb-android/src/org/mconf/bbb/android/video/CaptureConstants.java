@@ -30,10 +30,16 @@ public class CaptureConstants {
 	public static final int E_COULD_NOT_CENTER = -25;
 	public static final int E_COULD_NOT_GET_PUBLISHER = -26;
 	
-	//other constants:
+	//video parameters constants:
 	public static final int DEFAULT_FRAME_RATE = 15;
 	public static final int DEFAULT_WIDTH = 320;
 	public static final int DEFAULT_HEIGHT = 240;
 	public static final int DEFAULT_BIT_RATE = 512000;
 	public static final int DEFAULT_GOP = 5;
+	
+	//constants to tell the state of the capture/encoding/publish:
+	public static final int STOPPED = 0; // no video is being captured, the native threads are closed and the video publisher does not exist 
+	public static final int RESUMED = 1; // video is being captured, encoded and published
+	public static final int PAUSED = 2;	// no video is being captured, the native encoding thread is running and waiting for frames, and the video publisher exists and is waiting for frames
+	public static final int ERROR = 3; // an error occured, and it is not possible to determine the state of the capture/encoding/publish
 }

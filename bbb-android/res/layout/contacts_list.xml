@@ -6,7 +6,7 @@
 	<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
 		android:id="@+id/Scroll" android:layout_width="fill_parent"
 		android:layout_height="fill_parent" android:background="@color/background"
-		android:layout_above="@+id/audio_bar">
+		android:layout_above="@+id/video_capture_layout">
 		<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			android:layout_width="fill_parent" android:layout_height="fill_parent"
 			>

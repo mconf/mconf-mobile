@@ -51,8 +51,11 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 		return CaptureConstants.E_OK;
     }
  
-	public boolean isCapturing() {
-		if(mVideoPublish != null && mVideoPublish.isCapturing){
+	public boolean isCapturing() { // returns true if the capture is running or is paused
+								   // returns false if the capture is stopped or is in an error state
+		if(mVideoPublish != null && 
+		  (mVideoPublish.state == CaptureConstants.RESUMED ||
+		   mVideoPublish.state == CaptureConstants.PAUSED)){
 			return true;
 		}		
 		return false;
@@ -398,50 +401,60 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	if(mVideoPublish == null){
     		err = getPublisher();
     		if(err != CaptureConstants.E_OK){
+    			mVideoPublish.state = CaptureConstants.ERROR;
     			return err;
     		}
     	}
+    	
+    	mVideoPublish.state = CaptureConstants.RESUMED;
     	
     	mVideoPublish.restartWhenResume = false;
     	
     	// acquires the camera
 		err = openCamera();
     	if(err != CaptureConstants.E_OK){
+    		mVideoPublish.state = CaptureConstants.ERROR;
     		return err; 
     	};
     	    	
     	// sets up the camera parameters
     	err = setParameters();
     	if(err != CaptureConstants.E_OK){
+    		mVideoPublish.state = CaptureConstants.ERROR;
     		return err;
     	}
     	
     	// gets the size of a non encoded frame
     	mVideoPublish.bufSize = getBufferSize();
     	if(mVideoPublish.bufSize < CaptureConstants.E_OK){
+    		mVideoPublish.state = CaptureConstants.ERROR;
     		return mVideoPublish.bufSize;
     	}
     	
 		err = resumeCapture();
 		if(err != CaptureConstants.E_OK){
+			mVideoPublish.state = CaptureConstants.ERROR;
 			return err;
 		}
 		
 		// creates the shared buffer, inits the native side and sets the streamId 
 		err = initNativeSide();
 		if(err != CaptureConstants.E_OK){
+			mVideoPublish.state = CaptureConstants.ERROR;
 			return err;
 		}
     	
     	// start the publisher native thread and sets isCapturing to true
     	err = startPublisherThread();
     	if(err != CaptureConstants.E_OK){
+    		mVideoPublish.state = CaptureConstants.ERROR;
     		return err;
     	}
     	
     	// start the publisher handler
     	err = startPublisher();
     	if(err != CaptureConstants.E_OK){
+    		mVideoPublish.state = CaptureConstants.ERROR;
     		return err;
     	}
     	
@@ -452,38 +465,43 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	int err = CaptureConstants.E_OK;
     	if(!isSurfaceCreated || mVideoPublish == null){
     		err = CaptureConstants.E_COULD_NOT_RESUME_CAPTURE;
+    		mVideoPublish.state = CaptureConstants.ERROR;
     		return err;
        	}
     	
-    	mVideoPublish.paused = false;
-    	mVideoPublish.allowResume = false;
-    	mVideoPublish.isReadyToResume = false;
+    	mVideoPublish.state = CaptureConstants.RESUMED;
+    	   	
+    	mVideoPublish.lastSurfaceDestroyed = false; // set to false because the 2 surfaces conflict has ended
+    	mVideoPublish.nextSurfaceCreated = false; // set to false because the 2 surfaces conflict has ended
     	
     	// tells it where to draw (sets display for preview)
     	err = setDisplay();
     	if(err != CaptureConstants.E_OK){
+    		mVideoPublish.state = CaptureConstants.ERROR;
     		return err;
     	}
     	
     	// prepares the callback
     	err = prepareCallback(); 
     	if(err != CaptureConstants.E_OK){
+    		mVideoPublish.state = CaptureConstants.ERROR;
     		return err;
     	}
     	
     	// begins the preview.
 	    err = beginPreview();
 	    if(err != CaptureConstants.E_OK){
+	    	mVideoPublish.state = CaptureConstants.ERROR;
 	    	return err;
 	    }
-    	
+	     	
     	return err;
     }
     
     public void stopCapture(){ 
     	if(mVideoPublish != null){
 	    	pauseCapture();
-	    	mVideoPublish.paused = false;
+	    	mVideoPublish.state = CaptureConstants.STOPPED;
 	    	
 	    	// Because the CameraDevice object is not a shared resource, it's very
 	        // important to release it when it may not be used anymore
@@ -492,19 +510,18 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	        	mVideoPublish.mCamera = null;
 	    	}
 	    	
-	    	if(mVideoPublish.isCapturing){
-	    		mVideoPublish.endNativeEncoder();
-	    		mVideoPublish.stopPublisher();
-	    	}	 
-	    	
+	    	mVideoPublish.endNativeEncoder();
+	    	mVideoPublish.stopPublisher();
+	    		    	
 	    	mVideoPublish = ((BigBlueButton) getContext().getApplicationContext()).deleteVideoPublish(); 
     	}
     }
     
-    public void pauseCapture(){
-    	if(mVideoPublish != null && mVideoPublish.mCamera != null && !mVideoPublish.paused){
-    		mVideoPublish.paused = true;
-    		
+    private void pauseCapture(){
+    	if(mVideoPublish != null && mVideoPublish.mCamera != null && 
+    			!(mVideoPublish.state == CaptureConstants.PAUSED)){
+    		mVideoPublish.state = CaptureConstants.PAUSED;
+    		    		
     		mVideoPublish.mCamera.stopPreview();
     		
     		resetBuffersAndCallbacks();
@@ -634,7 +651,9 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	
     	isSurfaceCreated = false;
     	
-    	if(mVideoPublish != null && mVideoPublish.isCapturing){ // means that the activity or the orientation
+    	if(mVideoPublish != null && 
+    			(mVideoPublish.state == CaptureConstants.RESUMED 
+    		  || mVideoPublish.state == CaptureConstants.PAUSED)){ // means that the activity or the orientation
     		   // changed and the camera was being captured and published 
     		   // (because, in the strategy we are using, this surface will only be destroyed
 			   // when the activity or the orientation changes) 	
@@ -648,17 +667,18 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	    		
 	    		// stops the preview, the publish and releases the camera
 	    		stopCapture();	    		
-	    	} else { // means that the next activity belongs to this application
+	    	} else { // means that the next activity belongs to this application	    		
 	       		// pauses the preview and publish
 	    		pauseCapture();
 	    		
 	    		// signalizes that the activity has changed and the
 		        // camera was being captured
-	    		if(mVideoPublish.isReadyToResume){ // means that the surface of the next activity has
+	    		if(mVideoPublish.nextSurfaceCreated){ // means that the surface of the next activity or
+	    			    // of the next orientation has
 	    				// already been created
 	    			mVideoPublish.RequestResume();
 	    		} else { // means that the surface of the next activity has not been created yet
-	    			mVideoPublish.allowResume = true;
+	    			mVideoPublish.lastSurfaceDestroyed = true; // set to true because the current surface has been destroyed
 	    		}
 	    	}
     	}
@@ -676,17 +696,20 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         if(getPublisher() == CaptureConstants.E_OK){
         	isSurfaceCreated = true;
         	
-        	if(mVideoPublish.isCapturing){ // means that the publish is paused (not stopped)
-        		if(!mVideoPublish.allowResume){ // means that the last preview surface used to
+        	if(mVideoPublish.state == CaptureConstants.RESUMED ||
+        	   mVideoPublish.state == CaptureConstants.PAUSED){
+        		if(!mVideoPublish.lastSurfaceDestroyed){ // means that the last preview surface used to
         										// capture the video is still active (not destroyed)
         										// and the capture is not paused yet.
         										// So, we can't resume the capture right now
+        			mVideoPublish.nextSurfaceCreated = true;
+        			
         			mVideoPublish.readyToResume(this);
         		} else { // means that the last preview surface used to capture the video has already been
         				 // destroyed and the capture is paused
         			resumeCapture();        			
         		}
-        	} else { // means that the publish is stopped
+        	} else if(mVideoPublish.state == CaptureConstants.STOPPED){
         		if(mVideoPublish.restartWhenResume){ // means that the following happened:
         											 // a publish was running, then the application went to
         											 // background, then it is now back to foreground.
@@ -701,7 +724,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     @Override
     public void onPreviewFrame (byte[] _data, Camera camera)
     {
-    	if(mVideoPublish != null && mVideoPublish.isCapturing){
+    	if(mVideoPublish != null && mVideoPublish.state == CaptureConstants.RESUMED){
     		if(usingHidden){ 
     			addCallbackBuffer_Android2p2(_data);
     		} else if(usingFaster && mVideoPublish.mCamera != null){

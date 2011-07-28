@@ -25,28 +25,14 @@ public class VideoPublish extends Thread implements RtmpReader {
 	
 	private static final Logger log = LoggerFactory.getLogger(VideoPublish.class);
 	
-	public Camera mCamera;
-	public int bufSize;
-    public int frameRate = CaptureConstants.DEFAULT_FRAME_RATE;
+	public int frameRate = CaptureConstants.DEFAULT_FRAME_RATE;
     public int width = CaptureConstants.DEFAULT_WIDTH;
     public int height = CaptureConstants.DEFAULT_HEIGHT;
     public int bitRate = CaptureConstants.DEFAULT_BIT_RATE;
     public int GOP = CaptureConstants.DEFAULT_GOP;
-   
-    private byte[] sharedBuffer;
     
-    public boolean isCapturing = false;
-    public boolean isReadyToResume = false;
-    public boolean allowResume = false;
-    public boolean nativeEncoderInitialized = false;
-    public boolean restartWhenResume;
-    public boolean paused = false; // false when: STOPPED, STARTED or RESUMED. true when: PAUSED
-    
-    private int firstTimeStamp = 0;
-	private int lastTimeStamp = 0;
-	private String streamId;
 	private int userId;
-	
+    	
 	private List<Video> framesList = new ArrayList<Video>();
 	
 	private VideoPublishHandler videoPublishHandler;
@@ -54,7 +40,52 @@ public class VideoPublish extends Thread implements RtmpReader {
 	private BigBlueButtonClient context;
 	
 	private VideoCapture mVideoCapture;	
-	private boolean framesListAvailable = false;
+	
+	private byte[] sharedBuffer;
+	
+	public int bufSize;
+	
+	public Camera mCamera;
+	
+	private int firstTimeStamp = 0;
+	private int lastTimeStamp = 0;
+	
+	private String streamId;
+	    
+    public int state = CaptureConstants.STOPPED;
+        
+    public boolean nextSurfaceCreated = false; // used when:
+    										// the activity or the orientation changes and 
+    										// the video was being captured. In this case,
+    										// there are 2 surfaces conflicting, and we need to know
+    										// if/when they are destroyed and created.
+    										// true when: the next surface has already been created
+    										// false when: the next surface has not been created yet OR 
+    										//             there isn't a 2 surfaces conflict
+    public boolean lastSurfaceDestroyed = false; // used when:
+    										// same situation as the "nextSurfaceCreated" variable
+    										// true when: the last preview surface has already been destroyed
+    										// false when: the last preview surface is still active
+    
+    public boolean nativeEncoderInitialized = false; // used to prevent errors.
+    												 // true when the native class VideoEncoder is not NULL
+    												 // false when the native class VideoEncoder is NULL
+    
+    public boolean restartWhenResume; // used in the following situation:
+    								  // the user put the application in background.
+    								  // now the user put the application in foreground again.
+    								  // in this situation, this boolean is true if the camera was being 
+    								  // captured when the application went to background, and false if the
+    								  // camera was not being captured.
+    								  // So, this boolean allows to keep the previous state (capturing or not)
+    								  // when the application resumes.
+    
+    private boolean framesListAvailable = false; // set to true when the RtmpPublisher starts seeking
+    										     // for video messages. When true, this boolean allows the addition
+    											 // of video frames to the list.
+    											 // Set to false right when the RtmpPublisher decides to 
+    											 // close the reader. When false, this boolean prevents the
+    											 // addition of new frames to the list.    												
 	        
     public VideoPublish(BigBlueButtonClient context, int userId, boolean restartWhenResume) {
     	this.context = context;    	 
@@ -69,12 +100,13 @@ public class VideoPublish extends Thread implements RtmpReader {
     }        	
     
     public void stopPublisher(){
-    	videoPublishHandler.stop(context);
+    	if(videoPublishHandler != null){
+    		videoPublishHandler.stop(context);
+    	}
     }
     
     public void readyToResume(VideoCapture videoCapture) {
     	mVideoCapture = videoCapture;
-    	isReadyToResume = true;
 	}
     
     public int RequestResume() {
@@ -98,16 +130,13 @@ public class VideoPublish extends Thread implements RtmpReader {
     }
     
     public void endNativeEncoder(){
-    	isCapturing = false;
     	nativeEncoderInitialized = false;
         	
     	endEncoder();
     }
     
     @Override
-    public void run() {
-       	isCapturing = true;
-       	
+    public void run() {       	
     	initSenderLoop();
     }
     
@@ -167,16 +196,18 @@ public class VideoPublish extends Thread implements RtmpReader {
 
 	@Override
 	public boolean hasNext() {
-		while(isCapturing && framesListAvailable && framesList != null && framesList.isEmpty()){
+		while((state == CaptureConstants.RESUMED || state == CaptureConstants.PAUSED)
+				&& framesListAvailable && framesList != null && framesList.isEmpty()){
 			try {
 				this.wait(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		if(isCapturing && framesListAvailable && framesList != null){
+		if((state == CaptureConstants.RESUMED || state == CaptureConstants.PAUSED)
+				&& framesListAvailable && framesList != null){ // means that the framesList is not empty
 			return true;
-		} else {
+		} else { // means that the framesList is empty or we should not get next frames
 			return false;
 		}
 	}
