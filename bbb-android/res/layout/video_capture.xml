@@ -7,7 +7,7 @@
 	android:visibility="visible"		
 	android:layout_above="@id/audio_bar"
 	android:weightSum="0.25"
-	android:background="@color/background">
+	android:background="@color/video_background">
 	<view class="org.mconf.bbb.android.video.VideoCapture" android:id="@+id/video_capture"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 

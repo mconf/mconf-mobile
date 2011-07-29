@@ -70,7 +70,7 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 		
 		setContentView(R.layout.video_window_fullscreen);
 		
-		videoWindow = (VideoSurface) findViewById(R.id.video_window_fullscreen);
+		videoWindow = (VideoSurface) findViewById(R.id.video_window);
 	}
 	
 	@Override
