@@ -1,6 +1,7 @@
 package org.mconf.bbb.android;
 
 import org.mconf.bbb.BigBlueButtonClient;
+import org.mconf.bbb.android.video.CaptureConstants;
 import org.mconf.bbb.android.video.VideoPublish;
 import org.mconf.bbb.android.voip.VoiceModule;
 
@@ -13,6 +14,12 @@ public class BigBlueButton extends Application {
 	private VoiceModule voice = null;
 	private VideoPublish mVideoPublish = null;
 	private boolean restartCaptureWhenAppResumes = false;
+	
+	private int frameRate = CaptureConstants.DEFAULT_FRAME_RATE;
+    private int width = CaptureConstants.DEFAULT_WIDTH;
+    private int height = CaptureConstants.DEFAULT_HEIGHT;
+    private int bitRate = CaptureConstants.DEFAULT_BIT_RATE;
+    private int GOP = CaptureConstants.DEFAULT_GOP;
 	
 	private int launchedBy = LAUNCHED_BY_NON_SPECIFIED;
 	public static final int LAUNCHED_BY_NON_SPECIFIED = 0;
@@ -38,7 +45,7 @@ public class BigBlueButton extends Application {
 	
 	public VideoPublish getVideoPublish() {
 		if(mVideoPublish == null) {
-			mVideoPublish = new VideoPublish(getHandler(), getHandler().getMyUserId(), restartCaptureWhenAppResumes);
+			mVideoPublish = new VideoPublish(getHandler(), getHandler().getMyUserId(), restartCaptureWhenAppResumes, frameRate, width, height, bitRate, GOP);
 		}
 		return mVideoPublish;
 	}
@@ -46,6 +53,13 @@ public class BigBlueButton extends Application {
 	public VideoPublish deleteVideoPublish() {
 		if(mVideoPublish != null){
 			restartCaptureWhenAppResumes = mVideoPublish.restartWhenResume;
+			
+			frameRate = mVideoPublish.frameRate;
+			width = mVideoPublish.width;
+			height = mVideoPublish.height;
+			bitRate = mVideoPublish.bitRate;
+			GOP = mVideoPublish.GOP;
+			
 			mVideoPublish = null;
 		}
 		return mVideoPublish;

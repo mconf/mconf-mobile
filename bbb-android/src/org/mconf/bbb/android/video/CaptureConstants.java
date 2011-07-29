@@ -29,6 +29,11 @@ public class CaptureConstants {
 	public static final int E_COULD_NOT_SET_GOP = -24;
 	public static final int E_COULD_NOT_CENTER = -25;
 	public static final int E_COULD_NOT_GET_PUBLISHER = -26;
+	public static final int E_COULD_NOT_GET_FR = -27;
+	public static final int E_COULD_NOT_GET_W = -28;
+	public static final int E_COULD_NOT_GET_H = -29;
+	public static final int E_COULD_NOT_GET_BR = -30;
+	public static final int E_COULD_NOT_GET_GOP = -31;
 	
 	//video parameters constants:
 	public static final int DEFAULT_FRAME_RATE = 15;

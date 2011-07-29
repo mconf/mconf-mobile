@@ -104,10 +104,55 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     public int setGOP(int g){
     	if(mVideoPublish != null){
     		mVideoPublish.GOP = g;
-    	return CaptureConstants.E_OK;
+    		return CaptureConstants.E_OK;
 		} else {
 			log.debug("Error: could not set gop");
 		    return CaptureConstants.E_COULD_NOT_SET_GOP;
+		}    	
+    }
+    
+    public int getFrameRate(int fr){
+    	if(mVideoPublish != null){
+    		return mVideoPublish.frameRate;
+       	} else {
+    		log.debug("Error: could not get frame rate");
+    	    return CaptureConstants.E_COULD_NOT_GET_FR;
+    	}    	
+    }
+    
+    public int getWidth(int w){
+    	if(mVideoPublish != null){
+	    	return mVideoPublish.width;
+		} else {
+			log.debug("Error: could not get width");
+		    return CaptureConstants.E_COULD_NOT_GET_W;
+		}    	
+    }
+    
+    public int getHeight(int h){
+    	if(mVideoPublish != null){
+	    	return mVideoPublish.height;
+		} else {
+			log.debug("Error: could not get height");
+		    return CaptureConstants.E_COULD_NOT_GET_H;
+		}    	
+    }
+    
+    public int getBitRate(int br){
+    	if(mVideoPublish != null){
+	    	return mVideoPublish.bitRate;
+	    } else {
+			log.debug("Error: could not get bitrate");
+		    return CaptureConstants.E_COULD_NOT_GET_BR;
+		}    	
+    }
+    
+    public int getGOP(int g){
+    	if(mVideoPublish != null){
+    		return mVideoPublish.GOP;
+		} else {
+			log.debug("Error: could not get gop");
+		    return CaptureConstants.E_COULD_NOT_GET_GOP;
 		}    	
     }
     

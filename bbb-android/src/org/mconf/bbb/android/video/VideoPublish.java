@@ -87,11 +87,18 @@ public class VideoPublish extends Thread implements RtmpReader {
     											 // close the reader. When false, this boolean prevents the
     											 // addition of new frames to the list.    												
 	        
-    public VideoPublish(BigBlueButtonClient context, int userId, boolean restartWhenResume) {
+    public VideoPublish(BigBlueButtonClient context, int userId, boolean restartWhenResume, int frameRate, int width, int height, int bitRate, int GOP) {
     	this.context = context;    	 
-    	this.userId = userId;
     	
+    	this.userId = userId;
+    	    	
     	this.restartWhenResume = restartWhenResume;
+    	
+    	this.frameRate = frameRate;
+    	this.width = width;
+    	this.height = height;
+    	this.bitRate = bitRate;
+    	this.GOP = GOP;
     }
     
     public void startPublisher(){
