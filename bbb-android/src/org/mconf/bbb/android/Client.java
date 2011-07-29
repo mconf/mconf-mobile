@@ -541,16 +541,12 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			case POPUP_MENU_SHOW_VIDEO:
 			{
 				Contact contact = (Contact) contactAdapter.getItem(info.position);
-				if(getBigBlueButton().getMyUserId() == contact.getUserId()){//shows the preview instead
-																			//of showing the received video
-																			//to save resources
-					updateVideoCaptureLayout(true);
-				} else {
-					if(getResources().getConfiguration().orientation==Configuration.ORIENTATION_PORTRAIT)
-						showVideo(true, contact.getUserId(), contact.getName());
-					else 
-						showVideo(false, contact.getUserId(), contact.getName());
-				}
+				
+				if(getResources().getConfiguration().orientation==Configuration.ORIENTATION_PORTRAIT)
+					showVideo(true, contact.getUserId(), contact.getName());
+				else 
+					showVideo(false, contact.getUserId(), contact.getName());
+				
 				return true;
 			}
 		}
@@ -643,7 +639,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			return true;	
 			
 		case MENU_STOP_VIDEO:
-			updateVideoCaptureLayout(false);
 			VideoCapture mVideoCapture1 = (VideoCapture) findViewById(R.id.video_capture);
 			mVideoCapture1.stopCapture();			
 			return true;	
@@ -1206,21 +1201,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		});
 	}
 	
-	private void updateVideoCaptureLayout(final boolean show) {
-		runOnUiThread(new Runnable() {
-
-			@Override
-			public void run() {
-				VideoCaptureLayout videoCaptureLayout = (VideoCaptureLayout) findViewById(R.id.video_capture_layout);
-				if(show){
-					videoCaptureLayout.show();
-				} else {
-					videoCaptureLayout.hide();
-				}
-			}
-		});
-	}
-
 	public void setDialogShown(boolean dialogShown) {
 		this.dialogShown = dialogShown;
 	}

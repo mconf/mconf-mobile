@@ -68,9 +68,9 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 		IntentFilter closeVideoFilter = new IntentFilter(Client.CLOSE_VIDEO);
 		registerReceiver(closeVideo, closeVideoFilter);
 		
-		setContentView(R.layout.video_window);
+		setContentView(R.layout.video_window_fullscreen);
 		
-		videoWindow = (VideoSurface) findViewById(R.id.video_window);
+		videoWindow = (VideoSurface) findViewById(R.id.video_window_fullscreen);
 	}
 	
 	@Override
