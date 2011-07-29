@@ -28,13 +28,13 @@ public class VideoCentering {
 		return layoutParams;
 	}
 	
-	public DisplayMetrics getDisplayMetrics(Context context){
+	public DisplayMetrics getDisplayMetrics(Context context, int margin){
 		DisplayMetrics metrics = new DisplayMetrics();
 		Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         display.getMetrics(metrics);
         log.debug("Maximum display resolution: {} X {}\n", metrics.widthPixels, metrics.heightPixels);
-        metrics.widthPixels -= 40;
-		metrics.heightPixels -= 40;
+        metrics.widthPixels -= margin;
+		metrics.heightPixels -= margin;
 		return metrics;
 	}
 

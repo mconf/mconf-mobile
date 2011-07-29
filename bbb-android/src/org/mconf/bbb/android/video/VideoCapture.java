@@ -114,11 +114,14 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	// Centers the preview on the screen keeping the capture aspect ratio.
     // Remember to call this function after you change the width or height if
     // you want to keep the aspect and the video centered
+    // This function is useful for displaying the preview centered on fullscreen on an Activity
+    // or centered on a Dialog, for example. If that is not the case, then it may be better to use
+    // the VideoCaptureLayout class to handle the video preview position instead
     public int centerPreview() {
     	if(mVideoPublish != null){
 	    	VideoCentering mVideoCentering = new VideoCentering();
 	    	mVideoCentering.setAspectRatio(mVideoPublish.width/(float)mVideoPublish.height);
-	    	LayoutParams layoutParams = mVideoCentering.getVideoLayoutParams(mVideoCentering.getDisplayMetrics(this.getContext()), this.getLayoutParams());
+	    	LayoutParams layoutParams = mVideoCentering.getVideoLayoutParams(mVideoCentering.getDisplayMetrics(this.getContext(),40), this.getLayoutParams());
 			setLayoutParams(layoutParams);
 			return CaptureConstants.E_OK;
     	} else {
@@ -127,6 +130,9 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	}
 	}
     
+    // This function is useful for hidden the preview that was being shown on fullscreen on an Activity
+    // or centered on a Dialog, for example. If that is not the case, then it may be better to use
+    // the VideoCaptureLayout class to handle the video preview hidding instead
     public void hidePreview() {
 		VideoCentering mVideoCentering = new VideoCentering();
 		LayoutParams layoutParams = mVideoCentering.hidePreview(this.getLayoutParams());   	
