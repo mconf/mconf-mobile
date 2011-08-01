@@ -334,4 +334,5 @@
 
 	<string name="ongoing">Chamada atual</string>
 	<string name="onHold">Em espera</string>
+	<string name="publishing_video">Seu vídeo está sendo transmitido para a sessão</string>
 </resources> 

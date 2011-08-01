@@ -47,4 +47,7 @@ public class CaptureConstants {
 	public static final int RESUMED = 1; // video is being captured, encoded and published
 	public static final int PAUSED = 2;	// no video is being captured, the native encoding thread is running and waiting for frames, and the video publisher exists and is waiting for frames
 	public static final int ERROR = 3; // an error occured, and it is not possible to determine the state of the capture/encoding/publish
+	
+	//notification ID:
+	public static final int VIDEO_PUBLISH_NOTIFICATION_ID = 88000;
 }

@@ -5,10 +5,15 @@ import java.lang.reflect.Method;
 
 import org.mconf.bbb.android.BackgroundManager;
 import org.mconf.bbb.android.BigBlueButton;
+import org.mconf.bbb.android.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.os.Build;
@@ -509,6 +514,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     		return err;
     	}
     	
+    	activateNotification();
+    	    	
     	return err;
     }
     
@@ -565,6 +572,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	    	mVideoPublish.stopPublisher();
 	    		    	
 	    	mVideoPublish = ((BigBlueButton) getContext().getApplicationContext()).deleteVideoPublish(); 
+	    	
+	    	cancelNotification();
     	}
     }
     
@@ -584,6 +593,25 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 				e.printStackTrace();
 			}
     	}
+    }
+    
+    private void activateNotification(){
+    	String contentTitle = getResources().getString(R.string.publishing_video);
+		NotificationManager notificationManager = (NotificationManager) context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+		Notification notification = new Notification(R.drawable.icon_bbb, contentTitle, System.currentTimeMillis());
+
+		Intent notificationIntent = null;
+		notificationIntent = new Intent(context, VideoCapture.class);
+		
+		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+		notification.setLatestEventInfo(context, contentTitle, null, contentIntent);
+		notificationManager.notify(CaptureConstants.VIDEO_PUBLISH_NOTIFICATION_ID, notification);	
+
+    }
+    
+    private void cancelNotification(){
+    	NotificationManager notificationManager = (NotificationManager) context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+		notificationManager.cancel(CaptureConstants.VIDEO_PUBLISH_NOTIFICATION_ID);
     }
     
     // Checks if addCallbackBuffer and setPreviewCallbackWithBuffer are written but hidden.
