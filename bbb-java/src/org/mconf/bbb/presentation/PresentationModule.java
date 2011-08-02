@@ -1,8 +1,12 @@
 package org.mconf.bbb.presentation;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +17,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.jboss.netty.channel.Channel;
+import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.MainRtmpConnection;
 import org.mconf.bbb.Module;
 import org.mconf.bbb.listeners.Listener;
@@ -44,6 +49,8 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 	private String conference;
 	private String room;
 	private String slideUri;
+	private URLConnection urlConnection;
+
 	
 	
 	public PresentationModule(MainRtmpConnection handler, Channel channel) {
@@ -52,6 +59,16 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 		presentationSO= handler.getSharedObject("presentationSO", false);
 		presentationSO.addSharedObjectListener(this);
 		presentationSO.connect(channel);
+	}
+	
+	public boolean loadSlideData(Slide slide) //to be used when the slide will be shown, after the changeSlide event
+	{
+		if(slide!=null)
+		{
+			return slide.load();
+		}
+		else 
+			return false;
 	}
 
 	public void doGetPresentationInfo()
@@ -80,7 +97,6 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 	}
 
 
-	
 	private void onPresentationReady(String presentationName) {
 		
 		String  fullUri = host + "/bigbluebutton/presentation/" + conference + "/" + room + "/" + presentationName+"/slides";	
@@ -89,10 +105,35 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 
 	}
 
-	private void loadSlides(String fullUri,	String slideUri) {
-		// TODO Auto-generated method stub
-		//how to create a java function like the load function on PresentationService
+	private void loadSlides(String fullUri,	String slideUri)  {
 		this.slideUri = slideUri;
+		String urlInformation="";
+		try {
+
+			URL full = new URL(fullUri);
+			urlConnection = full.openConnection();
+			BufferedReader in = new BufferedReader(new InputStreamReader( urlConnection.getInputStream()));
+
+			String buffer;
+			while((buffer = in.readLine())!=null)
+				urlInformation+=buffer;
+
+			log.debug("loading complete");
+			parseSlides(urlInformation);
+
+
+		} catch (IOException e) {
+			log.error("IOException on URL reading");
+			e.printStackTrace();
+		} catch (SAXException e) {
+			log.error("parse error");
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			log.error("parse configuration error");
+			e.printStackTrace();
+		}
+
+
 	}
 	
 	private void parseSlides (String presentationString) throws UnsupportedEncodingException, SAXException, IOException, ParserConfigurationException
@@ -122,13 +163,19 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 	}
 
 	private void loadPresentationListener(boolean loaded, String presentationName) {
-		// TODO like in PresentationService
-		
+
+		if(loaded)
+			for (IBigBlueButtonClientListener l : handler.getContext().getListeners()) {
+				l.onPresentationLoaded(presentationName, presentation);
+			}
+		else
+			log.error("presentation not loaded");
 	}
 
 	@Override
 	public void onSharedObjectClear(ISharedObjectBase so) {
-		// TODO Auto-generated method stub
+		log.debug("onSharedObjectClear");
+		doGetPresentationInfo();
 		
 	}
 
@@ -136,20 +183,47 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 	@Override
 	public void onSharedObjectSend(ISharedObjectBase so, String method,
 			List<?> params) {
-		// TODO Auto-generated method stub
+
+		log.debug("onSharedObjectSend");
+
+		if(method.equals("gotoSlideCallback")&& params!=null) //change slide
+		{
+			currentSlide = ((Double) params.get(0)).intValue();
+			for (IBigBlueButtonClientListener l : handler.getContext().getListeners())
+				l.onSlideChanged(currentSlide);
+		}
+		else if(method.equals("sharePresentationCallback")&& params!=null) //presentation shared or removed
+		{
+			String presentationName = (String) params.get(0);
+			boolean share = (Boolean) params.get(1);
+			if(share)//presentation shared
+			{
+				for (IBigBlueButtonClientListener l : handler.getContext().getListeners())
+					l.onPresentationShared(presentationName); //tells that a presentation has been shared
+				
+				//call the function to load the presentation
+				currentSlide=0;
+				onPresentationReady(presentationName);
+				//after the presentation is loaded, another event will be dispatched to tell that
+			}
+			else //presentation removed
+			{
+				for (IBigBlueButtonClientListener l : handler.getContext().getListeners())
+					l.onPresentationRemoved(); //tells that a presentation has been removed
+			}
+				
+		}
 		
 	}
 
 
 	@Override
 	public boolean onCommand(String resultFor, Command command) {
-		// TODO Auto-generated method stub
-		return false;
+		if(onGetPresentationInfo(resultFor, command))
+			return true;
+		else
+			return false;
 	}
-	
-	
-	
-	
 	
 	@Override
 	public void onSharedObjectConnect(ISharedObjectBase so) {

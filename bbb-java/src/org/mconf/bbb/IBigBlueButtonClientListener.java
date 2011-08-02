@@ -21,8 +21,11 @@
 
 package org.mconf.bbb;
 
+import java.util.ArrayList;
+
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.listeners.IListener;
+import org.mconf.bbb.presentation.Slide;
 import org.mconf.bbb.users.IParticipant;
 
 public interface IBigBlueButtonClientListener {
@@ -44,5 +47,13 @@ public interface IBigBlueButtonClientListener {
 	void onListenerLeft(IListener p);
 	void onListenerStatusChangeIsMuted(IListener p);
 	void onListenerStatusChangeIsTalking(IListener p);
+	
+	
+	public void onPresentationLoaded(String presentationName,ArrayList<Slide> presentation);
+	public void onSlideChanged(int currentSlide);
+	public void onPresentationShared(String presentationName);
+	public void onPresentationRemoved();
+	
+	
 	
 }

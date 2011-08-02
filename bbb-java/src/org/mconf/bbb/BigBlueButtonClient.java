@@ -31,6 +31,8 @@ import org.mconf.bbb.api.JoinService;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.chat.ChatModule;
 import org.mconf.bbb.listeners.ListenersModule;
+import org.mconf.bbb.presentation.PresentationModule;
+import org.mconf.bbb.presentation.Slide;
 import org.mconf.bbb.users.Participant;
 import org.mconf.bbb.users.UsersModule;
 import org.mconf.bbb.video.IVideoListener;
@@ -53,6 +55,7 @@ public class BigBlueButtonClient {
 	private ChatModule chatModule = null;
 	private UsersModule usersModule = null;
 	private ListenersModule listenersModule = null;
+	private PresentationModule presentationModule = null;
 
 	private Set<IBigBlueButtonClientListener> eventListeners = new LinkedHashSet<IBigBlueButtonClientListener>();
 	private Set<IVideoListener> videoListeners = new LinkedHashSet<IVideoListener>();
@@ -95,6 +98,15 @@ public class BigBlueButtonClient {
 
 	public ListenersModule getListenersModule() {
 		return listenersModule;
+	}
+	
+	public void createPresentationModule(MainRtmpConnection handler,
+			Channel channel) {
+		presentationModule = new PresentationModule(handler, channel);
+	}
+
+	public PresentationModule getPresentationModule() {
+		return presentationModule;
 	}
 	
 	public void addListener(IBigBlueButtonClientListener listener) {
@@ -163,6 +175,17 @@ public class BigBlueButtonClient {
 	public List<ChatMessage> getPublicChatMessages() {
 		return getChatModule().getPublicChatMessage();
 	}
+	
+	public List<Slide> getPresentation() {
+		return getPresentationModule().getPresentation();
+	}
+	
+	public byte[] getSlideData(Slide slide){
+		if(getPresentationModule().loadSlideData(slide))
+			return slide.getSlideData();
+		else
+			return null;
+	}
 
 	public void sendPrivateChatMessage(String message, int userId) {
 		getChatModule().sendPrivateChatMessage(message, userId);
@@ -214,7 +237,8 @@ public class BigBlueButtonClient {
 	public boolean onCommand(String resultFor, Command command) {
 		if (usersModule.onCommand(resultFor, command)
 				|| chatModule.onCommand(resultFor, command)
-				|| listenersModule.onCommand(resultFor, command))
+				|| listenersModule.onCommand(resultFor, command)
+				||presentationModule.onCommand(resultFor, command))
 			return true;
 		else
 			return false;
