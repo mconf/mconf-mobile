@@ -24,21 +24,7 @@ public class TestLogin extends ActivityInstrumentationTestCase2<LoginPage> {
 		super.setUp();
 		this.solo = new Solo(getInstrumentation(), getActivity());
 
-		// select the server
-		solo.assertCurrentActivity("wrong activity", LoginPage.class);
-		if (!solo.searchText(Common.DEFAULT_SERVER)) {
-			solo.clickOnView(solo.getView(R.id.server));
-			solo.assertCurrentActivity("wrong activity", ServerChoosing.class);
-			solo.enterText(0, Common.DEFAULT_SERVER);
-			assertTrue(solo.searchText(Common.DEFAULT_SERVER));
-			solo.clickOnButton(solo.getString(R.string.connect));
-			solo.assertCurrentActivity("wrong activity", LoginPage.class);
-		}
-		// enter the name
-		if (!solo.getEditText(0).getText().toString().equals(Common.DEFAULT_NAME)) {
-			solo.clearEditText(0);
-			solo.enterText(0, Common.DEFAULT_NAME);
-		}
+		Common.prepareToLogin(solo);
 	}
 
 	@Override

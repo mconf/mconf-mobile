@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="42dip"
+  android:minHeight="42dip"
+  android:maxHeight="42dip"
+	android:gravity="center">
+  
+  <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+		android:text="TextView" 
+		android:id="@+id/meeting_inf_title"
+		android:layout_width="fill_parent" 
+		android:layout_height="fill_parent"
+		android:textColor="@color/text_color"
+		android:textAppearance="@style/ParticipantNameStyle"
+		android:layout_marginLeft="5dp"
+		android:layout_marginTop="5dp"
+		android:layout_centerVertical="true"
+		android:layout_alignParentTop="true"
+		></TextView>
+		
+		  <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+		android:text="TextView" 
+		android:id="@+id/meeting_inf_data"
+		android:layout_width="fill_parent" 
+		android:layout_height="fill_parent"
+		android:textColor="@color/text_color"
+		android:textAppearance="@style/ChatUser"
+		android:layout_marginLeft="5dp"
+		android:layout_marginTop="5dp"
+		android:layout_centerVertical="true"
+		android:layout_below="@+id/meeting_inf_title"
+		></TextView>
+  
+  
+</RelativeLayout>

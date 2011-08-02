@@ -4,10 +4,10 @@ import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.LoginPage;
 import org.mconf.bbb.android.PrivateChat;
 import org.mconf.bbb.android.R;
+import org.mconf.bbb.users.IParticipant;
 
-import android.app.Activity;
 import android.test.ActivityInstrumentationTestCase2;
-import android.view.View;
+import android.widget.SlidingDrawer;
 
 import com.jayway.android.robotium.solo.Solo;
 
@@ -17,16 +17,15 @@ public class TestPrivateChat extends ActivityInstrumentationTestCase2<LoginPage>
 	
 	public TestPrivateChat() {
 		super("org.mconf.bbb.android", LoginPage.class);
-		}
+	}
 	
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		this.solo = new Solo(getInstrumentation(), getActivity());
+
 		Common.addContactsToMeeting(solo, 5);
 		Common.loginAsModerator(solo);
-		solo.clickInList(2);
-		solo.assertCurrentActivity("didn't open private chat", PrivateChat.class);
 	}
 	
 	@Override
@@ -41,39 +40,60 @@ public class TestPrivateChat extends ActivityInstrumentationTestCase2<LoginPage>
 		super.tearDown();
 	}
 	
-	public void changeChat()
-	{
-		int num =1;
-		String first, second;
+	public void testChangeChat() {
+		IParticipant p1 = Common.getRandomUser(solo, false),
+			p2 = Common.getRandomUser(solo, false);
 		
-		first = solo.getCurrentActivity().getTitle().toString();
-		num=2;
-		solo.goBack();
-		solo.clickInList(num);
-		solo.assertCurrentActivity("didn't open the second chat", PrivateChat.class);
-		second = solo.getCurrentActivity().getTitle().toString();
-		//TODO can't swipe between chats
+		while (p2.getUserId() == p1.getUserId()) {
+			p2 = Common.getRandomUser(solo, false);
+		}
 		
+		solo.clickInList(Common.getParticipantsList(solo).getPositionById(p1.getUserId()) + 1);
+		solo.assertCurrentActivity("wrong activity", PrivateChat.class);
+		assertTrue(solo.getCurrentActivity().getTitle().toString().contains(p1.getName()));
+		solo.goBackToActivity("Client");
 		
+		solo.clickInList(Common.getParticipantsList(solo).getPositionById(p2.getUserId()) + 1);
+		solo.assertCurrentActivity("wrong activity", PrivateChat.class);
+		assertTrue(solo.getCurrentActivity().getTitle().toString().contains(p2.getName()));
+		
+		solo.scrollToSide(Solo.RIGHT);
+		assertTrue(solo.getCurrentActivity().getTitle().toString().contains(p1.getName()));
+		solo.scrollToSide(Solo.RIGHT);
+		assertTrue(solo.getCurrentActivity().getTitle().toString().contains(p2.getName()));
+		
+		solo.scrollToSide(Solo.LEFT);
+		assertTrue(solo.getCurrentActivity().getTitle().toString().contains(p1.getName()));
+		solo.scrollToSide(Solo.LEFT);
+		assertTrue(solo.getCurrentActivity().getTitle().toString().contains(p2.getName()));
 	}
 	
-	public void testCloseCurrentChat()
-	{
-
-
+	public void testOpenAndClose() {
+		IParticipant p = Common.getRandomUser(solo, false);
+		solo.clickInList(Common.getParticipantsList(solo).getPositionById(p.getUserId()) + 1);
+		solo.assertCurrentActivity("wrong activity", PrivateChat.class);
+		assertTrue(solo.getCurrentActivity().getTitle().toString().contains(p.getName()));
+		
+		/*
+		 * \TODO close the chat is not working always, implementation (of the 
+		 * feature, not the test) should be reviewed
+		 */
 		solo.clickOnMenuItem(solo.getString(R.string.close_chat));
-		solo.assertCurrentActivity("didn't close the chat", Client.class);
+//		solo.waitForText(solo.getString(R.string.list_participants));	
+		solo.waitForView(SlidingDrawer.class);
+		solo.assertCurrentActivity("wrong activity", Client.class);
 	}
 	
-	public void testWriteMessage()
-	{
+	public void testWriteMessage() {
+		IParticipant p = Common.getRandomUser(solo, false);
+		solo.clickInList(Common.getParticipantsList(solo).getPositionById(p.getUserId()) + 1);
+		solo.assertCurrentActivity("wrong activity", PrivateChat.class);
+
 		String test = "testing message";
-
-
 		solo.clearEditText(0);
 		solo.enterText(0, test);
 		solo.clickOnButton(solo.getString(R.string.send_message));
-		solo.clearEditText(0);
+		assertEquals(solo.getEditText(0).getText().toString().length(), 0);
 		assertTrue(solo.searchText(test));
 	}
 	

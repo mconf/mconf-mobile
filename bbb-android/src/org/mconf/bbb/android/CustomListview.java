@@ -30,7 +30,7 @@ public class CustomListview extends ListView {
 	}
 	
 	//calculates the size of the contacts and listeners lists
-	public void setHeight() {
+	public int setHeight() {
 		int totalHeight = 0;
 		Resources r = getResources();
 		int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, ROW_HEIGHT, r.getDisplayMetrics());
@@ -39,6 +39,7 @@ public class CustomListview extends ListView {
 		params.height = totalHeight + (getDividerHeight() * (getCount() - 1));
 		setLayoutParams(params); 
 		requestLayout();
+		return params.height;
 	}
 
 }

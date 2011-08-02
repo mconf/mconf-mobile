@@ -73,6 +73,17 @@
 	<string name="install_bar_code">Install Barcode Scanner?</string>
 	<string name="bar_code_no_found">Barcode Scanner not found, install?</string>
 	<string name="show_video">Show video</string>
+	<string name="application_on_background">Mconf BBB</string>
+	<string name="application_on_background_text">Application still running</string>
+	<string name="quit_dialog">Are you sure you want to quit the application?</string>
+	<string name="if_no_send_to_back">If you hit no, the app will be sent to back</string>
+	
+		<string name="meeting_information">Meeting information</string>
+		<string name="meeting_id">Meeting ID</string>
+		<string name="meeting_message">Meeting message</string>
+		<string name="start_time">Start time</string>
+		<string name="participant_count">Participant count</string>
+		<string name="moderator_count">Moderator count</string>
 	<string name="about">
 BBB-Android is an Android implementation of the BigBlueButton client.
 \nVersion ${VERSION}

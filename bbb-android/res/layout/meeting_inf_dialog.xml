@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/meeting_information"
+	android:layout_width="fill_parent" android:layout_height="wrap_content"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:background="@color/background" android:layout_gravity="center">
+
+	<view class="org.mconf.bbb.android.CustomListview" android:id="@+id/meeting_infs_list"
+		android:layout_above="@+id/ok" android:listSelector="@android:color/transparent"
+		android:layout_alignParentTop="true" android:dividerHeight="2dp"
+		android:divider="@color/title_background_onfocus"  
+		android:layout_width="fill_parent" android:layout_height="0dip"  />
+	<Button android:layout_alignParentBottom="true"
+		android:layout_height="wrap_content" android:text="@string/close"
+		android:layout_width="wrap_content" android:id="@+id/ok"
+		android:maxHeight="42dip" android:layout_marginBottom="5dip" 
+		android:paddingRight="40dp" android:paddingLeft="40dp"
+		android:paddingTop="10dp" android:paddingBottom="10dp"
+		android:layout_marginTop="5dip" android:textAppearance="@style/TitleStyle"
+		 android:layout_centerHorizontal="true"/>
+
+</RelativeLayout> 

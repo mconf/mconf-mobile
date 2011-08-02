@@ -37,6 +37,16 @@ public class JoinService {
 	public String getServerUrl() {
 		return serverUrl;
 	}
+	
+	public Meeting getMeetingById(String meetingID)
+	{
+		for(Meeting meeting:getMeetings())
+		{
+			if(meeting.getMeetingID().equals(meetingID))
+				return meeting;
+		}
+		return null;
+	}
 
 	public static final int E_OK = 0;
 	public static final int E_LOAD_HTTP_REQUEST = 1;
