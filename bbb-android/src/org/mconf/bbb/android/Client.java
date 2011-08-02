@@ -23,7 +23,6 @@ package org.mconf.bbb.android;
 
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.android.video.VideoCapture;
-import org.mconf.bbb.android.video.VideoCaptureLayout;
 import org.mconf.bbb.android.video.VideoDialog;
 import org.mconf.bbb.android.video.VideoFullScreen;
 import org.mconf.bbb.android.voip.AudioBarLayout;
@@ -138,8 +137,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	private BroadcastReceiver quit = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
 		{ 
-VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
-			mVideoCapture.stopCapture();
 			quit();
 			lastReadNum=-1;
 			sendBroadcast(new Intent(FINISH));
@@ -572,6 +569,9 @@ VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
 	}
 
 	private void quit() {
+		VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
+		mVideoCapture.stopCapture();
+		
 		getGlobalContext().invalidateVoiceModule();
 		getBigBlueButton().removeListener(this);
 		getBigBlueButton().disconnect();

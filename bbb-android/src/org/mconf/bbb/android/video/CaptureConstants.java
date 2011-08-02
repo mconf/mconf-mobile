@@ -49,5 +49,5 @@ public class CaptureConstants {
 	public static final int ERROR = 3; // an error occured, and it is not possible to determine the state of the capture/encoding/publish
 	
 	//notification ID:
-	public static final int VIDEO_PUBLISH_NOTIFICATION_ID = 88000;
+	public static final int VIDEO_PUBLISH_NOTIFICATION_ID = 57634;
 }
