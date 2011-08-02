@@ -129,7 +129,6 @@ public class VideoSurface extends GLSurfaceView {
 			System.load(path + "libavutil.so");
 			System.load(path + "libswscale.so");
 			System.load(path + "libavcodec.so");
-			System.load(path + "libavformat.so");
 			System.load(path + "libthread.so");
 			System.load(path + "libcommon.so");
 			System.load(path + "libqueue.so");

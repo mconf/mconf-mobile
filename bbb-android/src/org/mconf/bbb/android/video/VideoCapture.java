@@ -452,7 +452,9 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 		}
     }
     
-    public int startCapture(){   	
+    public int startCapture(){
+    	new LoadNativeCaptureLibs();
+    	
     	int err = CaptureConstants.E_OK;
     	if(mVideoPublish == null){
     		err = getPublisher();
@@ -810,25 +812,6 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     			mVideoPublish.mCamera.addCallbackBuffer(_data);
     		}
     		enqueueFrame(_data,_data.length);
-    	}
-    }
-    
-    static {
-    	String path = "/data/data/org.mconf.bbb.android/lib/";
-    	try {
-	    	System.load(path + "libavutil.so");
-	    	System.load(path + "libswscale.so");
-	        System.load(path + "libavcodec.so");
-	        System.load(path + "libavformat.so");
-	        System.load(path + "libthread.so");
-	    	System.load(path + "libcommon.so");
-	    	System.load(path + "libqueue.so");
-	    	System.load(path + "libencode.so");
-	    	System.load(path + "libmconfnativeencodevideo.so");  
-        
-	    	log.debug("Native libraries loaded");    
-    	} catch (SecurityException e) {
-    		log.debug("Native libraries failed");  
     	}
     }
     

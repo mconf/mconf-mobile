@@ -15,7 +15,7 @@ LOCAL_C_INCLUDES := \
 					$(LOCAL_PATH)/iva/queue \
 					$(LOCAL_PATH)/iva/thread
 					
-LOCAL_SHARED_LIBRARIES := queue thread common decode avcodec avformat avutil swscale
+LOCAL_SHARED_LIBRARIES := queue thread common decode avcodec
 LOCAL_LDLIBS := -lGLESv1_CM
 							   
 include $(BUILD_SHARED_LIBRARY)
@@ -30,21 +30,12 @@ LOCAL_SRC_FILES := \
 				   mconfnative/EncoderManager.cpp \
 				   mconfnative/VideoEncoder.cpp
 				  
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/iva/thread \
+LOCAL_C_INCLUDES := \
 					$(LOCAL_PATH)/iva/common \
 					$(LOCAL_PATH)/iva/queue \
-					$(LOCAL_PATH)/iva/encode
+					$(LOCAL_PATH)/iva/thread
 									   
-LOCAL_LDLIBS += -llog \
-				-lGLESv1_CM \
-				$(LOCAL_PATH)/../obj/local/armeabi/libavcodec.so \
-				$(LOCAL_PATH)/../obj/local/armeabi/libavformat.so \
-				$(LOCAL_PATH)/../obj/local/armeabi/libavutil.so \
-				$(LOCAL_PATH)/../obj/local/armeabi/libswscale.so \
-				$(LOCAL_PATH)/../obj/local/armeabi/libthread.so \
-				$(LOCAL_PATH)/../obj/local/armeabi/libcommon.so \
-				$(LOCAL_PATH)/../obj/local/armeabi/libqueue.so \
-				$(LOCAL_PATH)/../obj/local/armeabi/libencode.so
+LOCAL_SHARED_LIBRARIES := queue thread common encode
 							   
 include $(BUILD_SHARED_LIBRARY)
 #mconfnativeencodevideo module END
@@ -160,13 +151,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE    := encode
 
-LOCAL_SHARED_LIBRARIES := thread common queue
-
-LOCAL_LDLIBS += -llog \
-				$(LOCAL_PATH)/../obj/local/armeabi/libavcodec.so \
-				$(LOCAL_PATH)/../obj/local/armeabi/libavutil.so \
-				$(LOCAL_PATH)/../obj/local/armeabi//libavformat.so \
-				$(LOCAL_PATH)/../obj/local/armeabi/libswscale.so
+LOCAL_SHARED_LIBRARIES := thread common queue avcodec avformat avutil swscale
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/iva/thread \
 					$(LOCAL_PATH)/iva/common \
@@ -184,6 +169,7 @@ LOCAL_SRC_FILES :=	iva/encode/Encode.cpp \
 												   
 include $(BUILD_SHARED_LIBRARY)
 #end of encode module
+
 
 SPEEX	:= speex-1.2rc1
 SILK     := silk
