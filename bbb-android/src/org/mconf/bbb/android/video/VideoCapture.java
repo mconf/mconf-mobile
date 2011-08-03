@@ -646,8 +646,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	try {
 			Class<?> mC = Class.forName("android.hardware.Camera");
 		
-			Class<?>[] mPartypes = new Class[1];
-			// variable that will hold parameters for a function call
+			// variable that will indicate of what class is each parameter of the method
+			Class<?>[] mPartypes = new Class[1];			
 			mPartypes[0] = (new byte[1]).getClass(); //There is probably a better way to do this.
 			mAcb = mC.getMethod("addCallbackBuffer", mPartypes);
 
@@ -688,20 +688,23 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 			Class<?> c = Class.forName("android.hardware.Camera");
 			Method spcwb = null;  // sets a preview with buffers
 			//This way of finding our method is a bit inefficient
-			// However, since this method is only called once, this should not cause performance issues					
-//			Method[] m = c.getMethods(); // get all methods of camera
-//			for(int i=0; i<m.length; i++){
-//				if(m[i].getName().compareTo("setPreviewCallbackWithBuffer") == 0){
-//					spcwb = m[i];
-//					break;
-//				}
-//			}
+			// However, since this method is only called when the preview starts or resumes
+			// this should not cause performance issues					
+			Method[] m = c.getMethods(); // get all methods of camera
+			for(int i=0; i<m.length; i++){
+				if(m[i].getName().compareTo("setPreviewCallbackWithBuffer") == 0){
+					spcwb = m[i];
+					break;
+				}
+			}
 			
-//			This is a faster way to find the hidden method 			
-			Class<?>[] mPartypes = new Class[1];
-//			variable that will hold parameters for a function call
-			mPartypes[0] = (new byte[1]).getClass(); //There is probably a better way to do this.
-			spcwb = c.getMethod("setPreviewCallbackWithBuffer", mPartypes);
+//			This is a faster way to find the hidden method
+//			but for an unknown reason it is not working
+//			Class<?>[] mPartypes = new Class[2]; //	variable that will indicate of what class 
+//												 // is each parameter of the method
+//			mPartypes[0] = (mVideoPublish.mCamera).getClass();
+//			mPartypes[1] = (this).getClass(); //There is probably a better way to do this.
+//			spcwb = c.getMethod("setPreviewCallbackWithBuffer", mPartypes);
 			
 			//If we were able to find the setPreviewCallbackWithBuffer method of Camera, 
 			// we can now invoke it on our Camera instance, setting 'this' to be the
