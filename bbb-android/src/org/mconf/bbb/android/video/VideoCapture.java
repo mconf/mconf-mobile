@@ -26,14 +26,25 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	
 	private static final Logger log = LoggerFactory.getLogger(VideoCapture.class);	
 	
-    private SurfaceHolder mHolder;
+	private Context context;
+	
+	private SurfaceHolder mHolder;
+        
     private VideoPublish mVideoPublish;
+    
 	private Method mAcb;       // method for adding a pre-allocated buffer 
-    private Object[] mArglist; // list of arguments
-    private Context context;
+    private Object[] mArglist; // list of arguments    
+    
     private boolean isSurfaceCreated = false; // true when: surface is created AND mVideoPublish is correctly set
-    										  // false when: surface is destroyed
-    private boolean usingFaster, usingHidden;
+											  // false when: surface is destroyed
+    
+    private boolean fakeDestroyed = false; // When there are 2 active preview surfaces on the same activity
+										   // (for example: the normal surface and a dialog surface)
+										   // we need to use this boolean to manage the conflict
+										   // true when: the preview is being shown on a Dialog
+										   // false otherwise
+    
+    private boolean usingFaster, usingHidden;											
 	
 	public VideoCapture(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -738,7 +749,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	if(mVideoPublish != null && 
     			(mVideoPublish.state == CaptureConstants.RESUMED 
     		  || mVideoPublish.state == CaptureConstants.PAUSED)){ // means that the activity or the orientation
-    		   // changed and the camera was being captured and published 
+    		   // changed and the camera was being captured and published (except if 
+    		   // we are faking a destruction - see the VideoCapture.fakeDestroyed variable for more info)
     		   // (because, in the strategy we are using, this surface will only be destroyed
 			   // when the activity or the orientation changes) 	
 	    	if(BackgroundManager.isApplicationBroughtToBackground(context)){ // means that the next
@@ -758,8 +770,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	    		// signalizes that the activity has changed and the
 		        // camera was being captured
 	    		if(mVideoPublish.nextSurfaceCreated){ // means that the surface of the next activity or
-	    			    // of the next orientation has
-	    				// already been created
+	    			    // of the next orientation has already been created
 	    			mVideoPublish.RequestResume();
 	    		} else { // means that the surface of the next activity has not been created yet
 	    			mVideoPublish.lastSurfaceDestroyed = true; // set to true because the current surface has been destroyed
@@ -771,6 +782,18 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
     	log.debug("preview surface changed");
+    	
+    	if(!fakeDestroyed && w == 0 && h == 0){ // means that we want to show the preview on a Dialog.
+    						  					// So, we need to simulate a surfaceDestroyed
+    		fakeDestroyed = true;
+        	surfaceDestroyed(holder); // this call does not destroy the surface,
+        							  // it just sets the variables to simulate a destruction
+    	} else if(fakeDestroyed && w == 1 && h == 1){ // means that we closed the preview Dialog.
+    								 				  // So, we need to simulate a surfaceCreated
+    		fakeDestroyed = false;
+    		surfaceCreated(holder); // this call does not create the surface,
+			  						// it just sets the variables to simulate a creation
+    	}
     }
     
     @Override

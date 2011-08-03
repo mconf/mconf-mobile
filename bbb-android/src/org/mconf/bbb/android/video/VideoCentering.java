@@ -51,5 +51,11 @@ public class VideoCentering {
 		layoutParams.height = 1;
 		return layoutParams;
 	}
+
+	public LayoutParams destroyPreview(LayoutParams layoutParams) {
+		layoutParams.width = 0;
+		layoutParams.height = 0;
+		return layoutParams;
+	}
 }
 

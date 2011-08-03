@@ -28,7 +28,7 @@ public class VideoCaptureLayout extends LinearLayout {
 //		setLayoutParams(params);
 	}
 	
-	public void show() {
+	public void show(int margin) {
 		VideoPublish mVideoPublish = ((BigBlueButton) getContext().getApplicationContext()).getVideoPublish();
 		if(mVideoPublish == null){
     		log.debug("Error: could not show capture preview. Reason: could not get or instantiate a VideoPublisher");
@@ -37,12 +37,23 @@ public class VideoCaptureLayout extends LinearLayout {
 		
 		VideoCentering mVideoCentering = new VideoCentering();
     	mVideoCentering.setAspectRatio(mVideoPublish.width/(float)mVideoPublish.height);
-    	ViewGroup.LayoutParams layoutParams = mVideoCentering.getVideoLayoutParams(mVideoCentering.getDisplayMetrics(getContext(),0), getLayoutParams());
+    	ViewGroup.LayoutParams layoutParams = mVideoCentering.getVideoLayoutParams(mVideoCentering.getDisplayMetrics(getContext(),margin), getLayoutParams());
 		setLayoutParams(layoutParams);
 
 		//ViewGroup.LayoutParams params = getLayoutParams();
 		//params.width = 320;
 		//params.height = 240;
 		//setLayoutParams(params);
+	}
+
+	public void destroy() {
+		VideoCentering mVideoCentering = new VideoCentering();
+		ViewGroup.LayoutParams layoutParams = mVideoCentering.destroyPreview(getLayoutParams());   	
+		setLayoutParams(layoutParams);
+		
+//		ViewGroup.LayoutParams params = getLayoutParams();
+//		params.width = 0;
+//		params.height = 0;
+//		setLayoutParams(params);
 	}	
 }

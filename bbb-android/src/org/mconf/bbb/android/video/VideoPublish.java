@@ -56,7 +56,9 @@ public class VideoPublish extends Thread implements RtmpReader {
         
     public boolean nextSurfaceCreated = false; // used when:
     										// the activity or the orientation changes and 
-    										// the video was being captured. In this case,
+    										// the video was being captured (except if 
+	   // we are faking a destruction - see the VideoCapture.fakeDestroyed variable for more info). 
+    										// In this moment,
     										// there are 2 surfaces conflicting, and we need to know
     										// if/when they are destroyed and created.
     										// true when: the next surface has already been created

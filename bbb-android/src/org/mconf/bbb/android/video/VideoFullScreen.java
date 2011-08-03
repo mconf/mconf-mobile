@@ -78,7 +78,7 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 		registerReceiver(closeVideo, closeVideoFilter);
 		
 		if(isPreview){
-			setContentView(R.layout.video_capture_fullscreen);	
+			setContentView(R.layout.video_capture);	
 		} else {
 			setContentView(R.layout.video_window_fullscreen);
 			
@@ -101,7 +101,7 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 
 		if(isPreview){
 			VideoCaptureLayout videocaplayout = (VideoCaptureLayout) findViewById(R.id.video_capture_layout);
-			videocaplayout.show();
+			videocaplayout.show(0);
 		} else {
 			videoWindow.start(userId, false);
 		}
@@ -120,7 +120,7 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 
 		if(isPreview){
 			VideoCaptureLayout videocaplayout = (VideoCaptureLayout) findViewById(R.id.video_capture_layout);
-			videocaplayout.show();
+			videocaplayout.show(0);
 		} else {
 			videoWindow.updateLayoutParams(false);
 		}
