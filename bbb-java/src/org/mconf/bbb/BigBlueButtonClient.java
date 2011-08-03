@@ -102,6 +102,7 @@ public class BigBlueButtonClient {
 	
 	public void createPresentationModule(MainRtmpConnection handler,
 			Channel channel) {
+		log.debug("presentation module creation");
 		presentationModule = new PresentationModule(handler, channel);
 	}
 
@@ -256,6 +257,20 @@ public class BigBlueButtonClient {
 			return false;
 		else
 			return mainConnection.isConnected();
+	}
+
+	public String getRoom() {
+		return joinService.getJoinedMeeting().getRoom();
+	}
+
+	public String getConference() {
+		
+		return joinService.getJoinedMeeting().getConference();
+	}
+
+	public String getHost() {
+
+		return joinService.getServerUrl();
 	}
 
 }

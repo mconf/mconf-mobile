@@ -269,6 +269,7 @@ public class UsersModule extends Module implements ISharedObjectListener {
 		if (onQueryParticipants(resultFor, command)) {
 			handler.getContext().createChatModule(handler, channel);
 			handler.getContext().createListenersModule(handler, channel);
+			handler.getContext().createPresentationModule(handler, channel);
 			return true;
 		} else
 			return false;

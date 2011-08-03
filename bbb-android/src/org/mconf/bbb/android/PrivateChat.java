@@ -21,6 +21,7 @@
 
 package org.mconf.bbb.android;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import java.util.Map;
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.listeners.IListener;
+import org.mconf.bbb.presentation.Slide;
 import org.mconf.bbb.users.IParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -164,6 +166,27 @@ public class PrivateChat extends BigBlueButtonActivity {
 		public void onListenerStatusChangeIsMuted(IListener p) {}
 		@Override
 		public void onListenerStatusChangeIsTalking(IListener p) {}
+		@Override
+		public void onPresentationLoaded(String presentationName,
+				ArrayList<Slide> presentation) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void onSlideChanged(int currentSlide) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void onPresentationShared(String presentationName) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void onPresentationRemoved() {
+			// TODO Auto-generated method stub
+			
+		}
 
 	}
 

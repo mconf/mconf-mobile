@@ -59,6 +59,7 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 		presentationSO= handler.getSharedObject("presentationSO", false);
 		presentationSO.addSharedObjectListener(this);
 		presentationSO.connect(channel);
+		setUrlParameters(handler.getContext().getHost(), handler.getContext().getConference(), handler.getContext().getRoom());
 	}
 	
 	public boolean loadSlideData(Slide slide) //to be used when the slide will be shown, after the changeSlide event
@@ -86,9 +87,12 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 			boolean sharing = (Boolean) presentation.get("sharing");
 			if(sharing)
 			{
-				currentSlide = (Integer) presentation.get("slide");
+				
+				String currentSlide =  presentation.get("slide").toString();
 				log.debug("The presenter has shared slides and showing slide " + currentSlide);
 				String presentationName = (String) presentation.get("currentPresentation");
+				for (IBigBlueButtonClientListener l : handler.getContext().getListeners())
+					l.onPresentationShared(presentationName); //tells that a presentation has been shared
 				onPresentationReady(presentationName);
 				return true;
 			}
@@ -101,6 +105,7 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 		
 		String  fullUri = host + "/bigbluebutton/presentation/" + conference + "/" + room + "/" + presentationName+"/slides";	
 		String slideUri= host + "/bigbluebutton/presentation/" + conference + "/" + room + "/" + presentationName;
+		log.debug("fullUri:{}"+fullUri);
 		loadSlides(fullUri, slideUri);
 
 	}
@@ -142,16 +147,15 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 		DocumentBuilder db = dbf.newDocumentBuilder();
 		Document doc = db.parse(new ByteArrayInputStream(presentationString.getBytes("UTF-8")));
 		doc.getDocumentElement().normalize();
-		
-		String presentationName = ((Element) doc.getElementsByTagName("presentation").item(0)).getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
+		String presentationName = ((Element) doc.getElementsByTagName("presentation")).getAttribute("name");//\TODO classCastException
 		
 		NodeList slideList = doc.getElementsByTagName("slide");
 		for (int i = 0; i < slideList.getLength(); ++i) {
 			Element elementSlide = (Element) slideList.item(i);
 			
-			String sUri = slideUri + "/" + elementSlide.getElementsByTagName("name").item(0).getFirstChild().getNodeValue();
-			String thumbUri = slideUri + "/" + elementSlide.getElementsByTagName("thumb").item(0).getFirstChild().getNodeValue();
-			int slideNumber = Integer.valueOf(elementSlide.getElementsByTagName("number").item(0).getFirstChild().getNodeValue());
+			String sUri = slideUri + "/" + elementSlide.getAttribute("name");
+			String thumbUri = slideUri + "/" + elementSlide.getAttribute("thumb");
+			int slideNumber = Integer.valueOf(elementSlide.getAttribute("number"));
 			Slide slide = new Slide(slideNumber, sUri, thumbUri );
 			this.presentation.add(slide);
 		}

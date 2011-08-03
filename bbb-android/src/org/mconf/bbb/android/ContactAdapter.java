@@ -60,6 +60,16 @@ public class ContactAdapter extends BaseAdapter {
 	public void setMyUserId(int userId) {
 		this.myUserId  = userId;
 	}
+	
+	public Contact getPresenter()
+	{
+		for(IParticipant part:listContact)
+		{
+			if(part.getStatus().isPresenter())
+				return (Contact)part;
+		}
+		return null;
+	}
 
 	public void addSection(IParticipant participant) {
 		Contact contact = new Contact(participant);
@@ -147,8 +157,13 @@ public class ContactAdapter extends BaseAdapter {
 
 		final ImageView presenter = (ImageView) convertView.findViewById(R.id.presenter);
 		if (entry.isPresenter()) {
-			presenter.setImageDrawable(viewGroup.getContext().getResources().getDrawable(R.drawable.presenter));
+			if(entry.isSharingPresentation())
+				presenter.setImageDrawable(viewGroup.getContext().getResources().getDrawable(R.drawable.presenter_sharing));
+			
+			else
+				presenter.setImageDrawable(viewGroup.getContext().getResources().getDrawable(R.drawable.presenter));
 			presenter.setVisibility(ImageView.VISIBLE);
+			
 		}
 		else
 			presenter.setVisibility(ImageView.INVISIBLE);

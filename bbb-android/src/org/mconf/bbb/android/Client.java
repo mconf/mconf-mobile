@@ -21,6 +21,8 @@
 
 package org.mconf.bbb.android;
 
+import java.util.ArrayList;
+
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.android.video.VideoDialog;
 import org.mconf.bbb.android.video.VideoFullScreen;
@@ -30,6 +32,7 @@ import org.mconf.bbb.android.voip.VoiceModule;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.listeners.IListener;
 import org.mconf.bbb.listeners.Listener;
+import org.mconf.bbb.presentation.Slide;
 import org.mconf.bbb.users.IParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1231,6 +1234,54 @@ public void showBackgroundNotification()
 
 	public boolean isKicked() {
 		return kicked;
+	}
+
+	@Override
+	public void onPresentationLoaded(String presentationName,
+			ArrayList<Slide> presentation) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSlideChanged(int currentSlide) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onPresentationShared(String presentationName) {
+		// TODO Auto-generated method stub
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				log.debug("on presentation shared");
+				contactAdapter.getPresenter().setSharingPresentation(true);
+				contactAdapter.notifyDataSetChanged();
+
+				Toast.makeText(getApplicationContext(), R.string.presentation_shared, Toast.LENGTH_SHORT).show();
+			}
+		}
+		);
+
+
+
+	}
+
+	@Override
+	public void onPresentationRemoved() {
+		// TODO Auto-generated method stub
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				contactAdapter.getPresenter().setSharingPresentation(false);
+				contactAdapter.notifyDataSetChanged();
+			}
+		}
+		);
+
 	}
 
 	
