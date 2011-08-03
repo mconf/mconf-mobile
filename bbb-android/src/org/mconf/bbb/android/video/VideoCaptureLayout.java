@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 
 public class VideoCaptureLayout extends LinearLayout {

@@ -40,6 +40,7 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 	private VideoSurface videoWindow;
 	private int userId;
 	private String name;
+	private boolean isPreview;
 
 	private BroadcastReceiver closeVideo = new BroadcastReceiver() {
 
@@ -48,7 +49,9 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 			Bundle extras = intent.getExtras();
 			int userId= extras.getInt("userId");
 			if (VideoFullScreen.this.userId == userId) {
-				videoWindow.stop();
+				if(!isPreview){
+					videoWindow.stop();
+				}
 				finish();
 			}
 		}
@@ -64,18 +67,30 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 			userId = extras.getInt("userId");
 			name = extras.getString("name");
 		}
+		
+		if(userId == getBigBlueButton().getMyUserId()){
+			isPreview = true;
+		} else {
+			isPreview = false;
+		}
 
 		IntentFilter closeVideoFilter = new IntentFilter(Client.CLOSE_VIDEO);
 		registerReceiver(closeVideo, closeVideoFilter);
 		
-		setContentView(R.layout.video_window_fullscreen);
-		
-		videoWindow = (VideoSurface) findViewById(R.id.video_window);
+		if(isPreview){
+			setContentView(R.layout.video_capture_fullscreen);	
+		} else {
+			setContentView(R.layout.video_window_fullscreen);
+			
+			videoWindow = (VideoSurface) findViewById(R.id.video_window);	
+		}		
 	}
 	
 	@Override
 	protected void onPause() {	
-		videoWindow.stop();
+		if(!isPreview){
+			videoWindow.stop();
+		}
 		
 		super.onPause();		
 	}
@@ -84,7 +99,12 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 	protected void onResume() {
 		super.onResume();
 
-		videoWindow.start(userId, false);
+		if(isPreview){
+			VideoCaptureLayout videocaplayout = (VideoCaptureLayout) findViewById(R.id.video_capture_layout);
+			videocaplayout.show();
+		} else {
+			videoWindow.start(userId, false);
+		}
 	}
 
 	@Override
@@ -98,6 +118,11 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 
-		videoWindow.updateLayoutParams(false);
+		if(isPreview){
+			VideoCaptureLayout videocaplayout = (VideoCaptureLayout) findViewById(R.id.video_capture_layout);
+			videocaplayout.show();
+		} else {
+			videoWindow.updateLayoutParams(false);
+		}
 	}
 }
