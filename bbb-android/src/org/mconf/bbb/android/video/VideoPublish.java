@@ -30,8 +30,6 @@ public class VideoPublish extends Thread implements RtmpReader {
     public int height = CaptureConstants.DEFAULT_HEIGHT;
     public int bitRate = CaptureConstants.DEFAULT_BIT_RATE;
     public int GOP = CaptureConstants.DEFAULT_GOP;
-    
-	private int userId;
     	
 	private List<Video> framesList = new ArrayList<Video>();
 	
@@ -49,8 +47,6 @@ public class VideoPublish extends Thread implements RtmpReader {
 	
 	private int firstTimeStamp = 0;
 	private int lastTimeStamp = 0;
-	
-	private String streamId;
 	    
     public int state = CaptureConstants.STOPPED;
         
@@ -89,11 +85,9 @@ public class VideoPublish extends Thread implements RtmpReader {
     											 // close the reader. When false, this boolean prevents the
     											 // addition of new frames to the list.    												
 	        
-    public VideoPublish(BigBlueButtonClient context, int userId, boolean restartWhenResume, int frameRate, int width, int height, int bitRate, int GOP) {
+    public VideoPublish(BigBlueButtonClient context, boolean restartWhenResume, int frameRate, int width, int height, int bitRate, int GOP) {
     	this.context = context;    	 
-    	
-    	this.userId = userId;
-    	    	
+    	 	
     	this.restartWhenResume = restartWhenResume;
     	
     	this.frameRate = frameRate;
@@ -104,7 +98,7 @@ public class VideoPublish extends Thread implements RtmpReader {
     }
     
     public void startPublisher(){
-    	videoPublishHandler = new VideoPublishHandler(userId, streamId, this, context);
+    	videoPublishHandler = new VideoPublishHandler(context.getMyUserId(), width+"x"+height+context.getMyUserId(), this, context);
     	videoPublishHandler.start();
     }        	
     
@@ -130,10 +124,13 @@ public class VideoPublish extends Thread implements RtmpReader {
     
     public void initNativeEncoder(){
     	sharedBuffer = new byte[bufSize]; // the encoded frame will never be bigger than the not encoded
+    									  //\TODO Usually the encoded frame is much smaller than the not encoded.
+    										    //So it would be good if we find out the biggest encoded
+    											//frame size possible (given the encoding parameters)
+    											//in order to initialize the sharedBuffer array as a byte[]
+    											//of the smaller size as possible, to alocate less memory.
     	
     	initEncoder(width, height, frameRate, bitRate, GOP);
-    	  	
-    	streamId = width+"x"+height+userId; 
     	
     	nativeEncoderInitialized = true;
     }

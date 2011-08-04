@@ -45,7 +45,7 @@ public class BigBlueButton extends Application {
 	
 	public VideoPublish getVideoPublish() {
 		if(mVideoPublish == null) {
-			mVideoPublish = new VideoPublish(getHandler(), getHandler().getMyUserId(), restartCaptureWhenAppResumes, frameRate, width, height, bitRate, GOP);
+			mVideoPublish = new VideoPublish(getHandler(), restartCaptureWhenAppResumes, frameRate, width, height, bitRate, GOP);
 		}
 		return mVideoPublish;
 	}
