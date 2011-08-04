@@ -222,7 +222,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         	 return CaptureConstants.E_COULD_NOT_OPEN_CAMERA;
          }
          Camera.Parameters parameters = mVideoPublish.mCamera.getParameters();
-         parameters.set("camera-id", 2);
+         parameters.set("camera-id", 2); // this command sets the front facing camera to be used
+         								 // (if the device has one). Else, it sets the default camera.
          mVideoPublish.mCamera.setParameters(parameters);
          return CaptureConstants.E_OK;
     }
