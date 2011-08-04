@@ -786,11 +786,13 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	if(!fakeDestroyed && w == 0 && h == 0){ // means that we want to show the preview on a Dialog.
     						  					// So, we need to simulate a surfaceDestroyed
     		fakeDestroyed = true;
+    		log.debug("simulating a preview surface destruction");
         	surfaceDestroyed(holder); // this call does not destroy the surface,
         							  // it just sets the variables to simulate a destruction
     	} else if(fakeDestroyed && w == 1 && h == 1){ // means that we closed the preview Dialog.
     								 				  // So, we need to simulate a surfaceCreated
     		fakeDestroyed = false;
+    		log.debug("simulating a preview surface creation");
     		surfaceCreated(holder); // this call does not create the surface,
 			  						// it just sets the variables to simulate a creation
     	}
