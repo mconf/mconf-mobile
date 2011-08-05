@@ -42,7 +42,7 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 	private static final Logger log = LoggerFactory.getLogger(PresentationModule.class);
 	private final IClientSharedObject presentationSO;
 	
-	private ArrayList<Slide> presentation = new ArrayList<Slide>();
+	private ArrayList<ISlide> presentation = new ArrayList<ISlide>();
 	
 	private int currentSlide;
 	private String host;
@@ -62,14 +62,14 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 		setUrlParameters(handler.getContext().getHost(), handler.getContext().getConference(), handler.getContext().getRoom());
 	}
 	
-	public boolean loadSlideData(Slide slide) //to be used when the slide will be shown, after the changeSlide event
+	public byte[] loadSlideData(ISlide slide) //to be used when the slide will be shown, after the changeSlide event
 	{
 		if(slide!=null)
 		{
 			return slide.load();
 		}
 		else 
-			return false;
+			return null;
 	}
 
 	public void doGetPresentationInfo()
@@ -87,9 +87,10 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 			boolean sharing = (Boolean) presentation.get("sharing");
 			if(sharing)
 			{
-				
-				String currentSlide =  presentation.get("slide").toString();
+				log.debug(presentation.toString());
+				currentSlide =  ((Double)presentation.get("slide")).intValue();
 				log.debug("The presenter has shared slides and showing slide " + currentSlide);
+				
 				String presentationName = (String) presentation.get("currentPresentation");
 				for (IBigBlueButtonClientListener l : handler.getContext().getListeners())
 					l.onPresentationShared(presentationName); //tells that a presentation has been shared
@@ -123,7 +124,7 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 			while((buffer = in.readLine())!=null)
 				urlInformation+=buffer;
 
-			log.debug("loading complete");
+			
 			parseSlides(urlInformation);
 
 
@@ -147,7 +148,7 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 		DocumentBuilder db = dbf.newDocumentBuilder();
 		Document doc = db.parse(new ByteArrayInputStream(presentationString.getBytes("UTF-8")));
 		doc.getDocumentElement().normalize();
-		String presentationName = ((Element) doc.getElementsByTagName("presentation")).getAttribute("name");//\TODO classCastException
+		String presentationName = ((Element) doc.getElementsByTagName("presentation").item(0)).getAttribute("name");
 		
 		NodeList slideList = doc.getElementsByTagName("slide");
 		for (int i = 0; i < slideList.getLength(); ++i) {
@@ -168,10 +169,12 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 
 	private void loadPresentationListener(boolean loaded, String presentationName) {
 
-		if(loaded)
+		if(loaded){
 			for (IBigBlueButtonClientListener l : handler.getContext().getListeners()) {
-				l.onPresentationLoaded(presentationName, presentation);
+				l.onPresentationLoaded(presentationName, presentation, currentSlide);
 			}
+			log.debug("loading complete");
+		}
 		else
 			log.error("presentation not loaded");
 	}
@@ -244,7 +247,7 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 		log.debug("onSharedObjectDisconnect");
 	}
 	
-	public ArrayList<Slide> getPresentation() {
+	public ArrayList<ISlide> getPresentation() {
 		return presentation;
 	}
 	

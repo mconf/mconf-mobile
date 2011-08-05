@@ -29,6 +29,7 @@ import java.util.Map;
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.listeners.IListener;
+import org.mconf.bbb.presentation.ISlide;
 import org.mconf.bbb.presentation.Slide;
 import org.mconf.bbb.users.IParticipant;
 import org.slf4j.Logger;
@@ -166,12 +167,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		public void onListenerStatusChangeIsMuted(IListener p) {}
 		@Override
 		public void onListenerStatusChangeIsTalking(IListener p) {}
-		@Override
-		public void onPresentationLoaded(String presentationName,
-				ArrayList<Slide> presentation) {
-			// TODO Auto-generated method stub
-			
-		}
+		
 		@Override
 		public void onSlideChanged(int currentSlide) {
 			// TODO Auto-generated method stub
@@ -184,6 +180,13 @@ public class PrivateChat extends BigBlueButtonActivity {
 		}
 		@Override
 		public void onPresentationRemoved() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onPresentationLoaded(String presentationName,
+				ArrayList<ISlide> presentation, int currentSLide) {
 			// TODO Auto-generated method stub
 			
 		}
@@ -657,7 +660,6 @@ public class PrivateChat extends BigBlueButtonActivity {
 		{
 			removeParticipant(getParticipantKeyByViewId(viewID));
 			Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
-			bringBackClient.setAction(Client.BACK_TO_CLIENT);
 			startActivity(bringBackClient);
 			finish(); 
 		}

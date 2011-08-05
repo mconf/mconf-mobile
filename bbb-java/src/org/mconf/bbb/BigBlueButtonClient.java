@@ -21,6 +21,7 @@
 
 package org.mconf.bbb;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -31,6 +32,7 @@ import org.mconf.bbb.api.JoinService;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.chat.ChatModule;
 import org.mconf.bbb.listeners.ListenersModule;
+import org.mconf.bbb.presentation.ISlide;
 import org.mconf.bbb.presentation.PresentationModule;
 import org.mconf.bbb.presentation.Slide;
 import org.mconf.bbb.users.Participant;
@@ -177,15 +179,13 @@ public class BigBlueButtonClient {
 		return getChatModule().getPublicChatMessage();
 	}
 	
-	public List<Slide> getPresentation() {
+	public ArrayList<ISlide> getPresentation() {
 		return getPresentationModule().getPresentation();
 	}
 	
-	public byte[] getSlideData(Slide slide){
-		if(getPresentationModule().loadSlideData(slide))
-			return slide.getSlideData();
-		else
-			return null;
+	public byte[] getSlideData(ISlide slide){
+		return getPresentationModule().loadSlideData(slide);
+			
 	}
 
 	public void sendPrivateChatMessage(String message, int userId) {

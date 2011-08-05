@@ -32,6 +32,7 @@ import org.mconf.bbb.android.voip.VoiceModule;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.listeners.IListener;
 import org.mconf.bbb.listeners.Listener;
+import org.mconf.bbb.presentation.ISlide;
 import org.mconf.bbb.presentation.Slide;
 import org.mconf.bbb.users.IParticipant;
 import org.slf4j.Logger;
@@ -1236,12 +1237,7 @@ public void showBackgroundNotification()
 		return kicked;
 	}
 
-	@Override
-	public void onPresentationLoaded(String presentationName,
-			ArrayList<Slide> presentation) {
-		// TODO Auto-generated method stub
-		
-	}
+
 
 	@Override
 	public void onSlideChanged(int currentSlide) {
@@ -1261,6 +1257,8 @@ public void showBackgroundNotification()
 				contactAdapter.notifyDataSetChanged();
 
 				Toast.makeText(getApplicationContext(), R.string.presentation_shared, Toast.LENGTH_SHORT).show();
+				
+				
 			}
 		}
 		);
@@ -1283,6 +1281,18 @@ public void showBackgroundNotification()
 		);
 
 	}
+
+	@Override
+	public void onPresentationLoaded(String presentationName,
+			ArrayList<ISlide> presentation, int currentSlide) {
+		
+		Intent showPresentation = new Intent(getApplicationContext(),Presentation.class);
+		showPresentation.putExtra("presentationName", presentationName);
+		showPresentation.putExtra("currentSlide", currentSlide);
+		startActivity(showPresentation);
+	}
+
+	
 
 	
 

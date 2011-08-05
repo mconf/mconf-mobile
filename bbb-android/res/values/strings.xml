@@ -77,6 +77,8 @@
 	<string name="quit_dialog">Are you sure you want to quit the application?</string>
 	<string name="if_no_send_to_back">If you hit no, the app will be sent to back</string>
 	<string name="presentation_shared">A presentation has been shared</string>
+	<string name="presentation_removed">The presentation has been removed</string>
+	<string name="loading_presentation">Loading presentation...</string>
 	
 		<string name="meeting_information">Meeting information</string>
 		<string name="meeting_id">Meeting ID</string>
