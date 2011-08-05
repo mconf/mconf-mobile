@@ -514,7 +514,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 			return err;
 		}
     	
-    	// start the publisher native thread and sets isCapturing to true
+    	// start the publisher native thread
     	err = startPublisherThread();
     	if(err != CaptureConstants.E_OK){
     		mVideoPublish.state = CaptureConstants.ERROR;
@@ -572,6 +572,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     
     public void stopCapture(){ 
     	if(mVideoPublish != null){
+    		new LoadNativeCaptureLibs();
+    		
 	    	pauseCapture();
 	    	mVideoPublish.state = CaptureConstants.STOPPED;
 	    	
