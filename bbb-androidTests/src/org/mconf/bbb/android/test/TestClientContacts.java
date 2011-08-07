@@ -126,33 +126,32 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	}
 	
 	public void testLowerHand() throws InterruptedException{
-		raiseRandomHands(3);
-		Contact p;
-		do{
-			p= getRandomContact(false);
-		}while(!p.isRaiseHand());
+		IParticipant p = null;
+		while (true) {
+			p = Common.getRandomUser(solo, false);
+			if (!p.getStatus().isRaiseHand()) {
+				Common.getUser(p.getUserId()).raiseHand(true);
+				break;
+			}			
+		}
+		
 		String name = p.getName();
 		solo.clickLongOnText(name);
 		solo.clickOnText(solo.getString(R.string.lower_hand));
 		solo.clickLongOnText(name);
 		assertFalse(solo.searchText(solo.getString(R.string.lower_hand)));
-
-		
-
 	}
 	
 	public void testKick() {
-		IParticipant p = getRandomUser(false);
+		IParticipant p = Common.getRandomUser(solo, false);
 		String name = p.getName();
 		solo.clickLongOnText(name);
 		solo.clickOnText(solo.getString(R.string.kick));
 		assertFalse(solo.searchText(name));
 	}
 	
-	
-	
 	public void testOpenChatLongPress() {
-		IParticipant p = getRandomUser(false);
+		IParticipant p = Common.getRandomUser(solo, false);
 		solo.clickLongInList(participantsList.getPositionById(p.getUserId()) + 1);
 		solo.clickOnText(solo.getString(R.string.open_private_chat));
 		solo.assertCurrentActivity("wrong activity", PrivateChat.class);
@@ -162,7 +161,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	
 	public void testAssignPresenter() {
 		while (true) {
-			IParticipant p = getRandomUser(true);
+			IParticipant p = Common.getRandomUser(solo, true);
 			if (!p.getStatus().isPresenter()) {
 				int position = participantsList.getPositionById(p.getUserId());
 				
@@ -190,31 +189,6 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 			}
 		}
 		assertTrue(numberOfPresenters <= 1);
-	}
-
-	public IParticipant getRandomUser(boolean includeMe) {
-		while (true) {
-			IParticipant p = (IParticipant) participantsList.getItem(new Random().nextInt(participantsList.getCount()));
-			if (includeMe || !p.getName().startsWith(Common.DEFAULT_NAME))
-				return p;
-		}
-	}
-	
-	public Contact getRandomContact(boolean includeMe){
-		Contact contact = new Contact(getRandomUser(includeMe));
-		return contact;
-	}
-	
-	public void raiseRandomHands(int howMany){
-		for(int i=0; i<howMany; i++)
-		{
-			Contact contact = getRandomContact(false);
-			int userId=contact.getUserId();
-			if(!contact.isRaiseHand())
-			{
-				Common.getUser(userId).raiseHand(userId, true);
-			}
-		}
 	}
 
 //	public void testShowVideo()
