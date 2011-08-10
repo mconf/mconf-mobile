@@ -392,6 +392,9 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         
     private int beginPreview(){
     	if(mVideoPublish.mCamera != null){
+    		while(!((BigBlueButton) getContext().getApplicationContext()).getHandler().getUsersModule().getParticipants().get(((BigBlueButton) getContext().getApplicationContext()).getHandler().getMyUserId()).getStatus().isHasStream()){
+    				//TODO Gian improve this
+    		}
     		mVideoPublish.mCamera.startPreview();
     		return CaptureConstants.E_OK;
     	} else {
@@ -501,13 +504,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     		return mVideoPublish.bufSize;
     	}
     	
-		err = resumeCapture();
-		if(err != CaptureConstants.E_OK){
-			mVideoPublish.state = CaptureConstants.ERROR;
-			return err;
-		}
-		
-		// creates the shared buffer, inits the native side and sets the streamId 
+    	// creates the shared buffer, inits the native side and sets the streamId 
 		err = initNativeSide();
 		if(err != CaptureConstants.E_OK){
 			mVideoPublish.state = CaptureConstants.ERROR;
@@ -527,6 +524,12 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     		mVideoPublish.state = CaptureConstants.ERROR;
     		return err;
     	}
+    	
+		err = resumeCapture();
+		if(err != CaptureConstants.E_OK){
+			mVideoPublish.state = CaptureConstants.ERROR;
+			return err;
+		}
     	
     	activateNotification();
     	    	

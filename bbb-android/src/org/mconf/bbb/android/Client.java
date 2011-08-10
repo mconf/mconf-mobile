@@ -630,9 +630,9 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, R.string.start_voice).setIcon(android.R.drawable.ic_btn_speak_now);
 			}
 			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
-			if (mVideoCapture.isCapturing()){
+			if (mVideoCapture.isCapturing() && getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).getStatus().isHasStream()){
 				menu.add(Menu.NONE, MENU_STOP_VIDEO, Menu.NONE, R.string.stop_video).setIcon(android.R.drawable.ic_btn_speak_now); //\TODO choose a icon
-			} else {
+			} else if(!mVideoCapture.isCapturing() && !getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).getStatus().isHasStream()) {
 				menu.add(Menu.NONE, MENU_START_VIDEO, Menu.NONE, R.string.start_video).setIcon(android.R.drawable.ic_btn_speak_now); //\TODO choose a icon
 			}
 			if (getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isRaiseHand())

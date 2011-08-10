@@ -161,7 +161,7 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
                                 + " not sending response, server likely to stop responding / disconnect");
                         } else {
                             Control swfv = Control.swfvResponse(swfvBytes);
-                            logger.info("sending swf verification response: {}", swfv);
+                            log.debug("sending swf verification response: {}", swfv);
                             channel.write(swfv);
                         }
                         break;
@@ -207,7 +207,7 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
                 logger.debug("server command: {}", name);
                 if(name.equals("_result")) {
                     String resultFor = transactionToCommandMap.get(command.getTransactionId());
-                    logger.info("result for method call: {}", resultFor);
+                    log.debug("result for method call: {}", resultFor);
                     if(resultFor.equals("connect")) {
                         writeCommandExpectingResult(channel, Command.createStream());
                     } else if(resultFor.equals("createStream")) {
@@ -244,12 +244,12 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
                 } else if(name.equals("onStatus")) {
                     final Map<String, Object> temp = (Map) command.getArg(0);
                     final String code = (String) temp.get("code");
-                    logger.info("onStatus code: {}", code);
+                    log.debug("onStatus code: {}", code);
                     if (code.equals("NetStream.Failed") // TODO cleanup
                             || code.equals("NetStream.Play.Failed")
                             || code.equals("NetStream.Play.Stop")
                             || code.equals("NetStream.Play.StreamNotFound")) {
-                        logger.info("disconnecting, code: {}, bytes read: {}", code, bytesRead);
+                        log.debug("disconnecting, code: {}, bytes read: {}", code, bytesRead);
                         channel.close();
                         return;
                     }
@@ -261,13 +261,13 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
                         return;
                     }
                     if (publisher != null && code.equals("NetStream.Unpublish.Success")) {
-                        logger.info("unpublish success, closing channel");
+                        log.debug("unpublish success, closing channel");
                         ChannelFuture future = channel.write(Command.closeStream(streamId));
                         future.addListener(ChannelFutureListener.CLOSE);
                         return;
                     }
                 } else if(name.equals("close")) {
-                    logger.info("server called close, closing channel");
+                    log.debug("server called close, closing channel");
                     channel.close();
                     return;
                 } else if(name.equals("_error")) {
@@ -279,7 +279,7 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
                 }
                 break;
             case BYTES_READ:
-                logger.info("ack from server: {}", message);
+                log.debug("ack from server: {}", message);
                 break;
             case WINDOW_ACK_SIZE:
                 WindowAckSize was = (WindowAckSize) message;                
@@ -298,7 +298,7 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
             	onSharedObject(channel, (SharedObjectMessage) message);
             	break;
             default:
-            logger.info("ignoring rtmp message: {}", message);
+            log.debug("ignoring rtmp message: {}", message);
         }
         if(publisher != null && publisher.isStarted()) { // TODO better state machine
             publisher.fireNext(channel, 0);
