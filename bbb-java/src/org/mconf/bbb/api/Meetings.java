@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
+import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -125,7 +126,8 @@ public class Meetings {
 		for (int i = 0; i < nodeMeetings.getLength(); ++i) {
 			Element elementMeeting = (Element) nodeMeetings.item(i);
 
-			DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy", Locale.UK);
+			DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy", Locale.CANADA);
+			//dateFormat.setTimeZone(TimeZone.getDefault());
 			//used Locale to avoid unparseable date exception. apparently the locale doesn't affect the time
 			Meeting meeting = new Meeting(); 
  
@@ -145,7 +147,10 @@ public class Meetings {
 			String startTime = elementMeeting.getElementsByTagName("startTime").item(0).getFirstChild().getNodeValue();
 			if (!startTime.equals("null"))
 			{
-				startTime = startTime.replace("UTC ", "");
+				String timezone = startTime.substring(20, 24);
+				log.debug("timezone{}", timezone);
+				//startTime = startTime.replace(timezone, TimeZone.getTimeZone(timezone).getDisplayName());
+				startTime=startTime.replace(timezone, "");
 				meeting.setStartTime(dateFormat.parse(startTime));
 				
 			}
@@ -153,7 +158,9 @@ public class Meetings {
 			String endTime = elementMeeting.getElementsByTagName("endTime").item(0).getFirstChild().getNodeValue();
 			if (!endTime.equals("null"))
 			{	
-				endTime = startTime.replace("UTC ", "");
+				String timezone = endTime.substring(20, 24);
+				//endTime = endTime.replace(timezone, TimeZone.getTimeZone(timezone).getDisplayName(Locale.getDefault()));
+				endTime=endTime.replace(timezone, "");
 				meeting.setEndTime(dateFormat.parse(endTime));
 				
 			}

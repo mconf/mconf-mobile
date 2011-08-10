@@ -96,7 +96,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public static final int POPUP_MENU_KICK_LISTENER = Menu.FIRST + 3;
 	public static final int POPUP_MENU_OPEN_PRIVATE_CHAT = Menu.FIRST + 4;
 	public static final int POPUP_MENU_SHOW_VIDEO = Menu.FIRST + 5;
-
+	public static final int POPUP_MENU_LOWER_HAND = Menu.FIRST + 6;
 
 	public static final int CHAT_NOTIFICATION_ID = 77000;
 	public static final int BACKGROUND_NOTIFICATION_ID = 88000;
@@ -171,6 +171,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	private int addedMessages=0;
 	private boolean dialogShown = false;
 	private boolean kicked=false;
+	private boolean backToLogin = false;
+	private boolean backToPrivateChat = false;
 
 	private VideoDialog mVideoDialog;
 
@@ -447,6 +449,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 		unregisterReceiver(chatClosed);
 		unregisterReceiver(closeVideo);
+		unregisterReceiver(quit);
 
 		super.onDestroy();
 	}
@@ -464,6 +467,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				if (contact.getUserId() != getBigBlueButton().getMyUserId())
 					menu.add(0, POPUP_MENU_OPEN_PRIVATE_CHAT, 0, R.string.open_private_chat);
 				if (moderator) {
+					if(contact.isRaiseHand())
+						menu.add(0, POPUP_MENU_LOWER_HAND, 0, R.string.lower_hand);
 					if (contact.getUserId() != getBigBlueButton().getMyUserId())
 						menu.add(0, POPUP_MENU_KICK_USER, 0, R.string.kick);
 					if (!contact.isPresenter())
@@ -492,50 +497,56 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 
 		switch (item.getItemId()) {
-		case POPUP_MENU_KICK_USER:
-		{
-			Contact contact = (Contact) contactAdapter.getItem(info.position);
-			getBigBlueButton().kickUser(contact.getUserId());
-			//closes private chat with the user if he is kicked
-			Intent kickedUser = new Intent(PrivateChat.KICKED_USER);
-			kickedUser.putExtra("userId", contact.getUserId());
-			sendBroadcast(kickedUser);
-			return true;
-		}
-		case POPUP_MENU_SET_PRESENTER:
-		{
-			Contact contact = (Contact) contactAdapter.getItem(info.position);
-			getBigBlueButton().assignPresenter(contact.getUserId());
-			return true;
-		}
-		case POPUP_MENU_MUTE_LISTENER:
-		{
-			Listener listener = (Listener) listenerAdapter.getItem(info.position);
-			getBigBlueButton().muteUnmuteListener(listener.getUserId(), !listener.isMuted());
-			return true;
-		}
-		case POPUP_MENU_KICK_LISTENER: 
-		{
-			Listener listener = (Listener) listenerAdapter.getItem(info.position);
-			getBigBlueButton().kickListener(listener.getUserId());
-			return true;
-		}
-		case POPUP_MENU_OPEN_PRIVATE_CHAT:
-		{
-			Contact contact = (Contact) contactAdapter.getItem(info.position);
-			startPrivateChat(contact);
-			return true;
-		}
-		case POPUP_MENU_SHOW_VIDEO:
-		{
-			Contact contact = (Contact) contactAdapter.getItem(info.position);
-			int orientation = getResources().getConfiguration().orientation;
-			if(orientation==Configuration.ORIENTATION_PORTRAIT)
-				showVideo(true, contact.getUserId(), contact.getName());
-			else 
-				showVideo(false, contact.getUserId(), contact.getName());
-			return true;
-		}
+			case POPUP_MENU_KICK_USER:
+			{
+				Contact contact = (Contact) contactAdapter.getItem(info.position);
+				getBigBlueButton().kickUser(contact.getUserId());
+				//closes private chat with the user if he is kicked
+				Intent kickedUser = new Intent(PrivateChat.KICKED_USER);
+				kickedUser.putExtra("userId", contact.getUserId());
+				sendBroadcast(kickedUser);
+				return true;
+			}
+			case POPUP_MENU_SET_PRESENTER:
+			{
+				Contact contact = (Contact) contactAdapter.getItem(info.position);
+				getBigBlueButton().assignPresenter(contact.getUserId());
+				return true;
+			}
+			case POPUP_MENU_LOWER_HAND:
+			{
+				Contact contact = (Contact) contactAdapter.getItem(info.position);
+				getBigBlueButton().raiseHand(contact.getUserId(), false);
+				return true;
+			}
+			case POPUP_MENU_MUTE_LISTENER:
+			{
+				Listener listener = (Listener) listenerAdapter.getItem(info.position);
+				getBigBlueButton().muteUnmuteListener(listener.getUserId(), !listener.isMuted());
+				return true;
+			}
+			case POPUP_MENU_KICK_LISTENER: 
+			{
+				Listener listener = (Listener) listenerAdapter.getItem(info.position);
+				getBigBlueButton().kickListener(listener.getUserId());
+				return true;
+			}
+			case POPUP_MENU_OPEN_PRIVATE_CHAT:
+			{
+				Contact contact = (Contact) contactAdapter.getItem(info.position);
+				startPrivateChat(contact);
+				return true;
+			}
+			case POPUP_MENU_SHOW_VIDEO:
+			{
+				Contact contact = (Contact) contactAdapter.getItem(info.position);
+				int orientation = getResources().getConfiguration().orientation;
+				if(orientation==Configuration.ORIENTATION_PORTRAIT)
+					showVideo(true, contact.getUserId(), contact.getName());
+				else 
+					showVideo(false, contact.getUserId(), contact.getName());
+				return true;
+			}
 		}
 		return super.onContextItemSelected(item);
 	}
@@ -547,6 +558,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 
 	private void startPrivateChat(final Contact contact) {
+		backToPrivateChat=true;
 		Intent intent = new Intent(getApplicationContext(), PrivateChat.class);
 		intent.putExtra("username", contact.getName());
 		intent.putExtra("userId", contact.getUserId());
@@ -628,6 +640,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			Intent login = new Intent(this, LoginPage.class);
 			startActivity(login);
 			lastReadNum=-1;
+			backToLogin=true;
 			sendBroadcast(intent);
 			finish();
 			return true;
@@ -693,28 +706,29 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		networkProperties.show();
 	}
 
-	protected void onUserLeaveHint() {
+protected void onUserLeaveHint() {
+	if(!backToLogin&&!backToPrivateChat)
 		showBackgroundNotification();
-	}
+}
 
-	public void showBackgroundNotification()
-	{
-		String contentTitle = getResources().getString(R.string.application_on_background);
-		String contentText = getResources().getString(R.string.application_on_background_text);
-
-		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		Notification notification = new Notification(R.drawable.icon_bbb, contentTitle, 0);
-		Intent notificationIntent = new Intent(getApplicationContext(), Client.class);
-		notificationIntent.setAction(ACTION_TO_FOREGROUND);
-
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
-		notification.flags=Notification.FLAG_ONGOING_EVENT;
-		notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
-
-		Toast.makeText(getApplicationContext(), contentText, Toast.LENGTH_SHORT).show();
-		notificationManager.notify(BACKGROUND_NOTIFICATION_ID, notification);	
-
-	}
+public void showBackgroundNotification()
+{
+	String contentTitle = getResources().getString(R.string.application_on_background);
+	String contentText = getResources().getString(R.string.application_on_background_text);
+	
+	NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+	Notification notification = new Notification(R.drawable.icon_bbb, contentTitle, 0);
+	Intent notificationIntent = new Intent(getApplicationContext(), Client.class);
+	notificationIntent.setAction(ACTION_TO_FOREGROUND);
+	
+	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+	notification.flags=Notification.FLAG_ONGOING_EVENT;
+	notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
+	
+	Toast.makeText(getApplicationContext(), contentText, Toast.LENGTH_SHORT).show();
+	notificationManager.notify(BACKGROUND_NOTIFICATION_ID, notification);	
+	
+}
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
@@ -955,6 +969,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			return;
 
 		if (intent.getAction().equals(BACK_TO_CLIENT)) {
+			backToPrivateChat=false;
 			for (int i=0; i<contactAdapter.getCount(); i++)
 				if(contactAdapter.getChatStatus(i)==Contact.CONTACT_ON_PRIVATE_MESSAGE)
 					((Contact) contactAdapter.getItem(i)).setChatStatus(Contact.CONTACT_NORMAL);

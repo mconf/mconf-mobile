@@ -6,3 +6,6 @@
 *.bak
 *.bat
 *.am
+bin/
+*.log
+*.orig

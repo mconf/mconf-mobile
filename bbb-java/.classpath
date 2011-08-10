@@ -10,6 +10,7 @@
 	<classpathentry kind="lib" path="../flazr/target/flazr/lib/netty-3.2.4.Final.jar"/>
 	<classpathentry kind="lib" path="../flazr/target/flazr/lib/slf4j-api-1.4.2.jar"/>
 	<classpathentry kind="lib" path="../flazr/target/flazr/lib/slf4j-log4j12-1.4.2.jar"/>
+    <classpathentry kind="lib" path="../flazr/target/flazr/lib/junit-4.8.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/flazr"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

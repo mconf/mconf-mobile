@@ -221,8 +221,8 @@ public class UsersModule extends Module implements ISharedObjectListener {
 		}
 	}
 
-	public void raiseHand(boolean value) {
-		Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "raiseHand", value);
+	public void raiseHand(int userId, boolean value) {
+		Command cmd = new CommandAmf0("participants.setParticipantStatus", null, userId, "raiseHand", value);
 		handler.writeCommandExpectingResult(channel, cmd);
 	}
 
