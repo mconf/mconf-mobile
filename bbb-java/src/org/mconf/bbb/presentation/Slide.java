@@ -12,10 +12,10 @@ import java.net.URLConnection;
 public class Slide implements ISlide {
 
 	private int slideNum;
-	
+
 
 	private URL slideUri;
-	private String thumbUri;
+	private URL thumbUri;
 	private URLConnection connection;
 	private boolean loaded=false;
 	private byte[] slideData;
@@ -29,14 +29,23 @@ public class Slide implements ISlide {
 		this.setSlideNum(slideNum);
 		try {
 			this.slideUri= new URL (slideUri);
+			this.thumbUri= new URL(thumbUri);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		this.thumbUri=thumbUri;
 
-		
+
+
+
 	}
-	
+	public URL getThumbUri() {
+		return thumbUri;
+	}
+
+	public void setThumbUri(URL thumbUri) {
+		this.thumbUri = thumbUri;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.mconf.bbb.presentation.ISlide#load()
 	 */
@@ -50,17 +59,22 @@ public class Slide implements ISlide {
 		else
 		{
 			try {
-				connection =slideUri.openConnection();
-				
-				BufferedReader in = new BufferedReader(new InputStreamReader( connection.getInputStream()));
-				String buffer;
-				String info="";
-				while((buffer = in.readLine())!=null)
-					info+=buffer;
-				
-				setSlideData(info.getBytes());
-				
-	
+				//\TODO getting the slide thumb
+				connection =thumbUri.openConnection();
+
+
+				InputStream iStrm = connection.getInputStream(); 
+				ByteArrayOutputStream bStrm = new ByteArrayOutputStream();
+
+				int ch;
+
+				while ((ch = iStrm.read()) != -1)
+					bStrm.write(ch);
+
+
+				setSlideData(bStrm.toByteArray());
+
+
 				loaded=true;
 				return slideData;
 			} catch (IOException e) {
@@ -101,7 +115,7 @@ public class Slide implements ISlide {
 	public int getSlideNum() {
 		return slideNum;
 	}
-	
+
 	public URL getSlideUri() {
 		return slideUri;
 	}
@@ -110,5 +124,5 @@ public class Slide implements ISlide {
 		this.slideUri = slideUri;
 	}
 
-	
+
 }

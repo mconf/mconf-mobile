@@ -12,5 +12,6 @@
 	<classpathentry kind="lib" path="/flazr/target/flazr/lib/junit-4.8.1.jar"/>
 	<classpathentry kind="lib" path="/flazr/target/flazr/lib/netty-3.2.4.Final.jar"/>
 	<classpathentry kind="lib" path="libs/slf4j-android-1.6.1-RC1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Alessandra/MConf/transform-3.0.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

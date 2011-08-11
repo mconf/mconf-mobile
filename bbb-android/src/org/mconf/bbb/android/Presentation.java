@@ -20,6 +20,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ public class Presentation extends BigBlueButtonActivity implements IBigBlueButto
 	private String presentationName;
 	private Slide slide;
 	private ImageView slideImage;
+
 	private PresentationAdapter presentationAdapter;
 
 	
@@ -44,11 +46,12 @@ public class Presentation extends BigBlueButtonActivity implements IBigBlueButto
 		
 		setContentView(R.layout.presentation);
 		 slideImage = (ImageView) findViewById(R.id.slide);
+		
 		 presentationAdapter = new PresentationAdapter(getBigBlueButton().getPresentation());
 		 Bundle extras = getIntent().getExtras();
 		 
 		this.presentationName=extras.getString("presentationName");
-		showSlide(extras.getInt("currentSlide"));
+		 showSlide(extras.getInt("currentSlide"));
 		 	
 			
 	}
@@ -63,6 +66,7 @@ public class Presentation extends BigBlueButtonActivity implements IBigBlueButto
 	@Override
 	public void onSlideChanged(int currentSlide) {
 		// TODO Auto-generated method stub
+		log.debug("slide changed {}", currentSlide);
 		showSlide(currentSlide);
 		
 	}
@@ -92,7 +96,8 @@ public class Presentation extends BigBlueButtonActivity implements IBigBlueButto
 		this.currentSlideNum=currentSlide;
 		slide =  (Slide) presentationAdapter.getPresentation().get(currentSlide); 
 		byte[] bytes = getBigBlueButton().getSlideData(slide);
-		log.debug(slide.getSlideUri().toString());
+		log.debug(slide.getThumbUri().toString());
+		
 		slideImage.setImageDrawable(getSlideDrawable(bytes));
 
 		
@@ -101,6 +106,7 @@ public class Presentation extends BigBlueButtonActivity implements IBigBlueButto
 	public Drawable getSlideDrawable(byte[] slideData)
 	{
 		//\TODO the slideData is a flash object NOOOOOOOOOO!!! bitmapfactory doesnt work
+		//using the thumbnails instead
 		Bitmap bitmap = BitmapFactory.decodeByteArray(slideData, 0, slideData.length);
 		
 		return (new BitmapDrawable(bitmap));

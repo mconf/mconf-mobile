@@ -158,6 +158,7 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 			String thumbUri = slideUri + "/" + elementSlide.getAttribute("thumb");
 			int slideNumber = Integer.valueOf(elementSlide.getAttribute("number"));
 			Slide slide = new Slide(slideNumber, sUri, thumbUri );
+			
 			this.presentation.add(slide);
 		}
 		
