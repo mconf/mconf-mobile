@@ -393,7 +393,13 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     private int beginPreview(){
     	if(mVideoPublish.mCamera != null){
     		while(!((BigBlueButton) getContext().getApplicationContext()).getHandler().getUsersModule().getParticipants().get(((BigBlueButton) getContext().getApplicationContext()).getHandler().getMyUserId()).getStatus().isHasStream()){
-    				//TODO Gian improve this
+    			synchronized(this) {
+    				try {
+						this.wait(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+    			}
     		}
     		mVideoPublish.mCamera.startPreview();
     		return CaptureConstants.E_OK;
@@ -845,7 +851,9 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     		} else if(usingFaster && mVideoPublish.mCamera != null){
     			mVideoPublish.mCamera.addCallbackBuffer(_data);
     		}
-    		enqueueFrame(_data,_data.length);
+    		if(((BigBlueButton) getContext().getApplicationContext()).getHandler().getUsersModule().getParticipants().get(((BigBlueButton) getContext().getApplicationContext()).getHandler().getMyUserId()).getStatus().isHasStream()){
+    			enqueueFrame(_data,_data.length);	
+    		}    		
     	}
     }
     

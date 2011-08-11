@@ -103,6 +103,9 @@ public class VideoPublish extends Thread implements RtmpReader {
     }        	
     
     public void stopPublisher(){
+    	synchronized(this) {
+			this.notifyAll();
+		}
     	if(videoPublishHandler != null){
     		videoPublishHandler.stop(context);
     	}
@@ -167,8 +170,12 @@ public class VideoPublish extends Thread implements RtmpReader {
    	    video.getHeader().setDeltaTime(interval);
 		video.getHeader().setStreamId(this.videoPublishHandler.videoConnection.streamId);
 		
-		if(framesListAvailable && framesList != null){
+		if(context.getUsersModule().getParticipants().get(context.getMyUserId()).getStatus().isHasStream()
+		   && framesListAvailable && framesList != null){
 			framesList.add(video);
+			synchronized(this) {
+				this.notifyAll();
+			}
 		}
 		
     	return 0;
@@ -202,10 +209,10 @@ public class VideoPublish extends Thread implements RtmpReader {
 
 	@Override
 	public boolean hasNext() {
-		while((state == CaptureConstants.RESUMED || state == CaptureConstants.PAUSED)
+		if((state == CaptureConstants.RESUMED || state == CaptureConstants.PAUSED)
 				&& framesListAvailable && framesList != null && framesList.isEmpty()){
 			try {
-				this.wait(100);
+				this.wait();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
