@@ -23,7 +23,6 @@ package org.mconf.bbb.android;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import org.mconf.bbb.api.JoinService;
 import org.mconf.bbb.api.Meeting;
@@ -41,6 +40,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -68,23 +68,22 @@ public class LoginPage extends BigBlueButtonActivity {
 	public static final int MENU_QR_CODE = Menu.FIRST;
 	public static final int MENU_ABOUT = Menu.FIRST + 1;
 
-	SharedPreferences preferencesFile;
-	Map<String,String> storedPreferences;
-
 	private ArrayAdapter<String> spinnerAdapter;
 	private boolean moderator;
 	private String username = "Android";
 	private String serverUrl = "";
+	private String serverPassword = "";
 	private String createdMeeting = "";
-	private Context context = this;
 
 	BroadcastReceiver serverChosed = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
 		{ 
 			Bundle extras = intent.getExtras();
-			serverUrl=extras.getString("serverURL");
+			serverUrl = extras.getString("serverUrl");
+			serverPassword = extras.getString("serverPassword");
 			Button serverView = (Button) findViewById(R.id.server);
 			serverView.setText(serverUrl);
+			storePreferences(username, serverUrl, serverPassword);
 		}
 	};
 
@@ -94,41 +93,29 @@ public class LoginPage extends BigBlueButtonActivity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.login);
-		//get Username and server if already saved on the preferences file
-		setPreferencesFile();
-		setUserPreferences();
+		// get username and server if already saved on the preferences file
+		loadUserPreferences();
 
 		final EditText editName = (EditText) findViewById(R.id.login_edittext_name);
 		editName.setText(username);
 		Button serverView = (Button) findViewById(R.id.server);
-		if(serverUrl.length()>3)
+		if(serverUrl.length() > 3)
 			serverView.setText(serverUrl);
 		else
 			serverView.setText(R.string.choose_a_server);
-
-
 
 		final Spinner spinner = (Spinner) findViewById(R.id.login_spinner);
 		spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
 		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(spinnerAdapter);
 
-
 		spinner.setOnTouchListener(new OnTouchListener() {
 
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					if(getBigBlueButton().getJoinService().getTimestamp()){
-						updateMeetingsList();
-						return true;
-					}
-					else
-					{
-						showToast(R.string.login_cant_contact_server);
-						log.debug("Error getting the timestamp");
-						return false;
-					}
+					updateMeetingsList();
+					return true;
 				} 
 				return false;
 			}
@@ -198,50 +185,36 @@ public class LoginPage extends BigBlueButtonActivity {
 
 
 		final Button join = (Button) findViewById(R.id.login_button_join);       
-		join.setOnClickListener( new OnClickListener()
-		{
+		join.setOnClickListener( new OnClickListener() {
 			@Override
 			public void onClick(View viewParam)
 			{
-				if(getBigBlueButton().getJoinService().getTimestamp()){
-					EditText usernameEditText = (EditText) findViewById(R.id.login_edittext_name);
-					username = usernameEditText.getText().toString();
+				EditText usernameEditText = (EditText) findViewById(R.id.login_edittext_name);
+				username = usernameEditText.getText().toString();
 
-					if (username.length() < 1) {
-						Toast.makeText(getApplicationContext(), R.string.login_empty_name, Toast.LENGTH_SHORT).show();  
-						return;
-					}
-
-					if (spinner.getSelectedItemPosition() == Spinner.INVALID_POSITION) {
-						Toast.makeText(getApplicationContext(), R.string.login_select_meeting, Toast.LENGTH_SHORT).show();
-						return;
-					}
-
-					String meetingId = (String) spinner.getSelectedItem();
-					//				if (!getBigBlueButton().getJoinService().join(meetingId, username, moderator)) {
-					//                	Toast.makeText(getApplicationContext(), getResources().getString(R.string.login_cant_join) + ": " + getBigBlueButton().getJoinService().getJoinedMeeting().getMessage(), Toast.LENGTH_SHORT).show();
-					//                	return;
-					//                }
-
-					updatePreferences(username, serverUrl);
-
-					Intent myIntent = new Intent(getApplicationContext(), Client.class);
-					myIntent.putExtra("username", username);
-					myIntent.putExtra("moderator", moderator);
-					myIntent.putExtra("serverUrl", serverUrl);
-					myIntent.putExtra("meetingId", meetingId);
-					startActivity(myIntent);
-
-					finish();
+				if (username.length() < 1) {
+					Toast.makeText(getApplicationContext(), R.string.login_empty_name, Toast.LENGTH_SHORT).show();  
+					return;
 				}
-				else
-				{
-					showToast(R.string.login_cant_contact_server);
-					log.debug("Error getting the timestamp");
+
+				if (spinner.getSelectedItemPosition() == Spinner.INVALID_POSITION) {
+					Toast.makeText(getApplicationContext(), R.string.login_select_meeting, Toast.LENGTH_SHORT).show();
+					return;
 				}
+
+				String meetingId = (String) spinner.getSelectedItem();
+
+				storePreferences(username, serverUrl, serverPassword);
+
+				Intent myIntent = new Intent(getApplicationContext(), Client.class);
+				myIntent.putExtra("username", username);
+				myIntent.putExtra("moderator", moderator);
+				myIntent.putExtra("meetingId", meetingId);
+				startActivity(myIntent);
+
+				finish();
 			}
-		}
-		);
+		});
 		//button to change the server
 		final Button server = (Button) findViewById(R.id.server);       
 		server.setOnClickListener( new OnClickListener()
@@ -314,7 +287,8 @@ public class LoginPage extends BigBlueButtonActivity {
 		final Thread updateThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				int r = getBigBlueButton().getJoinService().load(serverUrl);
+				getBigBlueButton().getJoinService().setServer(serverUrl, serverPassword);
+				int r = getBigBlueButton().getJoinService().load();
 				switch (r) {
 				case JoinService.E_LOAD_HTTP_REQUEST:
 					progressDialog.dismiss();
@@ -408,45 +382,21 @@ public class LoginPage extends BigBlueButtonActivity {
 		}
 	}    
 
-	public SharedPreferences getPreferencesFile() {
-		return preferencesFile;
+	private SharedPreferences getPreferences() {
+		return getSharedPreferences("storedPreferences", MODE_PRIVATE);
 	}
-
-	public void setUserPreferences(){
-		if(!storedPreferences.isEmpty())
-		{
-			this.username = this.storedPreferences.get("username");
-			this.serverUrl = this.storedPreferences.get("serverURL");
-		}
+	
+	private void loadUserPreferences(){
+		username = getPreferences().getString("username", username);
+		serverUrl = getPreferences().getString("serverUrl", "");
+		serverPassword = getPreferences().getString("serverPassword", "");
 	}
-
-	@SuppressWarnings("unchecked")
-	public void setPreferencesFile() {
-		if(this.getSharedPreferences("storedPreferences", MODE_PRIVATE)!=null)
-			this.preferencesFile = this.getSharedPreferences("storedPreferences", MODE_PRIVATE);
-		else
-		{
-			SharedPreferences.Editor serverEditor = preferencesFile.edit();
-			serverEditor.commit(); 
-			this.preferencesFile = this.getSharedPreferences("storedPreferences", MODE_PRIVATE);
-		}
-		this.storedPreferences = (Map<String, String>) preferencesFile.getAll();
-	}
-
-	public void updatePreferences(String username, String serverURL)
-	{
-		SharedPreferences.Editor preferenceEditor = preferencesFile.edit();
-		if(!preferencesFile.getString("username", "").equals(username))
-		{
-			preferenceEditor.remove("username");
-			preferenceEditor.putString("username", username);
-
-		}
-		if(!preferencesFile.getString("serverURL", "").equals(serverURL))
-		{
-			preferenceEditor.remove("serverURL");
-			preferenceEditor.putString("serverURL", serverURL);
-		}
+	
+	private void storePreferences(String username, String serverUrl, String serverPassword) {
+		SharedPreferences.Editor preferenceEditor = getPreferences().edit();
+		preferenceEditor.putString("username", username);
+		preferenceEditor.putString("serverUrl", serverUrl);
+		preferenceEditor.putString("serverPassword", serverPassword);
 		preferenceEditor.commit();
 	}
 
@@ -471,7 +421,7 @@ public class LoginPage extends BigBlueButtonActivity {
 
 	void showDownloadDialog()
 	{
-		AlertDialog.Builder downloadDialog = new AlertDialog.Builder(context);
+		AlertDialog.Builder downloadDialog = new AlertDialog.Builder(this);
 		downloadDialog.setTitle(R.string.install_bar_code);
 		downloadDialog.setMessage(R.string.bar_code_no_found);
 		downloadDialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {

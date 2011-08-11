@@ -1,14 +1,11 @@
 package org.mconf.bbb.api;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -17,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 public class JoinService {
 	private static final Logger log = LoggerFactory.getLogger(JoinService.class);
@@ -26,22 +22,17 @@ public class JoinService {
 	private Meetings meetings = new Meetings();
 	private JoinedMeeting joinedMeeting = null;
 	private String salt;
-	private String timestamp;
-
-	public String getSalt() {
-		return salt;
-	}
-
-	public void setSalt(String salt) {
-		this.salt = salt;
-	}
+	private long timestamp = 0,
+			lastRequest = 0;
+	
+	private static String DEMO_PATH = "/demo/mobile.jsp";
+//	private static String DEMO_PATH = "/bigbluebutton/demo/mobile.jsp";
 
 	public JoinedMeeting getJoinedMeeting() {
 		return joinedMeeting;
 	}
 
-	public void resetJoinedMeeting()
-	{
+	public void resetJoinedMeeting() {
 		joinedMeeting=null;
 	}
 
@@ -52,11 +43,15 @@ public class JoinService {
 	public String getServerUrl() {
 		return serverUrl;
 	}
+	
+	public void setServer(String serverUrl, String salt) {
+		this.serverUrl = serverUrl;
+		this.salt = salt;
+		lastRequest = 0;
+	}
 
-	public Meeting getMeetingById(String meetingID)
-	{
-		for(Meeting meeting:getMeetings())
-		{
+	public Meeting getMeetingById(String meetingID) {
+		for(Meeting meeting:getMeetings()) {
 			if(meeting.getMeetingID().equals(meetingID))
 				return meeting;
 		}
@@ -66,19 +61,21 @@ public class JoinService {
 	public static final int E_OK = 0;
 	public static final int E_LOAD_HTTP_REQUEST = 1;
 	public static final int E_LOAD_PARSE_MEETINGS = 2;
+	public static final int E_UNKNOWN = 3;
 
-	// /bigbluebutton/demo/mobile.jsp?action=getTimestamp&checksum=???????????????
+	// /demo/mobile.jsp?action=getTimestamp&checksum=???????????????
 	// action=getTimestamp<senha> = checksum
 	// action=getTimestamp&checksum=<checksum>
 	public int load() {
+		if (!updateTimestamp())
+			return E_UNKNOWN;
+		
 		while (serverUrl.endsWith("/")) {
 			serverUrl = serverUrl.substring(0, serverUrl.length() - 1);
 		}
 
-
-
 		String parameters = "action=getMeetings"+"&timestamp=" +timestamp;
-		String getMeetingsUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?" + parameters + "&checksum=" + checksum(parameters + salt);
+		String getMeetingsUrl = serverUrl + DEMO_PATH + "?" + parameters + "&checksum=" + checksum(parameters + salt);
 
 		String strMeetings = null;
 		try {
@@ -105,8 +102,10 @@ public class JoinService {
 	}
 
 	public boolean join(String meetingID, String name, boolean moderator) {
+		if (!updateTimestamp())
+			return false;
+		
 		for (Meeting m : meetings.getMeetings()) {
-			log.info(m.getMeetingID());
 			if (m.getMeetingID().equals(meetingID)) {
 				return join(m, name, moderator);
 			}
@@ -114,7 +113,7 @@ public class JoinService {
 		return false;
 	}
 
-	public static String checksum(String s) {
+	private static String checksum(String s) {
 		String checksum = "";
 		try {
 			checksum = org.apache.commons.codec.digest.DigestUtils.shaHex(s);
@@ -124,8 +123,7 @@ public class JoinService {
 		return checksum;
 	}
 
-	public boolean parse (String str)
-	{
+	private boolean parseTimestamp(String str) {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
@@ -135,7 +133,7 @@ public class JoinService {
 			String returncode = nodeResponse.getElementsByTagName("returncode").item(0).getFirstChild().getNodeValue();
 
 			if (returncode.equals("SUCCESS")) {	
-				timestamp = nodeResponse.getElementsByTagName("timestamp").item(0).getFirstChild().getNodeValue();
+				timestamp = Long.parseLong(nodeResponse.getElementsByTagName("timestamp").item(0).getFirstChild().getNodeValue());
 				return true;
 			}
 			else
@@ -152,13 +150,11 @@ public class JoinService {
 		}
 	}
 
-	public boolean getTimestamp(String serverUrl)
-	{
-		this.serverUrl = serverUrl;
-
+	private boolean getTimestamp() {	
 		String parameters = "action=getTimestamp";
-		String timestampUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?" + parameters + "&checksum=" + checksum(parameters + salt);
+		String timestampUrl = serverUrl + DEMO_PATH + "?" + parameters + "&checksum=" + checksum(parameters + salt);
 
+		log.debug("timestampUrl=" + timestampUrl);
 		String response = "Unknown error";
 		try {
 			HttpClient client = new HttpClient();
@@ -166,22 +162,35 @@ public class JoinService {
 			client.executeMethod(method);
 			response = method.getResponseBodyAsString().trim();
 			method.releaseConnection();
-			parse(response);
+			parseTimestamp(response);
 			log.debug("timestamp:{}",timestamp);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("Can't get the Timestamp from {}", serverUrl);
-			timestamp = null;
+			timestamp = 0;
 			return false;
 		}
-
+	}
+	
+	private boolean updateTimestamp() {
+		if (System.currentTimeMillis() < lastRequest + 55000)
+			return true;
+		else {
+			if (getTimestamp()) {
+				lastRequest = System.currentTimeMillis();
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean createMeeting(String meetingID) {
-		String parameters= "action=create"+"&meetingID=" + urlEncode(meetingID) +"&timestamp=" +timestamp;
-		String createUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?"+parameters
-		+ checksum(parameters+salt);
+		if (!updateTimestamp())
+			return false;
+		
+		String parameters= "action=create"+"&meetingID=" + urlEncode(meetingID) +"&timestamp=" + timestamp;
+		String createUrl = serverUrl + DEMO_PATH + "?" + parameters + "&checksum=" + checksum(parameters + salt);
 		log.debug(createUrl);
 
 		String response = "Unknown error";
@@ -205,21 +214,25 @@ public class JoinService {
 	}
 
 	public boolean join(Meeting meeting, String name, boolean moderator) {
+		if (!updateTimestamp())
+			return false;
+
 		String parameters = "action=join"
 			+ "&meetingID=" + urlEncode(meeting.getMeetingID())
 			+ "&fullName=" + urlEncode(name)
 			+ "&password=" + urlEncode(moderator? meeting.getModeratorPW(): meeting.getAttendeePW())
 			+ "&timestamp=" + timestamp;
-		String joinUrl = serverUrl + "/bigbluebutton/demo/mobile.jsp?" + parameters + "&checksum=" + checksum(parameters + salt);
+		String joinUrl = serverUrl + DEMO_PATH + "?" + parameters + "&checksum=" + checksum(parameters + salt);
 
 		log.debug(joinUrl);
 
 		joinedMeeting = new JoinedMeeting();
+		boolean parsedCorrectly = false;
 		try {
 			HttpClient client = new HttpClient();
 			HttpMethod method = new GetMethod(joinUrl);
 			client.executeMethod(method);
-			joinedMeeting.parse(method.getResponseBodyAsString().trim());
+			parsedCorrectly = joinedMeeting.parse(method.getResponseBodyAsString().trim());
 			method.releaseConnection();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -228,18 +241,19 @@ public class JoinService {
 			return false;
 		}
 		
-		if (joinedMeeting.getReturncode().equals("SUCCESS")) {
+		if (parsedCorrectly && joinedMeeting.getReturncode().equals("SUCCESS")) {
 			return true;
 		} else {
-			log.error(joinedMeeting.getMessage());
+			if (joinedMeeting.getMessage() != null)
+				log.error(joinedMeeting.getMessage());
 			return false;
 		}
 	}
 
-	public boolean join(String serverUrl, String joinUrl) {
-		this.serverUrl = serverUrl;
+	public boolean join(String joinUrl) {
+		serverUrl = joinUrl.substring(0, joinUrl.indexOf("/bigbluebutton/api/"));
 		String enterUrl = serverUrl + "/bigbluebutton/api/enter";
-		
+			
 		joinedMeeting = new JoinedMeeting();
 		try {
 			HttpClient client = new HttpClient();
@@ -266,7 +280,7 @@ public class JoinService {
 		}
 	}
 
-	public static String urlEncode(String s) {	
+	private static String urlEncode(String s) {	
 		try {
 			return URLEncoder.encode(s, "UTF-8");
 		} catch (Exception e) {

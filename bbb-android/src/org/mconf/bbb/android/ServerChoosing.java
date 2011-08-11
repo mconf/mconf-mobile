@@ -1,14 +1,13 @@
 package org.mconf.bbb.android;
 
-import java.util.Map;
+import java.util.Map.Entry;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,112 +21,83 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Toast;
 //class where the user chooses the server where he wants to connect
 public class ServerChoosing extends BigBlueButtonActivity  {
+
 	private static final int DELETE_SERVER = 0;
-	ListView servers;
+	private ListView serversListView;
 	private ArrayAdapter<String> listViewAdapter;
-	SharedPreferences serverFile;
-	Map<String,String> storedServers;
-	Context context = this;
-	EditText password;
-	String serverURL;
-	String serverPassword;
-	AlertDialog.Builder passwordDialog;
 	
-	
-	public String getServerPassword() {
-		return serverPassword;
-	}
-
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.server_choosing);
 		listViewAdapter = new ArrayAdapter<String>(this, R.layout.server);
-		servers = (ListView) findViewById(R.id.servers);
-		servers.setTextFilterEnabled(true);
-		servers.setAdapter(listViewAdapter);
-		setServerFile();
-		getServers();
-		registerForContextMenu(servers);
-		password = new EditText(context);
+		serversListView = (ListView) findViewById(R.id.servers);
+		serversListView.setTextFilterEnabled(true);
+		serversListView.setAdapter(listViewAdapter);
+		registerForContextMenu(serversListView);
+
 		//select server on click
 		Button connect = (Button) findViewById(R.id.connect);
 		connect.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				EditText server = (EditText)findViewById(R.id.serverURL);
-				if (server.getText().toString().length() > 0) {
+				EditText editTextServer = (EditText)findViewById(R.id.serverURL);
+				String serverUrl = getServerUrl(editTextServer.getText().toString());
+				if (serverUrl.length() > 0) {
 					
-					serverURL=server.getText().toString();
-
-					createDialog();
-
-					if(storedServers.get(serverURL)==null || storedServers.get(serverURL)=="")
-					{
-						passwordDialog.show();
-
+					if (getPreferences().contains(serverUrl)) {
+						String serverPassword = getPreferences().getString(serverUrl, "");
+						backToLogin(serverUrl, serverPassword);
+					} else {
+						createPasswordDialog().show();
 					}
-
-					else
-						callLogin();
 				}
-			}
+			}		
 		});
 
-		servers.setOnItemClickListener(new OnItemClickListener() {
+		serversListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				EditText server = (EditText)findViewById(R.id.serverURL);
-				String serverURL = servers.getItemAtPosition(position).toString();
+				String serverURL = serversListView.getItemAtPosition(position).toString();
 				server.setText(serverURL);
 
 			}
 		});
 
-
+		loadList();
 	}
 	
-	private void createDialog()
-	{
-		passwordDialog = new AlertDialog.Builder(context);
+	private AlertDialog.Builder createPasswordDialog() {
+		final EditText editTextPassword = new EditText(this);
+		AlertDialog.Builder passwordDialog = new AlertDialog.Builder(this);
 		passwordDialog.setCancelable(false);
 		passwordDialog.setTitle(R.string.server_password);
-		passwordDialog.setView(password);
-		passwordDialog.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+		passwordDialog.setView(editTextPassword);
+		passwordDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
-				if(password.getText().toString().length()>0)
-				{
-					serverPassword=password.getText().toString();
-					dialog.cancel();
-					callLogin();
-				}
-				else{
-					Toast.makeText(context, R.string.server_password, Toast.LENGTH_SHORT).show();
-					
-				}
+				
+				EditText editTextServer = (EditText) findViewById(R.id.serverURL);
+				String serverUrl = getServerUrl(editTextServer.getText().toString());
+				String serverPassword = editTextPassword.getText().toString();
+				
+				addServer(serverUrl, serverPassword);
+				backToLogin(serverUrl, serverPassword);
 			}
 		});
+		return passwordDialog;
 	}
 
-	private void callLogin()
-	{
-		getBigBlueButton().getJoinService().setSalt(serverPassword);
-		
-		while (serverURL.endsWith("/")) {
-			serverURL = serverURL.substring(0, serverURL.length() - 1);
-		}	
-
+	private void backToLogin(String serverUrl, String serverPassword) {
 		final Intent callLogin = new Intent (LoginPage.SERVER_CHOSED);
-		callLogin.putExtra("serverURL", serverURL);
+		callLogin.putExtra("serverUrl", serverUrl);
+		callLogin.putExtra("serverPassword", serverPassword);
 		sendBroadcast(callLogin);
 		finish(); 
-		addServer(serverURL, password.getText().toString());
 	}
 
 	@Override
@@ -136,82 +106,74 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 		super.onCreateContextMenu(menu, v, menuInfo);
 
 		menu.add(0, DELETE_SERVER, 0, R.string.delete_server);
-
 	}
-	//delete server on long press
+	
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 
 		switch (item.getItemId()) {
-		case DELETE_SERVER:
-			System.out.println(servers.getItemAtPosition(info.position).toString());
-			deleteServer(servers.getItemAtPosition(info.position).toString());
-			return true;
-		}
+			case DELETE_SERVER:
+				deleteServer(serversListView.getItemAtPosition(info.position).toString());
+				return true;
+			}
 		return super.onContextItemSelected(item);
 	}
 
-	public SharedPreferences getServerFile() {
-		return serverFile;
-	}
-	//the servers are stored on a SharedPreferences file, private to the program
-	@SuppressWarnings("unchecked")
-	public void setServerFile() {
-		if(this.getSharedPreferences("storedServers", MODE_PRIVATE)!=null)
-			this.serverFile = this.getSharedPreferences("storedServers", MODE_PRIVATE);
-		else {
-			SharedPreferences.Editor serverEditor = serverFile.edit();
-			serverEditor.commit(); 
-			this.serverFile = this.getSharedPreferences("storedServers", MODE_PRIVATE);
+	private void loadList() {
+		for (Entry<String, ?> entry : getPreferences().getAll().entrySet()) {
+			addServer(entry.getKey(), (String) entry.getValue());
 		}
-		// always insert the prav servers to the list
-		addServer("http://mconfweb.inf.ufrgs.br");
-//		addServer("http://mconfdev.inf.ufrgs.br");
-		this.storedServers = (Map<String, String>) serverFile.getAll();
+		addServer("http://test.bigbluebutton.org", "03b07");
+		addServer("http://mconfdev.inf.ufrgs.br", "03b07");
 	}
-
-	public void getServers()
-	{
-
-		for(String server:storedServers.keySet())
-			listViewAdapter.add(server);
-
+	
+	private SharedPreferences getPreferences() {
+		return getSharedPreferences("storedServers", MODE_PRIVATE);
 	}
-
-	public void addServer(String newServer, String serverPassword)
+	
+	private String getServerUrl(String serverUrl) {
+		while (serverUrl.endsWith("/")) {
+			serverUrl = serverUrl.substring(0, serverUrl.length() - 1);
+		}
+		return serverUrl;
+	}
+	
+	private void addServer(final String serverUrl, String serverPassword)
 	{
-		SharedPreferences.Editor serverEditor = serverFile.edit();
-		if(!serverFile.contains(newServer))
-		{
-			serverEditor.putString(newServer, serverPassword);
-			serverEditor.commit();
+		Log.d("===============> ", "adding server " + serverUrl + " password " + serverPassword);
+		
+		SharedPreferences.Editor serverEditor = getPreferences().edit();
+		serverEditor.putString(serverUrl, serverPassword);
+		serverEditor.commit();
+
+		if (listViewAdapter.getPosition(serverUrl) == -1) {
+			runOnUiThread(new Runnable() {
+	
+				@Override  
+				public void run() {
+					listViewAdapter.add(serverUrl);
+					listViewAdapter.notifyDataSetChanged();
+				}
+			});
 		}
 	}
-
 
 	public void deleteServer(final String server)
 	{
-		SharedPreferences.Editor serverEditor = serverFile.edit();
-		if(serverFile.contains(server))
-		{
-			serverEditor.remove(server);
-			serverEditor.commit();
-			System.out.println("deleted");
-			runOnUiThread(new Runnable() {
+		SharedPreferences.Editor serverEditor = getPreferences().edit();
+		serverEditor.remove(server);
+		serverEditor.commit();
 
-				@Override  
-				public void run() {
-					listViewAdapter.remove(server);
-					listViewAdapter.notifyDataSetChanged();
-					setServerFile();
+		runOnUiThread(new Runnable() {
 
-				}
+			@Override  
+			public void run() {
+				listViewAdapter.remove(server);
+				listViewAdapter.notifyDataSetChanged();
 			}
-			);
-		}
-
+		});
 	}
 
 }
