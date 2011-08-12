@@ -1,16 +1,14 @@
 package org.mconf.web;
 
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 public class AuthenticationTest {
 	@Test
 	public void constructor() {
-		Authentication auth = new Authentication("http://mconf.inf.ufrgs.br");
-		try {
-			auth.authenticate("", "");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Authentication auth = new Authentication("http://mconfmoodle.inf.ufrgs.br", "", "");
+		assertTrue(auth.isAuthenticated());
+		MconfWebAPI.getRooms(auth);
 	}
 }
