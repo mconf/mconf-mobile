@@ -67,7 +67,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		solo.waitForText(Common.exactly(solo.getString(R.string.quit_dialog)));
 		assertTrue(solo.searchText(solo.getString(R.string.quit_dialog)));
 		solo.clickOnButton(solo.getString(R.string.no));
-		//assertTrue(solo.getCurrentViews().isEmpty());
+		assertTrue(solo.getCurrentViews().isEmpty());
 		assertTrue(solo.searchText(solo.getString(R.string.application_on_background_text)));
 	}
 	

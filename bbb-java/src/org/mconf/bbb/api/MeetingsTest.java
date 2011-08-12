@@ -74,10 +74,10 @@ public class MeetingsTest {
 		assertTrue(meeting.getModeratorCount() == 1);
 		
 		assertTrue(meeting.getAttendees().size() == 2);
-		assertTrue(meeting.getAttendees().get(0).getUserID() == 236);
+		assertTrue(meeting.getAttendees().get(0).getUserID().equals("236"));
 		assertTrue(meeting.getAttendees().get(0).getFullName().equals("fcecagno@gmail.com"));
 		assertTrue(meeting.getAttendees().get(0).getRole().equals("MODERATOR"));
-		assertTrue(meeting.getAttendees().get(1).getUserID() == 237);
+		assertTrue(meeting.getAttendees().get(1).getUserID().equals("237"));
 		assertTrue(meeting.getAttendees().get(1).getFullName().equals("test@gmail.com"));
 		assertTrue(meeting.getAttendees().get(1).getRole().equals("VIEWER"));
 		
@@ -111,10 +111,10 @@ public class MeetingsTest {
 		assertTrue(meeting.getModeratorCount() == 1);
 		
 		assertTrue(meeting.getAttendees().size() == 2);
-		assertTrue(meeting.getAttendees().get(0).getUserID() == 236);
+		assertTrue(meeting.getAttendees().get(0).getUserID().equals("236"));
 		assertTrue(meeting.getAttendees().get(0).getFullName().equals("fcecagno@gmail.com"));
 		assertTrue(meeting.getAttendees().get(0).getRole().equals("MODERATOR"));
-		assertTrue(meeting.getAttendees().get(1).getUserID() == 237);
+		assertTrue(meeting.getAttendees().get(1).getUserID().equals("237"));
 		assertTrue(meeting.getAttendees().get(1).getFullName().equals("test@gmail.com"));
 		assertTrue(meeting.getAttendees().get(1).getRole().equals("VIEWER"));
 		

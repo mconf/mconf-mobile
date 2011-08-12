@@ -25,8 +25,8 @@ public class JoinService {
 	private long timestamp = 0,
 			lastRequest = 0;
 	
-	private static String DEMO_PATH = "/demo/mobile.jsp";
-//	private static String DEMO_PATH = "/bigbluebutton/demo/mobile.jsp";
+//	private static String DEMO_PATH = "/demo/mobile.jsp";
+	private static String DEMO_PATH = "/bigbluebutton/demo/mobile.jsp";
 
 	public JoinedMeeting getJoinedMeeting() {
 		return joinedMeeting;

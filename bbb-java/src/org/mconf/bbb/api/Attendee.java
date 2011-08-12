@@ -24,22 +24,22 @@ package org.mconf.bbb.api;
 import org.w3c.dom.Element;
 
 public class Attendee {
-	protected int userID;
-	protected String fullName,
+	protected String userID,
+		fullName,
 		role;
 
 	public boolean parse(Element elementAttendee) {
-		userID = Integer.parseInt(elementAttendee.getElementsByTagName("userID").item(0).getFirstChild().getNodeValue());
-		fullName = elementAttendee.getElementsByTagName("fullName").item(0).getFirstChild().getNodeValue();
-		role = elementAttendee.getElementsByTagName("role").item(0).getFirstChild().getNodeValue();
+		userID = ParserUtils.getNodeValue(elementAttendee, "userID");
+		fullName = ParserUtils.getNodeValue(elementAttendee, "fullName");
+		role = ParserUtils.getNodeValue(elementAttendee, "role");
 		return true;
 	}
 	
-	public int getUserID() {
+	public String getUserID() {
 		return userID;
 	}
 
-	public void setUserID(int userID) {
+	public void setUserID(String userID) {
 		this.userID = userID;
 	}
 

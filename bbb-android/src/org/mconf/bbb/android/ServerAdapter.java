@@ -17,19 +17,14 @@ public class ServerAdapter extends BaseAdapter{
 
 
 	public void addSection(String url, String password) {
-
-		if(getItemByUrl(url)==null){
-			Server server = new Server();
-
+		Server server = getItemByUrl(url);
+		if (server == null) {
+			server = new Server();
 			server.setUrl(url);
 			server.setPassword(password);
 			listServer.add(server);
-		}
-
-		else
-		{
-			getItemByUrl(url).setPassword(password);
-			notifyDataSetChanged();
+		} else {
+			server.setPassword(password);
 		}
 	}
 
@@ -95,6 +90,10 @@ public class ServerAdapter extends BaseAdapter{
 		passwordText.setText(server.getPassword());
 
 		return convertView;
+	}
+
+	public void clear() {
+		listServer.clear();
 	}
 
 }

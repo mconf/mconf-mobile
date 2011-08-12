@@ -21,9 +21,12 @@
 
 package org.mconf.bbb.api;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -87,31 +90,35 @@ public class Meeting {
 			return false;
 		meetingName = ParserUtils.getNodeValue(elementMeeting, "meetingName");
 		meetingID = ParserUtils.getNodeValue(elementMeeting, "meetingID");
-		createTime = new Date(Long.parseLong(ParserUtils.getNodeValue(elementMeeting, "createTime")));
+		createTime = new Date(Long.parseLong(ParserUtils.getNodeValue(elementMeeting, "createTime", true)));
 		attendeePW = ParserUtils.getNodeValue(elementMeeting, "attendeePW");
 		moderatorPW = ParserUtils.getNodeValue(elementMeeting, "moderatorPW");
-		running = Boolean.parseBoolean(ParserUtils.getNodeValue(elementMeeting, "running"));
-		hasBeenForciblyEnded = Boolean.parseBoolean(ParserUtils.getNodeValue(elementMeeting, "hasBeenForciblyEnded"));
-		startTime = new Date(Long.parseLong(ParserUtils.getNodeValue(elementMeeting, "startTime")));
-		endTime = new Date(Long.parseLong(ParserUtils.getNodeValue(elementMeeting, "endTime")));
-		participantCount = Integer.parseInt(ParserUtils.getNodeValue(elementMeeting, "participantCount"));
-		maxUsers = Integer.parseInt(ParserUtils.getNodeValue(elementMeeting, "maxUsers"));
-		moderatorCount = Integer.parseInt(ParserUtils.getNodeValue(elementMeeting, "moderatorCount"));
+		running = Boolean.parseBoolean(ParserUtils.getNodeValue(elementMeeting, "running", true));
+		hasBeenForciblyEnded = Boolean.parseBoolean(ParserUtils.getNodeValue(elementMeeting, "hasBeenForciblyEnded", true));
+		try {
+			startTime = new Date(Long.parseLong(ParserUtils.getNodeValue(elementMeeting, "startTime", true)));
+			endTime = new Date(Long.parseLong(ParserUtils.getNodeValue(elementMeeting, "endTime", true)));
+		} catch (Exception e) {
 
-		// \TODO fix the attendees parse
-//		NodeList nodeAttendees = elementMeeting.getElementsByTagName("attendees");
-//		if (nodeAttendees != null 
-//				&& nodeAttendees.getLength() > 0
-//				&& nodeAttendees.item(0) != null) {
-//			nodeAttendees = (NodeList) nodeAttendees.item(0);
-//		
-//			for (int i = 0; i < nodeAttendees.getLength(); ++i) {
-//				Attendee attendee = new Attendee();
-//				if (attendee.parse((Element) nodeAttendees.item(i))) {
-//					attendees.add(attendee);
-//				}
-//			}
-//		}
+		}
+		try {
+			startTime = parseDate(ParserUtils.getNodeValue(elementMeeting, "startTime"));
+			endTime = parseDate(ParserUtils.getNodeValue(elementMeeting, "endTime"));
+		} catch (Exception e) {
+			
+		}
+		participantCount = Integer.parseInt(ParserUtils.getNodeValue(elementMeeting, "participantCount", true));
+		maxUsers = Integer.parseInt(ParserUtils.getNodeValue(elementMeeting, "maxUsers", true));
+		moderatorCount = Integer.parseInt(ParserUtils.getNodeValue(elementMeeting, "moderatorCount", true));
+
+		NodeList nodeAttendees = elementMeeting.getElementsByTagName("attendee");
+		for (int i = 0; i < nodeAttendees.getLength(); ++i) {
+			Attendee attendee = new Attendee();
+			if (attendee.parse((Element) nodeAttendees.item(i))) {
+				attendees.add(attendee);
+			}
+		}
+
 		NodeList nodeMetadata = elementMeeting.getElementsByTagName("metadata");
 		if (nodeMetadata.getLength() > 0)
 			metadata.parse((Element) nodeMetadata.item(0));
@@ -120,6 +127,16 @@ public class Meeting {
 		message = ParserUtils.getNodeValue(elementMeeting, "message");
 		
 		return true;
+	}
+	
+	private Date parseDate(String date) {
+		DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy", Locale.CANADA);
+		try {
+			date = date.replace(date.substring(20, 24), "");
+			return dateFormat.parse(date);
+		} catch (Exception e) {
+			return new Date();
+		}
 	}
 	
 	public String getReturncode() {

@@ -175,13 +175,9 @@ public class Common {
 			String server = Common.DEFAULT_SERVER + "/test" + i;
 			solo.enterText(0, server);
 			solo.clickOnButton(solo.getString(R.string.connect));
-			if(solo.searchText(solo.getString(R.string.server_password)))
-			{
+			if(solo.searchText(solo.getString(R.string.server_password))) {
 				solo.enterText(0, Common.DEFAULT_PASSWORD);
-				Button button = (Button) solo.getCurrentActivity().findViewById(R.id.ok_password);
-				TouchUtils.clickView(test, solo.getButton("Ok"));
-				
-
+				solo.clickOnButton(solo.getString(R.string.ok));
 			}
 			solo.assertCurrentActivity("wrong activity", LoginPage.class);
 			junit.framework.Assert.assertTrue(solo.searchText(Common.exactly(server)));
