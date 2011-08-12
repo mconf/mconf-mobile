@@ -83,7 +83,9 @@ public class VideoPublish extends Thread implements RtmpReader {
     											 // of video frames to the list.
     											 // Set to false right when the RtmpPublisher decides to 
     											 // close the reader. When false, this boolean prevents the
-    											 // addition of new frames to the list.    												
+    											 // addition of new frames to the list.
+    
+    private boolean firstFrameWrote = false;
 	        
     public VideoPublish(BigBlueButtonClient context, boolean restartWhenResume, int frameRate, int width, int height, int bitRate, int GOP) {
     	this.context = context;    	 
@@ -168,11 +170,15 @@ public class VideoPublish extends Thread implements RtmpReader {
     	
        	Video video = new Video(timeStamp, aux, bufferSize);
    	    video.getHeader().setDeltaTime(interval);
-		video.getHeader().setStreamId(this.videoPublishHandler.videoConnection.streamId);
+		video.getHeader().setStreamId(videoPublishHandler.videoConnection.streamId);
 		
 		if(context.getUsersModule().getParticipants().get(context.getMyUserId()).getStatus().isHasStream()
 		   && framesListAvailable && framesList != null){
 			framesList.add(video);
+			if(!firstFrameWrote){
+				firstFrameWrote = true;
+				videoPublishHandler.videoConnection.publisher.fireNext(videoPublishHandler.videoConnection.publisher.channel, 0);
+			}
 			synchronized(this) {
 				this.notifyAll();
 			}

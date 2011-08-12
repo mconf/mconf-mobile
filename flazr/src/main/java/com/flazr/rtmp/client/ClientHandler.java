@@ -77,7 +77,7 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
     protected long bytesReadLastSent;    
     protected int bytesWrittenWindow = 2500000;
     
-    protected RtmpPublisher publisher;
+    public RtmpPublisher publisher;
     public int streamId;    
 
 	/**

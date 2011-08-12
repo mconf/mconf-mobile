@@ -36,10 +36,10 @@ public class CaptureConstants {
 	public static final int E_COULD_NOT_GET_GOP = -31;
 	
 	//video parameters constants:
-	public static final int DEFAULT_FRAME_RATE = 5;
+	public static final int DEFAULT_FRAME_RATE = 10;
 	public static final int DEFAULT_WIDTH = 320;
 	public static final int DEFAULT_HEIGHT = 240;
-	public static final int DEFAULT_BIT_RATE = 92000;
+	public static final int DEFAULT_BIT_RATE = 128000;
 	public static final int DEFAULT_GOP = 5;
 	
 	//constants to tell the state of the capture/encoding/publish:

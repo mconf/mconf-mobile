@@ -53,6 +53,8 @@ public abstract class RtmpPublisher {
     private int playLength = -1;
     private boolean paused;
     private int bufferDuration;
+    
+    public Channel channel;
 
     public static class Event {
 
@@ -121,7 +123,8 @@ public abstract class RtmpPublisher {
     }
 
     public void start(final Channel channel, final int seekTime, final int playLength, final RtmpMessage ... messages) {
-        this.playLength = playLength;
+        this.channel = channel;
+    	this.playLength = playLength;
         start(channel, seekTime, messages);
     }
 

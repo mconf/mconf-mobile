@@ -300,9 +300,9 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
             default:
             log.debug("ignoring rtmp message: {}", message);
         }
-        if(publisher != null && publisher.isStarted()) { // TODO better state machine
-            publisher.fireNext(channel, 0);
-        }
+//        if(publisher != null && publisher.isStarted()) { // TODO better state machine
+//            publisher.fireNext(channel, 0);
+//        }
     }
     
 	public BigBlueButtonClient getContext() {

@@ -392,6 +392,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         
     private int beginPreview(){
     	if(mVideoPublish.mCamera != null){
+    		log.debug("Ready to start the preview but waiting for the connection to be completely established...");
     		while(!((BigBlueButton) getContext().getApplicationContext()).getHandler().getUsersModule().getParticipants().get(((BigBlueButton) getContext().getApplicationContext()).getHandler().getMyUserId()).getStatus().isHasStream()){
     			synchronized(this) {
     				try {
@@ -401,7 +402,9 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 					}
     			}
     		}
+    		log.debug("Preview starting");
     		mVideoPublish.mCamera.startPreview();
+    		log.debug("Preview started");
     		return CaptureConstants.E_OK;
     	} else {
     		log.debug("Error: beginPreview() called without an opened camera");
