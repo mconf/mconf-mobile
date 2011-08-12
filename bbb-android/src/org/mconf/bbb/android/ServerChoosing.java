@@ -1,13 +1,16 @@
 package org.mconf.bbb.android;
 
-import java.util.Map.Entry;
+import java.util.Map;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,83 +24,123 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Toast;
 //class where the user chooses the server where he wants to connect
 public class ServerChoosing extends BigBlueButtonActivity  {
-
 	private static final int DELETE_SERVER = 0;
-	private ListView serversListView;
-	private ArrayAdapter<String> listViewAdapter;
+	private static final int CHANGE_PASSWORD = 1;
+	public static final String PASSWORD_INPUTED ="org.mconf.bbb.android.Client.PASSWORD_INPUTED";
+	public static final String PASSWORD_CHANGED ="org.mconf.bbb.android.Client.PASSWORD_CHANGED";
+	ListView servers;  
+	private ServerAdapter serverAdapter = new ServerAdapter();
+	SharedPreferences serverFile;
+	Map<String,String> storedServers;
+	Context context = this;
+	String serverURL;
+	public String serverPassword;
+	public static boolean changePassword = false;
+	 
+	private BroadcastReceiver passwordInputedLogin = new BroadcastReceiver(){ 
+		public void onReceive(Context context, Intent intent)
+		{ 
+			Bundle extras = intent.getExtras();
+			serverPassword= extras.getString("serverPassword");
+			callLogin();
+		} 
+	};
 	
+	private BroadcastReceiver passwordChanged = new BroadcastReceiver(){ 
+		public void onReceive(Context context, Intent intent)
+		{ 
+			Bundle extras = intent.getExtras();
+			serverPassword= extras.getString("serverPassword");
+			serverURL= extras.getString("serverURL");
+			changePassword = false;  
+			addServer(serverURL, serverPassword);
+			
+			
+		} 
+	};
+	
+	
+	public String getServerPassword() {
+		return serverPassword;
+	}
+
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.server_choosing);
-		listViewAdapter = new ArrayAdapter<String>(this, R.layout.server);
-		serversListView = (ListView) findViewById(R.id.servers);
-		serversListView.setTextFilterEnabled(true);
-		serversListView.setAdapter(listViewAdapter);
-		registerForContextMenu(serversListView);
-
+		
+		servers = (ListView) findViewById(R.id.servers);
+		servers.setTextFilterEnabled(true);
+		servers.setAdapter(serverAdapter);
+		setServerFile();
+		getServers();
+		registerForContextMenu(servers);
+		IntentFilter inputed = new IntentFilter(ServerChoosing.PASSWORD_INPUTED);
+		registerReceiver(passwordInputedLogin, inputed); 
+		IntentFilter changed = new IntentFilter(ServerChoosing.PASSWORD_CHANGED);
+		registerReceiver(passwordChanged, changed);
+		
+		
+		
 		//select server on click
 		Button connect = (Button) findViewById(R.id.connect);
 		connect.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				EditText editTextServer = (EditText)findViewById(R.id.serverURL);
-				String serverUrl = getServerUrl(editTextServer.getText().toString());
-				if (serverUrl.length() > 0) {
+				EditText server = (EditText)findViewById(R.id.serverURL);
+				if (server.getText().toString().length() > 0) {
 					
-					if (getPreferences().contains(serverUrl)) {
-						String serverPassword = getPreferences().getString(serverUrl, "");
-						backToLogin(serverUrl, serverPassword);
-					} else {
-						createPasswordDialog().show();
+					serverURL=server.getText().toString(); 
+					if(storedServers.get(serverURL)==null || storedServers.get(serverURL)=="")
+					{
+						ServerPasswordDialog serverPassword = new ServerPasswordDialog(context);
+						serverPassword.setCancelable(false);
+						serverPassword.show();
 					}
+
+					else
+					{
+						serverPassword=storedServers.get(serverURL);
+						callLogin();
+					}
+						
 				}
-			}		
+			}
 		});
 
-		serversListView.setOnItemClickListener(new OnItemClickListener() {
+		servers.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				EditText server = (EditText)findViewById(R.id.serverURL);
-				String serverURL = serversListView.getItemAtPosition(position).toString();
+				String serverURL = ((Server) serverAdapter.getItem(position)).getUrl();
 				server.setText(serverURL);
 
 			}
 		});
 
-		loadList();
+
 	}
 	
-	private AlertDialog.Builder createPasswordDialog() {
-		final EditText editTextPassword = new EditText(this);
-		AlertDialog.Builder passwordDialog = new AlertDialog.Builder(this);
-		passwordDialog.setCancelable(false);
-		passwordDialog.setTitle(R.string.server_password);
-		passwordDialog.setView(editTextPassword);
-		passwordDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int id) {
-				
-				EditText editTextServer = (EditText) findViewById(R.id.serverURL);
-				String serverUrl = getServerUrl(editTextServer.getText().toString());
-				String serverPassword = editTextPassword.getText().toString();
-				
-				addServer(serverUrl, serverPassword);
-				backToLogin(serverUrl, serverPassword);
-			}
-		});
-		return passwordDialog;
-	}
+	
 
-	private void backToLogin(String serverUrl, String serverPassword) {
+	private void callLogin() {
+		while (serverURL.endsWith("/")) {
+			serverURL = serverURL.substring(0, serverURL.length() - 1);
+		}	
+
 		final Intent callLogin = new Intent (LoginPage.SERVER_CHOSED);
-		callLogin.putExtra("serverUrl", serverUrl);
+		callLogin.putExtra("serverUrl", serverURL);
 		callLogin.putExtra("serverPassword", serverPassword);
 		sendBroadcast(callLogin);
+		addServer(serverURL, serverPassword);
 		finish(); 
+		
 	}
 
 	@Override
@@ -106,74 +149,101 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 		super.onCreateContextMenu(menu, v, menuInfo);
 
 		menu.add(0, DELETE_SERVER, 0, R.string.delete_server);
+		menu.add(0, CHANGE_PASSWORD, 0, R.string.change_password);
+
 	}
-	
+	//delete server on long press
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 
 		switch (item.getItemId()) {
-			case DELETE_SERVER:
-				deleteServer(serversListView.getItemAtPosition(info.position).toString());
-				return true;
-			}
+		case DELETE_SERVER:
+			deleteServer(((Server) serverAdapter.getItem(info.position)).getUrl());
+			return true;
+		case CHANGE_PASSWORD:	
+			changePassword = true;
+			ServerPasswordDialog serverPassword = new ServerPasswordDialog(context);
+			serverPassword.setCancelable(true);
+			serverPassword.show();
+			return true;
+		}
 		return super.onContextItemSelected(item);
 	}
 
-	private void loadList() {
-		for (Entry<String, ?> entry : getPreferences().getAll().entrySet()) {
-			addServer(entry.getKey(), (String) entry.getValue());
+	public SharedPreferences getServerFile() {
+		return serverFile;
+	}
+	//the servers are stored on a SharedPreferences file, private to the program
+	@SuppressWarnings("unchecked")
+	public void setServerFile() {
+		if(this.getSharedPreferences("storedServers", MODE_PRIVATE)!=null)
+			this.serverFile = this.getSharedPreferences("storedServers", MODE_PRIVATE);
+		else {
+			SharedPreferences.Editor serverEditor = serverFile.edit();
+			serverEditor.commit(); 
+			this.serverFile = this.getSharedPreferences("storedServers", MODE_PRIVATE);
 		}
-		addServer("http://test.bigbluebutton.org", "03b07");
-		addServer("http://mconfdev.inf.ufrgs.br", "03b07");
-	}
-	
-	private SharedPreferences getPreferences() {
-		return getSharedPreferences("storedServers", MODE_PRIVATE);
-	}
-	
-	private String getServerUrl(String serverUrl) {
-		while (serverUrl.endsWith("/")) {
-			serverUrl = serverUrl.substring(0, serverUrl.length() - 1);
-		}
-		return serverUrl;
-	}
-	
-	private void addServer(final String serverUrl, String serverPassword)
-	{
-		Log.d("===============> ", "adding server " + serverUrl + " password " + serverPassword);
+		// always insert the prav servers to the list
+		//addServer("http://mconf.inf.ufrgs.br", "helloPassword");
+		//\TODO add the right password
 		
-		SharedPreferences.Editor serverEditor = getPreferences().edit();
-		serverEditor.putString(serverUrl, serverPassword);
-		serverEditor.commit();
-
-		if (listViewAdapter.getPosition(serverUrl) == -1) {
-			runOnUiThread(new Runnable() {
-	
-				@Override  
-				public void run() {
-					listViewAdapter.add(serverUrl);
-					listViewAdapter.notifyDataSetChanged();
-				}
-			});
-		}
+		this.storedServers = (Map<String, String>) serverFile.getAll();
 	}
+	
+	@Override
+	protected void onDestroy() {
+		unregisterReceiver(passwordChanged);
+		unregisterReceiver(passwordInputedLogin);
+		super.onDestroy();
+	}
+
+	public void getServers()
+	{
+
+		for(String server:storedServers.keySet())
+		{	String password = storedServers.get(server);
+			serverAdapter.addSection(server, password);
+		}
+
+	}
+
+	public void addServer(String newServer, String serverPassword)
+	{
+		SharedPreferences.Editor serverEditor = serverFile.edit();
+		if(!serverFile.contains(newServer)||(serverFile.contains(newServer) && !serverFile.getString(newServer, "").equals(serverPassword)))
+		{
+			serverAdapter.addSection(newServer, serverPassword);
+			serverAdapter.notifyDataSetChanged();
+			serverEditor.putString(newServer, serverPassword);
+			serverEditor.commit();
+		}
+		
+			
+	}
+
 
 	public void deleteServer(final String server)
 	{
-		SharedPreferences.Editor serverEditor = getPreferences().edit();
-		serverEditor.remove(server);
-		serverEditor.commit();
+		SharedPreferences.Editor serverEditor = serverFile.edit();
+		if(serverFile.contains(server))
+		{
+			serverEditor.remove(server);
+			serverEditor.commit();
+			runOnUiThread(new Runnable() {
 
-		runOnUiThread(new Runnable() {
+				@Override  
+				public void run() {
+					serverAdapter.removeSection(server);
+					serverAdapter.notifyDataSetChanged();
+					setServerFile();
 
-			@Override  
-			public void run() {
-				listViewAdapter.remove(server);
-				listViewAdapter.notifyDataSetChanged();
+				}
 			}
-		});
+			);
+		}
+
 	}
 
 }

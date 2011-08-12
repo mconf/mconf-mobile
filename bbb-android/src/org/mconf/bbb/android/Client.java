@@ -276,6 +276,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				new JoinFailDialog(this).show();
 				return false;
 			}
+
 		} else if (getIntent().getExtras() != null) {
 			getGlobalContext().setLaunchedBy(BigBlueButton.LAUNCHED_BY_APPLICATION);
 
@@ -695,29 +696,29 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		networkProperties.show();
 	}
 
-protected void onUserLeaveHint() {
-	if(!backToLogin&&!backToPrivateChat)
-		showBackgroundNotification();
-}
+	protected void onUserLeaveHint() {
+		if(!backToLogin&&!backToPrivateChat)
+			showBackgroundNotification();
+	}
 
-public void showBackgroundNotification()
-{
-	String contentTitle = getResources().getString(R.string.application_on_background);
-	String contentText = getResources().getString(R.string.application_on_background_text);
-	
-	NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-	Notification notification = new Notification(R.drawable.icon_bbb, contentTitle, 0);
-	Intent notificationIntent = new Intent(getApplicationContext(), Client.class);
-	notificationIntent.setAction(ACTION_TO_FOREGROUND);
-	
-	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
-	notification.flags=Notification.FLAG_ONGOING_EVENT;
-	notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
-	
-	Toast.makeText(getApplicationContext(), contentText, Toast.LENGTH_SHORT).show();
-	notificationManager.notify(BACKGROUND_NOTIFICATION_ID, notification);	
-	
-}
+	public void showBackgroundNotification()
+	{
+		String contentTitle = getResources().getString(R.string.application_on_background);
+		String contentText = getResources().getString(R.string.application_on_background_text);
+
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		Notification notification = new Notification(R.drawable.icon_bbb, contentTitle, 0);
+		Intent notificationIntent = new Intent(getApplicationContext(), Client.class);
+		notificationIntent.setAction(ACTION_TO_FOREGROUND);
+
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+		notification.flags=Notification.FLAG_ONGOING_EVENT;
+		notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
+
+		Toast.makeText(getApplicationContext(), contentText, Toast.LENGTH_SHORT).show();
+		notificationManager.notify(BACKGROUND_NOTIFICATION_ID, notification);	
+
+	}
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {

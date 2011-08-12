@@ -13,7 +13,7 @@
 		android:layout_alignLeft="@+id/choose_server" android:dividerHeight="2dp"
 		android:id="@+id/servers" android:layout_width="wrap_content"
 		android:divider="@color/title_background_onfocus"
-		android:stackFromBottom="true" android:transcriptMode="alwaysScroll" />
+		android:stackFromBottom="true" android:transcriptMode="normal" />
 
 
 	<RelativeLayout android:id="@+id/bottom_bar"
