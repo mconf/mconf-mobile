@@ -101,30 +101,41 @@ public class Authentication {
         client.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
 
         PostMethod method = new PostMethod(server + "/session");
+		method.setFollowRedirects(false);
 //		method.addParameter("authenticity_token", token);
 		method.addParameter("login", username);
 		method.addParameter("password", password);
 //		method.setRequestHeader("Cookie", cookie);
 		
-		client.executeMethod(method);
-		String result = method.getResponseBodyAsString().trim();
-
+		int response = client.executeMethod(method);
+		
+		// the response code must be a redirect
+		if (response != 302) {
+			log.error("Invalid response code");
+			return false;
+		}
+		
+		String location = null;
+		for (HeaderElement element : method.getResponseHeader("Location").getElements()) {
+			location = element.getName(); 
+		}
+		if (location == null ||
+				!location.equals(server + "/home")) {
+			log.error("Invalid password");
+			return false;
+		}
+		
 	    for (Cookie tmp : client.getState().getCookies()) {
 	    	if (tmp.getName().equals("_vcc_session"))
 	    		cookie = tmp.toString();
 	    }
 		method.releaseConnection();
 		
-		if (!result.equals("<html><body>You are being <a href=\"" + server + "/home\">redirected</a>.</body></html>")) {
-			log.error("Invalid password");
-			return false;
-		}
-		
 		log.info("Authenticated on " + server);
 		return true;
 	}
 	
-	public String authenticatedGet(String path) throws HttpException, IOException {
+	public String getUrl(String path) throws HttpException, IOException {
 		if (!authenticated)
 			return "";
 		
@@ -136,5 +147,35 @@ public class Authentication {
 		method.releaseConnection();
 		
 		return result;
+	}
+	
+	public String getRedirectUrl(String path) throws HttpException, IOException {
+		if (!authenticated)
+			return "";
+		
+		HttpClient client = new HttpClient();
+		GetMethod method = new GetMethod(server + path);
+		method.setFollowRedirects(false);
+		method.setRequestHeader("Cookie", cookie);
+		int response = client.executeMethod(method);
+		
+		// the response code must be a redirect
+		if (response != 302) {
+			log.error("Invalid response code");
+			return "";
+		}
+		
+		String location = null;
+		for (HeaderElement element : method.getResponseHeader("Location").getElements()) {
+			location = element.getName() + "="+ element.getValue(); 
+		}
+		if (location == null) {
+			log.error("Invalid redirect URL");
+			return "";
+		}
+		
+		method.releaseConnection();
+		
+		return location;
 	}
 }

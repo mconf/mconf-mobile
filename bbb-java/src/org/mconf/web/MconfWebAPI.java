@@ -1,6 +1,7 @@
 package org.mconf.web;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class MconfWebAPI {
 	public static List<Room> getRooms(Authentication auth) {
 		List<Room> list = new ArrayList<Room>();
 		try {
-			String str = auth.authenticatedGet("/home/user_rooms.json");
+			String str = auth.getUrl("/home/user_rooms.json");
 			JSONArray arrayRooms = new JSONArray(str);
 			for (int i = 0; i < arrayRooms.length(); ++i) {
 				JSONObject objectRoom = arrayRooms.getJSONObject(i).getJSONObject("bigbluebutton_room");
@@ -37,5 +38,22 @@ public class MconfWebAPI {
 		for (Room room : list)
 			log.debug(room.toString());
 		return list;
+	}
+
+
+	public static String getJoinUrl(Authentication auth, String path) {
+		String result = "";
+		try {
+			result = auth.getRedirectUrl(path);
+//			result = URLDecoder.decode(result, "UTF-8");
+			log.debug("getJoinUrl = {}", result);
+		} catch (HttpException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
 	}
 }
