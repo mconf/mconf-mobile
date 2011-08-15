@@ -31,7 +31,7 @@ public class Contact extends Participant {
 	public static final int CONTACT_ON_PRIVATE_MESSAGE = 2;
 	
 	private int chatStatus = CONTACT_NORMAL;
-	private boolean sharingPresentation=false;
+	
 
 	public Contact(IParticipant partic) {
 		this.setName(partic.getName());
@@ -54,13 +54,7 @@ public class Contact extends Participant {
 		return name;
 	}
 
-	public void setSharingPresentation(boolean sharingPresentation) {
-		this.sharingPresentation = sharingPresentation;
-	}
-
-	public boolean isSharingPresentation() {
-		return sharingPresentation;
-	}
+	
 	
 
 }

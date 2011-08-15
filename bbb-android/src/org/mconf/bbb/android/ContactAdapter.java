@@ -48,7 +48,7 @@ public class ContactAdapter extends BaseAdapter {
 	private List<IParticipant> listContact = new ArrayList<IParticipant>();
 
 	private int myUserId = -1;
-
+	private boolean sharingPresentation=false;;
 	public ContactAdapter() {
 	}
 	
@@ -71,6 +71,15 @@ public class ContactAdapter extends BaseAdapter {
 		return null;
 	}
 
+	public void setSharingPresentation(boolean sharingPresentation) {
+		this.sharingPresentation = sharingPresentation;
+	}
+
+	public boolean isSharingPresentation() {
+		
+		return sharingPresentation;
+	}
+	
 	public void addSection(IParticipant participant) {
 		Contact contact = new Contact(participant);
 		if (getUserById(contact.getUserId()) == null) // only add if the user is not on the list
@@ -157,7 +166,7 @@ public class ContactAdapter extends BaseAdapter {
 
 		final ImageView presenter = (ImageView) convertView.findViewById(R.id.presenter);
 		if (entry.isPresenter()) {
-			if(entry.isSharingPresentation())
+			if(sharingPresentation)
 				presenter.setImageDrawable(viewGroup.getContext().getResources().getDrawable(R.drawable.presenter_sharing));
 			
 			else

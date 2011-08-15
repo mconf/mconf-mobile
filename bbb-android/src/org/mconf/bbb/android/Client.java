@@ -1272,9 +1272,9 @@ public void showBackgroundNotification()
 			@Override
 			public void run() {
 				
-				if(!contactAdapter.getPresenter().isSharingPresentation())
+				if(!contactAdapter.isSharingPresentation())
 				{
-					contactAdapter.getPresenter().setSharingPresentation(true);
+					contactAdapter.setSharingPresentation(true);
 					contactAdapter.notifyDataSetChanged();
 
 					Toast.makeText(getApplicationContext(), R.string.presentation_shared, Toast.LENGTH_SHORT).show();
@@ -1296,7 +1296,7 @@ public void showBackgroundNotification()
 
 			@Override
 			public void run() {
-				contactAdapter.getPresenter().setSharingPresentation(false);
+				contactAdapter.setSharingPresentation(false);
 				contactAdapter.notifyDataSetChanged();
 			}
 		}
