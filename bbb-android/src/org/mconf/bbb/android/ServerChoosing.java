@@ -145,7 +145,7 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 				serverAdapter.notifyDataSetChanged();
 			}
 		});
-		addServer("http://mconfdev.inf.ufrgs.br", "03b07");
+		addServer("http://test.bigbluebutton.org", "03b07");
 	}
 
 	private void addServer(final String newServer, final String serverPassword) {	
