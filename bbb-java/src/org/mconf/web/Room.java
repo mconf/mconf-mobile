@@ -16,4 +16,8 @@ public class Room {
 		return path;
 	}
 	
+	@Override
+	public String toString() {
+		return name + " -> " + path;
+	}
 }

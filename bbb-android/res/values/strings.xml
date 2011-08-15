@@ -83,6 +83,10 @@
 		<string name="start_time">Start time</string>
 		<string name="participant_count">Participant count</string>
 		<string name="moderator_count">Moderator count</string>
+		<string name="username">Username</string>
+		<string name="password">Password</string>
+		<string name="remember">Remember me</string>
+		<string name="rooms">Rooms</string>
 	<string name="about">
 BBB-Android is an Android implementation of the BigBlueButton client.
 \nVersion ${VERSION}

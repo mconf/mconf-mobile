@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+    <EditText android:id="@+id/editTextUsername" android:layout_height="wrap_content" android:inputType="textEmailAddress" android:layout_centerHorizontal="true" android:layout_width="200dp" android:layout_below="@+id/imageView1" android:layout_marginBottom="30dp">
+        <requestFocus></requestFocus>
+    </EditText>
+    <EditText android:id="@+id/editTextPassword" android:layout_height="wrap_content" android:inputType="textPassword" android:layout_below="@+id/editTextUsername" android:layout_alignLeft="@+id/editTextUsername" android:layout_width="200dp"></EditText>
+    <ImageView android:src="@drawable/mconf_logo" android:id="@+id/imageView1" android:layout_height="wrap_content" android:layout_alignParentTop="true" android:layout_centerHorizontal="true" android:layout_width="wrap_content" android:layout_marginBottom="30dp"></ImageView>
+    <Spinner android:id="@+id/spinnerRooms" android:layout_height="wrap_content" android:layout_centerHorizontal="true" android:layout_width="200dp" android:layout_marginBottom="30dp" android:layout_below="@+id/checkBoxRememberMe"></Spinner>
+    <Button android:id="@+id/buttonJoin" android:layout_height="wrap_content" android:layout_below="@+id/spinnerRooms" android:layout_centerHorizontal="true" android:text="@string/login_button_join" android:layout_width="200dp" android:layout_marginBottom="30dp"></Button>
+    <TextView android:id="@+id/textView1" android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_height="wrap_content" android:layout_above="@+id/editTextUsername" android:layout_alignLeft="@+id/editTextUsername" android:text="@string/username"></TextView>
+    <TextView android:id="@+id/textView2" android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_height="wrap_content" android:layout_above="@+id/editTextPassword" android:layout_alignLeft="@+id/editTextPassword" android:text="@string/password"></TextView>
+    <TextView android:id="@+id/textView3" android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_height="wrap_content" android:layout_above="@+id/spinnerRooms" android:layout_alignLeft="@+id/spinnerRooms" android:text="@string/rooms"></TextView>
+    <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignLeft="@+id/editTextPassword" android:layout_below="@+id/editTextPassword" android:id="@+id/checkBoxRememberMe" android:layout_marginBottom="30dp" android:text="@string/remember"></CheckBox>
+    
+</RelativeLayout>

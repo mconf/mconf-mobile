@@ -23,7 +23,6 @@ public class MconfWebAPI {
 			for (int i = 0; i < arrayRooms.length(); ++i) {
 				JSONObject objectRoom = arrayRooms.getJSONObject(i).getJSONObject("bigbluebutton_room");
 				list.add(new Room(objectRoom.getString("name"), objectRoom.getString("join_path")));
-				log.debug(objectRoom.toString());
 			}
 		} catch (HttpException e) {
 			// TODO Auto-generated catch block
@@ -35,7 +34,8 @@ public class MconfWebAPI {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		log.debug(list.toString());
+		for (Room room : list)
+			log.debug(room.toString());
 		return list;
 	}
 }
