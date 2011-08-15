@@ -154,7 +154,7 @@ public class MeetingInfDialog extends Dialog implements OnClickListener{
 	}
 
 	public void setParticipantCount() {
-		this.participantCount = getJoined().getParticipantCount();
+		this.participantCount = ((BigBlueButton) context.getApplicationContext()).getHandler().getUsersModule().getParticipantCount();
 	}
 
 	public int getModeratorCount() {
@@ -162,7 +162,7 @@ public class MeetingInfDialog extends Dialog implements OnClickListener{
 	}
 
 	public void setModeratorCount() {
-		this.moderatorCount = getJoined().getModeratorCount();
+		this.moderatorCount = ((BigBlueButton) context.getApplicationContext()).getHandler().getUsersModule().getModeratorCount();
 	}
 
 	
