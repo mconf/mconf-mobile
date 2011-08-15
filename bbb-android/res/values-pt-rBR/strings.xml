@@ -77,6 +77,7 @@
 	<string name="meeting_information">Informações da sala</string>
 	<string name="presentation_shared">Uma apresentação foi compartilhada</string>
 	<string name="presentation_removed">A apresentação foi removida</string>
+		<string name="show_presentation">Mostrar apresentação</string>
 		<string name="loading_presentation">Carregando apresentação...</string>
 	
 		<string name="meeting_id">Identificação da sala</string>

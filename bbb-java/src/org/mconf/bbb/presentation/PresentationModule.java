@@ -195,13 +195,14 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 		log.debug("onSharedObjectSend");
 
 		if(method.equals("gotoSlideCallback")&& params!=null) //change slide
-		{
+		{	
 			currentSlide = ((Double) params.get(0)).intValue();
+			log.debug("changeSlide {}", currentSlide);
 			for (IBigBlueButtonClientListener l : handler.getContext().getListeners())
 				l.onSlideChanged(currentSlide);
 		}
 		else if(method.equals("sharePresentationCallback")&& params!=null) //presentation shared or removed
-		{
+		{	log.debug("presentationShared");
 			String presentationName = (String) params.get(0);
 			boolean share = (Boolean) params.get(1);
 			if(share)//presentation shared

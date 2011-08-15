@@ -101,6 +101,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public static final int POPUP_MENU_OPEN_PRIVATE_CHAT = Menu.FIRST + 4;
 	public static final int POPUP_MENU_SHOW_VIDEO = Menu.FIRST + 5;
 	public static final int POPUP_MENU_LOWER_HAND = Menu.FIRST + 6;
+	public static final int POPUP_MENU_SHOW_PRESENTATION = Menu.FIRST + 7;
 
 	public static final int CHAT_NOTIFICATION_ID = 77000;
 	public static final int BACKGROUND_NOTIFICATION_ID = 88000;
@@ -108,6 +109,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public static final String ACTION_OPEN_SLIDER = "org.mconf.bbb.android.Client.OPEN_SLIDER";
 	public static final String ACTION_TO_FOREGROUND = "org.mconf.bbb.android.Client.ACTION_TO_FOREGROUND";
 	public static final String BACK_TO_CLIENT = "org.mconf.bbb.android.Client.BACK_TO_CLIENT";
+	public static final String KICKED_USER = "bbb.android.action.KICKED_USER";
 	public static final String FINISH = "bbb.android.action.FINISH";
 	public static final String QUIT = "bbb.android.action.QUIT";
 	public static final String CLOSE_VIDEO = "org.mconf.bbb.android.Video.CLOSE";
@@ -173,12 +175,19 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 	private static int lastReadNum=-1; 
 	private int addedMessages=0;
+	private boolean presentationShared = false;
 	private boolean dialogShown = false;
 	private boolean kicked=false;
-	private boolean backToLogin = false;
-	private boolean backToPrivateChat = false;
+	private boolean otherActivity = false;
+	
+	
 
+	private Presentation presentationDialog;
 	private VideoDialog mVideoDialog;
+
+	private String presentationName;
+
+	private int currentSlide;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -460,6 +469,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				final Contact contact = (Contact) contactAdapter.getItem(info.position);
 				if (contact.getUserId() != getBigBlueButton().getMyUserId())
 					menu.add(0, POPUP_MENU_OPEN_PRIVATE_CHAT, 0, R.string.open_private_chat);
+				if(contact.getStatus().isPresenter() && presentationShared)
+					menu.add(0, POPUP_MENU_SHOW_PRESENTATION, 0, R.string.show_presentation);
 				if (moderator) {
 					if(contact.isRaiseHand())
 						menu.add(0, POPUP_MENU_LOWER_HAND, 0, R.string.lower_hand);
@@ -496,7 +507,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				Contact contact = (Contact) contactAdapter.getItem(info.position);
 				getBigBlueButton().kickUser(contact.getUserId());
 				//closes private chat with the user if he is kicked
-				Intent kickedUser = new Intent(PrivateChat.KICKED_USER);
+				Intent kickedUser = new Intent(KICKED_USER);
 				kickedUser.putExtra("userId", contact.getUserId());
 				sendBroadcast(kickedUser);
 				return true;
@@ -517,6 +528,13 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			{
 				Listener listener = (Listener) listenerAdapter.getItem(info.position);
 				getBigBlueButton().muteUnmuteListener(listener.getUserId(), !listener.isMuted());
+				return true;
+			}
+			case POPUP_MENU_SHOW_PRESENTATION:
+			{
+				otherActivity=true;
+				presentationDialog = new Presentation(this, presentationName, currentSlide);
+				presentationDialog.show();
 				return true;
 			}
 			case POPUP_MENU_KICK_LISTENER: 
@@ -552,7 +570,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 
 	private void startPrivateChat(final Contact contact) {
-		backToPrivateChat=true;
+		otherActivity=true;
 		Intent intent = new Intent(getApplicationContext(), PrivateChat.class);
 		intent.putExtra("username", contact.getName());
 		intent.putExtra("userId", contact.getUserId());
@@ -634,7 +652,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			Intent login = new Intent(this, LoginPage.class);
 			startActivity(login);
 			lastReadNum=-1;
-			backToLogin=true;
+			otherActivity=true;
 			sendBroadcast(intent);
 			finish();
 			return true;
@@ -660,6 +678,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		case MENU_AUDIO_CONFIG:
 			new AudioControlDialog(this).show();
 			return true;
+		
 
 		case MENU_DISCONNECT:
 			getBigBlueButton().disconnect();
@@ -701,7 +720,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 
 protected void onUserLeaveHint() {
-	if(!backToLogin&&!backToPrivateChat)
+	if(!otherActivity)
 		showBackgroundNotification();
 }
 
@@ -929,7 +948,7 @@ public void showBackgroundNotification()
 				contactAdapter.notifyDataSetChanged();
 				CustomListview contactListView = (CustomListview) findViewById(R.id.contacts_list);
 				contactListView.setHeight();
-				Intent kickedUser = new Intent(PrivateChat.KICKED_USER);
+				Intent kickedUser = new Intent(KICKED_USER);
 				kickedUser.putExtra("userId", p.getUserId());
 				sendBroadcast(kickedUser);
 				
@@ -963,7 +982,7 @@ public void showBackgroundNotification()
 			return;
 
 		if (intent.getAction().equals(BACK_TO_CLIENT)) {
-			backToPrivateChat=false;
+			otherActivity=false;
 			for (int i=0; i<contactAdapter.getCount(); i++)
 				if(contactAdapter.getChatStatus(i)==Contact.CONTACT_ON_PRIVATE_MESSAGE)
 					((Contact) contactAdapter.getItem(i)).setChatStatus(Contact.CONTACT_NORMAL);
@@ -1247,18 +1266,21 @@ public void showBackgroundNotification()
 
 	@Override
 	public void onPresentationShared(String presentationName) {
-		// TODO Auto-generated method stub
+		log.debug("on presentation shared");
 		runOnUiThread(new Runnable() {
 
 			@Override
 			public void run() {
-				log.debug("on presentation shared");
-				contactAdapter.getPresenter().setSharingPresentation(true);
-				contactAdapter.notifyDataSetChanged();
+				
+				if(!contactAdapter.getPresenter().isSharingPresentation())
+				{
+					contactAdapter.getPresenter().setSharingPresentation(true);
+					contactAdapter.notifyDataSetChanged();
 
-				Toast.makeText(getApplicationContext(), R.string.presentation_shared, Toast.LENGTH_SHORT).show();
-				
-				
+					Toast.makeText(getApplicationContext(), R.string.presentation_shared, Toast.LENGTH_SHORT).show();
+				}
+
+
 			}
 		}
 		);
@@ -1285,11 +1307,10 @@ public void showBackgroundNotification()
 	@Override
 	public void onPresentationLoaded(String presentationName,
 			ArrayList<ISlide> presentation, int currentSlide) {
+		this.presentationName = presentationName;
+		this.currentSlide =currentSlide;
+		presentationShared=true;
 		
-		Intent showPresentation = new Intent(getApplicationContext(),Presentation.class);
-		showPresentation.putExtra("presentationName", presentationName);
-		showPresentation.putExtra("currentSlide", currentSlide);
-		startActivity(showPresentation);
 	}
 
 	

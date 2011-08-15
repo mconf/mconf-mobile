@@ -204,10 +204,9 @@ public class PrivateChat extends BigBlueButtonActivity {
 
 	public static final int MENU_CLOSE = Menu.FIRST;
 
-	private static final String FINISH = "bbb.android.action.FINISH";
-	private static final String SEND_TO_BACK = "bbb.android.action.SEND_TO_BACK";
+	
 	public static final String CHAT_CLOSED = "bbb.android.action.CHAT_CLOSED";
-	public static final String KICKED_USER = "bbb.android.action.KICKED_USER";
+	
 
 	private static final int INVALIDATED = 6678;
 
@@ -483,17 +482,17 @@ public class PrivateChat extends BigBlueButtonActivity {
 	}
 
 	private void registerFinishedReceiver(){ 
-		IntentFilter filter = new IntentFilter(FINISH); 
+		IntentFilter filter = new IntentFilter(Client.FINISH); 
 		registerReceiver(finishedReceiver, filter); 
 	}
 
 	private void registerMoveToBackReceiver(){ 
-		IntentFilter filter = new IntentFilter(SEND_TO_BACK); 
+		IntentFilter filter = new IntentFilter(Client.SEND_TO_BACK); 
 		registerReceiver(moveToBack, filter); 
 	}
 
 	private void registerKickedUser(){
-		IntentFilter filter = new IntentFilter(KICKED_USER);
+		IntentFilter filter = new IntentFilter(Client.KICKED_USER);
 		registerReceiver(kickedUser, filter);
 	}
 
