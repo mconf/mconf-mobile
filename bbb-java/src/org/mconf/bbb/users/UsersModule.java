@@ -47,7 +47,7 @@ public class UsersModule extends Module implements ISharedObjectListener {
 	private final IClientSharedObject participantsSO;
 
 	private Map<Integer, Participant> participants = new ConcurrentHashMap<Integer, Participant>();
-	private String meetingID;
+	private String meetingName;
 	private Meeting meeting;
 
 	public UsersModule(MainRtmpConnection handler, Channel channel) {
@@ -57,8 +57,8 @@ public class UsersModule extends Module implements ISharedObjectListener {
 		participantsSO.addSharedObjectListener(this);
 		participantsSO.connect(channel);
 
-		meetingID = handler.getContext().getJoinService().getJoinedMeeting().getMeetingID();
-		meeting = handler.getContext().getJoinService().getMeetingById(meetingID);
+		meetingName = handler.getContext().getJoinService().getJoinedMeeting().getConfname();
+		meeting = handler.getContext().getJoinService().getMeetingByName(meetingName);
 		meeting.setModeratorCount(0);
 		meeting.setParticipantCount(0);
 	}

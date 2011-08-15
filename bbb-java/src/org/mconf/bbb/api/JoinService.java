@@ -25,8 +25,8 @@ public class JoinService {
 	private long timestamp = 0,
 			lastRequest = 0;
 	
-//	private static String DEMO_PATH = "/demo/mobile.jsp";
-	private static String DEMO_PATH = "/bigbluebutton/demo/mobile.jsp";
+	private static String DEMO_PATH = "/demo/mobile.jsp";
+//	private static String DEMO_PATH = "/bigbluebutton/demo/mobile.jsp";
 
 	public JoinedMeeting getJoinedMeeting() {
 		return joinedMeeting;
@@ -50,9 +50,9 @@ public class JoinService {
 		lastRequest = 0;
 	}
 
-	public Meeting getMeetingById(String meetingID) {
-		for(Meeting meeting:getMeetings()) {
-			if(meeting.getMeetingID().equals(meetingID))
+	public Meeting getMeetingByName(String meetingName) {
+		for(Meeting meeting : meetings.getMeetings()) {
+			if(meeting.getMeetingName().equals(meetingName))
 				return meeting;
 		}
 		return null;
@@ -242,6 +242,7 @@ public class JoinService {
 		}
 		
 		if (parsedCorrectly && joinedMeeting.getReturncode().equals("SUCCESS")) {
+			log.info("Joined the meeting: " + joinedMeeting.toString());
 			return true;
 		} else {
 			if (joinedMeeting.getMessage() != null)

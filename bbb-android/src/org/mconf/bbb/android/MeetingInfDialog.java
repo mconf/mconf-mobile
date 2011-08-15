@@ -23,34 +23,19 @@ package org.mconf.bbb.android;
 
 
 import java.util.Date;
-import java.util.zip.Inflater;
 
 import org.mconf.bbb.api.JoinService;
-import org.mconf.bbb.api.JoinedMeeting;
 import org.mconf.bbb.api.Meeting;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
-import android.widget.TableLayout.LayoutParams;
-import android.widget.TextView;
 
 public class MeetingInfDialog extends Dialog implements OnClickListener{
 
@@ -120,9 +105,9 @@ public class MeetingInfDialog extends Dialog implements OnClickListener{
 
 	public Meeting getJoined()
 	{
-		JoinService joined = ((BigBlueButton) context.getApplicationContext()).getHandler().getJoinService();
-		String meetingID= joined.getJoinedMeeting().getMeetingID();
-		return joined.getMeetingById(meetingID);
+		JoinService joinService = ((BigBlueButton) context.getApplicationContext()).getHandler().getJoinService();
+		String meetingName = joinService.getJoinedMeeting().getConfname();
+		return joinService.getMeetingByName(meetingName);
 		
 		
 	}
