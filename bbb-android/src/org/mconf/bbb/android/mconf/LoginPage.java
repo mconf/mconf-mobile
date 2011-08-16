@@ -60,24 +60,26 @@ public class LoginPage extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					if (auth == null
-							|| !auth.isAuthenticated())
-						auth = new Authentication(DEFAULT_SERVER, editTextUsername.getText().toString(), editTextPassword.getText().toString());
-					if (auth.isAuthenticated()) {
-						storeCredentials();
-						rooms = MconfWebAPI.getRooms(auth);
-						if (rooms.isEmpty()) {
-							Toast.makeText(LoginPage.this, R.string.no_rooms, Toast.LENGTH_SHORT).show();
-						} else {
-							for (Room room : rooms) {
-								spinnerAdapter.add(room.getName());
-							}
-							spinnerAdapter.notifyDataSetChanged();
-							spinnerRooms.performClick();
-						}
-					} else {
-						Toast.makeText(LoginPage.this, R.string.invalid_password, Toast.LENGTH_SHORT).show();
-					}
+					RoomsDialog dialog = new RoomsDialog(LoginPage.this);
+					dialog.show();
+//					if (auth == null
+//							|| !auth.isAuthenticated())
+//						auth = new Authentication(DEFAULT_SERVER, editTextUsername.getText().toString(), editTextPassword.getText().toString());
+//					if (auth.isAuthenticated()) {
+//						storeCredentials();
+//						rooms = MconfWebAPI.getRooms(auth);
+//						if (rooms.isEmpty()) {
+//							Toast.makeText(LoginPage.this, R.string.no_rooms, Toast.LENGTH_SHORT).show();
+//						} else {
+//							for (Room room : rooms) {
+//								spinnerAdapter.add(room.getName());
+//							}
+//							spinnerAdapter.notifyDataSetChanged();
+//							spinnerRooms.performClick();
+//						}
+//					} else {
+//						Toast.makeText(LoginPage.this, R.string.invalid_password, Toast.LENGTH_SHORT).show();
+//					}
 					return true;
 				} else
 					return false;

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/Scroll" android:layout_width="fill_parent"
+  android:layout_height="fill_parent">
+	<RelativeLayout
+	  xmlns:android="http://schemas.android.com/apk/res/android"
+	  android:orientation="vertical"
+	  android:layout_width="fill_parent" android:layout_height="fill_parent">
+	  	<RelativeLayout android:id="@+id/layout_rooms_user"
+		  xmlns:android="http://schemas.android.com/apk/res/android"
+		  android:layout_width="fill_parent" android:layout_height="wrap_content"
+		  android:background="#FF0000">
+		    <TextView android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceLarge" android:id="@+id/textView1" android:text="TextView" android:layout_height="wrap_content"/>
+		    <view class="org.mconf.bbb.android.CustomListview" android:id="@+id/rooms_user" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_below="@+id/textView1"/>
+	  	</RelativeLayout>
+	  	<RelativeLayout android:id="@+id/layout_rooms_user_spaces"
+		  xmlns:android="http://schemas.android.com/apk/res/android"
+		  android:layout_width="fill_parent" android:layout_height="wrap_content"
+		  android:layout_below="@+id/layout_rooms_user"
+		  android:background="#00FF00">
+		    <TextView android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceLarge" android:id="@+id/textView2" android:text="TextView" android:layout_height="wrap_content"/>
+		    <view class="org.mconf.bbb.android.CustomListview" android:id="@+id/rooms_user_spaces" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_below="@+id/textView2"/>
+	  	</RelativeLayout>
+	  	<RelativeLayout android:id="@+id/layout_rooms_public_spaces"
+		  xmlns:android="http://schemas.android.com/apk/res/android"
+		  android:layout_width="fill_parent" android:layout_height="wrap_content"
+		  android:layout_below="@+id/layout_rooms_user_spaces"
+		  android:background="#0000FF">
+		    <TextView android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceLarge" android:id="@+id/textView3" android:text="TextView" android:layout_height="wrap_content"/>
+		    <view class="org.mconf.bbb.android.CustomListview" android:id="@+id/rooms_public_spaces" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_below="@+id/textView3"/>
+	    </RelativeLayout>
+	</RelativeLayout>
+</ScrollView>
