@@ -22,81 +22,62 @@
 package org.mconf.bbb.android;
 
 
-import java.util.Date;
-import java.util.zip.Inflater;
-
-import org.mconf.bbb.api.JoinService;
+import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.api.JoinedMeeting;
 import org.mconf.bbb.api.Meeting;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
-import android.widget.TableLayout.LayoutParams;
-import android.widget.TextView;
 
-public class MeetingInfDialog extends Dialog implements OnClickListener{
+public class MeetingInfDialog extends Dialog {
 
 	public static final int ROW_HEIGHT = 60;
 	
 	private MeetingInfAdapter meetingAdapter = new MeetingInfAdapter();
-	private String meetingID;
-	private String message;
-	private Date startTime;
-	private int participantCount;
-	private int moderatorCount;
-	
-	private Button ok;
-	private Context context;
 	
 	public MeetingInfDialog(Context context) {
-		
 		super(context);
-		this.context=context;
-		setMeetingID();
-		setMessage();
-		setStartTime();
-		setParticipantCount();
-		setModeratorCount();  
 		
 		setTitle(R.string.meeting_information);
 		requestWindowFeature(Window.FEATURE_LEFT_ICON);
 		
-
 		setCancelable(true);
 		setContentView(R.layout.meeting_inf_dialog);
-		ok = (Button) findViewById(R.id.ok);
-		ok.setOnClickListener(this);
-		
-		
+		Button buttonOk = (Button) findViewById(R.id.ok);
+		buttonOk.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dismiss();
+			}
+		});
  
+		BigBlueButtonClient bigbluebutton = ((BigBlueButton) getContext().getApplicationContext()).getHandler();
+		
 		RelativeLayout relative = (RelativeLayout)findViewById(R.id.meeting_information);
-		CustomListview meetingInfList =(CustomListview)findViewById(R.id.meeting_infs_list);
+		CustomListview meetingInfList = (CustomListview)findViewById(R.id.meeting_infs_list);
 		meetingInfList.setAdapter(meetingAdapter);
 		
-		meetingAdapter.addSection(context.getResources().getString(R.string.meeting_id), meetingID);
-		meetingAdapter.addSection(context.getResources().getString(R.string.meeting_message), message);
-		meetingAdapter.addSection(context.getResources().getString(R.string.start_time), startTime.toLocaleString());
-		meetingAdapter.addSection(context.getResources().getString(R.string.moderator_count), Integer.toString(moderatorCount));
-		meetingAdapter.addSection(context.getResources().getString(R.string.participant_count), Integer.toString(participantCount));
-		
+		JoinedMeeting joinedMeeting = bigbluebutton.getJoinService().getJoinedMeeting();
+		if (joinedMeeting != null) {
+			meetingAdapter.addSection(context.getResources().getString(R.string.meeting_id), joinedMeeting.getConfname());
+			Meeting meeting = bigbluebutton.getJoinService().getMeetingById(joinedMeeting.getConfname());
+			if (meeting != null) {
+				if (meeting.getMessage() != null
+						&& meeting.getMessage().length() > 0)
+					meetingAdapter.addSection(context.getResources().getString(R.string.meeting_message), meeting.getMessage());
+				if (meeting.getStartTime() != null)
+					meetingAdapter.addSection(context.getResources().getString(R.string.start_time), meeting.getStartTime().toLocaleString());
+			}
+			meetingAdapter.addSection(context.getResources().getString(R.string.moderator_count), Integer.toString(bigbluebutton.getUsersModule().getModeratorCount()));
+			meetingAdapter.addSection(context.getResources().getString(R.string.participant_count), Integer.toString(bigbluebutton.getUsersModule().getParticipantCount()));
+		}
 		
 		ViewGroup.LayoutParams  params = relative.getLayoutParams();
 		int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, ROW_HEIGHT, context.getResources().getDisplayMetrics());
@@ -105,67 +86,4 @@ public class MeetingInfDialog extends Dialog implements OnClickListener{
 		relative.requestLayout();  
 		
 	}
-	
-	@Override
-	public void onClick(View v) {
-		if(v==ok)
-			dismiss();
-		
-	}
-
-
-	public String getMeetingID() {
-		return meetingID;
-	}
-
-	public Meeting getJoined()
-	{
-		JoinService joined = ((BigBlueButton) context.getApplicationContext()).getHandler().getJoinService();
-		String meetingID= joined.getJoinedMeeting().getMeetingID();
-		return joined.getMeetingById(meetingID);
-		
-		
-	}
-	public void setMeetingID() {
-		
-		this.meetingID=getJoined().getMeetingID();
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage() {
-		this.message = getJoined().getMessage();
-	}
-
-	public Date getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime() {
-		this.startTime = getJoined().getStartTime();
-		if(startTime==null)
-			System.out.println("damn");
-	}
-
-	public int getParticipantCount() {
-		return participantCount;
-	}
-
-	public void setParticipantCount() {
-		this.participantCount = ((BigBlueButton) context.getApplicationContext()).getHandler().getUsersModule().getParticipantCount();
-	}
-
-	public int getModeratorCount() {
-		return moderatorCount;
-	}
-
-	public void setModeratorCount() {
-		this.moderatorCount = ((BigBlueButton) context.getApplicationContext()).getHandler().getUsersModule().getModeratorCount();
-	}
-
-	
-
-	
 }
