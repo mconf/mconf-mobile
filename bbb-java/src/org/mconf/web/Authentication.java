@@ -161,7 +161,8 @@ public class Authentication {
 		
 		// the response code must be a redirect
 		if (response != 302) {
-			log.error("Invalid response code");
+			log.error("Invalid response code: {}", response);
+			method.releaseConnection();
 			return "";
 		}
 		
@@ -171,11 +172,11 @@ public class Authentication {
 		}
 		if (location == null) {
 			log.error("Invalid redirect URL");
+			method.releaseConnection();
 			return "";
 		}
 		
-		method.releaseConnection();
-		
+		method.releaseConnection();	
 		return location;
 	}
 }

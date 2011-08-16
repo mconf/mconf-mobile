@@ -2,7 +2,6 @@ package org.mconf.bbb.android.mconf;
 
 import java.util.List;
 
-import org.apache.commons.httpclient.URI;
 import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.R;
 import org.mconf.web.Authentication;
@@ -61,12 +60,14 @@ public class LoginPage extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					auth = new Authentication(DEFAULT_SERVER, editTextUsername.getText().toString(), editTextPassword.getText().toString());
+					if (auth == null
+							|| !auth.isAuthenticated())
+						auth = new Authentication(DEFAULT_SERVER, editTextUsername.getText().toString(), editTextPassword.getText().toString());
 					if (auth.isAuthenticated()) {
 						storeCredentials();
 						rooms = MconfWebAPI.getRooms(auth);
 						if (rooms.isEmpty()) {
-							Toast.makeText(LoginPage.this, "No rooms available", Toast.LENGTH_SHORT).show();
+							Toast.makeText(LoginPage.this, R.string.no_rooms, Toast.LENGTH_SHORT).show();
 						} else {
 							for (Room room : rooms) {
 								spinnerAdapter.add(room.getName());
@@ -75,7 +76,7 @@ public class LoginPage extends Activity {
 							spinnerRooms.performClick();
 						}
 					} else {
-						Toast.makeText(LoginPage.this, "Invalid username and/or password", Toast.LENGTH_SHORT).show();
+						Toast.makeText(LoginPage.this, R.string.invalid_password, Toast.LENGTH_SHORT).show();
 					}
 					return true;
 				} else
@@ -105,7 +106,7 @@ public class LoginPage extends Activity {
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					if (selectedRoom.length() == 0) {
-						Toast.makeText(LoginPage.this, "Please select a room", Toast.LENGTH_SHORT).show();
+						Toast.makeText(LoginPage.this, R.string.select_room, Toast.LENGTH_SHORT).show();
 						return true;
 					}
 					
@@ -117,11 +118,16 @@ public class LoginPage extends Activity {
 						}
 					}
 					if (path == null) {
-						Toast.makeText(LoginPage.this, "Invalid room", Toast.LENGTH_SHORT).show();
+						Toast.makeText(LoginPage.this, R.string.invalid_room, Toast.LENGTH_SHORT).show();
 						return true;
 					}
 					
 					path = MconfWebAPI.getJoinUrl(auth, path);
+					if (path == null
+							|| path.length() == 0) {
+						Toast.makeText(LoginPage.this, R.string.cant_join, Toast.LENGTH_SHORT).show();
+						return true;
+					}
 	                Intent intent = new Intent(getApplicationContext(), Client.class);
 	                intent.setAction(Intent.ACTION_VIEW);
 	                intent.addCategory("android.intent.category.BROWSABLE");

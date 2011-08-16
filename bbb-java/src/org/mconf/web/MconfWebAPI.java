@@ -1,7 +1,6 @@
 package org.mconf.web;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +44,6 @@ public class MconfWebAPI {
 		String result = "";
 		try {
 			result = auth.getRedirectUrl(path);
-//			result = URLDecoder.decode(result, "UTF-8");
 			log.debug("getJoinUrl = {}", result);
 		} catch (HttpException e) {
 			// TODO Auto-generated catch block
