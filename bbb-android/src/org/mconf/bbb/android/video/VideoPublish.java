@@ -176,8 +176,14 @@ public class VideoPublish extends Thread implements RtmpReader {
 		   && framesListAvailable && framesList != null){
 			framesList.add(video);
 			if(!firstFrameWrote){
-				firstFrameWrote = true;
-				videoPublishHandler.videoConnection.publisher.fireNext(videoPublishHandler.videoConnection.publisher.channel, 0);
+				if(videoPublishHandler != null && videoPublishHandler.videoConnection != null
+						&& videoPublishHandler.videoConnection.publisher != null
+						&& videoPublishHandler.videoConnection.publisher.isStarted()) {
+					firstFrameWrote = true;
+					videoPublishHandler.videoConnection.publisher.fireNext(videoPublishHandler.videoConnection.publisher.channel, 0);
+				} else {
+					log.debug("Warning: tried to fireNext but video publisher is not started");
+				}
 			}
 			synchronized(this) {
 				this.notifyAll();
