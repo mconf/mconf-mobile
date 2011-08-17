@@ -28,9 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.jboss.netty.channel.Channel;
 import org.mconf.bbb.IBigBlueButtonClientListener;
-import org.mconf.bbb.Module;
 import org.mconf.bbb.MainRtmpConnection;
-import org.mconf.bbb.api.Meeting;
+import org.mconf.bbb.Module;
 import org.red5.server.api.IAttributeStore;
 import org.red5.server.api.so.IClientSharedObject;
 import org.red5.server.api.so.ISharedObjectBase;
@@ -47,8 +46,7 @@ public class UsersModule extends Module implements ISharedObjectListener {
 	private final IClientSharedObject participantsSO;
 
 	private Map<Integer, Participant> participants = new ConcurrentHashMap<Integer, Participant>();
-	private String meetingName;
-	private Meeting meeting;
+	private int moderatorCount = 0, participantCount = 0;
 
 	public UsersModule(MainRtmpConnection handler, Channel channel) {
 		super(handler, channel);
@@ -56,11 +54,6 @@ public class UsersModule extends Module implements ISharedObjectListener {
 		participantsSO = handler.getSharedObject("participantsSO", false);
 		participantsSO.addSharedObjectListener(this);
 		participantsSO.connect(channel);
-
-		meetingName = handler.getContext().getJoinService().getJoinedMeeting().getConfname();
-		meeting = handler.getContext().getJoinService().getMeetingByName(meetingName);
-		meeting.setModeratorCount(0);
-		meeting.setParticipantCount(0);
 	}
 
 	@Override
@@ -108,9 +101,9 @@ public class UsersModule extends Module implements ISharedObjectListener {
 				}
 
 				if(p.getRole().equals("MODERATOR"))
-					meeting.setModeratorCount(meeting.getModeratorCount()-1);
+					moderatorCount--;
 				else
-					meeting.setParticipantCount(meeting.getParticipantCount()-1);
+					participantCount--;
 
 				log.debug("participantLeft: {}", p);
 				participants.remove(p.getUserId());
@@ -193,9 +186,9 @@ public class UsersModule extends Module implements ISharedObjectListener {
 		log.info("new participant: {}", p.toString());
 		participants.put(p.getUserId(), p);	
 		if(p.isModerator())
-			meeting.setModeratorCount(meeting.getModeratorCount()+1);
+			moderatorCount++;
 		else
-			meeting.setParticipantCount(meeting.getParticipantCount()+1);
+			participantCount++;
 	}
 
 	private void onParticipantStatusChange(Participant p, String key,
@@ -272,6 +265,14 @@ public class UsersModule extends Module implements ISharedObjectListener {
 			return true;
 		} else
 			return false;
+	}
+
+	public int getModeratorCount() {
+		return moderatorCount;
+	}
+
+	public int getParticipantCount() {
+		return participantCount;
 	}
 
 }
