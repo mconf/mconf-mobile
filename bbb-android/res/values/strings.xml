@@ -92,6 +92,11 @@
 	<string name="select_room">Please select a room</string>
 	<string name="invalid_room">Invalid room</string>
 	<string name="cant_join">You can\'t join the meeting this moment</string>
+	
+	<string name="rooms_user">User rooms</string>
+	<string name="rooms_user_spaces">Rooms from user spaces</string>
+	<string name="rooms_public_spaces">Rooms from public spaces</string>
+
 	<string name="about">
 BBB-Android is an Android implementation of the BigBlueButton client.
 \nVersion ${VERSION}

@@ -91,6 +91,11 @@
 	<string name="select_room">Por favor selecione uma sala</string>
 	<string name="invalid_room">Sala inválida</string>
 	<string name="cant_join">Você não pode entrar na sala nesse momento</string>
+
+	<string name="rooms_user">Salas de usuário</string>
+	<string name="rooms_user_spaces">Salas de comunidades do usuário</string>
+	<string name="rooms_public_spaces">Salas de comunidades públicas</string>
+
 	<string name="about">
 		BBB-Android é uma implementação do cliente BigBlueButton para Android.
 		\nVersão ${VERSION}

@@ -1,9 +1,11 @@
 package org.mconf.bbb.android.mconf;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.R;
+import org.mconf.bbb.android.mconf.RoomsDialog.OnSelectRoomListener;
 import org.mconf.web.Authentication;
 import org.mconf.web.MconfWebAPI;
 import org.mconf.web.Room;
@@ -35,9 +37,7 @@ public class LoginPage extends Activity {
 	private final String DEFAULT_SERVER = "http://mconfmoodle.inf.ufrgs.br";
 	private Authentication auth = null;
 	private ArrayAdapter<String> spinnerAdapter;
-	private List<Room> rooms;
-
-	private String selectedRoom = "";
+	private Room selectedRoom = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -60,46 +60,37 @@ public class LoginPage extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					RoomsDialog dialog = new RoomsDialog(LoginPage.this);
-					dialog.show();
-//					if (auth == null
-//							|| !auth.isAuthenticated())
-//						auth = new Authentication(DEFAULT_SERVER, editTextUsername.getText().toString(), editTextPassword.getText().toString());
-//					if (auth.isAuthenticated()) {
-//						storeCredentials();
-//						rooms = MconfWebAPI.getRooms(auth);
-//						if (rooms.isEmpty()) {
-//							Toast.makeText(LoginPage.this, R.string.no_rooms, Toast.LENGTH_SHORT).show();
-//						} else {
-//							for (Room room : rooms) {
-//								spinnerAdapter.add(room.getName());
-//							}
-//							spinnerAdapter.notifyDataSetChanged();
-//							spinnerRooms.performClick();
-//						}
-//					} else {
-//						Toast.makeText(LoginPage.this, R.string.invalid_password, Toast.LENGTH_SHORT).show();
-//					}
+					if (auth == null
+							|| !auth.isAuthenticated())
+						auth = new Authentication(DEFAULT_SERVER, editTextUsername.getText().toString(), editTextPassword.getText().toString());
+					if (auth.isAuthenticated()) {
+						storeCredentials();
+						List<Room> rooms = MconfWebAPI.getRooms(auth);
+						if (rooms.isEmpty()) {
+							Toast.makeText(LoginPage.this, R.string.no_rooms, Toast.LENGTH_SHORT).show();
+						} else {
+							RoomsDialog dialog = new RoomsDialog(LoginPage.this, rooms);
+							dialog.setOnSelectRoomListener(new RoomsDialog.OnSelectRoomListener() {
+								
+								@Override
+								public void onSelectRoom(Room room) {
+									selectedRoom = room;
+									spinnerAdapter.clear();
+									spinnerAdapter.add(room.getName());
+									spinnerAdapter.notifyDataSetChanged();
+								}
+							});
+							dialog.show();
+						}
+					} else {
+						Toast.makeText(LoginPage.this, R.string.invalid_password, Toast.LENGTH_SHORT).show();
+					}
 					return true;
 				} else
 					return false;
 			}
 		});
 		
-		spinnerRooms.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view,
-					int position, long id) {
-				selectedRoom  = spinnerAdapter.getItem(position);
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
 		final CheckBox checkBoxRememberMe = (CheckBox) findViewById(R.id.checkBoxRememberMe);
 		final Button buttonJoin = (Button) findViewById(R.id.buttonJoin);
 		buttonJoin.setOnTouchListener(new OnTouchListener() {
@@ -107,24 +98,12 @@ public class LoginPage extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					if (selectedRoom.length() == 0) {
+					if (selectedRoom == null) {
 						Toast.makeText(LoginPage.this, R.string.select_room, Toast.LENGTH_SHORT).show();
 						return true;
 					}
 					
-					String path = null;
-					for (Room room : rooms) {
-						if (room.getName().equals(selectedRoom)) {
-							path = room.getPath();
-							break;
-						}
-					}
-					if (path == null) {
-						Toast.makeText(LoginPage.this, R.string.invalid_room, Toast.LENGTH_SHORT).show();
-						return true;
-					}
-					
-					path = MconfWebAPI.getJoinUrl(auth, path);
+					String path = MconfWebAPI.getJoinUrl(auth, selectedRoom.getPath());
 					if (path == null
 							|| path.length() == 0) {
 						Toast.makeText(LoginPage.this, R.string.cant_join, Toast.LENGTH_SHORT).show();

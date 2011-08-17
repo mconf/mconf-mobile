@@ -22,7 +22,7 @@ public class MconfWebAPI {
 			JSONArray arrayRooms = new JSONArray(str);
 			for (int i = 0; i < arrayRooms.length(); ++i) {
 				JSONObject objectRoom = arrayRooms.getJSONObject(i).getJSONObject("bigbluebutton_room");
-				list.add(new Room(objectRoom.getString("name"), objectRoom.getString("join_path")));
+				list.add(new Room(objectRoom.getString("name"), objectRoom.getString("join_path"), Room.TYPE_USER));
 			}
 		} catch (HttpException e) {
 			// TODO Auto-generated catch block

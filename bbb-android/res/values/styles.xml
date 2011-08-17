@@ -34,4 +34,9 @@
         <item name="android:textColor">@color/chat_time</item>
         <item name="android:typeface">sans</item>
     </style>
+    <style name="RoomListType" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="RoomListName" parent="@style/ParticipantNameStyle">
+    </style>
 </resources>

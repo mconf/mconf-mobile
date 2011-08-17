@@ -1,39 +1,75 @@
 package org.mconf.bbb.android.mconf;
 
-import org.mconf.bbb.android.CustomListview;
+import java.util.List;
+
+import org.mconf.bbb.android.NoScrollListView;
 import org.mconf.bbb.android.R;
 import org.mconf.web.Room;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.view.View;
+import android.view.Window;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.AdapterView;
+import android.widget.RelativeLayout;
+import android.widget.AdapterView.OnItemClickListener;
 
 
 public class RoomsDialog extends Dialog {
 
+	private class RoomsDialogOnItemClickListener implements OnItemClickListener {
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			if (onSelectRoomListener != null)
+				onSelectRoomListener.onSelectRoom((Room) parent.getAdapter().getItem(position));
+			dismiss();
+		}
+	}
+	
+	public interface OnSelectRoomListener {
+		public void onSelectRoom(Room room);
+	}
+	
 	private RoomsAdapter rooms_user = new RoomsAdapter();
 	private RoomsAdapter rooms_user_spaces = new RoomsAdapter();
 	private RoomsAdapter rooms_public_spaces = new RoomsAdapter();
-	
-	public RoomsDialog(Context context) {
-		super(context);
-		setContentView(R.layout.rooms_list);
-		setTitle("Rooms");
-		
-		for (int i = 0; i < 10; ++i) {
-			rooms_user.add(new Room("rooms_user " + i, "..."));
-			rooms_user_spaces.add(new Room("rooms_user_spaces " + i, "..."));
-			rooms_public_spaces.add(new Room("rooms_public_spaces " + i, "..."));
-		}
-		
-		final CustomListview view_rooms_user = (CustomListview) findViewById(R.id.rooms_user);
-		view_rooms_user.setAdapter(rooms_user);
-		view_rooms_user.setHeight();
-		final CustomListview view_rooms_user_spaces = (CustomListview) findViewById(R.id.rooms_user_spaces);
-		view_rooms_user_spaces.setAdapter(rooms_user_spaces);
-		view_rooms_user_spaces.setHeight();
-		final CustomListview view_rooms_public_spaces = (CustomListview) findViewById(R.id.rooms_public_spaces);
-		view_rooms_public_spaces.setAdapter(rooms_public_spaces);
-		view_rooms_public_spaces.setHeight();
-	}
+	private OnSelectRoomListener onSelectRoomListener = null;
 
+	public RoomsDialog(Context context, List<Room> rooms) {
+		super(context);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		setContentView(R.layout.rooms_list);
+		
+		for (Room room : rooms) {
+			if (room.getType().equals(Room.TYPE_USER))
+				rooms_user.add(room);
+			else if (room.getType().equals(Room.TYPE_USER_SPACE))
+				rooms_user_spaces.add(room);
+			else if (room.getType().equals(Room.TYPE_PUBLIC_SPACE))
+				rooms_public_spaces.add(room);
+		}
+
+		initView(rooms_user, R.id.rooms_user, R.id.layout_rooms_user);
+		initView(rooms_user_spaces, R.id.rooms_user_spaces, R.id.layout_rooms_user_spaces);
+		initView(rooms_public_spaces, R.id.rooms_public_spaces, R.id.layout_rooms_public_spaces);
+	}
+	
+	void initView(RoomsAdapter adapter, int listViewId, int layoutId) {
+		if (adapter.isEmpty()) {
+			RelativeLayout layout = (RelativeLayout) findViewById(layoutId);
+			LayoutParams params = layout.getLayoutParams();
+			params.height = 0;
+			layout.setLayoutParams(params);
+		} else {
+			NoScrollListView listView = (NoScrollListView) findViewById(listViewId);
+			listView.setAdapter(adapter);
+			listView.setOnItemClickListener(new RoomsDialogOnItemClickListener());
+		}		
+	}
+	
+	void setOnSelectRoomListener(OnSelectRoomListener listener) {
+		onSelectRoomListener = listener;
+	}
 }
