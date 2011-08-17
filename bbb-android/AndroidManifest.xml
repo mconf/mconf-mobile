@@ -16,7 +16,7 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name=".mconf.LoginPage" android:label="Mconf" android:icon="@drawable/icon">
+		<activity android:name=".mconf.LoginPage" android:label="Mconf" android:icon="@drawable/icon_mconf">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
