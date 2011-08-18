@@ -37,6 +37,9 @@ public class CaptureConstants {
 	
 	//video parameters constants:
 	public static final int DEFAULT_FRAME_RATE = 10;
+	//I wouldn't set the width and height to values too low (below 200x200),
+	//because there is a known bug on some Android devices where setting these values too low
+	//causes the camera to crash the second time we open it, leading to the need of restarting the device.
 	public static final int DEFAULT_WIDTH = 320;
 	public static final int DEFAULT_HEIGHT = 240;
 	public static final int DEFAULT_BIT_RATE = 128000;
