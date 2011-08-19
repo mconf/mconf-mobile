@@ -61,7 +61,7 @@ public class Common {
 		users = new BigBlueButtonClient[numberOfUsers];
 		for (int i = 0; i < numberOfUsers; ++i) {
 			users[i] = new BigBlueButtonClient();
-			users[i].getJoinService().setServer(Common.DEFAULT_SERVER, Common.DEFAULT_PASSWORD);
+			users[i].createJoinService(Common.DEFAULT_SERVER, Common.DEFAULT_PASSWORD);
 			users[i].getJoinService().load();
 			users[i].getJoinService().join(Common.DEFAULT_TEST_ROOM, Common.DEFAULT_TEST_USERS_NAME.replace("[]", Integer.toString(i + 1)), false);
 			

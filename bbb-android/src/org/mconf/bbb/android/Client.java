@@ -264,7 +264,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 			String joinUrl = getIntent().getData().toString().replace(getResources().getString(R.string.protocol) + "://", "http://");
 			log.debug("Joining: " + joinUrl);
-			if (getBigBlueButton().getJoinService().join(joinUrl)) {
+			getBigBlueButton().createJoinService(joinUrl);
+			if (getBigBlueButton().getJoinService().standardJoin(joinUrl)) {
 				username = getBigBlueButton().getJoinService().getJoinedMeeting().getFullname();
 				// can't access the moderator information from the user module because at this point, the user isn't connected to the meeting yet
 				// moderator = getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isModerator();

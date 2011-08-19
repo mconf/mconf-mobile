@@ -34,6 +34,8 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
+import org.mconf.bbb.api.JoinService0Dot7;
+import org.mconf.bbb.api.JoinService0Dot8;
 import org.mconf.bbb.api.JoinedMeeting;
 import org.red5.server.so.SharedObjectMessage;
 import org.slf4j.Logger;
@@ -135,11 +137,23 @@ public class MainRtmpConnection extends RtmpConnection {
 		 */		
 			
         JoinedMeeting meeting = context.getJoinService().getJoinedMeeting();
-        Command connect = new CommandAmf0("connect", object, 
+        Command connect = null;
+        if (context.getJoinService().getClass() == JoinService0Dot8.class) 
+        	connect = new CommandAmf0("connect", object, 
         		meeting.getFullname(), 
         		meeting.getRole(), 
         		meeting.getConference(), 
 //        		meeting.getMode(), 
+        		meeting.getRoom(), 
+        		meeting.getVoicebridge(), 
+        		meeting.getRecord().equals("true"), 
+        		meeting.getExternUserID());
+        else if (context.getJoinService().getClass() == JoinService0Dot7.class)
+        	connect = new CommandAmf0("connect", object, 
+        		meeting.getFullname(), 
+        		meeting.getRole(), 
+        		meeting.getConference(), 
+        		meeting.getMode(), 
         		meeting.getRoom(), 
         		meeting.getVoicebridge(), 
         		meeting.getRecord().equals("true"), 

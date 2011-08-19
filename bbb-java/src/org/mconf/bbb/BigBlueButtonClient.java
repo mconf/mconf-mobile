@@ -27,7 +27,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.jboss.netty.channel.Channel;
-import org.mconf.bbb.api.JoinService;
+import org.mconf.bbb.api.JoinServiceBase;
+import org.mconf.bbb.api.JoinServiceProxy;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.chat.ChatModule;
 import org.mconf.bbb.listeners.ListenersModule;
@@ -47,7 +48,7 @@ public class BigBlueButtonClient {
 
 	private MainRtmpConnection mainConnection = null;
 
-	private JoinService joinService = new JoinService();
+	private JoinServiceProxy joinServiceProxy = new JoinServiceProxy();
 
 	private int myUserId = -1;
 	private ChatModule chatModule = null;
@@ -129,16 +130,26 @@ public class BigBlueButtonClient {
 		return videoListeners;
 	}	
 
-	public JoinService getJoinService() {
-		return joinService;
+	public void createJoinService(String serverUrl) {
+		if (serverUrl.contains("/bigbluebutton/api/"))
+			serverUrl = serverUrl.substring(0, serverUrl.indexOf("/bigbluebutton/api/"));
+		joinServiceProxy.setServer(serverUrl);
+	}
+	
+	public void createJoinService(String serverUrl, String salt) {
+		joinServiceProxy.setServer(serverUrl, salt);
+	}
+	
+	public JoinServiceBase getJoinService() {
+		return joinServiceProxy.getJoinService();
 	}
 
 	public boolean connectBigBlueButton() {
 
 		ClientOptions opt = new ClientOptions();
 		opt.setClientVersionToUse(Utils.fromHex("00000000"));
-		opt.setHost(joinService.getServerUrl().toLowerCase().replace("http://", ""));
-		opt.setAppName("bigbluebutton/" + joinService.getJoinedMeeting().getConference());
+		opt.setHost(getJoinService().getServerUrl().toLowerCase().replace("http://", ""));
+		opt.setAppName("bigbluebutton/" + getJoinService().getJoinedMeeting().getConference());
 		log.debug(opt.toString());
 
 		mainConnection = new MainRtmpConnection(opt, this);
@@ -153,7 +164,7 @@ public class BigBlueButtonClient {
 	public void disconnect() {
 		if (mainConnection != null)
 			mainConnection.disconnect();
-		joinService = new JoinService();
+		joinServiceProxy = new JoinServiceProxy();
 	}
 
 	public Collection<Participant> getParticipants() {
@@ -203,7 +214,7 @@ public class BigBlueButtonClient {
 
 	public static void main(String[] args) {
 		BigBlueButtonClient client = new BigBlueButtonClient();
-		client.getJoinService().setServer("http://test.bigbluebutton.org/", "03b07");
+		client.createJoinService("http://test.bigbluebutton.org/", "03b07");
 		client.getJoinService().load();
 		if (client.getJoinService().join("English 110", "Eclipse", false)
 				&& (client.getJoinService().getJoinedMeeting() != null)) {

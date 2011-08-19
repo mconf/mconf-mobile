@@ -22,19 +22,18 @@
 package org.mconf.bbb.api;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 public class JoinedMeeting {
-	
-	private static final Logger log = LoggerFactory.getLogger(JoinedMeeting.class);
-	
 	private String returncode;
 	private String fullname;
 	private String confname;
@@ -72,40 +71,31 @@ public class JoinedMeeting {
 	 * 	<welcome>&lt;br&gt;Welcome to this BigBlueButton Demo Server.&lt;br&gt;&lt;br&gt;For help using BigBlueButton &lt;a href="event:http://www.bigbluebutton.org/content/videos"&gt;&lt;u&gt;check out these videos&lt;/u&gt;&lt;/a&gt;.&lt;br&gt;&lt;br&gt;</welcome>
 	 * </response>
 	 */
-	public boolean parse(String str) {	
-		try {
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();
-			Document doc = db.parse(new ByteArrayInputStream(str.getBytes("UTF-8")));
-			doc.getDocumentElement().normalize();
+	public void parse(String str) throws UnsupportedEncodingException, SAXException, IOException, ParserConfigurationException {	
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		Document doc = db.parse(new ByteArrayInputStream(str.getBytes("UTF-8")));
+		doc.getDocumentElement().normalize();
 
-			Element nodeResponse = (Element) doc.getElementsByTagName("response").item(0);
-			returncode = nodeResponse.getElementsByTagName("returncode").item(0).getFirstChild().getNodeValue();
-			
-			if (returncode.equals("SUCCESS")) {		
-				fullname = nodeResponse.getElementsByTagName("fullname").item(0).getFirstChild().getNodeValue();
-				confname = nodeResponse.getElementsByTagName("confname").item(0).getFirstChild().getNodeValue();
-				meetingID = nodeResponse.getElementsByTagName("meetingID").item(0).getFirstChild().getNodeValue();
-				externUserID = nodeResponse.getElementsByTagName("externUserID").item(0).getFirstChild().getNodeValue();
-				role = nodeResponse.getElementsByTagName("role").item(0).getFirstChild().getNodeValue();
-				conference = nodeResponse.getElementsByTagName("conference").item(0).getFirstChild().getNodeValue();
-				room = nodeResponse.getElementsByTagName("room").item(0).getFirstChild().getNodeValue();
-				voicebridge = nodeResponse.getElementsByTagName("voicebridge").item(0).getFirstChild().getNodeValue();
-				webvoiceconf = nodeResponse.getElementsByTagName("webvoiceconf").item(0).getFirstChild().getNodeValue();
-				mode = nodeResponse.getElementsByTagName("mode").item(0).getFirstChild().getNodeValue();
-				record = nodeResponse.getElementsByTagName("record").item(0).getFirstChild().getNodeValue();
-				welcome = nodeResponse.getElementsByTagName("welcome").item(0).getFirstChild().getNodeValue();			
-			} else {
-				message = nodeResponse.getElementsByTagName("message").item(0).getFirstChild().getNodeValue();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.warn("Failed to parse: {}", str);
-			return false;
-		}
+		Element nodeResponse = (Element) doc.getElementsByTagName("response").item(0);
+		returncode = ParserUtils.getNodeValue(nodeResponse, "returncode");
 		
-		log.debug(toString());
-		return true;	
+		if (returncode.equals("SUCCESS")) {		
+			fullname = ParserUtils.getNodeValue(nodeResponse, "fullname");
+			confname = ParserUtils.getNodeValue(nodeResponse, "confname");
+			meetingID = ParserUtils.getNodeValue(nodeResponse, "meetingID");
+			externUserID = ParserUtils.getNodeValue(nodeResponse, "externUserID");
+			role = ParserUtils.getNodeValue(nodeResponse, "role");
+			conference = ParserUtils.getNodeValue(nodeResponse, "conference");
+			room = ParserUtils.getNodeValue(nodeResponse, "room");
+			voicebridge = ParserUtils.getNodeValue(nodeResponse, "voicebridge");
+			webvoiceconf = ParserUtils.getNodeValue(nodeResponse, "webvoiceconf");
+			mode = ParserUtils.getNodeValue(nodeResponse, "mode");
+			record = ParserUtils.getNodeValue(nodeResponse, "record");
+			welcome = ParserUtils.getNodeValue(nodeResponse, "welcome");
+		} else {
+			message = ParserUtils.getNodeValue(nodeResponse, "message");
+		}
 	}
 
 	public String getReturncode() {

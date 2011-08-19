@@ -24,7 +24,6 @@ package org.mconf.bbb.android;
 import java.util.Comparator;
 import java.util.List;
 
-import org.mconf.bbb.api.JoinService;
 import org.mconf.bbb.api.Meeting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,6 +112,7 @@ public class LoginPage extends BigBlueButtonActivity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					spinnerAdapter.clear();
 					updateMeetingsList();
 					return true;
 				} 
@@ -216,18 +216,16 @@ public class LoginPage extends BigBlueButtonActivity {
 		});
 		//button to change the server
 		final Button server = (Button) findViewById(R.id.server);       
-		server.setOnClickListener( new OnClickListener()
-		{
+		server.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View viewParam)
-			{
+			public void onClick(View viewParam) {
+				spinnerAdapter.clear();
 				Intent intent = new Intent(getApplicationContext(), ServerChoosing.class);
 				log.debug("BACK_TO_SERVERS");
 				startActivity(intent);
 			}
 
-		}
-		);
+		});
 
 
 		updateRoleOption();
@@ -286,21 +284,15 @@ public class LoginPage extends BigBlueButtonActivity {
 		final Thread updateThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				getBigBlueButton().getJoinService().setServer(serverUrl, serverPassword);
-				int r = getBigBlueButton().getJoinService().load();
-				switch (r) {
-				case JoinService.E_LOAD_HTTP_REQUEST:
-					progressDialog.dismiss();
-					showToast(R.string.login_cant_contact_server);
-					return;
-				case JoinService.E_LOAD_PARSE_MEETINGS:
+				getBigBlueButton().createJoinService(serverUrl, serverPassword);
+				
+				if (getBigBlueButton().getJoinService() == null) {
 					progressDialog.dismiss();
 					showToast(R.string.login_unsupported_server);
 					return;
-
-				default:
-					break;
 				}
+				getBigBlueButton().getJoinService().load();
+
 				if (Thread.interrupted())
 					return;
 
