@@ -66,7 +66,7 @@
 	<string name="taptospeak">Pressione para falar</string>
 	<string name="lockspeak">Fala contínua</string>
 	<string name="user_disconnected">Usuário se desconectou</string>
-	<string name="ok">Ok</string>
+	<string name="ok">OK</string>
 	<string name="participant_left">Usuário se desconectou. Fechando o chat</string>
 	<string name="mute_room">Sala sem som</string>
 	<string name="unmute_room">Sala com som</string>
@@ -74,16 +74,16 @@
 	<string name="install_bar_code">Instalar Barcode Scanner?</string>
 	<string name="bar_code_no_found">Barcode Scanner não encontrado, instalar?</string>
 	<string name="show_video">Exibir vídeo</string>
-	<string name="application_on_background">Mconf BBB</string>
-	<string name="application_on_background_text">Programa ainda rodando</string>
+	<string name="application_on_background">BigBlueButton</string>
+	<string name="application_on_background_text">O aplicativo ainda está rodando</string>
 	<string name="meeting_information">Informações da sala</string>
 		<string name="meeting_id">Identificação da sala</string>
 		<string name="meeting_message">Mensagem</string>
 		<string name="start_time">Horário de início</string>
 		<string name="participant_count">Contagem de participantes</string>
 		<string name="moderator_count">Contagem de moderadores</string>
-		<string name="quit_dialog">Tem certeza que quer fechar o programa?</string>
-	<string name="if_no_send_to_back">Se pressionar não, ele continuará rodando</string>
+		<string name="quit_dialog">Tem certeza que deseja fechar o aplicativo?</string>
+	<string name="if_no_send_to_back">Se pressionar \"Não\", ele será colocado em background</string>
 	<string name="about">
 		BBB-Android é uma implementação do cliente BigBlueButton para Android.
 		\nVersão ${VERSION}

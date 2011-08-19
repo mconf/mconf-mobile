@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import com.flazr.rtmp.client.ClientOptions;
 import com.flazr.util.Utils;
 
-
 public abstract class IVideoListener {
 
 	private static final Logger log = LoggerFactory.getLogger(IVideoListener.class);
@@ -83,9 +82,13 @@ public abstract class IVideoListener {
 	}
 	
 	public float getAspectRatio() {
+		return getAspectRatio(userId, streamName);
+	}
+	
+	public static float getAspectRatio(int userId, String streamName) {
 		String userIdStr = Integer.toString(userId);
 		if (streamName != null && streamName.contains(userIdStr)) {
-			String resStr = streamName.substring(0, streamName.indexOf(userIdStr));
+			String resStr = streamName.substring(0, streamName.lastIndexOf(userIdStr));
 			String[] res = resStr.split("x");
 			int width = Integer.parseInt(res[0]), 
 				height = Integer.parseInt(res[1]);

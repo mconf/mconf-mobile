@@ -1,7 +1,6 @@
 package org.mconf.bbb.android.test;
 
 import java.util.Random;
-import junit.framework.Assert.*;
 
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.android.BigBlueButton;
@@ -23,6 +22,8 @@ public class Common {
 	public final static String DEFAULT_TEST_USERS_NAME = "User []";
 	public final static String DEFAULT_TEST_ROOM = "Test meeting";
 	public final static String DEFAULT_SERVER = "http://mconfweb.inf.ufrgs.br";
+	public final static int TIMEOUT_SMALL = 5000;
+	public final static int SLEEP_SMALL = 1000;
 	
 	public static BigBlueButtonClient getUser(int userId)
 	{
@@ -146,5 +147,4 @@ public class Common {
 				return p;
 		}
 	}
-	
 }
