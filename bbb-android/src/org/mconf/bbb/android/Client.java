@@ -34,6 +34,7 @@ import org.mconf.bbb.users.IParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Notification;
@@ -214,7 +215,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	@Override
 	protected void onResume() {
 		super.onResume();
-				
+
+		hideBackgroundNotification();
 		if (mVideoDialog != null && mVideoDialog.isShowing())
 			mVideoDialog.resume();
 	}
@@ -321,7 +323,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 			notificationManager.cancel(CHAT_NOTIFICATION_ID);
 		}
-
+		
 		// UI elements registration and setting of adapters
 		final ListView chatListView = (ListView) findViewById(R.id.messages);
 		chatListView.setAdapter(chatAdapter);
@@ -696,46 +698,56 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		networkProperties.show();
 	}
 
-protected void onUserLeaveHint() {
-	if(!backToLogin&&!backToPrivateChat)
-		showBackgroundNotification();
-}
+	private void showBackgroundNotification() {
+		String contentTitle = getResources().getString(R.string.application_on_background);
+		String contentText = getResources().getString(R.string.application_on_background_text);
+		
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		Notification notification = new Notification(R.drawable.icon_bbb, contentTitle, 0);
+		Intent notificationIntent = new Intent(getApplicationContext(), Client.class);
+		notificationIntent.setAction(ACTION_TO_FOREGROUND);
+		
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+		notification.flags=Notification.FLAG_ONGOING_EVENT;
+		notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
+		
+		Toast.makeText(getApplicationContext(), contentText, Toast.LENGTH_SHORT).show();
+		notificationManager.notify(BACKGROUND_NOTIFICATION_ID, notification);	
+	}
+	
+	private void hideBackgroundNotification() {
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		notificationManager.cancel(BACKGROUND_NOTIFICATION_ID);
+	}
 
-public void showBackgroundNotification()
-{
-	String contentTitle = getResources().getString(R.string.application_on_background);
-	String contentText = getResources().getString(R.string.application_on_background_text);
-	
-	NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-	Notification notification = new Notification(R.drawable.icon_bbb, contentTitle, 0);
-	Intent notificationIntent = new Intent(getApplicationContext(), Client.class);
-	notificationIntent.setAction(ACTION_TO_FOREGROUND);
-	
-	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
-	notification.flags=Notification.FLAG_ONGOING_EVENT;
-	notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
-	
-	Toast.makeText(getApplicationContext(), contentText, Toast.LENGTH_SHORT).show();
-	notificationManager.notify(BACKGROUND_NOTIFICATION_ID, notification);	
-	
-}
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
-//			Intent intent = new Intent(SEND_TO_BACK);
-//			sendBroadcast(intent);
-			log.debug("KEYCODE_BACK");
-			CloseDialog close = new CloseDialog(Client.this);
-			close.show();
-			//moveTaskToBack(true);
-			
+			CloseDialog closeDialog = new CloseDialog(this);
+			closeDialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					showBackgroundNotification();
+					moveTaskToBack(true);
+					dialog.cancel();
+				}
+		    });
+			closeDialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+		        public void onClick(DialogInterface dialog, int id) {
+		        	finish();
+		        	dialog.cancel();
+		        }
+		    });
+			closeDialog.show();
 			return true;
-			//    		case KeyEvent.KEYCODE_VOLUME_DOWN:
-			//    		case KeyEvent.KEYCODE_VOLUME_UP:
-			//				Dialog dialog = new AudioControlDialog(this);
-			//				dialog.show();
-			//				return true;
+//    	case KeyEvent.KEYCODE_VOLUME_DOWN:
+//    	case KeyEvent.KEYCODE_VOLUME_UP:
+//			Dialog dialog = new AudioControlDialog(this);
+//			dialog.show();
+//			return true;
+//		case KeyEvent.KEYCODE_HOME:
+//			showBackgroundNotification();
+//			return super.onKeyDown(keyCode, event);
 		
 		default:
 			return super.onKeyDown(keyCode, event);
@@ -967,11 +979,8 @@ public void showBackgroundNotification()
 
 			contactAdapter.notifyDataSetChanged();
 		}
-		else if (intent.getAction().equals(ACTION_TO_FOREGROUND))
-		{
-			NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-			notificationManager.cancel(Client.BACKGROUND_NOTIFICATION_ID);
-			
+		else if (intent.getAction().equals(ACTION_TO_FOREGROUND)) {
+			hideBackgroundNotification();
 		} else if (intent.getAction().equals(ACTION_OPEN_SLIDER)) {
 			SlidingDrawer slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
 			if (slidingDrawer != null && (!slidingDrawer.isShown() || !slidingDrawer.isOpened())) {
