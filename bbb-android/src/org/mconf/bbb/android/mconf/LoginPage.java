@@ -1,13 +1,12 @@
 package org.mconf.bbb.android.mconf;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.R;
-import org.mconf.bbb.android.mconf.RoomsDialog.OnSelectRoomListener;
 import org.mconf.web.Authentication;
-import org.mconf.web.MconfWebAPI;
+import org.mconf.web.MconfWebImpl;
+import org.mconf.web.MconfWebItf;
 import org.mconf.web.Room;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +21,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnTouchListener;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemSelectedListener;
 
 public class LoginPage extends Activity {
 	private static final Logger log = LoggerFactory.getLogger(LoginPage.class);
@@ -38,6 +35,7 @@ public class LoginPage extends Activity {
 	private Authentication auth = null;
 	private ArrayAdapter<String> spinnerAdapter;
 	private Room selectedRoom = null;
+	private MconfWebItf mconf = new MconfWebImpl();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +63,14 @@ public class LoginPage extends Activity {
 						auth = new Authentication(DEFAULT_SERVER, editTextUsername.getText().toString(), editTextPassword.getText().toString());
 					if (auth.isAuthenticated()) {
 						storeCredentials();
-						List<Room> rooms = MconfWebAPI.getRooms(auth);
+						List<Room> rooms = null;
+						try {
+							rooms = mconf.getRooms(auth);
+						} catch (Exception e) {
+							e.printStackTrace();
+							Toast.makeText(LoginPage.this, R.string.login_cant_contact_server, Toast.LENGTH_SHORT).show();
+							return true;
+						}
 						if (rooms.isEmpty()) {
 							Toast.makeText(LoginPage.this, R.string.no_rooms, Toast.LENGTH_SHORT).show();
 						} else {
@@ -103,7 +108,15 @@ public class LoginPage extends Activity {
 						return true;
 					}
 					
-					String path = MconfWebAPI.getJoinUrl(auth, selectedRoom.getPath());
+					String path = null;
+					try {
+						path = mconf.getJoinUrl(auth, selectedRoom.getPath());
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						Toast.makeText(LoginPage.this, R.string.login_cant_contact_server, Toast.LENGTH_SHORT).show();
+						return true;
+					}
 					if (path == null
 							|| path.length() == 0) {
 						Toast.makeText(LoginPage.this, R.string.cant_join, Toast.LENGTH_SHORT).show();

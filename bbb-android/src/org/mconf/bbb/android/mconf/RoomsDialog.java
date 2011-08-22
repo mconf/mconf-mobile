@@ -1,10 +1,13 @@
 package org.mconf.bbb.android.mconf;
 
+import java.security.acl.Owner;
 import java.util.List;
 
 import org.mconf.bbb.android.NoScrollListView;
 import org.mconf.bbb.android.R;
 import org.mconf.web.Room;
+import org.mconf.web.Space;
+import org.mconf.web.User;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -43,12 +46,15 @@ public class RoomsDialog extends Dialog {
 		setContentView(R.layout.rooms_list);
 		
 		for (Room room : rooms) {
-			if (room.getType().equals(Room.TYPE_USER))
+			if (room.getOwner().getClass() == User.class)
 				rooms_user.add(room);
-			else if (room.getType().equals(Room.TYPE_USER_SPACE))
-				rooms_user_spaces.add(room);
-			else if (room.getType().equals(Room.TYPE_PUBLIC_SPACE))
-				rooms_public_spaces.add(room);
+			else if (room.getOwner().getClass() == Space.class) {
+				Space space = (Space) room.getOwner();
+				if (space.isMember())
+					rooms_user_spaces.add(room);
+				else
+					rooms_public_spaces.add(room);
+			}
 		}
 
 		initView(rooms_user, R.id.rooms_user, R.id.layout_rooms_user);
@@ -57,16 +63,16 @@ public class RoomsDialog extends Dialog {
 	}
 	
 	void initView(RoomsAdapter adapter, int listViewId, int layoutId) {
-		if (adapter.isEmpty()) {
-			RelativeLayout layout = (RelativeLayout) findViewById(layoutId);
-			LayoutParams params = layout.getLayoutParams();
-			params.height = 0;
-			layout.setLayoutParams(params);
-		} else {
+//		if (adapter.isEmpty()) {
+//			RelativeLayout layout = (RelativeLayout) findViewById(layoutId);
+//			LayoutParams params = layout.getLayoutParams();
+//			params.height = 0;
+//			layout.setLayoutParams(params);
+//		} else {
 			NoScrollListView listView = (NoScrollListView) findViewById(listViewId);
 			listView.setAdapter(adapter);
 			listView.setOnItemClickListener(new RoomsDialogOnItemClickListener());
-		}		
+//		}		
 	}
 	
 	void setOnSelectRoomListener(OnSelectRoomListener listener) {
