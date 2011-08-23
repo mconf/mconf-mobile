@@ -7,8 +7,8 @@ public class CloseDialog extends AlertDialog.Builder {
 	
 	public CloseDialog(final Context context) {
 		super(context);
-		setTitle(R.string.quit_dialog);
-		setMessage(R.string.if_no_send_to_back);
+		setTitle(R.string.back_pressed);
+		setMessage(R.string.back_pressed_action);
 	}
 
 }

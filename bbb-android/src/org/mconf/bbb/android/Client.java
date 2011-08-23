@@ -36,7 +36,6 @@ import org.mconf.bbb.users.IParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Notification;
@@ -789,14 +788,15 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
 			CloseDialog closeDialog = new CloseDialog(this);
-			closeDialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+			closeDialog.setNegativeButton(R.string.minimize, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
 					showBackgroundNotification();
+					sendBroadcast(new Intent(SEND_TO_BACK));
 					moveTaskToBack(true);
 					dialog.cancel();
 				}
 		    });
-			closeDialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+			closeDialog.setPositiveButton(R.string.quit, new DialogInterface.OnClickListener() {
 		        public void onClick(DialogInterface dialog, int id) {
 		        	finish();
 		        	dialog.cancel();

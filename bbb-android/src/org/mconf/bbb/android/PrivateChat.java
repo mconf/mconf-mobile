@@ -194,7 +194,8 @@ public class PrivateChat extends BigBlueButtonActivity {
 	private ViewFlipper flipper; 
 	private Context context= this;
 	
-	public boolean movedToBack=false;
+	// \TODO review the needed of these kind of flags
+	private boolean movedToBack=false;
 	
 	public static boolean hasUserOnPrivateChat(int userId)
 	{
@@ -233,7 +234,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		public void onReceive(Context context, Intent intent)
 		{ 
 			removeAllParticipants();
-			PrivateChat.this.finish(); // we finish PrivateChat here when receiving the broadcast 
+			finish(); // we finish PrivateChat here when receiving the broadcast 
 
 		} 
 	};
@@ -244,7 +245,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		public void onReceive(Context context, Intent intent)
 		{ 
 			log.debug("sent to back");
-			PrivateChat.this.moveTaskToBack(true); 
+			moveTaskToBack(true); 
 			movedToBack=true;
 		} 
 	};

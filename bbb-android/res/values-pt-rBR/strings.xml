@@ -30,12 +30,13 @@
 	<string name="unmute">Com som</string>
 	<string name="assign_presenter">Tornar apresentador</string>
 	<string name="not_implemented">Funcionalidade não implementada</string>
-	<string name="speaker">Speaker</string>
+	<string name="speaker">Alto-falante</string>
 	<string name="start_voice">Iniciar voz</string>
 	<string name="stop_voice">Parar voz</string>
 	<string name="start_video">Iniciar video</string>
 	<string name="stop_video">Parar video</string>
 	<string name="quit">Fechar</string>
+	<string name="minimize">Minimizar</string>
 	<string name="logout">Sair da sala</string>
 	<string name="raise_hand">Levantar a mão</string>
 	<string name="open_private_chat">Abrir o chat privado</string>
@@ -82,8 +83,8 @@
 		<string name="start_time">Horário de início</string>
 		<string name="participant_count">Contagem de participantes</string>
 		<string name="moderator_count">Contagem de moderadores</string>
-		<string name="quit_dialog">Tem certeza que deseja fechar o aplicativo?</string>
-	<string name="if_no_send_to_back">Se pressionar \"Não\", ele será colocado em background</string>
+		<string name="back_pressed">Tecla \"Voltar\" pressionada</string>
+		<string name="back_pressed_action">O que deseja fazer?</string>
 	<string name="about">
 		BBB-Android é uma implementação do cliente BigBlueButton para Android.
 		\nVersão ${VERSION}
