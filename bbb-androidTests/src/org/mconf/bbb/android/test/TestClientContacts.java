@@ -64,8 +64,8 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	
 	public void testCloseDialogPutInBackground() {
 		solo.sendKey(KeyEvent.KEYCODE_BACK);
-		solo.waitForText(Common.exactly(solo.getString(R.string.quit_dialog)));
-		assertTrue(solo.searchText(solo.getString(R.string.quit_dialog)));
+		solo.waitForText(Common.exactly(solo.getString(R.string.back_pressed)));
+		assertTrue(solo.searchText(solo.getString(R.string.back_pressed)));
 		solo.clickOnButton(solo.getString(R.string.no));
 		//assertTrue(solo.getCurrentViews().isEmpty());
 		assertTrue(solo.searchText(solo.getString(R.string.application_on_background_text)));
@@ -73,8 +73,8 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	
 	public void testCloseDialogQuit() {
 		solo.sendKey(KeyEvent.KEYCODE_BACK);
-		solo.waitForText(Common.exactly(solo.getString(R.string.quit_dialog)));
-		assertTrue(solo.searchText(solo.getString(R.string.quit_dialog)));
+		solo.waitForText(Common.exactly(solo.getString(R.string.back_pressed)));
+		assertTrue(solo.searchText(solo.getString(R.string.back_pressed)));
 		solo.clickOnButton(solo.getString(R.string.yes));
 		assertTrue(solo.getCurrentViews().isEmpty());
 		assertFalse(solo.searchText(solo.getString(R.string.application_on_background_text)));

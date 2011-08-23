@@ -22,6 +22,8 @@
 package org.mconf.bbb.android;
 
 import org.mconf.bbb.IBigBlueButtonClientListener;
+import org.mconf.bbb.android.video.VideoCapture;
+import org.mconf.bbb.android.video.VideoCaptureLayout;
 import org.mconf.bbb.android.video.VideoDialog;
 import org.mconf.bbb.android.video.VideoFullScreen;
 import org.mconf.bbb.android.voip.AudioBarLayout;
@@ -89,6 +91,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public static final int MENU_MUTE_ROOM = Menu.FIRST + 11;
 	public static final int MENU_UNMUTE_ROOM = Menu.FIRST + 12;
 	public static final int MENU_MEETING_INF = Menu.FIRST + 13;
+	public static final int MENU_START_VIDEO = Menu.FIRST + 14;
+	public static final int MENU_STOP_VIDEO = Menu.FIRST + 15;
 
 	public static final int POPUP_MENU_KICK_USER = Menu.FIRST;
 	public static final int POPUP_MENU_MUTE_LISTENER = Menu.FIRST + 1;
@@ -107,6 +111,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public static final String FINISH = "bbb.android.action.FINISH";
 	public static final String QUIT = "bbb.android.action.QUIT";
 	public static final String CLOSE_VIDEO = "org.mconf.bbb.android.Video.CLOSE";
+	public static final String CLOSE_DIALOG_PREVIEW = "org.mconf.bbb.android.Video.CLOSE_DIALOG_PREVIEW";
 	public static final String SEND_TO_BACK = "bbb.android.action.SEND_TO_BACK";
 
 	public static final int ID_DIALOG_RECONNECT = 111000;
@@ -147,6 +152,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			log.debug("Client.closeVideo.onReceive()");
+			
 			Bundle extras = intent.getExtras();
 			int userId= extras.getInt("userId");
 			if (mVideoDialog != null && mVideoDialog.isShowing() && mVideoDialog.getVideoId() == userId) {
@@ -154,6 +160,17 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				mVideoDialog.dismiss();
 				mVideoDialog = null;
 			}
+		}
+		
+	};
+	
+	private BroadcastReceiver closeDialogPreview = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			log.debug("Client.closeDialgoPreview.onReceive()");
+			
+			destroyCaptureSurface(false);
 		}
 		
 	};
@@ -189,6 +206,9 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		IntentFilter closeVideoFilter = new IntentFilter(CLOSE_VIDEO);
 		registerReceiver(closeVideo, closeVideoFilter);
 		
+		IntentFilter closeDialogPreviewFilter = new IntentFilter(CLOSE_DIALOG_PREVIEW);
+		registerReceiver(closeDialogPreview, closeDialogPreviewFilter);
+		
 		IntentFilter quitDialogFilter = new IntentFilter(QUIT);
 		registerReceiver(quit, quitDialogFilter);
 
@@ -214,7 +234,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	@Override
 	protected void onResume() {
 		super.onResume();
-				
+
+		hideBackgroundNotification();
 		if (mVideoDialog != null && mVideoDialog.isShowing())
 			mVideoDialog.resume();
 	}
@@ -312,6 +333,25 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		return true;
 	}
 
+	private void endListeners() { // if we have already called setAdapter
+								  // and we want to call setAdapter again 
+								  // we need to call setAdapter(null) before
+								  // or the memory usage will grow.
+								  // This should be also done onDestroy()
+								  // because of a bug on Android.
+								  // see: http://stackoverflow.com/questions/6517295/setadapter-causes-memory-leak-bug-in-development-system
+		final ListView chatListView = (ListView) findViewById(R.id.messages);
+		chatListView.setAdapter(null);
+		
+		final CustomListview contactListView = (CustomListview) findViewById(R.id.contacts_list);
+		contactListView.setAdapter(null);
+		unregisterForContextMenu(contactListView);
+		
+		final CustomListview listenerListView = (CustomListview) findViewById(R.id.listeners_list);
+		listenerListView.setAdapter(null);
+		unregisterForContextMenu(listenerListView);
+	}
+	
 	private void initListeners() {
 		setContentView(R.layout.contacts_list);
 
@@ -321,7 +361,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 			notificationManager.cancel(CHAT_NOTIFICATION_ID);
 		}
-
+		
 		// UI elements registration and setting of adapters
 		final ListView chatListView = (ListView) findViewById(R.id.messages);
 		chatListView.setAdapter(chatAdapter);
@@ -415,6 +455,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
+		endListeners();
+		
 		super.onConfigurationChanged(newConfig);
 
 		initListeners();
@@ -439,7 +481,10 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		
 		unregisterReceiver(chatClosed);
 		unregisterReceiver(closeVideo);
+		unregisterReceiver(closeDialogPreview);
 		unregisterReceiver(quit);
+		
+		endListeners();
 
 		super.onDestroy();
 	}
@@ -530,11 +575,12 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			case POPUP_MENU_SHOW_VIDEO:
 			{
 				Contact contact = (Contact) contactAdapter.getItem(info.position);
-				int orientation = getResources().getConfiguration().orientation;
-				if(orientation==Configuration.ORIENTATION_PORTRAIT)
+				
+				if(getResources().getConfiguration().orientation==Configuration.ORIENTATION_PORTRAIT)
 					showVideo(true, contact.getUserId(), contact.getName());
 				else 
 					showVideo(false, contact.getUserId(), contact.getName());
+				
 				return true;
 			}
 		}
@@ -542,6 +588,9 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 
 	private void quit() {
+		VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
+		mVideoCapture.stopCapture();
+		
 		getGlobalContext().invalidateVoiceModule();
 		getBigBlueButton().removeListener(this);
 		getBigBlueButton().disconnect();
@@ -581,6 +630,12 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			} else {
 				menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, R.string.start_voice).setIcon(android.R.drawable.ic_btn_speak_now);
 			}
+			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
+			if (mVideoCapture.isCapturing() && getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).getStatus().isHasStream()){
+				menu.add(Menu.NONE, MENU_STOP_VIDEO, Menu.NONE, R.string.stop_video).setIcon(android.R.drawable.ic_media_pause);
+			} else if(!mVideoCapture.isCapturing() && !getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).getStatus().isHasStream()) {
+				menu.add(Menu.NONE, MENU_START_VIDEO, Menu.NONE, R.string.start_video).setIcon(android.R.drawable.ic_media_play);
+			}
 			if (getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isRaiseHand())
 				menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.lower_hand).setIcon(android.R.drawable.ic_menu_myplaces);
 			else
@@ -616,6 +671,16 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			if (getVoiceModule().isOnCall())
 				getVoiceModule().hang();
 			return true;
+			
+		case MENU_START_VIDEO:
+			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
+			mVideoCapture.startCapture();
+			return true;	
+			
+		case MENU_STOP_VIDEO:
+			VideoCapture mVideoCapture1 = (VideoCapture) findViewById(R.id.video_capture);
+			mVideoCapture1.stopCapture();			
+			return true;	
 
 		case MENU_MUTE:
 			getVoiceModule().muteCall(!getVoiceModule().isMuted());
@@ -696,46 +761,57 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		networkProperties.show();
 	}
 
-protected void onUserLeaveHint() {
-	if(!backToLogin&&!backToPrivateChat)
-		showBackgroundNotification();
-}
+	private void showBackgroundNotification() {
+		String contentTitle = getResources().getString(R.string.application_on_background);
+		String contentText = getResources().getString(R.string.application_on_background_text);
+		
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		Notification notification = new Notification(R.drawable.icon_bbb, contentTitle, 0);
+		Intent notificationIntent = new Intent(getApplicationContext(), Client.class);
+		notificationIntent.setAction(ACTION_TO_FOREGROUND);
+		
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+		notification.flags=Notification.FLAG_ONGOING_EVENT;
+		notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
+		
+		Toast.makeText(getApplicationContext(), contentText, Toast.LENGTH_SHORT).show();
+		notificationManager.notify(BACKGROUND_NOTIFICATION_ID, notification);	
+	}
+	
+	private void hideBackgroundNotification() {
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		notificationManager.cancel(BACKGROUND_NOTIFICATION_ID);
+	}
 
-public void showBackgroundNotification()
-{
-	String contentTitle = getResources().getString(R.string.application_on_background);
-	String contentText = getResources().getString(R.string.application_on_background_text);
-	
-	NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-	Notification notification = new Notification(R.drawable.icon_bbb, contentTitle, 0);
-	Intent notificationIntent = new Intent(getApplicationContext(), Client.class);
-	notificationIntent.setAction(ACTION_TO_FOREGROUND);
-	
-	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
-	notification.flags=Notification.FLAG_ONGOING_EVENT;
-	notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
-	
-	Toast.makeText(getApplicationContext(), contentText, Toast.LENGTH_SHORT).show();
-	notificationManager.notify(BACKGROUND_NOTIFICATION_ID, notification);	
-	
-}
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
-//			Intent intent = new Intent(SEND_TO_BACK);
-//			sendBroadcast(intent);
-			log.debug("KEYCODE_BACK");
-			CloseDialog close = new CloseDialog(Client.this);
-			close.show();
-			//moveTaskToBack(true);
-			
+			CloseDialog closeDialog = new CloseDialog(this);
+			closeDialog.setNegativeButton(R.string.minimize, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					showBackgroundNotification();
+					sendBroadcast(new Intent(SEND_TO_BACK));
+					moveTaskToBack(true);
+					dialog.cancel();
+				}
+		    });
+			closeDialog.setPositiveButton(R.string.quit, new DialogInterface.OnClickListener() {
+		        public void onClick(DialogInterface dialog, int id) {
+		        	finish();
+		        	dialog.cancel();
+		        }
+		    });
+			closeDialog.show();
 			return true;
-			//    		case KeyEvent.KEYCODE_VOLUME_DOWN:
-			//    		case KeyEvent.KEYCODE_VOLUME_UP:
-			//				Dialog dialog = new AudioControlDialog(this);
-			//				dialog.show();
-			//				return true;
+//    	case KeyEvent.KEYCODE_VOLUME_DOWN:
+//    	case KeyEvent.KEYCODE_VOLUME_UP:
+//			Dialog dialog = new AudioControlDialog(this);
+//			dialog.show();
+//			return true;
+//		case KeyEvent.KEYCODE_HOME:
+//			showBackgroundNotification();
+//			return super.onKeyDown(keyCode, event);
 		
 		default:
 			return super.onKeyDown(keyCode, event);
@@ -967,11 +1043,8 @@ public void showBackgroundNotification()
 
 			contactAdapter.notifyDataSetChanged();
 		}
-		else if (intent.getAction().equals(ACTION_TO_FOREGROUND))
-		{
-			NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-			notificationManager.cancel(Client.BACKGROUND_NOTIFICATION_ID);
-			
+		else if (intent.getAction().equals(ACTION_TO_FOREGROUND)) {
+			hideBackgroundNotification();
 		} else if (intent.getAction().equals(ACTION_OPEN_SLIDER)) {
 			SlidingDrawer slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
 			if (slidingDrawer != null && (!slidingDrawer.isShown() || !slidingDrawer.isOpened())) {
@@ -1180,7 +1253,10 @@ public void showBackgroundNotification()
 
 	private void showVideo(boolean inDialog, int videoId, String videoName){
 		if(inDialog){
-			mVideoDialog = new VideoDialog(this, videoId, videoName);
+			if(videoId ==  getBigBlueButton().getMyUserId()){
+				destroyCaptureSurface(true);
+			}
+			mVideoDialog = new VideoDialog(this, videoId, getBigBlueButton().getMyUserId(), videoName);
 			mVideoDialog.show();
 		} else {
 			Intent intent = new Intent(getApplicationContext(), VideoFullScreen.class);
@@ -1213,6 +1289,21 @@ public void showBackgroundNotification()
 					audiolayout.show(getVoiceModule().isMuted());
 				else
 					audiolayout.hide();
+			}
+		});
+	}
+	
+	private void destroyCaptureSurface(final boolean destroy) {
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				VideoCaptureLayout videocaplayout = (VideoCaptureLayout) findViewById(R.id.video_capture_layout);
+				if(destroy){
+					videocaplayout.destroy();
+				} else {
+					videocaplayout.hide();
+				}
 			}
 		});
 	}

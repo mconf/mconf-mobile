@@ -8,8 +8,7 @@
 	<string name="login_select_meeting">Por favor, selecione uma sala</string>
 	<string name="login_cant_join">Não foi possível entrar na sala</string>
 	<string name="login_updating">Atualizando lista de salas</string>
-	<string name="login_cant_contact_server">Não foi possível conectar ao servidor. Tente
-		novamente mais tarde</string>
+	<string name="login_cant_contact_server">Não foi possível conectar ao servidor. Tente novamente mais tarde</string>
 	<string name="login_unsupported_server">O servidor não possui suporte a dispositivos móveis</string>
 	<string name="wait">Por favor, aguarde</string>
 	<string name="welcome">Seja bem-vindo</string>
@@ -30,10 +29,16 @@
 	<string name="unmute">Com som</string>
 	<string name="assign_presenter">Tornar apresentador</string>
 	<string name="not_implemented">Funcionalidade não implementada</string>
-	<string name="speaker">Speaker</string>
+	<string name="speaker">Alto-falante</string>
 	<string name="start_voice">Iniciar voz</string>
 	<string name="stop_voice">Parar voz</string>
+
+	<string name="start_video">Iniciar video</string>
+	<string name="stop_video">Parar video</string>
+    <string name="publishing_video">Seu vídeo está sendo transmitido para a sessão</string>
+
 	<string name="quit">Fechar</string>
+	<string name="minimize">Minimizar</string>
 	<string name="logout">Sair da sala</string>
 	<string name="raise_hand">Levantar a mão</string>
 	<string name="lower_hand">Abaixar a mão</string>
@@ -71,17 +76,6 @@
 	<string name="install_bar_code">Instalar Barcode Scanner?</string>
 	<string name="bar_code_no_found">Barcode Scanner não encontrado, instalar?</string>
 	<string name="show_video">Exibir vídeo</string>
-	<string name="application_on_background">BigBlueButton</string>
-	<string name="application_on_background_text">A aplicação ainda está rodando</string>
-    <string name="quit_dialog">Tem certeza que quer fechar o programa?</string>
-    <string name="if_no_send_to_back">Se pressionar não, ele continuará rodando</string>
-
-    <string name="meeting_information">Informações da sala</string>
-	<string name="meeting_id">Identificação da sala</string>
-	<string name="meeting_message">Mensagem</string>
-	<string name="start_time">Horário de início</string>
-	<string name="participant_count">Contagem de participantes</string>
-	<string name="moderator_count">Contagem de moderadores</string>
     <string name="username">Usuário</string>
     <string name="password">Senha</string>
     <string name="remember">Lembrar-me</string>
@@ -98,6 +92,20 @@
 
     <string name="dont_have_account">Não possui uma conta? Clique aqui!</string>
     <string name="no_running_meeting">Você precisa aguardar um moderador para entrar</string>
+
+    <string name="application_on_background">BigBlueButton</string>
+	<string name="application_on_background_text">O aplicativo ainda está rodando</string>
+    
+    <string name="server">Servidor</string>
+	<string name="meeting_information">Informações da sala</string>
+	<string name="meeting_id">Identificação da sala</string>
+	<string name="meeting_message">Mensagem</string>
+	<string name="start_time">Horário de início</string>
+	<string name="participant_count">Contagem de participantes</string>
+	<string name="moderator_count">Contagem de moderadores</string>
+	
+	<string name="back_pressed">Tecla \"Voltar\" pressionada</string>
+	<string name="back_pressed_action">O que deseja fazer?</string>
 
 	<string name="about">
 		BBB-Android é uma implementação do cliente BigBlueButton para Android.
