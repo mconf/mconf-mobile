@@ -1,6 +1,5 @@
 package org.mconf.bbb.android.mconf;
 
-import java.security.acl.Owner;
 import java.util.List;
 
 import org.mconf.bbb.android.NoScrollListView;
@@ -63,16 +62,16 @@ public class RoomsDialog extends Dialog {
 	}
 	
 	void initView(RoomsAdapter adapter, int listViewId, int layoutId) {
-//		if (adapter.isEmpty()) {
-//			RelativeLayout layout = (RelativeLayout) findViewById(layoutId);
-//			LayoutParams params = layout.getLayoutParams();
-//			params.height = 0;
-//			layout.setLayoutParams(params);
-//		} else {
+		if (adapter.isEmpty()) {
+			RelativeLayout layout = (RelativeLayout) findViewById(layoutId);
+			LayoutParams params = layout.getLayoutParams();
+			params.height = 0;
+			layout.setLayoutParams(params);
+		} else {
 			NoScrollListView listView = (NoScrollListView) findViewById(listViewId);
 			listView.setAdapter(adapter);
 			listView.setOnItemClickListener(new RoomsDialogOnItemClickListener());
-//		}		
+		}		
 	}
 	
 	void setOnSelectRoomListener(OnSelectRoomListener listener) {

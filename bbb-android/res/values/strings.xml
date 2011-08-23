@@ -96,6 +96,9 @@
 	<string name="rooms_user">User rooms</string>
 	<string name="rooms_user_spaces">Rooms from user spaces</string>
 	<string name="rooms_public_spaces">Rooms from public spaces</string>
+	
+	<string name="dont_have_account">Don\'t you have an account? Click here!</string>
+    <string name="no_running_meeting">You must wait for a moderator to join</string>
 
 	<string name="about">
 BBB-Android is an Android implementation of the BigBlueButton client.

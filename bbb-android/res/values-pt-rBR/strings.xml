@@ -96,6 +96,9 @@
 	<string name="rooms_user_spaces">Salas de comunidades do usuário</string>
 	<string name="rooms_public_spaces">Salas de comunidades públicas</string>
 
+    <string name="dont_have_account">Não possui uma conta? Clique aqui!</string>
+    <string name="no_running_meeting">Você precisa aguardar um moderador para entrar</string>
+
 	<string name="about">
 		BBB-Android é uma implementação do cliente BigBlueButton para Android.
 		\nVersão ${VERSION}

@@ -8,6 +8,7 @@ import org.mconf.web.Authentication;
 import org.mconf.web.MconfWebImpl;
 import org.mconf.web.MconfWebItf;
 import org.mconf.web.Room;
+import org.mconf.web.Space;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,8 +16,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -26,12 +30,14 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class LoginPage extends Activity {
+	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger(LoginPage.class);
 
-	private final String DEFAULT_SERVER = "http://mconfmoodle.inf.ufrgs.br";
+	private final String DEFAULT_SERVER = "http://mconf.inf.ufrgs.br";
 	private Authentication auth = null;
 	private ArrayAdapter<String> spinnerAdapter;
 	private Room selectedRoom = null;
@@ -96,7 +102,6 @@ public class LoginPage extends Activity {
 			}
 		});
 		
-		final CheckBox checkBoxRememberMe = (CheckBox) findViewById(R.id.checkBoxRememberMe);
 		final Button buttonJoin = (Button) findViewById(R.id.buttonJoin);
 		buttonJoin.setOnTouchListener(new OnTouchListener() {
 			
@@ -112,9 +117,12 @@ public class LoginPage extends Activity {
 					try {
 						path = mconf.getJoinUrl(auth, selectedRoom.getPath());
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						Toast.makeText(LoginPage.this, R.string.login_cant_contact_server, Toast.LENGTH_SHORT).show();
+						if (selectedRoom.getOwner().getClass() == Space.class
+								&& ((Space) selectedRoom.getOwner()).isPublic()
+								&& !((Space) selectedRoom.getOwner()).isMember())
+							Toast.makeText(LoginPage.this, R.string.no_running_meeting, Toast.LENGTH_SHORT).show();
+						else
+							Toast.makeText(LoginPage.this, R.string.login_cant_contact_server, Toast.LENGTH_SHORT).show();
 						return true;
 					}
 					if (path == null
@@ -136,6 +144,11 @@ public class LoginPage extends Activity {
 				return false;
 			}
 		});
+		
+		final TextView account = (TextView) findViewById(R.id.textViewDontHaveAccount);
+		account.setText(Html.fromHtml("<a href=\"" + DEFAULT_SERVER + "\">" + getResources().getString(R.string.dont_have_account) + "</a>"));
+		account.setMovementMethod(LinkMovementMethod.getInstance());
+		account.setLinkTextColor(Color.YELLOW);
 	}
 	
 	private void loadCredentials() {

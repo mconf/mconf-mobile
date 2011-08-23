@@ -1,29 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
 		xmlns:android="http://schemas.android.com/apk/res/android"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		android:background="#33608D"
-		android:layout_gravity="center_vertical"
-		android:fillViewport="true"
-		>
+		android:background="#33608D" android:layout_gravity="center" android:isScrollContainer="true" android:clickable="true" android:layout_height="match_parent" android:layout_width="match_parent">
 	<RelativeLayout
-		 	xmlns:android="http://schemas.android.com/apk/res/android"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_vertical"
-		 	android:clickable="true"
-		 	android:padding="30dip">
-	    <ImageView android:src="@drawable/mconf_logo" android:id="@+id/imageView1" android:layout_centerHorizontal="true" android:layout_alignParentTop="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="50dip"></ImageView>
-		<EditText android:id="@+id/editTextUsername" android:layout_height="wrap_content" android:inputType="textEmailAddress" android:layout_centerHorizontal="true" android:layout_below="@+id/imageView1" android:layout_marginBottom="30dp" android:layout_width="230dip">
-		    <requestFocus></requestFocus>
-		</EditText>
+		 	android:layout_gravity="center" android:layout_height="fill_parent" android:layout_width="fill_parent">
+	    <ImageView android:src="@drawable/mconf_logo" android:id="@+id/imageView1" android:layout_centerHorizontal="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="50dip" android:visibility="visible"></ImageView>
+		<EditText android:id="@+id/editTextUsername" android:layout_height="wrap_content" android:inputType="textEmailAddress" android:layout_centerHorizontal="true" android:layout_below="@+id/imageView1" android:layout_marginBottom="30dp" android:layout_width="230dip"/>
 		<EditText android:id="@+id/editTextPassword" android:layout_height="wrap_content" android:inputType="textPassword" android:layout_below="@+id/editTextUsername" android:layout_alignLeft="@+id/editTextUsername" android:layout_width="230dip"></EditText>
 		<Spinner android:id="@+id/spinnerRooms" android:layout_height="wrap_content" android:layout_centerHorizontal="true" android:layout_marginBottom="30dp" android:layout_below="@+id/checkBoxRememberMe" android:layout_width="230dip"></Spinner>
 		<Button android:id="@+id/buttonJoin" android:layout_height="wrap_content" android:layout_below="@+id/spinnerRooms" android:layout_centerHorizontal="true" android:text="@string/login_button_join" android:layout_width="230dip"></Button>
 		<TextView android:id="@+id/textView1" android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_height="wrap_content" android:layout_above="@+id/editTextUsername" android:layout_alignLeft="@+id/editTextUsername" android:text="@string/username"></TextView>
 		<TextView android:id="@+id/textView2" android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_height="wrap_content" android:layout_above="@+id/editTextPassword" android:layout_alignLeft="@+id/editTextPassword" android:text="@string/password"></TextView>
 		<TextView android:id="@+id/textView3" android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_height="wrap_content" android:layout_above="@+id/spinnerRooms" android:layout_alignLeft="@+id/spinnerRooms" android:text="@string/rooms"></TextView>
-		<CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignLeft="@+id/editTextPassword" android:layout_below="@+id/editTextPassword" android:id="@+id/checkBoxRememberMe" android:layout_marginBottom="30dp" android:text="@string/remember"></CheckBox>
+		<CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignLeft="@+id/editTextPassword" android:layout_below="@+id/editTextPassword" android:id="@+id/checkBoxRememberMe" android:text="@string/remember" android:layout_marginBottom="50dip"></CheckBox>
+        <TextView android:layout_height="wrap_content" android:text="@string/dont_have_account" android:layout_width="wrap_content" android:layout_above="@+id/spinnerRooms" android:textAppearance="?android:attr/textAppearanceSmall" android:layout_alignLeft="@+id/spinnerRooms" android:paddingTop="10dip" android:paddingBottom="10dip" android:layout_marginBottom="20dip" android:id="@+id/textViewDontHaveAccount"></TextView>
 	</RelativeLayout>
 </ScrollView>
