@@ -1,4 +1,4 @@
-package org.mconf.bbb.android.mconf;
+package org.mconf.android;
 
 import java.util.List;
 
@@ -47,7 +47,7 @@ public class LoginPage extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.login_mconf);
+		setContentView(R.layout.login);
 		
 		loadCredentials();
 		

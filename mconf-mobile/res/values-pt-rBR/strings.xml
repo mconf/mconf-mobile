@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+
+	<string name="username">Usuário</string>
+	<string name="password">Senha</string>
+	<string name="remember">Lembrar-me</string>
+	<string name="rooms">Salas</string>
+	<string name="no_rooms">Nenhuma sala disponível</string>
+	<string name="invalid_password">Usuário e/ou senha inválidos</string>
+	<string name="select_room">Por favor selecione uma sala</string>
+	<string name="invalid_room">Sala inválida</string>
+	<string name="cant_join">Você não pode entrar na sala nesse momento</string>
+	
+	<string name="rooms_user">Salas de usuário</string>
+	<string name="rooms_user_spaces">Salas de comunidades do usuário</string>
+	<string name="rooms_public_spaces">Salas de comunidades públicas</string>
+	
+	<string name="dont_have_account">Não possui uma conta? Clique aqui</string>
+	<string name="no_running_meeting">Você precisa aguardar um moderador para entrar</string>
+    
+</resources>

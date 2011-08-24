@@ -1,4 +1,4 @@
-package org.mconf.bbb.android.mconf;
+package org.mconf.android;
 
 import java.util.List;
 
