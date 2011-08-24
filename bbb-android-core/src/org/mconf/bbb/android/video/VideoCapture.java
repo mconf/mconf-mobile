@@ -30,7 +30,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	
 	private SurfaceHolder mHolder;
         
-    private VideoPublish mVideoPublish;
+    private VideoPublish mVideoPublish = null;
     
 	private Method mAcb;       // method for adding a pre-allocated buffer 
     private Object[] mArglist; // list of arguments    
@@ -492,8 +492,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 		}
     }
     
-    public int startCapture(){
-    	new LoadNativeCaptureLibs();
+    public int startCapture() {
+    	NativeLibsLoader.loadCaptureLibs(context.getPackageName());
     	
     	int err = CaptureConstants.E_OK;
     	if(mVideoPublish == null){
@@ -599,8 +599,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     }
     
     public void stopCapture(){ 
-    	if(mVideoPublish != null){
-    		new LoadNativeCaptureLibs();
+    	if(isCapturing()){
+        	NativeLibsLoader.loadCaptureLibs(context.getPackageName());
     		
 	    	pauseCapture();
 	    	mVideoPublish.state = CaptureConstants.STOPPED;

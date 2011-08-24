@@ -41,8 +41,9 @@ public class VideoSurface extends GLSurfaceView {
 	
 	public VideoSurface(Context context, AttributeSet attrs) {
 		super(context, attrs);
-	
-        mRenderer = new VideoRenderer(this);
+		NativeLibsLoader.loadPlaybackLibs(context.getPackageName());
+
+		mRenderer = new VideoRenderer(this);
 		setRenderer(mRenderer);
 	}
 	
@@ -123,24 +124,6 @@ public class VideoSurface extends GLSurfaceView {
         return metrics;
 	}
 		
-	static {
-		String path = "/data/data/org.mconf.bbb.android/lib/";
-		try {
-			System.load(path + "libavutil.so");
-			System.load(path + "libswscale.so");
-			System.load(path + "libavcodec.so");
-			System.load(path + "libthread.so");
-			System.load(path + "libcommon.so");
-			System.load(path + "libqueue.so");
-			System.load(path + "libdecode.so");
-			System.load(path + "libmconfnativeshowvideo.so");
-	        
-	    	log.debug("Native libraries loaded");
-		} catch (SecurityException e) {
-	    	log.debug("Native libraries failed");
-		}
-    }
-	
 	private native int initDrawer(int screenW, int screenH, int displayAreaW, int displayAreaH, int displayPositionX, int displayPositionY);
 	private native int nativeResize(int screenW, int screenH, int displayAreaW, int displayAreaH, int displayPositionX, int displayPositionY);
 	private native int endDrawer();

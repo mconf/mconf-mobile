@@ -11,15 +11,6 @@
 	<uses-permission android:name="android.permission.GET_TASKS"></uses-permission>
 	<application android:name=".BigBlueButton" android:label="@string/app_name" android:icon="@drawable/icon_bbb">
 
-		<activity android:name=".LoginPage" android:label="@string/app_name" android:icon="@drawable/icon_bbb">
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN" />
-			    <category android:name="android.intent.category.DEFAULT" />
-				<category android:name="android.intent.category.LAUNCHER" />
-			</intent-filter>
-		</activity>
-				
-		<activity android:name=".ServerChoosing" />
 		<activity android:name=".Client" android:launchMode="singleTask" android:alwaysRetainTaskState="true"  android:configChanges="orientation|keyboardHidden">
 			<intent-filter>
 			    <data android:scheme="@string/protocol" />
@@ -30,6 +21,7 @@
 		</activity>
 		<activity android:name=".PrivateChat" android:launchMode="singleInstance" android:configChanges="orientation|keyboardHidden"/> 
 		<activity android:name=".video.VideoFullScreen" android:configChanges="orientation|keyboardHidden" android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
+
 	</application>
 	<supports-screens  android:smallScreens="true" android:normalScreens="true" android:largeScreens="true" />
 

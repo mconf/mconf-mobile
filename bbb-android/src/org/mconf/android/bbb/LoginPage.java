@@ -19,12 +19,16 @@
  * along with Mconf-Mobile.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mconf.bbb.android;
+package org.mconf.android.bbb;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import org.mconf.bbb.android.AboutDialog;
+import org.mconf.bbb.android.BigBlueButtonActivity;
+import org.mconf.bbb.android.Client;
+import org.mconf.bbb.android.NetworkPropertiesDialog;
 import org.mconf.bbb.api.JoinService;
 import org.mconf.bbb.api.Meeting;
 import org.slf4j.Logger;
@@ -215,15 +219,13 @@ public class LoginPage extends BigBlueButtonActivity {
 //                }
 
            		updatePreferences(username, serverUrl);
-           		
+
                 Intent myIntent = new Intent(getApplicationContext(), Client.class);
                 myIntent.putExtra("username", username);
                 myIntent.putExtra("moderator", moderator);
                 myIntent.putExtra("serverUrl", serverUrl);
                 myIntent.putExtra("meetingId", meetingId);
                 startActivity(myIntent);
-     
-                finish();
 			}
 		}
 		);
@@ -447,7 +449,6 @@ public class LoginPage extends BigBlueButtonActivity {
 	            joinAndLogin.addCategory("android.intent.category.BROWSABLE");
 	            joinAndLogin.setData(meetingAdress);
 	            startActivity(joinAndLogin);
-	            finish();
 	        } else if (resultCode == RESULT_CANCELED) {
 	            //\TODO Handle cancel
 	        }

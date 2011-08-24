@@ -7,7 +7,7 @@ import android.content.Intent;
 
 public class NetworkPropertiesDialog extends AlertDialog.Builder{
 	
-	NetworkPropertiesDialog(final Context context)
+	public NetworkPropertiesDialog(final Context context)
 	{
 		super(context);
 		setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {

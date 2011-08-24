@@ -78,7 +78,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	private static final Logger log = LoggerFactory.getLogger(Client.class);
 
 	public static final int MENU_QUIT = Menu.FIRST;
-	public static final int MENU_LOGOUT = Menu.FIRST + 1;
 	public static final int MENU_RAISE_HAND = Menu.FIRST + 2;
 	public static final int MENU_START_VOICE = Menu.FIRST + 3;
 	public static final int MENU_STOP_VOICE = Menu.FIRST + 4;
@@ -640,16 +639,12 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.lower_hand).setIcon(android.R.drawable.ic_menu_myplaces);
 			else
 				menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.raise_hand).setIcon(android.R.drawable.ic_menu_myplaces);
-			if (getGlobalContext().getLaunchedBy() == BigBlueButton.LAUNCHED_BY_APPLICATION)
-				menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, R.string.logout).setIcon(android.R.drawable.ic_menu_revert);
 			menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 			menu.add(Menu.NONE, MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
 			menu.add(Menu.NONE, MENU_MEETING_INF, Menu.NONE, R.string.meeting_information).setIcon(android.R.drawable.ic_menu_agenda);
 			//test purposes only
 //			menu.add(Menu.NONE, MENU_DISCONNECT, Menu.NONE, "Disconnect").setIcon(android.R.drawable.ic_dialog_alert);
 		} else {
-			if (getGlobalContext().getLaunchedBy() == BigBlueButton.LAUNCHED_BY_APPLICATION)
-				menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, R.string.logout).setIcon(android.R.drawable.ic_menu_revert);
 			menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 			menu.add(Menu.NONE, MENU_RECONNECT, Menu.NONE, R.string.reconnect).setIcon(android.R.drawable.ic_menu_rotate);
 		}
@@ -688,16 +683,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 		case MENU_SPEAKER:
 			getVoiceModule().setSpeaker(getVoiceModule().getSpeaker() != AudioManager.MODE_NORMAL? AudioManager.MODE_NORMAL: AudioManager.MODE_IN_CALL);
-			return true;
-
-		case MENU_LOGOUT:
-			quit();
-			Intent login = new Intent(this, LoginPage.class);
-			startActivity(login);
-			lastReadNum=-1;
-			backToLogin=true;
-			sendBroadcast(intent);
-			finish();
 			return true;
 
 		case MENU_QUIT:
@@ -935,9 +920,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				} else {
 					makeToast(R.string.kicked);
 					quit();
-					Intent login = new Intent(getApplicationContext(), LoginPage.class);
-					login.putExtra("username", username);
-					startActivity(login);
 					lastReadNum=-1;
 					sendBroadcast(new Intent(FINISH));
 					finish();

@@ -1,4 +1,4 @@
-package org.mconf.bbb.android;
+package org.mconf.android.bbb;
 
 import java.util.Map;
 
