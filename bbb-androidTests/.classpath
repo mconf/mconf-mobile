@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry combineaccessrules="false" kind="src" path="/bbb-android"/>
 	<classpathentry excluding="org/mconf/bbb/android/test/TestClientVideo.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="lib" path="libs/robotium-solo-2.4.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/bbb-android-core"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

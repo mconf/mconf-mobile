@@ -32,9 +32,9 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>bbb-android_src</name>
+			<name>bbb-android-core_src</name>
 			<type>2</type>
-			<locationURI>_android_bbb_android_551953c4/src</locationURI>
+			<locationURI>_android_bbb_android_core_e5e13808/src</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
