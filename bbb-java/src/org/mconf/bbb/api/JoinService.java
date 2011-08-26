@@ -20,9 +20,8 @@ public class JoinService {
 		return joinedMeeting;
 	}
 	
-	public void resetJoinedMeeting()
-	{
-		joinedMeeting=null;
+	public void resetJoinedMeeting() {
+		joinedMeeting = null;
 	}
 
 	public List<Meeting> getMeetings() {

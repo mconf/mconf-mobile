@@ -72,8 +72,8 @@ public class LoginPage extends BigBlueButtonActivity {
 	public static final int MENU_QR_CODE = Menu.FIRST;
 	public static final int MENU_ABOUT = Menu.FIRST + 1;
 	
-	SharedPreferences preferencesFile;
-	Map<String,String> storedPreferences;
+	private SharedPreferences preferencesFile;
+	private Map<String,String> storedPreferences;
 
 	private ArrayAdapter<String> spinnerAdapter;
 	private boolean moderator;

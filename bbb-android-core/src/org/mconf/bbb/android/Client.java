@@ -278,6 +278,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 //		}
 
 		if (getIntent().hasCategory("android.intent.category.BROWSABLE")
+				&& getIntent().getScheme() != null
 				&& getIntent().getScheme().equals(getResources().getString(R.string.protocol))) {
 			getGlobalContext().setLaunchedBy(BigBlueButton.LAUNCHED_BY_BROWSER);
 
@@ -305,6 +306,13 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			serverUrl = extras.getString("serverUrl");
 			meetingId = extras.getString("meetingId");
 
+			if (username == null
+					|| serverUrl == null
+					|| meetingId == null) {
+				new JoinFailDialog(this).show();
+				return false;
+			}			
+			
 			if (!getBigBlueButton().getJoinService().join(meetingId, username, moderator)) {
 				if (getBigBlueButton().getJoinService().getJoinedMeeting() != null) {
 					String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();

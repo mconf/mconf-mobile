@@ -153,7 +153,7 @@ public class BigBlueButtonClient {
 	public void disconnect() {
 		if (mainConnection != null)
 			mainConnection.disconnect();
-		joinService = new JoinService();
+		joinService.resetJoinedMeeting();
 	}
 
 	public Collection<Participant> getParticipants() {
