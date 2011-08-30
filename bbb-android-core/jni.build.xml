@@ -56,12 +56,6 @@
         <antcall target="install"/>
     </target>
     
-    <target name="sipdroid" depends="init">
-        <!--build target="OSNetworkSystem speex_jni bv16_jni silkcommon silk8_jni silk16_jni silk24_jni g722_jni gsm_jni"/-->
-        <build target="OSNetworkSystem speex_jni"/>
-        <antcall target="install"/>
-    </target>
-    
 	<target name="install">
 		<copy toDir="libs/armeabi/tmp" overwrite="true">
 			<fileset dir="libs/armeabi" includes="*.so"/>
@@ -71,5 +65,5 @@
 		</copy>
 	</target>
 	
-	<target name="all" depends="iva,mconfnativeshowvideo,mconfnativeencodevideo,sipdroid"/>
+	<target name="all" depends="iva,mconfnativeshowvideo,mconfnativeencodevideo"/>
 </project>

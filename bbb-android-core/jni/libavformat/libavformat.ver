@@ -1,3 +1,0 @@
-LIBAVFORMAT_52 {
-        global: *;
-};

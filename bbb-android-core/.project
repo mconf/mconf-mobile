@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>bbb-android</name>
+	<name>bbb-android-core</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -30,4 +30,11 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>sipdroid_src</name>
+			<type>2</type>
+			<locationURI>_android_sipdroid_216ae9e2/src</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>
