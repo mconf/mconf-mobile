@@ -1,5 +1,6 @@
-package org.mconf.bbb.android;
+package org.mconf.bbb.android.voip;
 
+import org.mconf.bbb.android.R;
 import org.sipdroid.media.RtpStreamReceiver;
 import org.sipdroid.media.RtpStreamSender;
 import org.sipdroid.sipua.ui.Receiver;

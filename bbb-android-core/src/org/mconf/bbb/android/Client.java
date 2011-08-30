@@ -27,6 +27,7 @@ import org.mconf.bbb.android.video.VideoCaptureLayout;
 import org.mconf.bbb.android.video.VideoDialog;
 import org.mconf.bbb.android.video.VideoFullScreen;
 import org.mconf.bbb.android.voip.AudioBarLayout;
+import org.mconf.bbb.android.voip.AudioControlDialog;
 import org.mconf.bbb.android.voip.OnCallListener;
 import org.mconf.bbb.android.voip.VoiceModule;
 import org.mconf.bbb.chat.ChatMessage;

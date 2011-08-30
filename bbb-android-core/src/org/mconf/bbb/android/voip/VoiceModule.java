@@ -35,6 +35,7 @@ import org.sipdroid.net.KeepAliveSip;
 import org.sipdroid.sipua.UserAgent;
 import org.sipdroid.sipua.UserAgentProfile;
 import org.sipdroid.sipua.ui.Receiver;
+import org.sipdroid.sipua.ui.Settings;
 import org.sipdroid.sipua.ui.Sipdroid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,8 +56,11 @@ import org.zoolu.tools.LogLevel;
 import org.zoolu.tools.Parser;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.media.AudioManager;
 import android.os.Build;
+import android.preference.PreferenceManager;
 
 public class VoiceModule implements ExtendedCallListener {
 	private static final Logger log = LoggerFactory.getLogger(VoiceModule.class);
@@ -78,8 +82,18 @@ public class VoiceModule implements ExtendedCallListener {
 	public VoiceModule(Context context, String username, String url) {
 		Receiver.mContext = context;
 		
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+		if (!preferences.contains(Settings.PREF_MICGAIN)) {
+			SharedPreferences.Editor editor = preferences.edit();
+			editor.putString(Settings.PREF_MICGAIN, "0.1");
+			editor.commit();
+		}
+		// it puts speex as the preferred audio codec
+		preferences.edit().putString(Settings.PREF_CODECS, "97").commit();
+		
 		SipStack.init();
-		Sipdroid.release = false;
+		// log purposes only
+//		Sipdroid.release = false;
 		Receiver.call_state = UserAgent.UA_STATE_IDLE;
 		
 		SipStack.debug_level = LogLevel.LOWER;
