@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-	<string name="app_name">BigBlueButton</string>
 	<string name="protocol">bigbluebutton</string>
-	<string name="login_name">Name:</string>
-	<string name="login_button_join">Join</string>
-	<string name="login_empty_name">Empty username</string>
-	<string name="login_select_meeting">Please select a meeting</string>
+
 	<string name="login_cant_join">Can\'t join the meeting</string>
-	<string name="login_updating">Updating meeting list</string>
+	<string name="login_button_join">Join</string>
 	<string name="login_cant_contact_server">Can\'t contact the server. Try it later</string>
-	<string name="login_unsupported_server">The server doesn\'t provide mobile access</string>
 	<string name="wait">Please wait</string>
 	<string name="welcome">Welcome</string>
 	<string name="cancel">Cancel</string>
@@ -20,11 +15,7 @@
 	<string name="list_listeners">List of listeners</string>
 	<string name="public_chat">Public chat</string>
 	<string name="meeting">Meeting:</string>
-	<string name="choose_server">Choose a server to connect:</string>
-	<string name="connect">Connect</string>
-	<string name="type_server">Or type a server URL:</string>
-	<string name="choose_a_server">Choose a server</string>
-	<string name="delete_server">Delete server</string>
+
 	<string name="kick">Kick</string>
 	<string name="mute">Mute</string>
 	<string name="unmute">Unmute</string>
@@ -62,7 +53,7 @@
 	<string name="reconnect">Reconnect</string>
 	<string name="no_connection">No internet connection</string>
 	<string name="open_properties">Open network properties?</string>
-	<string name="choose_a_server_to_login">Choose a server to login</string>
+
 	<string name="kicked">You have been kicked</string>
 	<string name="new_meeting">Create new meeting</string>
 	<string name="create">Create</string>
@@ -75,8 +66,10 @@
 	<string name="unmute_room">Unmute room</string>
 	<string name="qrcode">QR code</string>
 	<string name="login_in">Log in</string>
-	<string name="install_bar_code">Install Barcode Scanner?</string>
-	<string name="bar_code_no_found">Barcode Scanner not found, install?</string>
+	<string name="install_bar_code">Do you want to install it?</string>
+	<string name="bar_code_no_found">Barcode Scanner not found</string>
+	<string name="invalid_join_url">Invalid scanned code</string>
+	
 	<string name="show_video">Show video</string>
 
 	<string name="application_on_background">BigBlueButton</string>
@@ -91,12 +84,12 @@
 	<string name="start_time">Start time</string>
 	<string name="participant_count">Participant count</string>
 	<string name="moderator_count">Moderator count</string>
-	
 	<string name="about">
 BBB-Android is an Android implementation of the BigBlueButton client.
+\n
 \nVersion ${VERSION}
 \n
-\nIt was developed by PRAV Labs as part of the GT-Mconf project (http://inf.ufrgs.br/prav/gtmconf).
+\nIt was developed by PRAV Labs as part of the GT-Mconf project (http://inf.ufrgs.br/prav/gtmconf) supported by RNP (http://www.rnp.br).
 \n
 \nThe source code is licensed under the GNU General Public License (GPL) and it is available at https://github.com/mconf.
 \n

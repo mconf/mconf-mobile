@@ -2,6 +2,8 @@ package org.mconf.android;
 
 import java.util.List;
 
+import org.mconf.bbb.android.AboutDialog;
+import org.mconf.bbb.android.BarcodeHandler;
 import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.R;
 import org.mconf.web.Authentication;
@@ -21,6 +23,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -37,11 +41,15 @@ public class LoginPage extends Activity {
 	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger(LoginPage.class);
 
+	private static final int MENU_QR_CODE = Menu.FIRST;
+	private static final int MENU_ABOUT = Menu.FIRST + 1;
+	
 	private final String DEFAULT_SERVER = "http://mconf.inf.ufrgs.br";
 	private Authentication auth = null;
 	private ArrayAdapter<String> spinnerAdapter;
 	private Room selectedRoom = null;
 	private MconfWebItf mconf = new MconfWebImpl();
+	private BarcodeHandler barcodeHandler = new BarcodeHandler();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -182,4 +190,32 @@ public class LoginPage extends Activity {
 		}
 		pref.commit();
 	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(Menu.NONE, MENU_QR_CODE, Menu.NONE, R.string.qrcode).setIcon(R.drawable.ic_menu_qrcode);
+		menu.add(Menu.NONE, MENU_ABOUT, Menu.NONE, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) { 
+		switch (item.getItemId()) {
+		case MENU_ABOUT:
+			new AboutDialog(this).show();
+			return true; 
+		case MENU_QR_CODE: 
+			barcodeHandler.scan(this);
+			return true;
+		default:			
+			return super.onOptionsItemSelected(item);
+		}
+	}    
+
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		if (barcodeHandler.handle(requestCode, resultCode, intent)) {
+			// handled
+		}
+	}
+	
 }

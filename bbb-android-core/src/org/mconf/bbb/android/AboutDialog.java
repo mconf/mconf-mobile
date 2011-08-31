@@ -37,7 +37,9 @@ public class AboutDialog extends AlertDialog {
 	public AboutDialog(Context context) {
 		super(context);
 		
-		final SpannableString s = new SpannableString(context.getText(R.string.about).toString().replace("${VERSION}", getVersion(context)));
+		final SpannableString s = new SpannableString(context.getText(R.string.about).toString()
+				.replace("${VERSION}", getVersion(context))
+				.replace("${APP_NAME}", context.getText(R.string.app_name).toString()));
 		Linkify.addLinks(s, Linkify.WEB_URLS);
 
 		final TextView message = new TextView(context);

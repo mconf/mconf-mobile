@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+	<string name="app_name">BigBlueButton</string>
+
+	<string name="login_name">Name:</string>
+	<string name="login_empty_name">Empty username</string>
+	<string name="login_select_meeting">Please select a meeting</string>
+	<string name="login_updating">Updating meeting list</string>
+	<string name="login_unsupported_server">The server doesn\'t provide mobile access</string>
+
+	<string name="choose_server">Choose a server to connect:</string>
+	<string name="connect">Connect</string>
+	<string name="type_server">Or type a server URL:</string>
+	<string name="choose_a_server">Choose a server</string>
+	<string name="delete_server">Delete server</string>
+
+	<string name="choose_a_server_to_login">Choose a server to login</string>
+</resources>

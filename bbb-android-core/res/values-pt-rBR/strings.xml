@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-	<string name="app_name">BigBlueButton</string>
-	<string name="login_name">Nome:</string>
-	<string name="login_button_join">Entrar</string>
-	<string name="login_empty_name">Nome em branco</string>
-	<string name="login_select_meeting">Por favor, selecione uma sala</string>
 	<string name="login_cant_join">Não foi possível entrar na sala</string>
-	<string name="login_updating">Atualizando lista de salas</string>
+	<string name="login_button_join">Entrar</string>
 	<string name="login_cant_contact_server">Não foi possível conectar ao servidor. Tente novamente mais tarde</string>
-	<string name="login_unsupported_server">O servidor não possui suporte a dispositivos móveis</string>
 	<string name="wait">Por favor, aguarde</string>
 	<string name="welcome">Seja bem-vindo</string>
 	<string name="cancel">Cancelar</string>
@@ -19,11 +13,7 @@
 	<string name="list_listeners">Lista de ouvintes</string>
 	<string name="public_chat">Bate-papo público</string>
 	<string name="meeting">Sala:</string>
-	<string name="choose_server">Escolha um servidor para conectar:</string>
-	<string name="connect">Conectar</string>
-	<string name="type_server">Ou digite o endereço do servidor:</string>
-	<string name="choose_a_server">Escolha um servidor</string>
-	<string name="delete_server">Apagar servidor</string>
+
 	<string name="kick">Expulsar</string>
 	<string name="mute">Sem som</string>
 	<string name="unmute">Com som</string>
@@ -61,7 +51,6 @@
 	<string name="reconnect">Reconectar</string>
 	<string name="no_connection">Sem conexão com a internet</string>
 	<string name="open_properties">Abrir propriedades de conexão?</string>
-	<string name="choose_a_server_to_login">Escolha um servidor para conectar</string>
 	<string name="kicked">Você foi expulso da sala</string>
 	<string name="new_meeting">Criar nova sala</string>
 	<string name="create">Criar</string>
@@ -73,8 +62,10 @@
 	<string name="mute_room">Sala sem som</string>
 	<string name="unmute_room">Sala com som</string>
 	<string name="login_in">Entrando</string>
-	<string name="install_bar_code">Instalar Barcode Scanner?</string>
-	<string name="bar_code_no_found">Barcode Scanner não encontrado, instalar?</string>
+	<string name="install_bar_code">Deseja instalar?</string>
+	<string name="bar_code_no_found">Barcode Scanner não encontrado</string>
+	<string name="invalid_join_url">Código escaneado inválido</string>
+	
 	<string name="show_video">Exibir vídeo</string>
 
     <string name="application_on_background">BigBlueButton</string>
@@ -93,10 +84,11 @@
 
 	<string name="about">
 		BBB-Android é uma implementação do cliente BigBlueButton para Android.
+		\n
 		\nVersão ${VERSION}
 		\n
 		\nFoi desenvolvido pelo Laboratório do PRAV como parte do projeto GT-Mconf
-		(http://inf.ufrgs.br/prav/gtmconf).
+		(http://inf.ufrgs.br/prav/gtmconf) financiado pela RNP (http://www.rnp.br).
 		\n
 		\nO código fonte está licenciado sob a GNU General Public License (GPL) e
 		está disponível em https://github.com/mconf.

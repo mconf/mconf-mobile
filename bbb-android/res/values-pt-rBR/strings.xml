@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+	<string name="app_name">BigBlueButton</string>
+
+	<string name="login_name">Nome:</string>
+	<string name="login_empty_name">Nome em branco</string>
+	<string name="login_select_meeting">Por favor, selecione uma sala</string>
+	<string name="login_updating">Atualizando lista de salas</string>
+	<string name="login_unsupported_server">O servidor não possui suporte a dispositivos móveis</string>
+
+	<string name="choose_server">Escolha um servidor para conectar:</string>
+	<string name="connect">Conectar</string>
+	<string name="type_server">Ou digite o endereço do servidor:</string>
+	<string name="choose_a_server">Escolha um servidor</string>
+	<string name="delete_server">Apagar servidor</string>
+
+	<string name="choose_a_server_to_login">Escolha um servidor para conectar</string>
+</resources> 

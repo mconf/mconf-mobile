@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mconf.bbb.android.AboutDialog;
+import org.mconf.bbb.android.BarcodeHandler;
 import org.mconf.bbb.android.BigBlueButtonActivity;
 import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.NetworkPropertiesDialog;
@@ -36,14 +37,12 @@ import org.slf4j.LoggerFactory;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -80,7 +79,6 @@ public class LoginPage extends BigBlueButtonActivity {
 	private String username = "Android";
 	private String serverUrl = "";
 	private String createdMeeting = "";
-	private Context context = this;
 	
 	BroadcastReceiver serverChosed = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
@@ -92,13 +90,15 @@ public class LoginPage extends BigBlueButtonActivity {
 		}
 	};
 
+	private BarcodeHandler barcodeHandler = new BarcodeHandler();
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.login);
-		//get Username and server if already saved on the preferences file
+		//get username and server if already saved on the preferences file
 		setPreferencesFile();
 		setUserPreferences();
 
@@ -382,14 +382,8 @@ public class LoginPage extends BigBlueButtonActivity {
 			new AboutDialog(this).show();
 			return true; 
 		case MENU_QR_CODE: 
-			Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-	        intent.setPackage("com.google.zxing.client.android");
-	        intent.putExtra("SCAN_MODE", "QR_CODE_MODE"); 
-	        try {
-		        startActivityForResult(intent, 0);
-	          } catch (ActivityNotFoundException e) {
-	        	  showDownloadDialog();
-	          }
+			barcodeHandler.scan(this);
+			return true;
 		default:			
 			return super.onOptionsItemSelected(item);
 		}
@@ -437,41 +431,9 @@ public class LoginPage extends BigBlueButtonActivity {
 		preferenceEditor.commit();
 	}
 
-	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-	    if (requestCode == 0) {
-	        if (resultCode == RESULT_OK) {
-	        	
-	            String contents = intent.getStringExtra("SCAN_RESULT");
-	            String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
-	            
-	            Uri meetingAdress = Uri.parse(contents);
-	            Intent joinAndLogin = new Intent(getApplicationContext(), Client.class);
-	            joinAndLogin.addCategory("android.intent.category.BROWSABLE");
-	            joinAndLogin.setData(meetingAdress);
-	            startActivity(joinAndLogin);
-	        } else if (resultCode == RESULT_CANCELED) {
-	            //\TODO Handle cancel
-	        }
-	    }
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		if (barcodeHandler.handle(requestCode, resultCode, intent)) {
+			// handled
+		}
 	}
-	
-	void showDownloadDialog()
-	{
-		 AlertDialog.Builder downloadDialog = new AlertDialog.Builder(context);
-		    downloadDialog.setTitle(R.string.install_bar_code);
-		    downloadDialog.setMessage(R.string.bar_code_no_found);
-		    downloadDialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-		      public void onClick(DialogInterface dialogInterface, int i) {
-		        Uri uri = Uri.parse("market://search?q=pname:" + "com.google.zxing.client.android");
-		        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-		        startActivity(intent);
-		      }
-		    });
-		    downloadDialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-		      public void onClick(DialogInterface dialogInterface, int i) {}
-		    });
-		    downloadDialog.show();
-
-	}
-
 }

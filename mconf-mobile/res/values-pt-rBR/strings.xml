@@ -17,7 +17,7 @@
 	<string name="rooms_user_spaces">Salas de comunidades do usuário</string>
 	<string name="rooms_public_spaces">Salas de comunidades públicas</string>
 	
-	<string name="dont_have_account">Não possui uma conta? Clique aqui</string>
+	<string name="dont_have_account">Crie uma conta</string>
 	<string name="no_running_meeting">Você precisa aguardar um moderador para entrar</string>
     
 </resources>

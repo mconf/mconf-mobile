@@ -97,7 +97,7 @@
          android:layout_width="wrap_content" 
          android:layout_above="@+id/spinnerRooms" 
          android:textAppearance="?android:attr/textAppearanceSmall" 
-         android:layout_alignLeft="@+id/spinnerRooms" 
+	     android:layout_centerHorizontal="true" 
          android:paddingTop="10dip" 
          android:paddingBottom="10dip" 
          android:layout_marginBottom="20dip" 

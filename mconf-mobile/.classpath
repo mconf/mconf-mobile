@@ -12,5 +12,6 @@
 	<classpathentry kind="lib" path="/flazr/target/flazr/lib/netty-3.2.4.Final.jar"/>
 	<classpathentry kind="lib" path="/bbb-android-core/libs/slf4j-android-1.6.1-RC1.jar"/>
 	<classpathentry kind="src" path="bbb-android-core_src"/>
+	<classpathentry kind="src" path="sipdroid_src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
