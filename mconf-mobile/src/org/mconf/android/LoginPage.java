@@ -1,9 +1,12 @@
 package org.mconf.android;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.httpclient.HttpException;
 import org.mconf.bbb.android.AboutDialog;
 import org.mconf.bbb.android.BarcodeHandler;
+import org.mconf.bbb.android.BigBlueButtonActivity;
 import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.R;
 import org.mconf.web.Authentication;
@@ -14,7 +17,8 @@ import org.mconf.web.Space;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -23,11 +27,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -37,15 +44,20 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class LoginPage extends Activity {
+public class LoginPage extends BigBlueButtonActivity {
 	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger(LoginPage.class);
 
 	private static final int MENU_QR_CODE = Menu.FIRST;
 	private static final int MENU_ABOUT = Menu.FIRST + 1;
+
+	private static final int E_AUTHENTICATED = 0;
+	private static final int E_NOT_AUTHENTICATED = 1;
+	private static final int E_CANNOT_CONTACT_SERVER = 2;
 	
 	private final String DEFAULT_SERVER = "http://mconf.inf.ufrgs.br";
 	private Authentication auth = null;
+	private String authUsername, authPassword;
 	private ArrayAdapter<String> spinnerAdapter;
 	private Room selectedRoom = null;
 	private MconfWebItf mconf = new MconfWebImpl();
@@ -61,7 +73,7 @@ public class LoginPage extends Activity {
 		
 		final EditText editTextUsername = (EditText) findViewById(R.id.editTextUsername);
 		final EditText editTextPassword = (EditText) findViewById(R.id.editTextPassword);
-		
+
 		final Spinner spinnerRooms = (Spinner) findViewById(R.id.spinnerRooms);
 		spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
 		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -72,38 +84,91 @@ public class LoginPage extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					if (auth == null
-							|| !auth.isAuthenticated())
-						auth = new Authentication(DEFAULT_SERVER, editTextUsername.getText().toString(), editTextPassword.getText().toString());
-					if (auth.isAuthenticated()) {
-						storeCredentials();
-						List<Room> rooms = null;
-						try {
-							rooms = mconf.getRooms(auth);
-						} catch (Exception e) {
-							e.printStackTrace();
-							Toast.makeText(LoginPage.this, R.string.login_cant_contact_server, Toast.LENGTH_SHORT).show();
-							return true;
+					
+					final ProgressDialog progressDialog = new ProgressDialog(LoginPage.this);
+					progressDialog.setTitle(R.string.wait);
+					progressDialog.setMessage(getResources().getString(R.string.login_updating));
+					
+					final Thread updateThread = new Thread(new Runnable() {
+						@Override
+						public void run() {
+							
+							boolean hasError = false;
+							int errorId = 0;
+							
+							int r = checkAuthentication();
+							switch (r) {
+								case E_AUTHENTICATED:
+									storeCredentials();
+									List<Room> rooms = null;
+									try {
+										rooms = mconf.getRooms(auth);
+									} catch (Exception e) {
+										e.printStackTrace();
+										errorId = R.string.login_cant_contact_server; hasError = true;
+									}
+									
+									if (!progressDialog.isShowing())
+										return;
+									
+									if (!hasError) {
+										if (rooms.isEmpty()) {
+											errorId = R.string.no_rooms; hasError = true;
+										} else {
+											progressDialog.dismiss();
+											openRoomsDialog(rooms);
+											return;
+										}
+									}
+									break;
+								case E_NOT_AUTHENTICATED:
+									errorId = R.string.invalid_password; hasError = true;
+									break;
+								case E_CANNOT_CONTACT_SERVER:
+									errorId = R.string.login_cant_contact_server; hasError = true;
+									break;
+							}
+							
+							if (progressDialog.isShowing()) {
+								progressDialog.dismiss();
+								if (hasError)
+									makeToast(errorId);
+							}
 						}
-						if (rooms.isEmpty()) {
-							Toast.makeText(LoginPage.this, R.string.no_rooms, Toast.LENGTH_SHORT).show();
-						} else {
-							RoomsDialog dialog = new RoomsDialog(LoginPage.this, rooms);
-							dialog.setOnSelectRoomListener(new RoomsDialog.OnSelectRoomListener() {
+
+						private void openRoomsDialog(final List<Room> rooms) {
+							runOnUiThread(new Runnable() {
 								
 								@Override
-								public void onSelectRoom(Room room) {
-									selectedRoom = room;
-									spinnerAdapter.clear();
-									spinnerAdapter.add(room.getName());
-									spinnerAdapter.notifyDataSetChanged();
+								public void run() {
+									RoomsDialog dialog = new RoomsDialog(LoginPage.this, rooms);
+									dialog.setOnSelectRoomListener(new RoomsDialog.OnSelectRoomListener() {
+										
+										@Override
+										public void onSelectRoom(Room room) {
+											selectedRoom = room;
+											spinnerAdapter.clear();
+											spinnerAdapter.add(room.getName());
+											spinnerAdapter.notifyDataSetChanged();
+										}
+									});
+									
+									dialog.show();
 								}
 							});
-							dialog.show();
 						}
-					} else {
-						Toast.makeText(LoginPage.this, R.string.invalid_password, Toast.LENGTH_SHORT).show();
-					}
+					});
+					progressDialog.setButton(ProgressDialog.BUTTON_POSITIVE, getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							updateThread.interrupt();
+							progressDialog.dismiss();
+						}
+					});
+					
+					progressDialog.show();
+					updateThread.start();
+					
 					return true;
 				} else
 					return false;
@@ -116,6 +181,17 @@ public class LoginPage extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					
+					int r = checkAuthentication();
+					switch (r) {
+						case E_NOT_AUTHENTICATED:
+							Toast.makeText(LoginPage.this, R.string.invalid_password, Toast.LENGTH_SHORT).show();
+							return true;
+						case E_CANNOT_CONTACT_SERVER:
+							Toast.makeText(LoginPage.this, R.string.login_cant_contact_server, Toast.LENGTH_SHORT).show();
+							return true;
+					}
+					
 					if (selectedRoom == null) {
 						Toast.makeText(LoginPage.this, R.string.select_room, Toast.LENGTH_SHORT).show();
 						return true;
@@ -156,6 +232,36 @@ public class LoginPage extends Activity {
 		account.setText(Html.fromHtml("<a href=\"" + DEFAULT_SERVER + "\">" + getResources().getString(R.string.dont_have_account) + "</a>"));
 		account.setMovementMethod(LinkMovementMethod.getInstance());
 		account.setLinkTextColor(Color.YELLOW);
+	}
+	
+	private int checkAuthentication() {
+		final EditText editTextUsername = (EditText) findViewById(R.id.editTextUsername);
+		final EditText editTextPassword = (EditText) findViewById(R.id.editTextPassword);
+
+		if (auth == null
+				|| !auth.isAuthenticated()
+				|| !authUsername.equals(editTextUsername.getText().toString())
+				|| !authPassword.equals(editTextPassword.getText().toString())) {
+
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					spinnerAdapter.clear();
+					spinnerAdapter.notifyDataSetChanged();
+				}
+			});
+
+			authUsername = editTextUsername.getText().toString();
+			authPassword = editTextPassword.getText().toString();
+			auth = null;
+			try {
+				auth = new Authentication(DEFAULT_SERVER, authUsername, authPassword);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return E_CANNOT_CONTACT_SERVER;
+			}
+		}
+		return (auth.isAuthenticated()? E_AUTHENTICATED: E_NOT_AUTHENTICATED);
 	}
 	
 	private void loadCredentials() {

@@ -8,6 +8,7 @@
 	<string name="remember">Remember me</string>
 	<string name="rooms">Rooms</string>
 	<string name="no_rooms">No rooms available</string>
+    <string name="login_updating">Authenticating and updating rooms list</string>
 	<string name="invalid_password">Invalid username and/or password</string>
 	<string name="select_room">Please select a room</string>
 	<string name="invalid_room">Invalid room</string>

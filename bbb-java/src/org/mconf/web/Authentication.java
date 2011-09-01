@@ -18,14 +18,9 @@ public class Authentication {
 	private String server, cookie;
 	private boolean authenticated = false;
 	
-	public Authentication(String server, String username, String password) {
+	public Authentication(String server, String username, String password) throws HttpException, IOException {
 		this.server = server;
-		try {
-			authenticated = authenticate(username, password);
-		} catch (Exception e) {
-			authenticated = false;
-			e.printStackTrace();
-		}
+		authenticated = authenticate(username, password);
 	}
 	
 	public boolean isAuthenticated() {

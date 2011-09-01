@@ -8,6 +8,7 @@
 	<string name="remember">Lembrar-me</string>
 	<string name="rooms">Salas</string>
 	<string name="no_rooms">Nenhuma sala disponível</string>
+    <string name="login_updating">Autenticando e atualizando lista de salas</string>
 	<string name="invalid_password">Usuário e/ou senha inválidos</string>
 	<string name="select_room">Por favor selecione uma sala</string>
 	<string name="invalid_room">Sala inválida</string>

@@ -1256,19 +1256,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		}
 	}
 	
-	private void makeToast(final int resId) {
-		makeToast(getResources().getString(resId));
-	}
-
-	private void makeToast(final String s) {
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
-			}
-		});
-	}
-
 	private void updateAudioBar() {
 		runOnUiThread(new Runnable() {
 
