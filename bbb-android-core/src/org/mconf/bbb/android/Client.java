@@ -264,7 +264,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 //						Intent login = new Intent(getGlobalContext(), LoginPage.class);
 //						startActivity(login);
 //					}
-					if (getGlobalContext().getLaunchedBy() == BigBlueButton.LAUNCHED_BY_BROWSER)
+					if (getGlobalContext().getLaunchedBy() == BigBlueButton.LAUNCHED_USING_URL)
 						finish();
 				}
 			});
@@ -278,10 +278,9 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 //			return false;
 //		}
 
-		if (getIntent().hasCategory("android.intent.category.BROWSABLE")
-				&& getIntent().getScheme() != null
+		if (getIntent().getScheme() != null
 				&& getIntent().getScheme().equals(getResources().getString(R.string.protocol))) {
-			getGlobalContext().setLaunchedBy(BigBlueButton.LAUNCHED_BY_BROWSER);
+			getGlobalContext().setLaunchedBy(BigBlueButton.LAUNCHED_USING_URL);
 
 			String joinUrl = getIntent().getData().toString().replace(getResources().getString(R.string.protocol) + "://", "http://");
 			log.debug("Joining: " + joinUrl);
@@ -299,7 +298,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				return false;
 			}
 		} else if (getIntent().getExtras() != null) {
-			getGlobalContext().setLaunchedBy(BigBlueButton.LAUNCHED_BY_APPLICATION);
+			getGlobalContext().setLaunchedBy(BigBlueButton.LAUNCHED_USING_DEMO);
 
 			Bundle extras = getIntent().getExtras();
 			username = extras.getString("username");

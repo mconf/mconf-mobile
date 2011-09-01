@@ -23,8 +23,8 @@ public class BigBlueButton extends Application {
 	
 	private int launchedBy = LAUNCHED_BY_NON_SPECIFIED;
 	public static final int LAUNCHED_BY_NON_SPECIFIED = 0;
-	public static final int LAUNCHED_BY_APPLICATION = 1;
-	public static final int LAUNCHED_BY_BROWSER = 2;
+	public static final int LAUNCHED_USING_DEMO = 1;
+	public static final int LAUNCHED_USING_URL = 2;
 	
 	public BigBlueButtonClient getHandler() {
 		if (handler == null)

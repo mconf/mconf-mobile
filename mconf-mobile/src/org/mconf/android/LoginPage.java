@@ -140,7 +140,6 @@ public class LoginPage extends Activity {
 					}
 	                Intent intent = new Intent(getApplicationContext(), Client.class);
 	                intent.setAction(Intent.ACTION_VIEW);
-	                intent.addCategory("android.intent.category.BROWSABLE");
 	                intent.setData(new Uri.Builder()
 	                		.scheme(getResources().getString(R.string.protocol))
 	                		.appendEncodedPath(path.replace(getResources().getString(R.string.protocol) + ":/", ""))
