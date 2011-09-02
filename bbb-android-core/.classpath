@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/bbb-java"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/bbb-java"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/flazr"/>
 	<classpathentry kind="lib" path="/flazr/target/flazr/lib/commons-cli-1.2.jar"/>
 	<classpathentry kind="lib" path="/flazr/target/flazr/lib/commons-codec-1.2.jar"/>

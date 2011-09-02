@@ -2,14 +2,14 @@ package org.mconf.bbb.android.test;
 
 import java.util.Random;
 
+import org.mconf.android.bbb.LoginPage;
+import org.mconf.android.bbb.ServerChoosing;
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.android.BigBlueButton;
 import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.ContactAdapter;
 import org.mconf.bbb.android.CustomListview;
-import org.mconf.bbb.android.LoginPage;
-import org.mconf.bbb.android.R;
-import org.mconf.bbb.android.ServerChoosing;
+import org.mconf.android.bbb.R;
 import org.mconf.bbb.users.IParticipant;
 
 import com.jayway.android.robotium.solo.Solo;

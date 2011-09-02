@@ -9,11 +9,21 @@ import org.json.JSONException;
 import org.junit.Test;
 
 public class AuthenticationTest {
-	private final String DEFAULT_USERNAME = "fcecagno@gmail.com";
-	private final String DEFAULT_PASSWORD = "debora";
+	private final String DEFAULT_USERNAME = "";
+	private final String DEFAULT_PASSWORD = "";
 	@Test
 	public void constructor() {
-		Authentication auth = new Authentication("http://mconfmoodle.inf.ufrgs.br", DEFAULT_USERNAME, DEFAULT_PASSWORD);
+		Authentication auth = null;
+		try {
+			auth = new Authentication("http://mconfmoodle.inf.ufrgs.br", DEFAULT_USERNAME, DEFAULT_PASSWORD);
+		} catch (HttpException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		assertNotNull(auth);
 		assertTrue(auth.isAuthenticated());
 		MconfWebItf mconf = new MconfWebImpl();
 		try {
