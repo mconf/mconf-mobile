@@ -11,6 +11,7 @@
 	<classpathentry kind="lib" path="/flazr/target/flazr/lib/jcl104-over-slf4j-1.4.2.jar"/>
 	<classpathentry kind="lib" path="/flazr/target/flazr/lib/netty-3.2.4.Final.jar"/>
 	<classpathentry kind="lib" path="libs/slf4j-android-1.6.1-RC1.jar"/>
+	<classpathentry kind="lib" path="libs/acra-4.2.3.jar"/>
 	<classpathentry kind="src" path="sipdroid_src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

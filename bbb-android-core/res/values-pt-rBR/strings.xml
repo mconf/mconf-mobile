@@ -110,4 +110,7 @@
 	<string name="earphone_volume">Volume do earphone</string>
 	<string name="mic_gain">Ganho do microfone</string>
 
+    <string name="report_crash_title">Enviar dados anônimos</string>
+    <string name="report_crash_message">Nós coletamos informações anônimas caso o aplicativo feche inesperadamente a fim de identificar e corrigir o problema. Você concorda em enviar informações anônimas?</string>
+
 </resources> 

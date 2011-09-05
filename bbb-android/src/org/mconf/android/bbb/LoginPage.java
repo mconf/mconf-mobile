@@ -30,6 +30,7 @@ import org.mconf.bbb.android.BarcodeHandler;
 import org.mconf.bbb.android.BigBlueButtonActivity;
 import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.NetworkPropertiesDialog;
+import org.mconf.bbb.android.ReportCrashDialog;
 import org.mconf.bbb.api.JoinService;
 import org.mconf.bbb.api.Meeting;
 import org.slf4j.Logger;
@@ -101,6 +102,8 @@ public class LoginPage extends BigBlueButtonActivity {
 		//get username and server if already saved on the preferences file
 		setPreferencesFile();
 		setUserPreferences();
+
+		new ReportCrashDialog(this).show();
 
 		final EditText editName = (EditText) findViewById(R.id.login_edittext_name);
 		editName.setText(username);

@@ -1,14 +1,13 @@
 package org.mconf.android;
 
-import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.httpclient.HttpException;
 import org.mconf.bbb.android.AboutDialog;
 import org.mconf.bbb.android.BarcodeHandler;
 import org.mconf.bbb.android.BigBlueButtonActivity;
 import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.R;
+import org.mconf.bbb.android.ReportCrashDialog;
 import org.mconf.web.Authentication;
 import org.mconf.web.MconfWebImpl;
 import org.mconf.web.MconfWebItf;
@@ -27,14 +26,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -69,10 +65,12 @@ public class LoginPage extends BigBlueButtonActivity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.login);
 		
+		new ReportCrashDialog(this).show();
+
 		loadCredentials();
 		
-		final EditText editTextUsername = (EditText) findViewById(R.id.editTextUsername);
-		final EditText editTextPassword = (EditText) findViewById(R.id.editTextPassword);
+//		final EditText editTextUsername = (EditText) findViewById(R.id.editTextUsername);
+//		final EditText editTextPassword = (EditText) findViewById(R.id.editTextPassword);
 
 		final Spinner spinnerRooms = (Spinner) findViewById(R.id.spinnerRooms);
 		spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);

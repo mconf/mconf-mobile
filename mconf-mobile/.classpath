@@ -13,5 +13,6 @@
 	<classpathentry kind="lib" path="/bbb-android-core/libs/slf4j-android-1.6.1-RC1.jar"/>
 	<classpathentry kind="src" path="bbb-android-core_src"/>
 	<classpathentry kind="src" path="sipdroid_src"/>
+	<classpathentry kind="lib" path="/bbb-android-core/libs/acra-4.2.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

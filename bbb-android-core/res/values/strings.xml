@@ -107,4 +107,7 @@ BBB-Android is an Android implementation of the BigBlueButton client.
 	<string name="earphone_volume">Earphone volume</string>
 	<string name="mic_gain">Microphone gain</string>
 
+    <string name="report_crash_title">Send anonymous data</string>
+    <string name="report_crash_message">We collect anonymous data when the application crashes in order to trace and solve the problem. Do you agree with sending error data?</string>
+
 </resources>

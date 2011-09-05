@@ -1,14 +1,16 @@
 package org.mconf.bbb.android;
 
+import org.acra.*;
+import org.acra.annotation.ReportsCrashes;
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.android.video.CaptureConstants;
 import org.mconf.bbb.android.video.VideoPublish;
 import org.mconf.bbb.android.voip.VoiceModule;
 
 import android.app.Application;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 
+@ReportsCrashes(formKey="dHVlSktWX2lUb1pWMzFIb1kxcE5YblE6MQ")
 public class BigBlueButton extends Application {
 	private BigBlueButtonClient handler = null;
 	private VoiceModule voice = null;
@@ -25,6 +27,13 @@ public class BigBlueButton extends Application {
 	public static final int LAUNCHED_BY_NON_SPECIFIED = 0;
 	public static final int LAUNCHED_USING_DEMO = 1;
 	public static final int LAUNCHED_USING_URL = 2;
+	
+	@Override
+	public void onCreate() {
+		// The following line triggers the initialization of ACRA
+        ACRA.init(this);
+        super.onCreate();
+	}
 	
 	public BigBlueButtonClient getHandler() {
 		if (handler == null)
