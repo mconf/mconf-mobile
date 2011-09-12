@@ -60,7 +60,7 @@ public class Slide implements ISlide {
 		{
 			try {
 				//\TODO getting the slide thumb
-				connection =thumbUri.openConnection();
+				connection =slideUri.openConnection();
 
 
 				InputStream iStrm = connection.getInputStream(); 
