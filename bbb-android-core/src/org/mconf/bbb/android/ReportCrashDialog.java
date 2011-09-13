@@ -49,7 +49,8 @@ public class ReportCrashDialog extends AlertDialog.Builder implements OnClickLis
 		
 	@Override
 	public AlertDialog show() {
-		if (ACRA.getACRASharedPreferences().getBoolean("acra.remember." + getVersionCode(), false))
+		if (((BigBlueButton) context.getApplicationContext()).isDebug()
+				|| ACRA.getACRASharedPreferences().getBoolean("acra.remember." + getVersionCode(), false))
 			return null;
 		else
 			return super.show();

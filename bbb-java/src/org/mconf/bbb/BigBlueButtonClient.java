@@ -133,6 +133,7 @@ public class BigBlueButtonClient {
 	public void createJoinService(String serverUrl) {
 		if (serverUrl.contains("/bigbluebutton/api/"))
 			serverUrl = serverUrl.substring(0, serverUrl.indexOf("/bigbluebutton/api/"));
+		
 		joinServiceProxy.setServer(serverUrl);
 	}
 	
@@ -164,7 +165,8 @@ public class BigBlueButtonClient {
 	public void disconnect() {
 		if (mainConnection != null)
 			mainConnection.disconnect();
-		joinServiceProxy.reset();
+		if (getJoinService() != null)
+			getJoinService().resetJoinedMeeting();
 	}
 
 	public Collection<Participant> getParticipants() {

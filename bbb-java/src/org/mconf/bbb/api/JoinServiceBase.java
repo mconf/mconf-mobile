@@ -16,6 +16,7 @@ public abstract class JoinServiceBase {
 
 	protected JoinedMeeting joinedMeeting = null;
 	protected String serverUrl = "";
+	protected int serverPort = 0;
 	protected Meetings meetings = new Meetings();
 	protected boolean loaded = false;
 	
@@ -25,12 +26,16 @@ public abstract class JoinServiceBase {
 	protected abstract String getJoinUrl(Meeting meeting, String name, boolean moderator);
 	protected abstract String getDemoPath();
 	
-	private String getQualifiedPath() {
-		return serverUrl + getDemoPath();
+	private String getFullDemoPath() {
+		return getFullServerUrl() + getDemoPath();
+	}
+	
+	private String getFullServerUrl() {
+		return serverUrl + ":" + serverPort;
 	}
 	
 	public boolean createMeeting(String meetingID) {
-		String createUrl = getQualifiedPath() + getCreateMeetingUrl(meetingID);
+		String createUrl = getFullDemoPath() + getCreateMeetingUrl(meetingID);
 		String response = "Unknown error";
 		try {
 			response = getUrl(createUrl);
@@ -46,7 +51,7 @@ public abstract class JoinServiceBase {
 	}
 
 	public boolean load() {
-		String loadUrl = getQualifiedPath() + getLoadUrl();
+		String loadUrl = getFullDemoPath() + getLoadUrl();
 		try {
 			meetings.parse(getUrl(loadUrl));
 		} catch (Exception e) {
@@ -72,7 +77,7 @@ public abstract class JoinServiceBase {
 	}
 
 	public boolean join(Meeting meeting, String name, boolean moderator) {
-		return join(getQualifiedPath() + getJoinUrl(meeting, name, moderator));
+		return join(getFullDemoPath() + getJoinUrl(meeting, name, moderator));
 	}
 	
 	private boolean join(String joinUrl) {
@@ -95,7 +100,7 @@ public abstract class JoinServiceBase {
 	}
 
 	public boolean standardJoin(String joinUrl) {
-		String enterUrl = serverUrl + "/bigbluebutton/api/enter";
+		String enterUrl = getFullServerUrl() + "/bigbluebutton/api/enter";
 			
 		joinedMeeting = new JoinedMeeting();
 		try {
@@ -134,7 +139,13 @@ public abstract class JoinServiceBase {
 	}
 	
 	public void setServer(String serverUrl) {
-		this.serverUrl = serverUrl;
+		if (serverUrl.matches(".*:\\d*")) {
+			this.serverPort = Integer.parseInt(serverUrl.substring(serverUrl.lastIndexOf(":") + 1));
+			this.serverUrl = serverUrl.substring(0, serverUrl.lastIndexOf(":"));
+		} else {
+			this.serverUrl = serverUrl;
+			this.serverPort = 80;
+		}
 	}	
 
 	public Meeting getMeetingByName(String meetingName) {

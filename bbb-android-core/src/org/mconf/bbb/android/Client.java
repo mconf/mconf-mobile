@@ -284,10 +284,10 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 			String joinUrl = getIntent().getData().toString().replace(getResources().getString(R.string.protocol) + "://", "http://");
 			log.debug("Joining: " + joinUrl);
-			serverUrl = joinUrl.substring(0, joinUrl.indexOf("/bigbluebutton/api/"));
-			if (getBigBlueButton().getJoinService().join(serverUrl, joinUrl)) {
+			getBigBlueButton().createJoinService(joinUrl);
+			if (getBigBlueButton().getJoinService().standardJoin(joinUrl)) {
 				username = getBigBlueButton().getJoinService().getJoinedMeeting().getFullname();
-				// can't access the moderator information from the user module because at this point, the user isn't connect to the meeting yet
+				// can't access the moderator information from the user module because at this point, the user isn't connected to the meeting yet
 				// moderator = getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isModerator();
 				moderator = getBigBlueButton().getJoinService().getJoinedMeeting().getRole().equals("MODERATOR");
 				meetingId = getBigBlueButton().getJoinService().getJoinedMeeting().getMeetingID();
@@ -303,11 +303,9 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			Bundle extras = getIntent().getExtras();
 			username = extras.getString("username");
 			moderator = extras.getBoolean("moderator");
-			serverUrl = extras.getString("serverUrl");
 			meetingId = extras.getString("meetingId");
 
 			if (username == null
-					|| serverUrl == null
 					|| meetingId == null) {
 				new JoinFailDialog(this).show();
 				return false;

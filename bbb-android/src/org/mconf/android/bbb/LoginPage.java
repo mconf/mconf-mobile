@@ -23,7 +23,6 @@ package org.mconf.android.bbb;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import org.mconf.bbb.android.AboutDialog;
 import org.mconf.bbb.android.BarcodeHandler;
@@ -31,7 +30,6 @@ import org.mconf.bbb.android.BigBlueButtonActivity;
 import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.NetworkPropertiesDialog;
 import org.mconf.bbb.android.ReportCrashDialog;
-import org.mconf.bbb.api.JoinService;
 import org.mconf.bbb.api.Meeting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,23 +69,23 @@ public class LoginPage extends BigBlueButtonActivity {
 	public static final String SERVER_CHOSED ="org.mconf.bbb.android.Client.SERVER_CHOSED";
 	public static final int MENU_QR_CODE = Menu.FIRST;
 	public static final int MENU_ABOUT = Menu.FIRST + 1;
-	
-	private SharedPreferences preferencesFile;
-	private Map<String,String> storedPreferences;
 
 	private ArrayAdapter<String> spinnerAdapter;
 	private boolean moderator;
 	private String username = "Android";
 	private String serverUrl = "";
+	private String serverPassword = "";
 	private String createdMeeting = "";
 	
 	BroadcastReceiver serverChosed = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
 		{ 
 			Bundle extras = intent.getExtras();
-			serverUrl=extras.getString("serverURL");
+			serverUrl = extras.getString("serverUrl");
+			serverPassword = extras.getString("serverPassword");
 			Button serverView = (Button) findViewById(R.id.server);
 			serverView.setText(serverUrl);
+			storePreferences(username, serverUrl, serverPassword);
 		}
 	};
 
@@ -99,33 +97,30 @@ public class LoginPage extends BigBlueButtonActivity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.login);
-		//get username and server if already saved on the preferences file
-		setPreferencesFile();
-		setUserPreferences();
+		// get username and server if already saved on the preferences file
+		loadUserPreferences();
 
 		new ReportCrashDialog(this).show();
 
 		final EditText editName = (EditText) findViewById(R.id.login_edittext_name);
 		editName.setText(username);
 		Button serverView = (Button) findViewById(R.id.server);
-		if(serverUrl.length()>3)
+		if(serverUrl.length() > 3)
 			serverView.setText(serverUrl);
 		else
 			serverView.setText(R.string.choose_a_server);
-		
-		
 
 		final Spinner spinner = (Spinner) findViewById(R.id.login_spinner);
 		spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
 		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(spinnerAdapter);
-		
 
 		spinner.setOnTouchListener(new OnTouchListener() {
 
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					spinnerAdapter.clear();
 					updateMeetingsList();
 					return true;
 				} 
@@ -197,8 +192,7 @@ public class LoginPage extends BigBlueButtonActivity {
 
         
 		final Button join = (Button) findViewById(R.id.login_button_join);       
-		join.setOnClickListener( new OnClickListener()
-		{
+		join.setOnClickListener( new OnClickListener() {
 			@Override
 			public void onClick(View viewParam)
 			{
@@ -216,36 +210,28 @@ public class LoginPage extends BigBlueButtonActivity {
 				}
 
 				String meetingId = (String) spinner.getSelectedItem();
-//				if (!getBigBlueButton().getJoinService().join(meetingId, username, moderator)) {
-//                	Toast.makeText(getApplicationContext(), getResources().getString(R.string.login_cant_join) + ": " + getBigBlueButton().getJoinService().getJoinedMeeting().getMessage(), Toast.LENGTH_SHORT).show();
-//                	return;
-//                }
 
-           		updatePreferences(username, serverUrl);
+				storePreferences(username, serverUrl, serverPassword);
 
-                Intent myIntent = new Intent(getApplicationContext(), Client.class);
-                myIntent.putExtra("username", username);
-                myIntent.putExtra("moderator", moderator);
-                myIntent.putExtra("serverUrl", serverUrl);
-                myIntent.putExtra("meetingId", meetingId);
-                startActivity(myIntent);
+				Intent myIntent = new Intent(getApplicationContext(), Client.class);
+				myIntent.putExtra("username", username);
+				myIntent.putExtra("moderator", moderator);
+				myIntent.putExtra("meetingId", meetingId);
+				startActivity(myIntent);
 			}
-		}
-		);
+		});
 		//button to change the server
 		final Button server = (Button) findViewById(R.id.server);       
-		server.setOnClickListener( new OnClickListener()
-		{
+		server.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View viewParam)
-			{
+			public void onClick(View viewParam) {
+				spinnerAdapter.clear();
 				Intent intent = new Intent(getApplicationContext(), ServerChoosing.class);
 				log.debug("BACK_TO_SERVERS");
 				startActivity(intent);
 			}
 
-		}
-		);
+		});
 
 
 		updateRoleOption();
@@ -304,20 +290,15 @@ public class LoginPage extends BigBlueButtonActivity {
 		final Thread updateThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				int r = getBigBlueButton().getJoinService().load(serverUrl);
-				switch (r) {
-					case JoinService.E_LOAD_HTTP_REQUEST:
-						progressDialog.dismiss();
-						showToast(R.string.login_cant_contact_server);
-						return;
-					case JoinService.E_LOAD_PARSE_MEETINGS:
-						progressDialog.dismiss();
-						showToast(R.string.login_unsupported_server);
-						return;
-	
-					default:
-						break;
+				getBigBlueButton().createJoinService(serverUrl, serverPassword);
+				
+				if (getBigBlueButton().getJoinService() == null) {
+					progressDialog.dismiss();
+					showToast(R.string.login_unsupported_server);
+					return;
 				}
+				getBigBlueButton().getJoinService().load();
+
 				if (Thread.interrupted())
 					return;
 
@@ -392,45 +373,21 @@ public class LoginPage extends BigBlueButtonActivity {
 		}
 	}    
 
-	public SharedPreferences getPreferencesFile() {
-		return preferencesFile;
+	private SharedPreferences getPreferences() {
+		return getSharedPreferences("storedPreferences", MODE_PRIVATE);
 	}
-
-	public void setUserPreferences(){
-		if(!storedPreferences.isEmpty())
-		{
-			this.username = this.storedPreferences.get("username");
-			this.serverUrl = this.storedPreferences.get("serverURL");
-		}
+	
+	private void loadUserPreferences(){
+		username = getPreferences().getString("username", username);
+		serverUrl = getPreferences().getString("serverUrl", "");
+		serverPassword = getPreferences().getString("serverPassword", "");
 	}
-
-	@SuppressWarnings("unchecked")
-	public void setPreferencesFile() {
-		if(this.getSharedPreferences("storedPreferences", MODE_PRIVATE)!=null)
-			this.preferencesFile = this.getSharedPreferences("storedPreferences", MODE_PRIVATE);
-		else
-		{
-			SharedPreferences.Editor serverEditor = preferencesFile.edit();
-			serverEditor.commit(); 
-			this.preferencesFile = this.getSharedPreferences("storedPreferences", MODE_PRIVATE);
-		}
-		this.storedPreferences = (Map<String, String>) preferencesFile.getAll();
-	}
-
-	public void updatePreferences(String username, String serverURL)
-	{
-		SharedPreferences.Editor preferenceEditor = preferencesFile.edit();
-		if(!preferencesFile.getString("username", "").equals(username))
-		{
-			preferenceEditor.remove("username");
-			preferenceEditor.putString("username", username);
-
-		}
-		if(!preferencesFile.getString("serverURL", "").equals(serverURL))
-		{
-			preferenceEditor.remove("serverURL");
-			preferenceEditor.putString("serverURL", serverURL);
-		}
+	
+	private void storePreferences(String username, String serverUrl, String serverPassword) {
+		SharedPreferences.Editor preferenceEditor = getPreferences().edit();
+		preferenceEditor.putString("username", username);
+		preferenceEditor.putString("serverUrl", serverUrl);
+		preferenceEditor.putString("serverPassword", serverPassword);
 		preferenceEditor.commit();
 	}
 

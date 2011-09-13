@@ -1,6 +1,6 @@
 package org.mconf.bbb.android;
 
-import org.acra.*;
+import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.android.video.CaptureConstants;
@@ -8,7 +8,7 @@ import org.mconf.bbb.android.video.VideoPublish;
 import org.mconf.bbb.android.voip.VoiceModule;
 
 import android.app.Application;
-import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ApplicationInfo;
 
 @ReportsCrashes(formKey="dHVlSktWX2lUb1pWMzFIb1kxcE5YblE6MQ")
 public class BigBlueButton extends Application {
@@ -31,8 +31,13 @@ public class BigBlueButton extends Application {
 	@Override
 	public void onCreate() {
 		// The following line triggers the initialization of ACRA
-        ACRA.init(this);
+		if (!isDebug())
+			ACRA.init(this);
         super.onCreate();
+	}
+	
+	public boolean isDebug() {
+		return ((getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) > 0);
 	}
 	
 	public BigBlueButtonClient getHandler() {
@@ -44,6 +49,7 @@ public class BigBlueButton extends Application {
 	public VoiceModule getVoiceModule() {
 		// the application could call getVoiceModule before connect to a meeting, so additional tests must be applied
 		if (voice == null 
+				&& getHandler().getJoinService() != null
 				&& getHandler().getJoinService().getJoinedMeeting() != null
 				&& getHandler().getJoinService().getJoinedMeeting().getReturncode().equals("SUCCESS"))
 			voice = new VoiceModule(this,
