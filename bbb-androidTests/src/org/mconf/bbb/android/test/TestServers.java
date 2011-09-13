@@ -2,12 +2,9 @@ package org.mconf.bbb.android.test;
 
 
 
-
-import org.mconf.bbb.android.LoginPage;
-import org.mconf.bbb.android.R;
-import org.mconf.bbb.android.Server;
-import org.mconf.bbb.android.ServerAdapter;
-import org.mconf.bbb.android.ServerChoosing;
+import org.mconf.android.bbb.LoginPage;
+import org.mconf.android.bbb.ServerChoosing;
+import org.mconf.android.bbb.R;
 
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.TouchUtils;
@@ -21,7 +18,7 @@ public class TestServers extends ActivityInstrumentationTestCase2<LoginPage>  {
 	private Solo solo;
 
 	public TestServers() {
-		super("org.mconf.bbb.android", LoginPage.class);
+		super("org.mconf.android.bbb", LoginPage.class);
 	}
 
 	@Override

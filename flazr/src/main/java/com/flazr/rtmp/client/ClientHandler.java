@@ -58,12 +58,12 @@ import com.flazr.util.Utils;
 @ChannelPipelineCoverage("one")
 public class ClientHandler extends SimpleChannelUpstreamHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
 
     private int transactionId = 1;
     protected Map<Integer, String> transactionToCommandMap;
     protected ClientOptions options;
-    private byte[] swfvBytes;
+    protected byte[] swfvBytes;
 
 	/**
 	 * Shared objects map
@@ -77,8 +77,8 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
     protected long bytesReadLastSent;    
     protected int bytesWrittenWindow = 2500000;
     
-    protected RtmpPublisher publisher;
-    protected int streamId;    
+    public RtmpPublisher publisher;
+    public int streamId;    
 
 	/**
 	 * Connect to client shared object.
@@ -162,8 +162,8 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
     
     @Override
     public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent me) {
-        if(publisher != null && publisher.handle(me)) {
-            return;
+    	if(publisher != null && publisher.handle(me)) {
+           	return;
         }
         final Channel channel = me.getChannel();
         final RtmpMessage message = (RtmpMessage) me.getMessage();
@@ -217,7 +217,7 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
                 break;
             case AUDIO:
             case VIDEO:
-            case AGGREGATE:                
+            case AGGREGATE:      
                 writer.write(message);
                 bytesRead += message.getHeader().getSize();
                 if((bytesRead - bytesReadLastSent) > bytesReadWindow) {
@@ -320,6 +320,7 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
                 break;
             case SHARED_OBJECT_AMF0:
             case SHARED_OBJECT_AMF3:
+            	logger.debug("SOAMF");
             	onSharedObject(channel, (SharedObjectMessage) message);
             	break;
             default:

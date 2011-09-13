@@ -232,6 +232,7 @@ public class MainRtmpConnection extends RtmpConnection {
 	                		doGetMyUserId(channel);
 	                	else {
 	                		log.error("method connect result in {}, quitting", code);
+	                		log.debug("connect response: {}", command.toString());
 	                		channel.close();
 	                	}
 	                	return;

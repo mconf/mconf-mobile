@@ -164,7 +164,7 @@ public class BigBlueButtonClient {
 	public void disconnect() {
 		if (mainConnection != null)
 			mainConnection.disconnect();
-		joinServiceProxy = new JoinServiceProxy();
+		joinServiceProxy.reset();
 	}
 
 	public Collection<Participant> getParticipants() {

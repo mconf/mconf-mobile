@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<string name="app_name">Mconf</string>
+	
+	<string name="username">Username</string>
+	<string name="password">Password</string>
+	<string name="remember">Remember me</string>
+	<string name="rooms">Rooms</string>
+	<string name="no_rooms">No rooms available</string>
+    <string name="login_updating">Authenticating and updating rooms list</string>
+	<string name="invalid_password">Invalid username and/or password</string>
+	<string name="select_room">Please select a room</string>
+	<string name="invalid_room">Invalid room</string>
+	<string name="cant_join">You can\'t join the meeting this moment</string>
+	
+	<string name="rooms_user">User rooms</string>
+	<string name="rooms_user_spaces">Rooms from user spaces</string>
+	<string name="rooms_public_spaces">Rooms from public spaces</string>
+	
+	<string name="dont_have_account">Create an account</string>
+	<string name="no_running_meeting">You must wait for a moderator to join</string>
+
+</resources>

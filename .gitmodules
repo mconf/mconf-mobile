@@ -1,0 +1,3 @@
+[submodule "sipdroid"]
+	path = sipdroid
+	url = git@github.com:mconf/sipdroid.git

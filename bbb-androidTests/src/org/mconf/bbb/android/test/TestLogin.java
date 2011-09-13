@@ -2,11 +2,9 @@ package org.mconf.bbb.android.test;
 
 import java.util.Random;
 
+import org.mconf.android.bbb.LoginPage;
 import org.mconf.bbb.android.Client;
-import org.mconf.bbb.android.LoginPage;
-import org.mconf.bbb.android.R;
-import org.mconf.bbb.android.ServerChoosing;
-import org.mconf.bbb.android.test.Common;
+import org.mconf.android.bbb.R;
 
 import android.test.ActivityInstrumentationTestCase2;
 
@@ -16,7 +14,7 @@ public class TestLogin extends ActivityInstrumentationTestCase2<LoginPage> {
 	private Solo solo;
 
 	public TestLogin() {
-		super("org.mconf.bbb.android", LoginPage.class);
+		super("org.mconf.android.bbb", LoginPage.class);
 	}
 
 	@Override

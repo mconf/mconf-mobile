@@ -30,4 +30,16 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>bbb-android-core_src</name>
+			<type>2</type>
+			<locationURI>_android_bbb_android_core_e5e13808/src</locationURI>
+		</link>
+		<link>
+			<name>sipdroid_src</name>
+			<type>2</type>
+			<locationURI>_android_sipdroid_216ae9e2/src</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>

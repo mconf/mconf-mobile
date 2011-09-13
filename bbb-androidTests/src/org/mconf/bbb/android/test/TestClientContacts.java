@@ -1,11 +1,11 @@
 package org.mconf.bbb.android.test;
 
+import org.mconf.android.bbb.LoginPage;
 import org.mconf.bbb.android.BigBlueButton;
 import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.Contact;
 import org.mconf.bbb.android.ContactAdapter;
 import org.mconf.bbb.android.CustomListview;
-import org.mconf.bbb.android.LoginPage;
 import org.mconf.bbb.android.PrivateChat;
 import org.mconf.bbb.android.R;
 import org.mconf.bbb.users.IParticipant;
@@ -30,7 +30,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	private int myUserId;
 	
 	public TestClientContacts() {
-		super("org.mconf.bbb.android", LoginPage.class);
+		super("org.mconf.android.bbb", LoginPage.class);
 	}
 	
 	@Override
@@ -64,32 +64,24 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	
 	public void testCloseDialogPutInBackground() {
 		solo.sendKey(KeyEvent.KEYCODE_BACK);
-		solo.waitForText(Common.exactly(solo.getString(R.string.quit_dialog)));
-		assertTrue(solo.searchText(solo.getString(R.string.quit_dialog)));
-		solo.clickOnButton(solo.getString(R.string.no));
-		assertTrue(solo.getCurrentViews().isEmpty());
+		solo.waitForText(Common.exactly(solo.getString(R.string.back_pressed)));
+		assertTrue(solo.searchText(solo.getString(R.string.back_pressed)));
+		solo.clickOnButton(solo.getString(R.string.minimize));
+		//assertTrue(solo.getCurrentViews().isEmpty());
 		assertTrue(solo.searchText(solo.getString(R.string.application_on_background_text)));
 	}
 	
 	public void testCloseDialogQuit() {
 		solo.sendKey(KeyEvent.KEYCODE_BACK);
-		solo.waitForText(Common.exactly(solo.getString(R.string.quit_dialog)));
-		assertTrue(solo.searchText(solo.getString(R.string.quit_dialog)));
-		solo.clickOnButton(solo.getString(R.string.yes));
-		assertTrue(solo.getCurrentViews().isEmpty());
-		assertFalse(solo.searchText(solo.getString(R.string.application_on_background_text)));
+		solo.waitForText(Common.exactly(solo.getString(R.string.back_pressed)));
+		assertTrue(solo.searchText(solo.getString(R.string.back_pressed)));
+		solo.clickOnButton(solo.getString(R.string.quit));
+		solo.assertCurrentActivity("wrong activity", LoginPage.class);
 	}
 	
-	public void testCloseRoom() {
-		solo.clickOnMenuItem(solo.getString(R.string.logout));
-		solo.assertCurrentActivity("didn't logout", LoginPage.class);
-	}
-
 	public void testQuit() {
-		assertFalse(solo.getCurrentViews().isEmpty());
 		solo.clickOnMenuItem(solo.getString(R.string.quit));
-		// current activity is not visible anymore
-		assertTrue(solo.getCurrentViews().isEmpty());
+		solo.assertCurrentActivity("wrong activity", LoginPage.class);
 	}
 	
 	public void testPublicChat() {

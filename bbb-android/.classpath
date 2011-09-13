@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/bbb-java"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/flazr"/>
-	<classpathentry kind="lib" path="/flazr/target/flazr/lib/commons-cli-1.2.jar"/>
-	<classpathentry kind="lib" path="/flazr/target/flazr/lib/commons-codec-1.2.jar"/>
-	<classpathentry kind="lib" path="/flazr/target/flazr/lib/commons-httpclient-3.1.jar"/>
-	<classpathentry kind="lib" path="/flazr/target/flazr/lib/jcl104-over-slf4j-1.4.2.jar"/>
-	<classpathentry kind="lib" path="/flazr/target/flazr/lib/junit-4.8.1.jar"/>
-	<classpathentry kind="lib" path="/flazr/target/flazr/lib/netty-3.2.4.Final.jar"/>
-	<classpathentry kind="lib" path="libs/slf4j-android-1.6.1-RC1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/flazr/target/flazr/lib/commons-cli-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="/flazr/target/flazr/lib/commons-codec-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="/flazr/target/flazr/lib/commons-httpclient-3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/flazr/target/flazr/lib/jcl104-over-slf4j-1.4.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="/flazr/target/flazr/lib/netty-3.2.4.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/bbb-android-core/libs/slf4j-android-1.6.1-RC1.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/bbb-java"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/flazr"/>
+	<classpathentry kind="src" path="bbb-android-core_src"/>
+	<classpathentry kind="src" path="sipdroid_src"/>
+	<classpathentry kind="lib" path="/bbb-android-core/libs/acra-4.2.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
