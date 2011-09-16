@@ -145,8 +145,7 @@ public class MeetingInfDialog extends Dialog implements OnClickListener{
 
 	public void setStartTime() {
 		this.startTime = getJoined().getStartTime();
-		if(startTime==null)
-			System.out.println("damn");
+
 	}
 
 	public int getParticipantCount() {

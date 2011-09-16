@@ -21,7 +21,6 @@ public class CustomListview extends ListView {
 	public boolean dispatchTouchEvent(final MotionEvent ev) {
 		
 		if (ev.getAction()==MotionEvent.ACTION_POINTER_DOWN || ev.getAction()==MotionEvent.ACTION_POINTER_UP) {
-			System.out.println("cancelled");
 			ev.setAction(MotionEvent.ACTION_CANCEL);
 			return true;
 		}

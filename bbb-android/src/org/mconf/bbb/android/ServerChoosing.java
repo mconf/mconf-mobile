@@ -92,7 +92,6 @@ public class ServerChoosing extends Activity  {
 		
 		switch (item.getItemId()) {
 			case DELETE_SERVER:
-				System.out.println(servers.getItemAtPosition(info.position).toString());
 				deleteServer(servers.getItemAtPosition(info.position).toString());
 				return true;
 		}
@@ -144,7 +143,6 @@ public class ServerChoosing extends Activity  {
 		{
 			serverEditor.remove(server);
 			serverEditor.commit();
-			System.out.println("deleted");
 			runOnUiThread(new Runnable() {
 
 				@Override  

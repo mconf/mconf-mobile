@@ -161,7 +161,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	protected ContactAdapter contactAdapter = new ContactAdapter();
 	protected ChatAdapter chatAdapter = new ChatAdapter();
 	protected ListenerAdapter listenerAdapter = new ListenerAdapter();
-
+	private Context context=this;
 	protected String username;
 	private boolean moderator;
 	protected String meetingId;
@@ -273,7 +273,12 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			} else {
 				String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
 				log.debug("Joining error message: " + error);
-				new JoinFailDialog(this).show();
+				runOnUiThread(new Runnable() { 
+					@Override
+					public void run() {
+						new JoinFailDialog(context).show();
+					}
+				});
 				return false;
 			}
 		} else if (getIntent().getExtras() != null) {
@@ -290,22 +295,54 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 					String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
 					log.debug("Joining error message: " + error);
 					if (error != null && !error.equals("null"))
-						new JoinFailDialog(this, error).show();
+					{
+						runOnUiThread(new Runnable() { 
+							@Override
+							public void run() {
+								new JoinFailDialog(context).show();
+							}
+						});
+					}
 					else
-						new JoinFailDialog(this).show();
-				} else
-					new JoinFailDialog(this).show();
+					{
+						runOnUiThread(new Runnable() { 
+							@Override
+							public void run() {
+								new JoinFailDialog(context).show();
+							}
+						});
+					}
+				} 
+				else
+				{
+					runOnUiThread(new Runnable() { 
+						@Override
+						public void run() {
+							new JoinFailDialog(context).show();
+						}
+					});
+				}
 				return false;
 			}
 
 		} else {
-			new JoinFailDialog(this).show();
+			runOnUiThread(new Runnable() { 
+				@Override
+				public void run() {
+					new JoinFailDialog(context).show();
+				}
+			});
 			return false;
 		}
 
 		boolean connected = getBigBlueButton().connectBigBlueButton();
 		if (!connected) {
-			new JoinFailDialog(this).show();
+			runOnUiThread(new Runnable() { 
+				@Override
+				public void run() {
+					new JoinFailDialog(context).show();
+				}
+			});
 			return false;
 		}
 
