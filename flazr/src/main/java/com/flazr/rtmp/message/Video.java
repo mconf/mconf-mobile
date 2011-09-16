@@ -50,6 +50,12 @@ public class Video extends DataMessage {
     public Video(final byte[] ... bytes) {
         super(bytes);
     }
+    
+    public Video(final int time, final byte[] videoData, final int length){
+    	header.setTime(time);
+    	data = ChannelBuffers.wrappedBuffer(videoData, 0, length);
+    	header.setSize(data.readableBytes());
+    }
 
     public Video(final int time, final byte[] prefix, final int compositionOffset, final byte[] videoData) {
         header.setTime(time);

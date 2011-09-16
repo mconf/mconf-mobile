@@ -162,8 +162,7 @@ public class VideoRtmpConnection extends RtmpConnection {
 	                channel.write(new BytesRead(bytesRead));
 	            }
         		          
-        		Video video = (Video) message;
-
+        		Video video = (Video) message;        		
         		context.onVideo(video.getBody());        		
         		        		
         		break;

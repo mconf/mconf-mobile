@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+	<string name="protocol">bigbluebutton</string>
+
+	<string name="login_cant_join">Can\'t join the meeting</string>
+	<string name="login_button_join">Join</string>
+	<string name="login_cant_contact_server">Can\'t contact the server. Try it later</string>
+	<string name="wait">Please wait</string>
+	<string name="welcome">Welcome</string>
+	<string name="cancel">Cancel</string>
+	<string name="you">you</string>
+	<string name="send_message">Send</string>
+	<string name="list_participants">List of participants</string>
+	<string name="list_listeners">List of listeners</string>
+	<string name="public_chat">Public chat</string>
+	<string name="meeting">Meeting:</string>
+
+	<string name="kick">Kick</string>
+	<string name="mute">Mute</string>
+	<string name="unmute">Unmute</string>
+	<string name="assign_presenter">Assign presenter</string>
+	<string name="not_implemented">Not implemented feature</string>
+	<string name="speaker">Loudspeaker</string>
+	<string name="start_voice">Start voice</string>
+	<string name="stop_voice">Stop voice</string>
+
+	<string name="start_video">Start video</string>
+	<string name="stop_video">Stop video</string>
+    <string name="publishing_video">Your camera is being published to the session</string>
+
+	<string name="quit">Quit</string>
+	<string name="minimize">Minimize</string>
+	<string name="logout">Logout</string>
+	<string name="raise_hand">Raise hand</string>
+	<string name="lower_hand">Lower hand</string>
+	<string name="open_private_chat">Open private chat</string>
+	<string name="lost_connection">Lost connection</string>
+	<string name="attempting_to_reconnect">Reconnecting...</string>
+	<string name="private_chat_notification">New private chat message from&#160;</string>
+	<string name="public_chat_notification">New public chat message from&#160;</string>
+	<string name="private_chat_title">Private chat with&#160;</string>
+	<string name="close_chat">Close chat</string>
+	<string name="connection_established">Connection established</string>
+	<string name="connection_closed">Connection closed</string>
+	<string name="connection_refused">Connection refused</string>
+	<string name="error">Error</string>
+	<string name="invalid_number">isn\'t a valid VoIP number</string>
+	<string name="no_options">No options avaiable</string>
+	<string name="not_moderator">You don\'t have enough permission</string>
+	<string name="cant_reconnect">Can\'t reconnect. Check your internet connection</string>
+	<string name="reconnected">Successfully reconnected</string>
+	<string name="reconnect">Reconnect</string>
+	<string name="no_connection">No internet connection</string>
+	<string name="open_properties">Open network properties?</string>
+
+	<string name="kicked">You have been kicked</string>
+	<string name="new_meeting">Create new meeting</string>
+	<string name="create">Create</string>
+	<string name="taptospeak">Tap to speak</string>
+	<string name="lockspeak">Lock speak</string>
+	<string name="ok">OK</string>
+	<string name="participant_left">User has disconnected. Closing the chat</string>
+	<string name="user_disconnected">User has disconnected</string>
+	<string name="mute_room">Mute room</string>
+	<string name="unmute_room">Unmute room</string>
+	<string name="qrcode">QR code</string>
+	<string name="login_in">Log in</string>
+	<string name="install_bar_code">Do you want to install it?</string>
+	<string name="bar_code_no_found">Barcode Scanner not found</string>
+	<string name="invalid_join_url">Invalid scanned code</string>
+	
+	<string name="show_video">Show video</string>
+
+	<string name="application_on_background">BigBlueButton</string>
+	<string name="application_on_background_text">The application is still running</string>
+	<string name="back_pressed">Key \"Back\" pressed</string>
+	<string name="back_pressed_action">Which action do you want to take?</string>
+	
+    <string name="server">Server</string>
+	<string name="meeting_information">Meeting information</string>
+	<string name="meeting_id">Meeting ID</string>
+	<string name="meeting_message">Meeting message</string>
+	<string name="start_time">Start time</string>
+	<string name="participant_count">Participant count</string>
+	<string name="moderator_count">Moderator count</string>
+	<string name="about">
+BBB-Android is an Android implementation of the BigBlueButton client.
+\n
+\nVersion ${VERSION}
+\n
+\nIt was developed by PRAV Labs as part of the GT-Mconf project (http://inf.ufrgs.br/prav/gtmconf) supported by RNP (http://www.rnp.br).
+\n
+\nThe source code is licensed under the GNU General Public License (GPL) and it is available at https://github.com/mconf.
+\n
+\nThe audio implementation is based on Sipdroid, an open-source SIP client for Android (http://sipdroid.org).
+\n
+\nIt uses Flazr, a Java implementation of multimedia streaming protocols (http://flazr.com).
+\n
+\nIt uses BBB-Java, a client-side Java API for BigBlueButton.
+	</string>
+	<string name="moderator">Moderator</string>
+	<string name="viewer">Viewer</string>
+	<string name="close">Close</string>
+	<string name="audio_config">Audio configuration</string>
+	<string name="speaker_volume">Speaker volume</string>
+	<string name="earphone_volume">Earphone volume</string>
+	<string name="mic_gain">Microphone gain</string>
+
+    <string name="report_crash_title">Send anonymous data</string>
+    <string name="report_crash_message">We collect anonymous data when the application crashes in order to trace and solve the problem. Do you agree with sending error data?</string>
+
+</resources>

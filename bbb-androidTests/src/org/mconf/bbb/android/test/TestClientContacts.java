@@ -1,20 +1,18 @@
 package org.mconf.bbb.android.test;
 
-import java.util.Random;
-
+import org.mconf.android.bbb.LoginPage;
 import org.mconf.bbb.android.BigBlueButton;
 import org.mconf.bbb.android.Client;
 import org.mconf.bbb.android.Contact;
 import org.mconf.bbb.android.ContactAdapter;
 import org.mconf.bbb.android.CustomListview;
-import org.mconf.bbb.android.LoginPage;
 import org.mconf.bbb.android.PrivateChat;
 import org.mconf.bbb.android.R;
 import org.mconf.bbb.users.IParticipant;
 
 import android.test.ActivityInstrumentationTestCase2;
-import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.jayway.android.robotium.solo.Solo;
@@ -32,7 +30,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	private int myUserId;
 	
 	public TestClientContacts() {
-		super("org.mconf.bbb.android", LoginPage.class);
+		super("org.mconf.android.bbb", LoginPage.class);
 	}
 	
 	@Override
@@ -66,34 +64,24 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	
 	public void testCloseDialogPutInBackground() {
 		solo.sendKey(KeyEvent.KEYCODE_BACK);
-		assertTrue(solo.searchText(solo.getString(R.string.quit_dialog)));
-		solo.clickOnButton(solo.getString(R.string.no));
+		solo.waitForText(Common.exactly(solo.getString(R.string.back_pressed)));
+		assertTrue(solo.searchText(solo.getString(R.string.back_pressed)));
+		solo.clickOnButton(solo.getString(R.string.minimize));
 		//assertTrue(solo.getCurrentViews().isEmpty());
 		assertTrue(solo.searchText(solo.getString(R.string.application_on_background_text)));
-		
-		
-		
 	}
 	
 	public void testCloseDialogQuit() {
 		solo.sendKey(KeyEvent.KEYCODE_BACK);
-		assertTrue(solo.searchText(solo.getString(R.string.quit_dialog)));
-		solo.clickOnButton(solo.getString(R.string.yes));
-		assertTrue(solo.getCurrentViews().isEmpty());
-		assertFalse(solo.searchText(solo.getString(R.string.application_on_background_text)));
+		solo.waitForText(Common.exactly(solo.getString(R.string.back_pressed)));
+		assertTrue(solo.searchText(solo.getString(R.string.back_pressed)));
+		solo.clickOnButton(solo.getString(R.string.quit));
+		solo.assertCurrentActivity("wrong activity", LoginPage.class);
 	}
 	
-	
-	public void testCloseRoom() {
-		solo.clickOnMenuItem(solo.getString(R.string.logout));
-		solo.assertCurrentActivity("didn't logout", LoginPage.class);
-	}
-
 	public void testQuit() {
-		assertFalse(solo.getCurrentViews().isEmpty());
 		solo.clickOnMenuItem(solo.getString(R.string.quit));
-		// current activity is not visible anymore
-		assertTrue(solo.getCurrentViews().isEmpty());
+		solo.assertCurrentActivity("wrong activity", LoginPage.class);
 	}
 	
 	public void testPublicChat() {
@@ -126,33 +114,32 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	}
 	
 	public void testLowerHand() throws InterruptedException{
-		raiseRandomHands(3);
-		Contact p;
-		do{
-			p= getRandomContact(false);
-		}while(!p.isRaiseHand());
+		IParticipant p = null;
+		while (true) {
+			p = Common.getRandomUser(solo, false);
+			if (!p.getStatus().isRaiseHand()) {
+				Common.getUser(p.getUserId()).raiseHand(true);
+				break;
+			}			
+		}
+		
 		String name = p.getName();
 		solo.clickLongOnText(name);
 		solo.clickOnText(solo.getString(R.string.lower_hand));
 		solo.clickLongOnText(name);
 		assertFalse(solo.searchText(solo.getString(R.string.lower_hand)));
-
-		
-
 	}
 	
 	public void testKick() {
-		IParticipant p = getRandomUser(false);
+		IParticipant p = Common.getRandomUser(solo, false);
 		String name = p.getName();
 		solo.clickLongOnText(name);
 		solo.clickOnText(solo.getString(R.string.kick));
 		assertFalse(solo.searchText(name));
 	}
 	
-	
-	
 	public void testOpenChatLongPress() {
-		IParticipant p = getRandomUser(false);
+		IParticipant p = Common.getRandomUser(solo, false);
 		solo.clickLongInList(participantsList.getPositionById(p.getUserId()) + 1);
 		solo.clickOnText(solo.getString(R.string.open_private_chat));
 		solo.assertCurrentActivity("wrong activity", PrivateChat.class);
@@ -162,16 +149,32 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	
 	public void testAssignPresenter() {
 		while (true) {
-			IParticipant p = getRandomUser(true);
+			IParticipant p = Common.getRandomUser(solo, true);
 			if (!p.getStatus().isPresenter()) {
-				int position = participantsList.getPositionById(p.getUserId());
+				int position = participantsList.getPositionById(p.getUserId());		
+				View icon = participantsListView.getChildAt(position).findViewById(R.id.presenter);
+				
+				assertFalse(icon.isShown());
 				
 				solo.clickLongInList(position + 1);
-				solo.clickOnText(solo.getString(R.string.assign_presenter));			
+				solo.clickOnText(solo.getString(R.string.assign_presenter));
+
+				// wait for the update of the presenter icon
+				// \TODO extract this function to Common in order to implement this wait in other tests
+//				long endTime = System.currentTimeMillis() + Common.TIMEOUT_SMALL;
+//				while (System.currentTimeMillis() < endTime) {
+//					position = participantsList.getPositionById(p.getUserId());
+//					icon = participantsListView.getChildAt(position).findViewById(R.id.presenter);
+//					if (icon.isShown())
+//						break;
+//					SystemClock.sleep(Common.SLEEP_SMALL);
+//				}
 				solo.waitForView(ImageView.class);
+				icon = participantsListView.getChildAt(position).findViewById(R.id.presenter);
+				assertTrue(icon.isShown());
 				
 				assertTrue(p.getStatus().isPresenter());
-				assertTrue(participantsListView.getChildAt(position).findViewById(R.id.presenter).isShown());
+				assertTrue(icon.isShown());
 				break;
 			}
 		}
@@ -190,31 +193,6 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 			}
 		}
 		assertTrue(numberOfPresenters <= 1);
-	}
-
-	public IParticipant getRandomUser(boolean includeMe) {
-		while (true) {
-			IParticipant p = (IParticipant) participantsList.getItem(new Random().nextInt(participantsList.getCount()));
-			if (includeMe || !p.getName().startsWith(Common.DEFAULT_NAME))
-				return p;
-		}
-	}
-	
-	public Contact getRandomContact(boolean includeMe){
-		Contact contact = new Contact(getRandomUser(includeMe));
-		return contact;
-	}
-	
-	public void raiseRandomHands(int howMany){
-		for(int i=0; i<howMany; i++)
-		{
-			Contact contact = getRandomContact(false);
-			int userId=contact.getUserId();
-			if(!contact.isRaiseHand())
-			{
-				Common.getUser(userId).raiseHand(userId, true);
-			}
-		}
 	}
 
 //	public void testShowVideo()

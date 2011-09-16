@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/Scroll" android:layout_width="fill_parent"
+  android:layout_height="fill_parent">
+	<RelativeLayout
+	  xmlns:android="http://schemas.android.com/apk/res/android"
+	  android:orientation="vertical"
+	  android:layout_width="fill_parent" android:layout_height="fill_parent">
+	  	<RelativeLayout android:id="@+id/layout_rooms_user"
+		  xmlns:android="http://schemas.android.com/apk/res/android"
+		  android:layout_width="fill_parent" android:layout_height="wrap_content">
+		    <TextView android:textAppearance="@style/RoomListType" android:text="@string/rooms_user" android:id="@+id/textView1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:padding="12dip"/>
+		    <org.mconf.bbb.android.NoScrollListView android:id="@+id/rooms_user" android:divider="@color/title_background_onfocus" android:dividerHeight="2dp" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_below="@+id/textView1" android:background="@color/background"/>
+	  	</RelativeLayout>
+	  	<RelativeLayout android:id="@+id/layout_rooms_user_spaces"
+		  xmlns:android="http://schemas.android.com/apk/res/android"
+		  android:layout_width="fill_parent" android:layout_height="wrap_content"
+		  android:layout_below="@+id/layout_rooms_user">
+		    <TextView android:textAppearance="@style/RoomListType" android:text="@string/rooms_user_spaces" android:id="@+id/textView2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:padding="12dip"/>
+		    <org.mconf.bbb.android.NoScrollListView android:id="@+id/rooms_user_spaces" android:divider="@color/title_background_onfocus" android:dividerHeight="2dp" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_below="@+id/textView2" android:background="@color/background"/>
+	  	</RelativeLayout>
+	  	<RelativeLayout android:id="@+id/layout_rooms_public_spaces"
+		  xmlns:android="http://schemas.android.com/apk/res/android"
+		  android:layout_width="fill_parent" android:layout_height="wrap_content"
+		  android:layout_below="@+id/layout_rooms_user_spaces">
+		    <TextView android:textAppearance="@style/RoomListType" android:text="@string/rooms_public_spaces" android:id="@+id/textView3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:padding="12dip"/>
+		    <org.mconf.bbb.android.NoScrollListView android:id="@+id/rooms_public_spaces" android:divider="@color/title_background_onfocus" android:dividerHeight="2dp" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_below="@+id/textView3" android:background="@color/background"/>
+	    </RelativeLayout>
+	</RelativeLayout>
+</ScrollView>
+  
