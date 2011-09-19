@@ -23,12 +23,18 @@ package org.mconf.bbb.chat;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class ChatMessage {
 	
 	/*
-	 * newMessage = event.message + "|" + attributes.username + "|" + event.color + "|" + event.time + "|" + event.language + "|" + attributes.userid;
+	 * newMessage = event.message 
+	 * 		+ "|" + attributes.username 
+	 * 		+ "|" + event.color 
+	 * 		+ "|" + event.time 
+	 * 		+ "|" + event.language 
+	 * 		+ "|" + attributes.userid;
 	 */
 	private String message;
 	private String username;
@@ -47,14 +53,17 @@ public class ChatMessage {
 		decode(s);
 	}
 	
-	public void decode(String s) {
+	public void decode(String s) throws NumberFormatException {
 		List<String> param = Arrays.asList(s.split("\\|"));
 		message = param.get(0);
 		username = param.get(1);
-		color = param.get(2);
-		time = param.get(3);
-		language = param.get(4);
-		userid = Double.valueOf(Double.parseDouble(param.get(5))).intValue();
+
+		Collections.reverse(param);
+		
+		userid = Double.valueOf(Double.parseDouble(param.get(0))).intValue();
+		language = param.get(1);
+		time = param.get(2);
+		color = param.get(3);
 	}
 	
 	public String encode() {

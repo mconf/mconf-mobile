@@ -53,7 +53,7 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 					serverURL = editTextServer.getText().toString();
 					
 					if (!getPreferences().contains(serverURL)) {
-						ServerPasswordDialog passwordDialog = new ServerPasswordDialog(ServerChoosing.this);
+						ServerPasswordDialog passwordDialog = new ServerPasswordDialog(ServerChoosing.this, "");
 						passwordDialog.setOnPasswordEntered(new OnPasswordEntered() {
 							
 							@Override
@@ -108,20 +108,21 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 	//delete server on long press
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
-		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+		final AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
+		final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 
 		switch (item.getItemId()) {
 		case DELETE_SERVER:
 			deleteServer(((Server) serverAdapter.getItem(info.position)).getUrl());
 			return true;
 		case CHANGE_PASSWORD:	
-			ServerPasswordDialog passwordDialog = new ServerPasswordDialog(this);
+			ServerPasswordDialog passwordDialog = new ServerPasswordDialog(this, ((Server) serverAdapter.getItem(info.position)).getPassword());
 			passwordDialog.setOnPasswordEntered(new OnPasswordEntered() {
 				
 				@Override
 				public void onPassword(String password) {
 					serverPassword = password;
+					addServer(((Server) serverAdapter.getItem(info.position)).getUrl(), serverPassword);
 				}
 			});
 			passwordDialog.show();

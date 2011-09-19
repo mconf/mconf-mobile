@@ -20,6 +20,11 @@ public class JoinServiceProxy {
 	private JoinServiceBase joinService = null;
 	
 	public void setServer(String serverUrl) {
+		if (this.serverUrl != null
+				&& this.serverUrl.equals(serverUrl))
+			return;
+		
+		joinService = null;
 		if (isBigBlueButtonServer(serverUrl)) {
 			if (serverVersion.equals(new JoinService0Dot7().getVersion()))
 				joinService = new JoinService0Dot7();
@@ -86,5 +91,10 @@ public class JoinServiceProxy {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	public void resetJoinedMeeting() {
+		if (joinService != null)
+			joinService.resetJoinedMeeting();
 	}
 }

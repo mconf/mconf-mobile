@@ -134,6 +134,10 @@ public abstract class JoinServiceBase {
 		return meetings.getMeetings();
 	}
 
+	public int getPort() {
+		return serverPort;
+	}
+
 	public String getServerUrl() {
 		return serverUrl;
 	}

@@ -9,12 +9,13 @@ import android.widget.EditText;
 public class ServerPasswordDialog extends Dialog {
 	private OnPasswordEntered externalListener = null;
 	
-	public ServerPasswordDialog(final Context context) {
+	public ServerPasswordDialog(final Context context, String currentPassword) {
 		super(context);
 		setTitle(R.string.server_password);
 		setContentView(R.layout.password_dialog);
 		
 		final EditText editTextPassword =(EditText) findViewById(R.id.server_password);
+		editTextPassword.setText(currentPassword);
 		final Button buttonOk = (Button) findViewById(R.id.ok_password);
 		buttonOk.setOnClickListener(new View.OnClickListener() {
 			
@@ -22,6 +23,7 @@ public class ServerPasswordDialog extends Dialog {
 			public void onClick(View v) {
 				if (externalListener != null)
 					externalListener.onPassword(editTextPassword.getText().toString());
+				dismiss();
 			}
 		});
 	}
