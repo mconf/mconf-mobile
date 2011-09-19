@@ -79,6 +79,7 @@
 	<string name="presentation_removed">A apresentação foi removida</string>
 		<string name="show_presentation">Mostrar apresentação</string>
 		<string name="loading_presentation">Carregando apresentação...</string>
+		<string name="no_server_support">O servidor não suporta apresentações móveis\n mostrando os thumbnails</string>
 	
 		<string name="meeting_id">Identificação da sala</string>
 		<string name="meeting_message">Mensagem</string>

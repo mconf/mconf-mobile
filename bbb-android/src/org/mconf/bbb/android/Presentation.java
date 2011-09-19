@@ -74,8 +74,9 @@ public class Presentation extends Dialog implements IBigBlueButtonClientListener
 		relative.setLayoutParams(params);
 		relative.requestLayout(); 
 		
-		
 		showSlide(currentSlide);
+		if(slide.getSlideUri().equals(slide.getThumbUri())) //the loaded slide is the thumbnail
+				Toast.makeText(context, R.string.no_server_support, Toast.LENGTH_SHORT);
 	}
 
 	

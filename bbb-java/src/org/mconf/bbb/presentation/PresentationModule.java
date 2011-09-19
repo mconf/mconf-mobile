@@ -153,11 +153,21 @@ public class PresentationModule  extends Module implements ISharedObjectListener
 		NodeList slideList = doc.getElementsByTagName("slide");
 		for (int i = 0; i < slideList.getLength(); ++i) {
 			Element elementSlide = (Element) slideList.item(i);
-			
-			String sUri = slideUri + "/" + elementSlide.getAttribute("image");
+			String sUri="";
+			boolean image;
+			if(elementSlide.hasAttribute("image"))
+			{
+				 sUri = slideUri + "/" + elementSlide.getAttribute("image");
+				 image=true;
+			}
+			else	
+			{
+				sUri = slideUri + "/" + elementSlide.getAttribute("thumb");
+				image=false;
+			}
 			String thumbUri = slideUri + "/" + elementSlide.getAttribute("thumb");
 			int slideNumber = Integer.valueOf(elementSlide.getAttribute("number"));
-			Slide slide = new Slide(slideNumber, sUri, thumbUri );
+			Slide slide = new Slide(slideNumber, sUri, thumbUri, image );
 			
 			this.presentation.add(slide);
 		}

@@ -24,11 +24,15 @@ public class Slide implements ISlide {
 	public Slide(){
 	}
 
-	public Slide( int slideNum, String slideUri, String thumbUri)
+	public Slide( int slideNum, String slideUri, String thumbUri, boolean hasImage)
 	{
 		this.setSlideNum(slideNum);
 		try {
-			this.slideUri= new URL (slideUri);
+			if(hasImage)
+				this.slideUri= new URL (slideUri);
+			else
+				this.slideUri= new URL (thumbUri);
+			
 			this.thumbUri= new URL(thumbUri);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();

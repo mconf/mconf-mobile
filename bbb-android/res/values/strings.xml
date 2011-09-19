@@ -80,6 +80,7 @@
 	<string name="presentation_removed">The presentation has been removed</string>
 	<string name="loading_presentation">Loading presentation...</string>
 	<string name="show_presentation">Show presentation</string>
+	<string name="no_server_support">The server doesn\'t support mobile presentation\n showing the thumbnails</string>
 	
 		<string name="meeting_information">Meeting information</string>
 		<string name="meeting_id">Meeting ID</string>
