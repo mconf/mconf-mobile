@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="bbb-android-jni" basedir="." default="all">
-	<property name="ndk.dir" value="../../android-ndk-r4-crystax"/>
+	<property name="ndk.dir" value="../../../android-ndk-r4-crystax"/>
 	<property name="ndk.build" value="${ndk.dir}/ndk-build"/>
 	<property name="bash" value="/bin/bash"/>
 	<property name="echo" value="/bin/echo"/>
@@ -66,4 +66,5 @@
 	</target>
 	
 	<target name="all" depends="iva,mconfnativeshowvideo,mconfnativeencodevideo"/>
+    
 </project>

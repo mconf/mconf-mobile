@@ -1,7 +1,7 @@
 ﻿#include <CommonLeaks.h>
 #include "EncodeVideo.h"
 #include "EncodeVideoParams.h"
-#include "EncodeVideoH264Presets.h"
+//#include "EncodeVideoH264Presets.h"
 #include <CommonLeaksCpp.h>
 
 EncodeVideo::EncodeVideo() :
@@ -51,7 +51,7 @@ void EncodeVideo::_SetContextParameters()
     _codecCtx->max_b_frames = NUMB;
     // tamanho do GOP.
     _codecCtx->gop_size = _params->getGopSize();
-
+/*
     // tratamento do preset caso esteja codificando em H.264
     if (_params->getCodec() == COMMON_CODEC_VIDEO_H264) {
         //_codecCtx->profile = FF_PROFILE_H264_BASELINE; /// \todo Testar se seta o profile assim
@@ -86,7 +86,7 @@ void EncodeVideo::_SetContextParameters()
             _codecCtx->weighted_p_pred = 0;
         }
     }
-
+*/
     _codecCtxMutex.unlock();
 }
 
