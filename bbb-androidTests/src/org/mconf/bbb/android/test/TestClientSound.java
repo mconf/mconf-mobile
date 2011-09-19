@@ -1,11 +1,11 @@
 package org.mconf.bbb.android.test;
 
-import org.mconf.android.bbb.LoginPage;
-import org.mconf.bbb.android.Client;
-import org.mconf.bbb.android.CustomListview;
-import org.mconf.bbb.android.ListenerAdapter;
-import org.mconf.bbb.android.ListenerContact;
-import org.mconf.bbb.android.R;
+import org.mconf.android.bbbandroid.R;
+import org.mconf.android.bbbandroid.LoginPage;
+import org.mconf.android.core.Client;
+import org.mconf.android.core.CustomListview;
+import org.mconf.android.core.ListenerAdapter;
+import org.mconf.android.core.ListenerContact;
 
 import android.test.ActivityInstrumentationTestCase2;
 
@@ -17,7 +17,7 @@ public class TestClientSound extends ActivityInstrumentationTestCase2<LoginPage>
 	private static int LINE_NUMBER=1;
 	
 	public TestClientSound() {
-		super("org.mconf.android.bbb", LoginPage.class);
+		super("org.mconf.android.bbbandroid", LoginPage.class);
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<org.mconf.bbb.android.voip.AudioBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<view class="org.mconf.android.core.voip.AudioBarLayout" xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/audio_bar"
 	android:layout_width="fill_parent"
 	android:layout_height="0dip"
@@ -36,4 +36,4 @@
 		android:drawableTop="@android:drawable/ic_btn_speak_now"
 		android:text="@string/taptospeak"
 	/>
-</org.mconf.bbb.android.voip.AudioBarLayout>
+</view>

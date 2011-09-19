@@ -1,15 +1,14 @@
 package org.mconf.bbb.android.test;
 
-
-
-import org.mconf.android.bbb.LoginPage;
-import org.mconf.android.bbb.ServerChoosing;
-import org.mconf.android.bbb.R;
+import org.mconf.android.bbbandroid.R;
+import org.mconf.android.bbbandroid.LoginPage;
+import org.mconf.android.bbbandroid.Server;
+import org.mconf.android.bbbandroid.ServerAdapter;
+import org.mconf.android.bbbandroid.ServerChoosing;
 
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.TouchUtils;
 import android.widget.EditText;
-
 
 import com.jayway.android.robotium.solo.Solo;
 
@@ -18,7 +17,7 @@ public class TestServers extends ActivityInstrumentationTestCase2<LoginPage>  {
 	private Solo solo;
 
 	public TestServers() {
-		super("org.mconf.android.bbb", LoginPage.class);
+		super("org.mconf.android.bbbandroid", LoginPage.class);
 	}
 
 	@Override
@@ -53,6 +52,7 @@ public class TestServers extends ActivityInstrumentationTestCase2<LoginPage>  {
 			solo.clickLongOnText(server);
 			solo.clickOnText(solo.getString(R.string.change_password));
 			assertTrue(solo.searchText(Common.exactly(solo.getString(R.string.server_password))));
+			solo.clearEditText(0);
 			solo.enterText(0, Common.DEFAULT_PASSWORD+server);
 			solo.clickOnButton(solo.getString(R.string.ok));
 			assertTrue(solo.searchText(Common.DEFAULT_PASSWORD+server));

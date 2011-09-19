@@ -4,7 +4,7 @@
       android:versionCode="1"
       android:versionName="1.0">
     <uses-sdk android:minSdkVersion="5" />
-    <instrumentation android:targetPackage="org.mconf.android.bbb" android:name="android.test.InstrumentationTestRunner" />
+    <instrumentation android:targetPackage="org.mconf.android.bbbandroid" android:name="android.test.InstrumentationTestRunner" />
     <application android:icon="@drawable/icon" android:label="@string/app_name">
 
     <uses-library android:name="android.test.runner" />
