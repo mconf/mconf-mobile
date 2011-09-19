@@ -27,6 +27,7 @@ import java.util.List;
 import org.mconf.bbb.chat.ChatMessage;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,7 +102,6 @@ public class ChatAdapter extends BaseAdapter {
 	}
 
 	public void add(ChatMessage message) {
-		System.out.println("ESCREVEU"+message.getMessage());
 		list.add(message);
 	}
 
