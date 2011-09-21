@@ -27,7 +27,7 @@
 					android:layout_width="fill_parent" android:layout_height="2dp"
 					android:background="@color/title_background" android:layout_below="@+id/label_participants" />
 
-				<view class="org.mconf.bbb.android.CustomListview" android:id="@+id/contacts_list"
+				<view class="org.mconf.android.core.CustomListview" android:id="@+id/contacts_list"
 					android:divider="@color/title_background_onfocus"
 					android:dividerHeight="2dp" android:layout_below="@+id/separator1"
 					android:layout_width="fill_parent" android:layout_height="fill_parent" />
@@ -55,7 +55,7 @@
 					android:layout_width="fill_parent" android:layout_height="2dp"
 					android:background="@color/title_background" android:layout_below="@+id/label_listeners" />
 
-				<view class="org.mconf.bbb.android.CustomListview" android:id="@+id/listeners_list"
+				<view class="org.mconf.android.core.CustomListview" android:id="@+id/listeners_list"
 					android:layout_width="fill_parent" android:layout_height="fill_parent"
 					android:divider="@color/title_background_onfocus"
 					android:dividerHeight="2dp" android:layout_below="@+id/separator2" />

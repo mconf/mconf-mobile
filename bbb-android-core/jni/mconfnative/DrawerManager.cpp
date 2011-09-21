@@ -7,7 +7,7 @@ VideoDrawer* videoDrawer = NULL;
 extern "C"{
 #endif
 
-jint Java_org_mconf_bbb_android_video_VideoSurface_initDrawer(JNIEnv *env, jobject obj, jint screenW, jint screenH, jint displayAreaW, jint displayAreaH, jint displayPositionX, jint displayPositionY) {
+jint Java_org_mconf_android_core_video_VideoSurface_initDrawer(JNIEnv *env, jobject obj, jint screenW, jint screenH, jint displayAreaW, jint displayAreaH, jint displayPositionX, jint displayPositionY) {
 	if (!videoDrawer) {
 		videoDrawer = new VideoDrawer(screenW, screenH);
 		videoDrawer->setDisplayAreaW(displayAreaW);
@@ -18,7 +18,7 @@ jint Java_org_mconf_bbb_android_video_VideoSurface_initDrawer(JNIEnv *env, jobje
 	return 0;
 }
 
-jint Java_org_mconf_bbb_android_video_VideoSurface_enqueueFrame(JNIEnv *env, jobject obj, jbyteArray data, jint length) {
+jint Java_org_mconf_android_core_video_VideoSurface_enqueueFrame(JNIEnv *env, jobject obj, jbyteArray data, jint length) {
 	if (videoDrawer) {
 		jbyte *javaData = env->GetByteArrayElements(data, 0);
 		videoDrawer->enqueueFrame((uint8_t*) javaData, length);
@@ -27,7 +27,7 @@ jint Java_org_mconf_bbb_android_video_VideoSurface_enqueueFrame(JNIEnv *env, job
 	return 0;
 }
 
-jint Java_org_mconf_bbb_android_video_VideoRenderer_nativeRender(JNIEnv *env, jobject obj) {
+jint Java_org_mconf_android_core_video_VideoRenderer_nativeRender(JNIEnv *env, jobject obj) {
 	int ret = 0;
 	if (videoDrawer){
 		ret = videoDrawer->renderFrame();
@@ -35,7 +35,7 @@ jint Java_org_mconf_bbb_android_video_VideoRenderer_nativeRender(JNIEnv *env, jo
 	return ret;
 }
 
-jint Java_org_mconf_bbb_android_video_VideoSurface_nativeResize(JNIEnv *env, jobject obj, jint screenW, jint screenH, jint displayAreaW, jint displayAreaH, jint displayPositionX, jint displayPositionY){
+jint Java_org_mconf_android_core_video_VideoSurface_nativeResize(JNIEnv *env, jobject obj, jint screenW, jint screenH, jint displayAreaW, jint displayAreaH, jint displayPositionX, jint displayPositionY){
 	if (videoDrawer) {
 		videoDrawer->setDisplayAreaW(displayAreaW);
 		videoDrawer->setDisplayAreaH(displayAreaH);
@@ -48,21 +48,21 @@ jint Java_org_mconf_bbb_android_video_VideoSurface_nativeResize(JNIEnv *env, job
 	return 0;
 }
 
-jint Java_org_mconf_bbb_android_video_VideoRenderer_getVideoWidth(JNIEnv *env, jobject obj) {
+jint Java_org_mconf_android_core_video_VideoRenderer_getVideoWidth(JNIEnv *env, jobject obj) {
 	if (videoDrawer)
 		return videoDrawer->getVideoW();
 	else
 		return 1;
 }
 
-jint Java_org_mconf_bbb_android_video_VideoRenderer_getVideoHeight(JNIEnv *env, jobject obj) {
+jint Java_org_mconf_android_core_video_VideoRenderer_getVideoHeight(JNIEnv *env, jobject obj) {
 	if (videoDrawer)
 		return videoDrawer->getVideoH();
 	else
 		return 1;
 }
 
-jint Java_org_mconf_bbb_android_video_VideoSurface_endDrawer(JNIEnv *env, jobject obj) {
+jint Java_org_mconf_android_core_video_VideoSurface_endDrawer(JNIEnv *env, jobject obj) {
 	if (videoDrawer) {
 		delete videoDrawer;
 		videoDrawer = NULL;

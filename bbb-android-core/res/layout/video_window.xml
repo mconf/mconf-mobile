@@ -5,7 +5,7 @@
 	android:layout_height="wrap_content"
 	android:background="@color/video_background"
 	android:layout_gravity="center">	
-	<view class="org.mconf.bbb.android.video.VideoSurface" android:id="@+id/video_window"
+	<view class="org.mconf.android.core.video.VideoSurface" android:id="@+id/video_window"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"/>
  	
 </LinearLayout>

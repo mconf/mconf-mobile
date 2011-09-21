@@ -27,7 +27,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.jboss.netty.channel.Channel;
-import org.mconf.bbb.api.JoinService;
+import org.mconf.bbb.api.JoinServiceBase;
+import org.mconf.bbb.api.JoinServiceProxy;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.chat.ChatModule;
 import org.mconf.bbb.listeners.ListenersModule;
@@ -42,13 +43,13 @@ import com.flazr.rtmp.message.Command;
 import com.flazr.util.Utils;
 
 public class BigBlueButtonClient {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(BigBlueButtonClient.class);
-	
+
 	private MainRtmpConnection mainConnection = null;
 
-	private JoinService joinService = new JoinService();
-	
+	private JoinServiceProxy joinServiceProxy = new JoinServiceProxy();
+
 	private int myUserId = -1;
 	private ChatModule chatModule = null;
 	private UsersModule usersModule = null;
@@ -59,14 +60,14 @@ public class BigBlueButtonClient {
 
 	public void setMyUserId(int myUserId) {
 		this.myUserId = myUserId;
-    	log.info("My userID is {}", myUserId);
+		log.info("My userID is {}", myUserId);
 	}
 
 	public MainRtmpConnection getConnection()
 	{
 		return mainConnection;
 	}
-	
+
 	public int getMyUserId() {
 		return myUserId;
 	}
@@ -78,7 +79,7 @@ public class BigBlueButtonClient {
 	public ChatModule getChatModule() {
 		return chatModule;
 	}
-	
+
 	public void createUsersModule(MainRtmpConnection handler,
 			Channel channel) {
 		usersModule = new UsersModule(handler, channel);
@@ -87,7 +88,7 @@ public class BigBlueButtonClient {
 	public UsersModule getUsersModule() {
 		return usersModule;
 	}
-	
+
 	public void createListenersModule(MainRtmpConnection handler,
 			Channel channel) {
 		listenersModule = new ListenersModule(handler, channel);
@@ -96,7 +97,7 @@ public class BigBlueButtonClient {
 	public ListenersModule getListenersModule() {
 		return listenersModule;
 	}
-	
+
 	public void addListener(IBigBlueButtonClientListener listener) {
 		eventListeners.add(listener);
 	}
@@ -104,11 +105,11 @@ public class BigBlueButtonClient {
 	public void removeListener(IBigBlueButtonClientListener listener) {
 		eventListeners.remove(listener);
 	}
-	
+
 	public Set<IBigBlueButtonClientListener> getListeners() {
 		return eventListeners;
 	}
-	
+
 	public void addVideoListener(IVideoListener listener) {
 		videoListeners.add(listener);
 	}
@@ -117,43 +118,54 @@ public class BigBlueButtonClient {
 		listener.stop();
 		videoListeners.remove(listener);
 	}
-	
+
 	public void removeAllVideoListeners() {
 		for (IVideoListener v : videoListeners) {
 			v.stop();
 		}
 		videoListeners.clear();
 	}
-	
+
 	public Set<IVideoListener> getVideoListeners() {
 		return videoListeners;
 	}	
 
-	public JoinService getJoinService() {
-		return joinService;
+	public void createJoinService(String serverUrl) {
+		if (serverUrl.contains("/bigbluebutton/api/"))
+			serverUrl = serverUrl.substring(0, serverUrl.indexOf("/bigbluebutton/api/"));
+		
+		joinServiceProxy.setServer(serverUrl);
+	}
+	
+	public void createJoinService(String serverUrl, String salt) {
+		joinServiceProxy.setServer(serverUrl, salt);
+	}
+	
+	public JoinServiceBase getJoinService() {
+		return joinServiceProxy.getJoinService();
 	}
 
 	public boolean connectBigBlueButton() {
-		
+
 		ClientOptions opt = new ClientOptions();
 		opt.setClientVersionToUse(Utils.fromHex("00000000"));
-		opt.setHost(joinService.getServerUrl().toLowerCase().replace("http://", ""));
-		opt.setAppName("bigbluebutton/" + joinService.getJoinedMeeting().getConference());
+		opt.setHost(getJoinService().getServerUrl().toLowerCase().replace("http://", ""));
+		opt.setAppName("bigbluebutton/" + getJoinService().getJoinedMeeting().getConference());
 		log.debug(opt.toString());
-		
+
 		mainConnection = new MainRtmpConnection(opt, this);
 		return mainConnection.connect();
 	}
-	
+
 	@SuppressWarnings("unused")
 	private void connectSip() {
-		
+
 	}
-	
+
 	public void disconnect() {
 		if (mainConnection != null)
 			mainConnection.disconnect();
-		joinService.resetJoinedMeeting();
+		joinServiceProxy.resetJoinedMeeting();
 	}
 
 	public Collection<Participant> getParticipants() {
@@ -171,7 +183,7 @@ public class BigBlueButtonClient {
 	public void sendPublicChatMessage(String message) {
 		getChatModule().sendPublicChatMessage(message);		
 	}
-	
+
 	public void raiseHand(boolean value) {
 		raiseHand(myUserId, value);
 	}
@@ -183,19 +195,19 @@ public class BigBlueButtonClient {
 	public void assignPresenter(int userId) {
 		getUsersModule().assignPresenter(userId);
 	}
-	
+
 	public void kickUser(int userId) {
 		getUsersModule().kickUser(userId);
 	}
-	
+
 	public void kickListener(int listenerId) {
 		getListenersModule().doEjectUser(listenerId);
 	}
-	
+
 	public void muteUnmuteListener(int listenerId, boolean value){
 		getListenersModule().doMuteUnmuteUser(listenerId,value);
 	}
-	
+
 	public void muteUnmuteRoom(boolean value)
 	{
 		getListenersModule().doMuteAllUsers(value);
@@ -203,10 +215,10 @@ public class BigBlueButtonClient {
 
 	public static void main(String[] args) {
 		BigBlueButtonClient client = new BigBlueButtonClient();
-		client.getJoinService().load("http://mconfdev.inf.ufrgs.br");
-		
-		client.getJoinService().join("Demo Meeting", "Eclipse", false);
-		if (client.getJoinService().getJoinedMeeting() != null) {
+		client.createJoinService("http://test.bigbluebutton.org/", "03b07");
+		client.getJoinService().load();
+		if (client.getJoinService().join("English 110", "Eclipse", false)
+				&& (client.getJoinService().getJoinedMeeting() != null)) {
 			client.connectBigBlueButton();
 		}
 	}
@@ -219,7 +231,7 @@ public class BigBlueButtonClient {
 		else
 			return false;
 	}
-	
+
 	public boolean onVideo(byte[] aux) {
 		for (IVideoListener l : videoListeners) {
 			l.onVideo(aux);

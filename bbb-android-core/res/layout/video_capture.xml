@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<org.mconf.bbb.android.video.VideoCaptureLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<view class="org.mconf.android.core.video.VideoCaptureLayout" xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/video_capture_layout"
 	android:layout_width="1px"
 	android:layout_height="1px"
@@ -8,8 +8,8 @@
 	android:layout_above="@id/audio_bar"
 	android:background="@color/video_background"
 	android:layout_gravity="center">
-	<view class="org.mconf.bbb.android.video.VideoCapture" android:id="@+id/video_capture"
+	<view class="org.mconf.android.core.video.VideoCapture" android:id="@+id/video_capture"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 
-</org.mconf.bbb.android.video.VideoCaptureLayout>
+</view>
 

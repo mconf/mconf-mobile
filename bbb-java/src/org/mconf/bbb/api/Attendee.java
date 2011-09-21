@@ -21,11 +21,20 @@
 
 package org.mconf.bbb.api;
 
+import org.w3c.dom.Element;
+
 public class Attendee {
-	private String userID,
+	protected String userID,
 		fullName,
 		role;
 
+	public boolean parse(Element elementAttendee) {
+		userID = ParserUtils.getNodeValue(elementAttendee, "userID");
+		fullName = ParserUtils.getNodeValue(elementAttendee, "fullName");
+		role = ParserUtils.getNodeValue(elementAttendee, "role");
+		return true;
+	}
+	
 	public String getUserID() {
 		return userID;
 	}
@@ -52,7 +61,7 @@ public class Attendee {
 
 	@Override
 	public String toString() {
-		return "Attendee [fullName=" + fullName + ", role=" + role
+		return "[fullName=" + fullName + ", role=" + role
 				+ ", userID=" + userID + "]";
 	}
 }

@@ -4,7 +4,7 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:background="@color/background" android:layout_gravity="center">
 
-	<view class="org.mconf.bbb.android.CustomListview" android:id="@+id/meeting_infs_list"
+	<view class="org.mconf.android.core.CustomListview" android:id="@+id/meeting_infs_list"
 		android:layout_above="@+id/ok" android:listSelector="@android:color/transparent"
 		android:layout_alignParentTop="true" android:dividerHeight="2dp"
 		android:divider="@color/title_background_onfocus"  

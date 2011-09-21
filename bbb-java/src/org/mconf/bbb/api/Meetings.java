@@ -24,14 +24,9 @@ package org.mconf.bbb.api;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.text.DateFormat;
-import java.text.DateFormatSymbols;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -63,54 +58,6 @@ public class Meetings {
 
 	}
 
-	/*
-	 * bbb.getMeetings()
-	 * 
-	 * <meetings>
-	 * 	<meeting>
-	 * 		<returncode>SUCCESS</returncode>
-	 * 		<meetingID>Minha sala's meeting</meetingID>
-	 * 		<attendeePW>ap</attendeePW>
-	 * 		<moderatorPW>mp</moderatorPW>
-	 * 		<running>true</running>
-	 * 		<hasBeenForciblyEnded>false</hasBeenForciblyEnded>
-	 * 		<startTime>Wed Jan 26 14:57:24 UTC 2011</startTime>
-	 * 		<endTime>null</endTime>
-	 * 		<participantCount>1</participantCount>
-	 * 		<moderatorCount>1</moderatorCount>
-	 * 		<attendees>
-	 * 			<attendee>
-	 * 				<userID>ilf7tbt6b6lm</userID>
-	 * 				<fullName>Minha sala</fullName>
-	 * 				<role>MODERATOR</role>
-	 * 			</attendee>
-	 * 		</attendees>
-	 * 		<messageKey></messageKey>
-	 * 		<message></message>
-	 * 	</meeting>
-	 * 	<meeting>
-	 * 		<returncode>SUCCESS</returncode>
-	 * 		<meetingID>Demo Meeting</meetingID>
-	 * 		<attendeePW>ap</attendeePW>
-	 * 		<moderatorPW>mp</moderatorPW>
-	 * 		<running>true</running>
-	 * 		<hasBeenForciblyEnded>false</hasBeenForciblyEnded>
-	 * 		<startTime>Wed Jan 26 14:54:01 UTC 2011</startTime>
-	 * 		<endTime>null</endTime>
-	 * 		<participantCount>1</participantCount>
-	 * 		<moderatorCount>1</moderatorCount>
-	 * 		<attendees>
-	 * 			<attendee>
-	 * 				<userID>jgrnbt7di7aj</userID>
-	 * 				<fullName>Felipe</fullName>
-	 * 				<role>MODERATOR</role>
-	 * 			</attendee>
-	 * 		</attendees>
-	 * 		<messageKey></messageKey>
-	 * 		<message></message>
-	 * 	</meeting>
-	 * </meetings>
-	 */
 	public boolean parse(String str) throws ParserConfigurationException, UnsupportedEncodingException, SAXException, IOException, DOMException, ParseException {
 		meetings.clear();
 
@@ -124,66 +71,10 @@ public class Meetings {
 		log.debug("parsing: {}", str);
 		log.debug("nodeMeetings.getLength() = {}", nodeMeetings.getLength());
 		for (int i = 0; i < nodeMeetings.getLength(); ++i) {
-			Element elementMeeting = (Element) nodeMeetings.item(i);
-
-			DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy", Locale.CANADA);
-			//dateFormat.setTimeZone(TimeZone.getDefault());
-			//used Locale to avoid unparseable date exception. apparently the locale doesn't affect the time
-			Meeting meeting = new Meeting(); 
- 
-			meeting.setReturncode(elementMeeting.getElementsByTagName("returncode").item(0).getFirstChild().getNodeValue());
-
-			if (!meeting.getReturncode().equals("SUCCESS"))
-				continue;
-
-			meeting.setMeetingID(elementMeeting.getElementsByTagName("meetingID").item(0).getFirstChild().getNodeValue());
-			meeting.setAttendeePW(elementMeeting.getElementsByTagName("attendeePW").item(0).getFirstChild().getNodeValue());
-			meeting.setModeratorPW(elementMeeting.getElementsByTagName("moderatorPW").item(0).getFirstChild().getNodeValue());
-			meeting.setRunning(Boolean.parseBoolean(elementMeeting.getElementsByTagName("running").item(0).getFirstChild().getNodeValue()));
-			meeting.setHasBeenForciblyEnded(Boolean.parseBoolean(elementMeeting.getElementsByTagName("hasBeenForciblyEnded").item(0).getFirstChild().getNodeValue()));
-			// TODO dates parsing
-
-			//removed "UTC" due to android bug http://code.google.com/p/android/issues/detail?id=14963
-			String startTime = elementMeeting.getElementsByTagName("startTime").item(0).getFirstChild().getNodeValue();
-			if (!startTime.equals("null"))
-			{
-				String timezone = startTime.substring(20, 24);
-				log.debug("timezone{}", timezone);
-				//startTime = startTime.replace(timezone, TimeZone.getTimeZone(timezone).getDisplayName());
-				startTime=startTime.replace(timezone, "");
-				meeting.setStartTime(dateFormat.parse(startTime));
-				log.debug("StartTimeOK");
+			Meeting meeting = new Meeting();
+			if (meeting.parse((Element) nodeMeetings.item(i))) {
+				meetings.add(meeting);				
 			}
-
-			String endTime = elementMeeting.getElementsByTagName("endTime").item(0).getFirstChild().getNodeValue();
-			if (!endTime.equals("null"))
-			{	
-				String timezone = endTime.substring(20, 24);
-				//endTime = endTime.replace(timezone, TimeZone.getTimeZone(timezone).getDisplayName(Locale.getDefault()));
-				endTime=endTime.replace(timezone, "");
-				meeting.setEndTime(dateFormat.parse(endTime));
-				log.debug("EndTimeOK");
-			}
-
-			meeting.setParticipantCount(Integer.parseInt(elementMeeting.getElementsByTagName("participantCount").item(0).getFirstChild().getNodeValue()));
-			meeting.setModeratorCount(Integer.parseInt(elementMeeting.getElementsByTagName("moderatorCount").item(0).getFirstChild().getNodeValue()));
-
-			NodeList nodeAttendees = elementMeeting.getElementsByTagName("attendees");
-
-			if (meeting.getParticipantCount() + meeting.getModeratorCount() > 0)
-				for (int j = 0; j < nodeAttendees.getLength(); ++j) {
-					Element elementAttendee = (Element) nodeAttendees.item(j);
-
-					Attendee attendee = new Attendee();
-
-					attendee.setUserID(elementAttendee.getElementsByTagName("userID").item(0).getFirstChild().getNodeValue());
-					attendee.setFullName(elementAttendee.getElementsByTagName("fullName").item(0).getFirstChild().getNodeValue());
-					attendee.setRole(elementAttendee.getElementsByTagName("role").item(0).getFirstChild().getNodeValue());
-
-					meeting.getAttendees().add(attendee);
-				}
-
-			meetings.add(meeting);				
 		}
 
 		return true;
@@ -191,7 +82,14 @@ public class Meetings {
 
 	@Override
 	public String toString() {
-		return "meetings=" + meetings;
+		if (meetings.isEmpty())
+			return "No meetings currently running";
+		
+		String str = "";
+		for (Meeting meeting : meetings) {
+			str += meeting.toString() + "\n"; 
+		}
+		return str.substring(0, str.length() - 1);
 	}
 
 }

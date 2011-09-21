@@ -67,7 +67,7 @@ public:
 
         for (int i = 0; i != formatCtx->nb_streams; ++i) {
             AVStream* stream = formatCtx->streams[i];
-            if (stream->codec->codec_type == CODEC_TYPE_VIDEO) {
+            if (stream->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
                 if (idVideo == -1) {
 			        idVideo = i;
                     extraVideo.setBitrate(stream->codec->bit_rate);
@@ -79,7 +79,7 @@ public:
                     extraVideo.setPixelFmt(IvaPixFmt().fromFfmpeg(stream->codec->pix_fmt));
                 } else
                     Log("Mais de uma stream de vídeo encontrada - descartada");
-            } else if (stream->codec->codec_type == CODEC_TYPE_AUDIO) {
+            } else if (stream->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
                 if (idAudio == -1) {
 			        idAudio = i;
                     extraAudio.setBitrate(stream->codec->bit_rate);

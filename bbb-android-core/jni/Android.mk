@@ -10,10 +10,13 @@ LOCAL_SRC_FILES := \
 				   mconfnative/DrawerManager.cpp \
 				   mconfnative/VideoDrawer.cpp
 				  
+LOCAL_CXXFLAGS := -D__STDC_CONSTANT_MACROS
+
 LOCAL_C_INCLUDES := \
 					$(LOCAL_PATH)/iva/common \
 					$(LOCAL_PATH)/iva/queue \
-					$(LOCAL_PATH)/iva/thread
+					$(LOCAL_PATH)/iva/thread \
+                    $(LOCAL_PATH)/ffmpeg
 					
 LOCAL_SHARED_LIBRARIES := queue thread common decode avcodec
 LOCAL_LDLIBS := -lGLESv1_CM
@@ -30,10 +33,13 @@ LOCAL_SRC_FILES := \
 				   mconfnative/EncoderManager.cpp \
 				   mconfnative/VideoEncoder.cpp
 				  
+LOCAL_CXXFLAGS := -D__STDC_CONSTANT_MACROS
+
 LOCAL_C_INCLUDES := \
 					$(LOCAL_PATH)/iva/common \
 					$(LOCAL_PATH)/iva/queue \
-					$(LOCAL_PATH)/iva/thread
+					$(LOCAL_PATH)/iva/thread \
+                    $(LOCAL_PATH)/ffmpeg
 									   
 LOCAL_SHARED_LIBRARIES := queue thread common encode
 							   
@@ -48,7 +54,8 @@ LOCAL_MODULE    := thread
 
 LOCAL_CPPFLAGS	:= -std=gnu++0x
 
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/iva/thread \
+LOCAL_C_INCLUDES := \
+					$(LOCAL_PATH)/iva/thread \
 					$(LOCAL_PATH)/iva/common
 
 LOCAL_SRC_FILES :=  \
@@ -72,10 +79,14 @@ LOCAL_MODULE    := common
 
 LOCAL_SHARED_LIBRARIES := thread avcodec avutil
  
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/iva/thread \
-					$(LOCAL_PATH)/iva/common
+LOCAL_C_INCLUDES := \
+					$(LOCAL_PATH)/iva/thread \
+                    $(LOCAL_PATH)/iva/common \
+                    $(LOCAL_PATH)/ffmpeg
 
 LOCAL_LDLIBS := -llog
+
+LOCAL_CXXFLAGS := -D__STDC_CONSTANT_MACROS
 
 LOCAL_SRC_FILES :=  \
                     iva/common/AVConfigs.cpp \
@@ -114,8 +125,11 @@ LOCAL_SHARED_LIBRARIES := thread common
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/iva/thread \
 					$(LOCAL_PATH)/iva/common \
-					$(LOCAL_PATH)/iva/queue
+					$(LOCAL_PATH)/iva/queue \
+                    $(LOCAL_PATH)/ffmpeg
 					
+LOCAL_CXXFLAGS := -D__STDC_CONSTANT_MACROS
+
 LOCAL_SRC_FILES :=	iva/queue/queue.cpp \
 					iva/queue/QueueBuffer.cpp \
 					iva/queue/QueueDiscard.cpp \
@@ -134,10 +148,14 @@ LOCAL_MODULE    := decode
 
 LOCAL_SHARED_LIBRARIES := thread common queue avcodec avutil swscale
 
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/iva/thread \
+LOCAL_C_INCLUDES := \
+					$(LOCAL_PATH)/iva/thread \
 					$(LOCAL_PATH)/iva/common \
 					$(LOCAL_PATH)/iva/queue \
-					$(LOCAL_PATH)/iva/decode
+					$(LOCAL_PATH)/iva/decode \
+                    $(LOCAL_PATH)/ffmpeg
+
+LOCAL_CXXFLAGS := -D__STDC_CONSTANT_MACROS
 
 LOCAL_SRC_FILES :=	iva/decode/Decode.cpp \
 					iva/decode/DecodeAudio.cpp \
@@ -153,17 +171,19 @@ LOCAL_MODULE    := encode
 
 LOCAL_SHARED_LIBRARIES := thread common queue avcodec avformat avutil swscale
 
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/iva/thread \
+LOCAL_C_INCLUDES := \
+					$(LOCAL_PATH)/iva/thread \
 					$(LOCAL_PATH)/iva/common \
 					$(LOCAL_PATH)/iva/queue \
-					$(LOCAL_PATH)/iva/encode
+					$(LOCAL_PATH)/iva/encode \
+                    $(LOCAL_PATH)/ffmpeg
+
+LOCAL_CXXFLAGS := -D__STDC_CONSTANT_MACROS
 
 LOCAL_SRC_FILES :=	iva/encode/Encode.cpp \
 					iva/encode/EncodeAudio.cpp \
 					iva/encode/EncodeAudioParams.cpp \
 					iva/encode/EncodeVideo.cpp \
-					iva/encode/EncodeVideoH264Opt.cpp \
-					iva/encode/EncodeVideoH264Presets.cpp \
 					iva/encode/EncodeVideoParams.cpp \
 					iva/encode/VideoLoader.cpp	
 												   

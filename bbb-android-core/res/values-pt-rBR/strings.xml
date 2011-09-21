@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
+	<string name="protocol">bigbluebutton</string>
+
 	<string name="login_cant_join">Não foi possível entrar na sala</string>
 	<string name="login_button_join">Entrar</string>
 	<string name="login_cant_contact_server">Não foi possível conectar ao servidor. Tente novamente mais tarde</string>

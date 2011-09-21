@@ -7,14 +7,14 @@ VideoEncoder* videoEncoder = NULL;
 extern "C"{
 #endif
 
-jint Java_org_mconf_bbb_android_video_VideoPublish_initEncoder(JNIEnv *env, jobject obj, jint width, jint height, jint frameRate, jint bitRate, jint GOP) {
+jint Java_org_mconf_android_core_video_VideoPublish_initEncoder(JNIEnv *env, jobject obj, jint width, jint height, jint frameRate, jint bitRate, jint GOP) {
 	if (!videoEncoder) {
 		videoEncoder = new VideoEncoder(env, obj, width, height, frameRate, bitRate, GOP);
 	}
 	return 0;
 }
 
-jint Java_org_mconf_bbb_android_video_VideoCapture_enqueueFrame(JNIEnv *env, jobject obj, jbyteArray data, jint length) {
+jint Java_org_mconf_android_core_video_VideoCapture_enqueueFrame(JNIEnv *env, jobject obj, jbyteArray data, jint length) {
 	if (videoEncoder) {
 		jbyte *javaData = env->GetByteArrayElements(data, 0);
 		videoEncoder->enqueueFrame((uint8_t*) javaData, length);
@@ -23,7 +23,7 @@ jint Java_org_mconf_bbb_android_video_VideoCapture_enqueueFrame(JNIEnv *env, job
 	return 0;
 }
 
-jint Java_org_mconf_bbb_android_video_VideoPublish_endEncoder(JNIEnv *env, jobject obj) {
+jint Java_org_mconf_android_core_video_VideoPublish_endEncoder(JNIEnv *env, jobject obj) {
 	if (videoEncoder) {
 		delete videoEncoder;
 		videoEncoder = NULL;
@@ -31,7 +31,7 @@ jint Java_org_mconf_bbb_android_video_VideoPublish_endEncoder(JNIEnv *env, jobje
 	return 0;
 }
 
-jint Java_org_mconf_bbb_android_video_VideoPublish_initSenderLoop(JNIEnv *env, jobject obj){
+jint Java_org_mconf_android_core_video_VideoPublish_initSenderLoop(JNIEnv *env, jobject obj){
 	if (videoEncoder) {
 		videoEncoder->senderLoop(env, obj);
 	}

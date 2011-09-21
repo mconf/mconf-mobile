@@ -1,13 +1,13 @@
 package org.mconf.bbb.android.test;
 
-import org.mconf.android.bbb.LoginPage;
-import org.mconf.bbb.android.BigBlueButton;
-import org.mconf.bbb.android.Client;
-import org.mconf.bbb.android.Contact;
-import org.mconf.bbb.android.ContactAdapter;
-import org.mconf.bbb.android.CustomListview;
-import org.mconf.bbb.android.PrivateChat;
-import org.mconf.bbb.android.R;
+import org.mconf.android.bbbandroid.R;
+import org.mconf.android.bbbandroid.LoginPage;
+import org.mconf.android.core.BigBlueButton;
+import org.mconf.android.core.Client;
+import org.mconf.android.core.Contact;
+import org.mconf.android.core.ContactAdapter;
+import org.mconf.android.core.CustomListview;
+import org.mconf.android.core.PrivateChat;
 import org.mconf.bbb.users.IParticipant;
 
 import android.test.ActivityInstrumentationTestCase2;
@@ -30,7 +30,7 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 	private int myUserId;
 	
 	public TestClientContacts() {
-		super("org.mconf.android.bbb", LoginPage.class);
+		super("org.mconf.android.bbbandroid", LoginPage.class);
 	}
 	
 	@Override
