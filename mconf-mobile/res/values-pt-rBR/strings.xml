@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<string name="app_name">Mconf</string>
+	<string name="app_name">Mconf-Mobile</string>
 
 	<string name="username">Usuário</string>
 	<string name="password">Senha</string>
