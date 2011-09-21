@@ -30,6 +30,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -50,7 +51,7 @@ public class LoginPage extends BigBlueButtonActivity {
 	private static final int E_NOT_AUTHENTICATED = 1;
 	private static final int E_CANNOT_CONTACT_SERVER = 2;
 	
-	private final String DEFAULT_SERVER = "http://mconf.inf.ufrgs.br";
+	private final String DEFAULT_SERVER = "http://mconf.org";
 	private Authentication auth = null;
 	private String authUsername, authPassword;
 	private ArrayAdapter<String> spinnerAdapter;
@@ -173,58 +174,79 @@ public class LoginPage extends BigBlueButtonActivity {
 		});
 		
 		final Button buttonJoin = (Button) findViewById(R.id.buttonJoin);
-		buttonJoin.setOnTouchListener(new OnTouchListener() {
+		buttonJoin.setOnClickListener(new OnClickListener() {
 			
 			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			public void onClick(View v) {
+				final ProgressDialog progressDialog = new ProgressDialog(LoginPage.this);
+				progressDialog.setCancelable(false);
+				progressDialog.setMessage(getResources().getString(R.string.wait));
+				progressDialog.show();
+				
+				new Thread(new Runnable() {
 					
-					int r = checkAuthentication();
-					switch (r) {
-						case E_NOT_AUTHENTICATED:
-							Toast.makeText(LoginPage.this, R.string.invalid_password, Toast.LENGTH_SHORT).show();
-							return true;
-						case E_CANNOT_CONTACT_SERVER:
-							Toast.makeText(LoginPage.this, R.string.login_cant_contact_server, Toast.LENGTH_SHORT).show();
-							return true;
+					private void showToast(final int id) {
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								Toast.makeText(LoginPage.this, id, Toast.LENGTH_SHORT).show();
+							}
+						});
 					}
 					
-					if (selectedRoom == null) {
-						Toast.makeText(LoginPage.this, R.string.select_room, Toast.LENGTH_SHORT).show();
-						return true;
-					}
-					
-					String path = null;
-					try {
-						path = mconf.getJoinUrl(auth, selectedRoom.getPath());
-					} catch (Exception e) {
-						if (selectedRoom.getOwner().getClass() == Space.class
-								&& ((Space) selectedRoom.getOwner()).isPublic()
-								&& !((Space) selectedRoom.getOwner()).isMember())
-							Toast.makeText(LoginPage.this, R.string.no_running_meeting, Toast.LENGTH_SHORT).show();
-						else
-							Toast.makeText(LoginPage.this, R.string.login_cant_contact_server, Toast.LENGTH_SHORT).show();
-						return true;
-					}
-					if (path == null
-							|| path.length() == 0) {
-						Toast.makeText(LoginPage.this, R.string.cant_join, Toast.LENGTH_SHORT).show();
-						return true;
-					}
-	                Intent intent = new Intent(getApplicationContext(), Client.class);
-	                intent.setAction(Intent.ACTION_VIEW);
-	                intent.setData(new Uri.Builder()
-	                		.scheme(getResources().getString(R.string.protocol))
-	                		.appendEncodedPath(path.replace(getResources().getString(R.string.protocol) + ":/", ""))
-	                		.build());
-	                startActivity(intent);
-	     
-	                return true;
-				}
-				return false;
-			}
+					@Override
+					public void run() {
+						int r = checkAuthentication();
+						switch (r) {
+							case E_NOT_AUTHENTICATED:
+								progressDialog.dismiss();
+								showToast(R.string.invalid_password);
+								return;
+							case E_CANNOT_CONTACT_SERVER:
+								progressDialog.dismiss();
+								showToast(R.string.login_cant_contact_server);
+								return;
+						}
+						
+						if (selectedRoom == null) {
+							progressDialog.dismiss();
+							showToast(R.string.select_room);
+							return;
+						}
+						
+						String path = null;
+						try {
+							path = mconf.getJoinUrl(auth, selectedRoom.getPath());
+						} catch (Exception e) {
+							progressDialog.dismiss();
+							if (selectedRoom.getOwner().getClass() == Space.class
+									&& ((Space) selectedRoom.getOwner()).isPublic()
+									&& !((Space) selectedRoom.getOwner()).isMember())
+								showToast(R.string.no_running_meeting);
+							else
+								showToast(R.string.login_cant_contact_server);
+							return;
+						}
+						if (path == null
+								|| path.length() == 0) {
+							progressDialog.dismiss();
+							showToast(R.string.cant_join);
+							return;
+						}
+						
+		                Intent intent = new Intent(getApplicationContext(), Client.class);
+		                intent.setAction(Intent.ACTION_VIEW);
+		                intent.setData(new Uri.Builder()
+		                		.scheme(getResources().getString(R.string.protocol))
+		                		.appendEncodedPath(path.replace(getResources().getString(R.string.protocol) + ":/", ""))
+		                		.build());
+		                startActivity(intent);
+						progressDialog.dismiss();
+	                }
+				}).start();
+            }
 		});
-		
+
 		final TextView account = (TextView) findViewById(R.id.textViewDontHaveAccount);
 		account.setText(Html.fromHtml("<a href=\"" + DEFAULT_SERVER + "\">" + getResources().getString(R.string.dont_have_account) + "</a>"));
 		account.setMovementMethod(LinkMovementMethod.getInstance());
