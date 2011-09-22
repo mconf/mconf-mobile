@@ -1,4 +1,7 @@
 bin/
 gen/
 obj/
-jni/Application.mk
+local.properties
+proguard.cfg
+build.xml
+*~

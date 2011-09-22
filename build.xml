@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+
+<project name="Mconf-Mobile Automation Build" default="init" basedir=".">
+	<target name="init">
+		<exec executable="git">
+			<arg value="submodule" />
+			<arg value="init" />
+		</exec>
+		<exec executable="git">
+			<arg value="submodule" />
+			<arg value="update" />
+		</exec>
+	</target>
+	
+    <macrodef name="build-android-lib-project">
+        <attribute name="dir"/>
+    	<attribute name="params" default="" />
+        <sequential>
+			<exec executable="bash" dir="@{dir}">
+				<arg value="-c" />
+				<arg value="android update lib-project --path . --target android-8 @{params}" />
+			</exec>
+			<build-android dir="@{dir}" />
+        </sequential>
+    </macrodef>
+	
+    <macrodef name="build-android-project">
+        <attribute name="dir"/>
+    	<attribute name="params" default="" />
+        <sequential>
+			<exec executable="bash" dir="@{dir}">
+				<arg value="-c" />
+				<arg value="android update project --name @{dir} --path . --target android-8 @{params}" />
+			</exec>
+			<build-android dir="@{dir}" />
+			<ant target="debug" dir="@{dir}" />
+			<ant target="release" dir="@{dir}" />
+        </sequential>
+    </macrodef>
+	
+	<macrodef name="build-android">
+	    <attribute name="dir"/>
+	    <sequential>
+		    <!--            
+			    character   reference
+			    <   		&lt;
+			    >   		&gt;
+			    "   		&quot;
+			    &   		&amp;
+			    '   		&apos;
+		    -->
+			
+			<!--
+				# http://code.google.com/p/android/issues/detail?id=13024#c21                                                                         
+				sed -i 's#<setup />#<setup />\n\t<path id="android.libraries.src"><path refid="project.libraries.src" /></path>\n\t<path id="android.libraries.jars"><path refid="project.libraries.jars" /></path>#g' build.xml			                                                            
+			-->
+			<exec executable="bash" dir="@{dir}">
+				<arg value="-c" />
+				<arg value="sed -i &apos;s#&lt;setup /&gt;#&lt;setup /&gt;\n\t&lt;path id=&quot;android.libraries.src&quot;&gt;&lt;path refid=&quot;project.libraries.src&quot; /&gt;&lt;/path&gt;\n\t&lt;path id=&quot;android.libraries.jars&quot;&gt;&lt;path refid=&quot;project.libraries.jars&quot; /&gt;&lt;/path&gt;#g&apos; build.xml" />
+			</exec>
+			<ant target="clean" dir="@{dir}" />
+			<ant target="compile" dir="@{dir}" />
+        </sequential>
+	</macrodef>
+	
+	<target name="sipdroid" depends="init">
+		<build-android-lib-project dir="sipdroid" />
+	</target>
+	
+	<target name="flazr">
+		<ant target="dist" dir="flazr" />
+	</target>
+	
+	<target name="bbb-java">
+		<ant target="jar" dir="bbb-java" />
+	</target>
+	
+	<target name="bbb-android-core" depends="sipdroid, bbb-java">
+		<copy todir="bbb-android-core/libs" file="bbb-java/target/bbb-java/lib/bbb-java.jar" />
+		<copy todir="bbb-android-core/libs" file="bbb-java/lib/JSON-java.jar" />
+		
+		<copy todir="bbb-android-core/libs" file="flazr/target/flazr/lib/flazr-0.7.jar" /> 
+		<copy todir="bbb-android-core/libs" file="flazr/target/flazr/lib/netty-3.2.4.Final.jar" /> 
+		<copy todir="bbb-android-core/libs" file="flazr/target/flazr/lib/commons-cli-1.2.jar" /> 
+		<copy todir="bbb-android-core/libs" file="flazr/target/flazr/lib/commons-codec-1.2.jar" /> 
+		<copy todir="bbb-android-core/libs" file="flazr/target/flazr/lib/commons-httpclient-3.1.jar" /> 
+		<copy todir="bbb-android-core/libs" file="flazr/target/flazr/lib/jcl104-over-slf4j-1.4.2.jar" /> 
+		
+		<build-android-lib-project dir="bbb-android-core" />
+	</target>
+	
+	<target name="bbb-android" depends="bbb-android-core">
+		<build-android-project dir="bbb-android" />
+	</target>
+	
+	<target name="mconf-mobile" depends="bbb-android-core">
+		<build-android-project dir="mconf-mobile" />
+	</target>
+</project>
