@@ -13,7 +13,7 @@ import org.junit.Test;
 
 public class FlvReaderTest {
 
-    private static final String FILE_PATH = "target/temp";
+    private static final String FILE_PATH = "../temp";
     private static final String FILE_NAME = FILE_PATH + "/test.flv";
 
     private void writeFile(final boolean withMetadata) {

@@ -37,7 +37,7 @@
     <target name="compile" depends="mvn-init">
         <mkdir dir="target/classes"/>        
         <javac srcdir="src/main/java" destdir="target/classes" debug="true" 
-            classpathref="compile.classpath" source="1.6" target="1.6"/>
+            classpathref="compile.classpath" source="1.6" target="1.6" includeantruntime="false"/>
         <copy todir="target/classes">
             <fileset dir="src/main/java" excludes="**/*.java"/>
         </copy>         
@@ -49,7 +49,7 @@
     <target name="compile-test" depends="compile">   
         <mkdir dir="target/test-classes"/>
         <javac srcdir="src/test/java" destdir="target/test-classes" debug="true" 
-            source="1.6" target="1.6">
+            source="1.6" target="1.6" includeantruntime="false">
             <classpath>
                 <path path="target/classes"/>
                 <path refid="test.classpath"/>
@@ -64,7 +64,7 @@
 
     <target name="dist-input-version">
         <!--input message="Release Version:" addproperty="flazr.version"/-->
-		<property name="flazr.version" value="0.7" />
+		<property name="flazr.version" value="git" />
     </target>
 
     <target name="dist" depends="dist-input-version, compile">

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="Mconf-Mobile Automation Build" default="all" basedir=".">
+<project name="Mconf-Mobile Automation Build" basedir=".">
 	<target name="init">
 		<exec executable="git">
 			<arg value="submodule" />
@@ -63,23 +63,48 @@
         </sequential>
 	</macrodef>
 	
-	<target name="sipdroid" depends="init">
+	<target name="build-sipdroid" depends="init">
 		<build-android-lib-project dir="sipdroid" />
 	</target>
 	
-	<target name="flazr">
+	<target name="build-flazr">
 		<ant target="dist" dir="flazr" />
 	</target>
 	
-	<target name="bbb-java">
+	<target name="test-flazr">
+        <ant target="compile-test" dir="flazr" />
+		
+	    <mkdir dir="flazr/target/temp" />
+	    <get dest="flazr/target/temp/test.flv" src="http://www.mediacollege.com/video-gallery/testclips/20051210-w50s_56K.flv"/>
+	
+		<junit printsummary="yes" haltonfailure="true" showoutput="yes"> 
+	        <classpath> 
+                <pathelement location="flazr/target/test-classes" /> 
+                <fileset dir="flazr/target/flazr/lib">
+                     <include name="**/*.jar"/>
+                </fileset>
+	        </classpath>                   
+		    <formatter type="brief" usefile="false" />
+	        <batchtest fork="yes"> 
+                <!--fileset dir="flazr/src/test/java"> 
+                    <include name="**/*Test*.java"/> 
+                </fileset-->
+        	    <fileset dir="flazr/target/test-classes">
+        	    	<include name="**/*Test*.class" />
+    	        </fileset>
+	        </batchtest> 
+		</junit> 		
+	</target>
+	
+	<target name="build-bbb-java">
 		<ant target="jar" dir="bbb-java" />
 	</target>
 	
-	<target name="bbb-android-core" depends="sipdroid, bbb-java">
-		<copy todir="bbb-android-core/libs" file="bbb-java/target/bbb-java/lib/bbb-java.jar" />
+	<target name="build-bbb-android-core" depends="build-sipdroid, build-bbb-java">
+		<copy todir="bbb-android-core/libs" file="bbb-java/target/bbb-java/lib/bbb-java-git.jar" />
 		<copy todir="bbb-android-core/libs" file="bbb-java/lib/JSON-java.jar" />
 		
-		<copy todir="bbb-android-core/libs" file="flazr/target/flazr/lib/flazr-0.7.jar" /> 
+		<copy todir="bbb-android-core/libs" file="flazr/target/flazr/lib/flazr-git.jar" /> 
 		<copy todir="bbb-android-core/libs" file="flazr/target/flazr/lib/netty-3.2.4.Final.jar" /> 
 		<copy todir="bbb-android-core/libs" file="flazr/target/flazr/lib/commons-cli-1.2.jar" /> 
 		<copy todir="bbb-android-core/libs" file="flazr/target/flazr/lib/commons-codec-1.2.jar" /> 
@@ -89,13 +114,13 @@
 		<build-android-lib-project dir="bbb-android-core" />
 	</target>
 	
-	<target name="bbb-android" depends="bbb-android-core">
+	<target name="build-bbb-android" depends="build-bbb-android-core">
 		<build-android-project dir="bbb-android" />
 	</target>
 	
-	<target name="mconf-mobile" depends="bbb-android-core">
+	<target name="build-mconf-mobile" depends="build-bbb-android-core">
 		<build-android-project dir="mconf-mobile" />
 	</target>
 	
-	<target name="all" depends="bbb-android, mconf-mobile" />
+	<target name="build-all" depends="build-bbb-android, build-mconf-mobile" />
 </project>
