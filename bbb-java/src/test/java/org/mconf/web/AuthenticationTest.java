@@ -6,8 +6,10 @@ import java.io.IOException;
 
 import org.apache.commons.httpclient.HttpException;
 import org.json.JSONException;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class AuthenticationTest {
 	private final String DEFAULT_USERNAME = "";
 	private final String DEFAULT_PASSWORD = "";
