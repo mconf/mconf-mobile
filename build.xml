@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="Mconf-Mobile Automation Build" default="init" basedir=".">
+<project name="Mconf-Mobile Automation Build" default="all" basedir=".">
 	<target name="init">
 		<exec executable="git">
 			<arg value="submodule" />
@@ -96,4 +96,6 @@
 	<target name="mconf-mobile" depends="bbb-android-core">
 		<build-android-project dir="mconf-mobile" />
 	</target>
+	
+	<target name="all" depends="bbb-android, mconf-mobile" />
 </project>
