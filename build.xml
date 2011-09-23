@@ -147,7 +147,7 @@
             <arg value="-c" />
             <arg value="if [ `cat build.xml | grep &#39;&lt;import file=&quot;compile.xml&quot; /&gt;&#39; | wc -l` -eq 0 ]; then sed -i &#39;s:&lt;/project&gt;:\t&lt;import file=&quot;compile.xml&quot; /&gt;\n\n&lt;/project&gt;:g&#39; build.xml; fi" />
         </exec>
-	    <ant target="compile" dir="bbb-androidTests" />
+	    <!--ant target="compile" dir="bbb-androidTests" /-->
 	</target>
 	
 	<target name="build-mconf-mobile" depends="build-bbb-android-core">
@@ -155,4 +155,5 @@
 	</target>
 	
 	<target name="build-all" depends="build-bbb-android, build-mconf-mobile" />
+	<target name="test-all" depends="test-flazr, test-bbb-java, test-bbb-android" /> 
 </project>
