@@ -21,6 +21,7 @@
 				<arg value="android update lib-project --path . --target android-8 @{params}" />
 			</exec>
 			<build-android dir="@{dir}" />
+            <ant target="compile" dir="@{dir}" />
         </sequential>
     </macrodef>
 	
@@ -34,7 +35,6 @@
 			</exec>
 			<build-android dir="@{dir}" />
 			<ant target="debug" dir="@{dir}" />
-			<ant target="release" dir="@{dir}" />
         </sequential>
     </macrodef>
 	
@@ -58,16 +58,16 @@
 				<arg value="-c" />
 				<arg value="sed -i &apos;s#&lt;setup /&gt;#&lt;setup /&gt;\n\t&lt;path id=&quot;android.libraries.src&quot;&gt;&lt;path refid=&quot;project.libraries.src&quot; /&gt;&lt;/path&gt;\n\t&lt;path id=&quot;android.libraries.jars&quot;&gt;&lt;path refid=&quot;project.libraries.jars&quot; /&gt;&lt;/path&gt;#g&apos; build.xml" />
 			</exec>
-			<ant target="clean" dir="@{dir}" />
-			<ant target="compile" dir="@{dir}" />
         </sequential>
 	</macrodef>
 	
-	<target name="build-sipdroid" depends="init">
+	<target name="build-sipdroid" depends="init" unless="sipdroid-built">
+        <property name="sipdroid-built" value="true" />
 		<build-android-lib-project dir="sipdroid" />
 	</target>
 	
-	<target name="build-flazr">
+	<target name="build-flazr" unless="flazr-built">
+    <property name="flazr-built" value="true" />
 		<ant target="dist" dir="flazr" />
 	</target>
 	
@@ -96,7 +96,8 @@
 		</junit> 		
 	</target>
 	
-	<target name="build-bbb-java">
+	<target name="build-bbb-java" unless="bbb-java-built">
+        <property name="bbb-java-built" value="true" />
 		<ant target="dist" dir="bbb-java" />
 	</target>
 	
@@ -104,7 +105,8 @@
 		<ant target="test" dir="bbb-java" />
 	</target>
 	
-	<target name="build-bbb-android-core" depends="build-sipdroid, build-bbb-java">
+	<target name="build-bbb-android-core" depends="build-sipdroid, build-bbb-java" unless="bbb-android-core-built">
+		<property name="bbb-android-core-built" value="true" />
 		<ant target="build-all" dir="bbb-android-core" antfile="jni.build.xml" />
 	
 		<copy todir="bbb-android-core/libs">
@@ -129,6 +131,23 @@
 	
 	<target name="build-bbb-android" depends="build-bbb-android-core">
 		<build-android-project dir="bbb-android" />
+	</target>
+	
+	<target name="test-bbb-android" depends="build-bbb-android">
+        <copy todir="bbb-androidTests/libs" file="flazr/target/flazr/lib/junit-4.8.1.jar" />
+        <exec executable="bash" dir="bbb-androidTests">
+            <arg value="-c" />
+            <arg value="android update test-project --main ../bbb-android --path ." />
+        </exec>
+	    <build-android dir="bbb-androidTests" />
+        <!-- 
+            if [ `cat build.xml | grep '<import file="compile.xml" />' | wc -l` -eq 0 ]; then sed -i 's:</project>:\t<import file="compile.xml" />\n\n</project>:g' build.xml; fi
+        -->
+        <exec executable="bash" dir="bbb-androidTests">
+            <arg value="-c" />
+            <arg value="if [ `cat build.xml | grep &#39;&lt;import file=&quot;compile.xml&quot; /&gt;&#39; | wc -l` -eq 0 ]; then sed -i &#39;s:&lt;/project&gt;:\t&lt;import file=&quot;compile.xml&quot; /&gt;\n\n&lt;/project&gt;:g&#39; build.xml; fi" />
+        </exec>
+	    <ant target="compile" dir="bbb-androidTests" />
 	</target>
 	
 	<target name="build-mconf-mobile" depends="build-bbb-android-core">
