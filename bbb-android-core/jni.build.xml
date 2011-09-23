@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="bbb-android-jni" basedir="." default="all">
+<project name="bbb-android-jni" basedir=".">
+	<!--property name="ndk.dir" value="../../../android-ndk-r6b"/-->
 	<property name="ndk.dir" value="../../../android-ndk-r4-crystax"/>
 	<property name="ndk.build" value="${ndk.dir}/ndk-build"/>
-	<property name="bash" value="/bin/bash"/>
-	<property name="echo" value="/bin/echo"/>
+	
+	<property name="target.iva" value="thread common queue decode encode" />
+	<property name="target.mconf" value="mconfnativeshowvideo mconfnativeencodevideo" />
 
 	<target name="init">
 		<delete includeemptydirs="true" failonerror="false">
@@ -22,49 +24,52 @@
     <target name="clean">
         <delete includeemptydirs="true" failonerror="false">
             <fileset dir="obj/"/>
+			<fileset dir="libs/armeabi/tmp"/>
         </delete>      
     </target>
 
 	<macrodef name="build">
 		<attribute name="target"/>
 		<sequential>
-			<exec executable="${echo}" output="jni/Application.mk" >
+			<exec executable="echo" output="jni/Application.mk" >
                 <arg value="-e" />
                 <arg value="APP_MODULES := @{target}\n" />
                 <arg value="APP_OPTIM := release\n" />
-                <arg value="APP_CFLAGS := -O3" />
+                <arg value="APP_CFLAGS := -O3\n" />
+				<!-- http://groups.google.com/group/android-ndk/browse_thread/thread/983c436239d48704 -->
+				<!--arg value="APP_STL := gnustl_static" /-->
 			</exec>
-			<exec executable="${ndk.build}">
+			<exec executable="${ndk.build}" failonerror="true">
 				<arg value="-j" />
 				<arg value="8" />
 			</exec>
 		</sequential>
 	</macrodef>
 	
-	<target name="mconfnativeshowvideo" depends="init">
-		<build target="mconfnativeshowvideo"/>
-		<antcall target="install"/>
+	<target name="build-mconf" depends="init">
+		<build target="${target.mconf}"/>
+		<deploy-libs />
 	</target>
 	
-	<target name="mconfnativeencodevideo" depends="init">
-		<build target="mconfnativeencodevideo"/>
-		<antcall target="install"/>
-	</target>
-	
-    <target name="iva" depends="init">
-        <build target="thread common queue decode encode"/>
-        <antcall target="install"/>
+    <target name="build-iva" depends="init">
+        <build target="${target.iva}"/>
+		<deploy-libs />
     </target>
     
-	<target name="install">
-		<copy toDir="libs/armeabi/tmp" overwrite="true">
-			<fileset dir="libs/armeabi" includes="*.so"/>
-		</copy>
-		<copy toDir="libs/armeabi" overwrite="true">
-			<fileset dir="libs/armeabi/tmp" includes="*.so"/>
-		</copy>
-	</target>
+	<macrodef name="deploy-libs">
+		<sequential>
+			<copy toDir="libs/armeabi/tmp" overwrite="true">
+				<fileset dir="libs/armeabi" includes="*.so"/>
+			</copy>
+			<copy toDir="libs/armeabi" overwrite="true">
+				<fileset dir="libs/armeabi/tmp" includes="*.so"/>
+			</copy>
+		</sequential>
+	</macrodef>
 	
-	<target name="all" depends="iva,mconfnativeshowvideo,mconfnativeencodevideo"/>
+	<target name="build-all" depends="init">
+		<build target="${target.iva} ${target.mconf}" />
+		<deploy-libs />
+	</target>
     
 </project>

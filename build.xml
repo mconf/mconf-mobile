@@ -97,19 +97,32 @@
 	</target>
 	
 	<target name="build-bbb-java">
-		<ant target="jar" dir="bbb-java" />
+		<ant target="dist" dir="bbb-java" />
+	</target>
+	
+	<target name="test-bbb-java">
+		<ant target="test" dir="bbb-java" />
 	</target>
 	
 	<target name="build-bbb-android-core" depends="build-sipdroid, build-bbb-java">
-		<copy todir="bbb-android-core/libs" file="bbb-java/target/bbb-java/lib/bbb-java-git.jar" />
-		<copy todir="bbb-android-core/libs" file="bbb-java/lib/JSON-java.jar" />
-		
-		<copy todir="bbb-android-core/libs" file="flazr/target/flazr/lib/flazr-git.jar" /> 
-		<copy todir="bbb-android-core/libs" file="flazr/target/flazr/lib/netty-3.2.4.Final.jar" /> 
-		<copy todir="bbb-android-core/libs" file="flazr/target/flazr/lib/commons-cli-1.2.jar" /> 
-		<copy todir="bbb-android-core/libs" file="flazr/target/flazr/lib/commons-codec-1.2.jar" /> 
-		<copy todir="bbb-android-core/libs" file="flazr/target/flazr/lib/commons-httpclient-3.1.jar" /> 
-		<copy todir="bbb-android-core/libs" file="flazr/target/flazr/lib/jcl104-over-slf4j-1.4.2.jar" /> 
+		<ant target="build-all" dir="bbb-android-core" antfile="jni.build.xml" />
+	
+		<copy todir="bbb-android-core/libs">
+			<fileset dir="bbb-java/target/bbb-java/lib">
+				<include name="bbb-java-git.jar" />
+			</fileset>
+			<fileset dir="bbb-java/lib">
+				<include name="JSON-java.jar" />
+			</fileset>
+			<fileset dir="flazr/target/flazr/lib">
+				<include name="flazr-git.jar" />
+				<include name="netty-3.2.4.Final.jar" />
+				<include name="commons-cli-1.2.jar" />
+				<include name="commons-codec-1.2.jar" />
+				<include name="commons-httpclient-3.1.jar" />
+				<include name="jcl104-over-slf4j-1.4.2.jar" />
+			</fileset>
+		</copy>
 		
 		<build-android-lib-project dir="bbb-android-core" />
 	</target>
