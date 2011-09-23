@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 
 <project name="Mconf-Mobile Automation Build" basedir=".">
+	
+	<property file="local.properties" />
+	<property name="android.exec" value="${android.sdk.path}/tools/android" />
+	
 	<target name="init">
 		<exec executable="git">
 			<arg value="submodule" />
@@ -16,9 +20,9 @@
         <attribute name="dir"/>
     	<attribute name="params" default="" />
         <sequential>
-			<exec executable="bash" dir="@{dir}">
+			<exec executable="bash" dir="@{dir}" failonerror="true">
 				<arg value="-c" />
-				<arg value="android update lib-project --path . --target android-8 @{params}" />
+				<arg value="${android.exec} update lib-project --path . --target android-8 @{params}" />
 			</exec>
 			<build-android dir="@{dir}" />
             <ant target="compile" dir="@{dir}" />
@@ -29,9 +33,9 @@
         <attribute name="dir"/>
     	<attribute name="params" default="" />
         <sequential>
-			<exec executable="bash" dir="@{dir}">
+			<exec executable="bash" dir="@{dir}" failonerror="true">
 				<arg value="-c" />
-				<arg value="android update project --name @{dir} --path . --target android-8 @{params}" />
+				<arg value="${android.exec} update project --name @{dir} --path . --target android-8 @{params}" />
 			</exec>
 			<build-android dir="@{dir}" />
 			<ant target="debug" dir="@{dir}" />
@@ -54,7 +58,7 @@
 				# http://code.google.com/p/android/issues/detail?id=13024#c21                                                                         
 				sed -i 's#<setup />#<setup />\n\t<path id="android.libraries.src"><path refid="project.libraries.src" /></path>\n\t<path id="android.libraries.jars"><path refid="project.libraries.jars" /></path>#g' build.xml			                                                            
 			-->
-			<exec executable="bash" dir="@{dir}">
+			<exec executable="bash" dir="@{dir}" failonerror="true">
 				<arg value="-c" />
 				<arg value="sed -i &apos;s#&lt;setup /&gt;#&lt;setup /&gt;\n\t&lt;path id=&quot;android.libraries.src&quot;&gt;&lt;path refid=&quot;project.libraries.src&quot; /&gt;&lt;/path&gt;\n\t&lt;path id=&quot;android.libraries.jars&quot;&gt;&lt;path refid=&quot;project.libraries.jars&quot; /&gt;&lt;/path&gt;#g&apos; build.xml" />
 			</exec>
@@ -135,15 +139,15 @@
 	
 	<target name="test-bbb-android" depends="build-bbb-android">
         <copy todir="bbb-androidTests/libs" file="flazr/target/flazr/lib/junit-4.8.1.jar" />
-        <exec executable="bash" dir="bbb-androidTests">
+        <exec executable="bash" dir="bbb-androidTests" failonerror="true">
             <arg value="-c" />
-            <arg value="android update test-project --main ../bbb-android --path ." />
+            <arg value="${android.exec} update test-project --main ../bbb-android --path ." />
         </exec>
 	    <build-android dir="bbb-androidTests" />
         <!-- 
             if [ `cat build.xml | grep '<import file="compile.xml" />' | wc -l` -eq 0 ]; then sed -i 's:</project>:\t<import file="compile.xml" />\n\n</project>:g' build.xml; fi
         -->
-        <exec executable="bash" dir="bbb-androidTests">
+        <exec executable="bash" dir="bbb-androidTests" failonerror="true">
             <arg value="-c" />
             <arg value="if [ `cat build.xml | grep &#39;&lt;import file=&quot;compile.xml&quot; /&gt;&#39; | wc -l` -eq 0 ]; then sed -i &#39;s:&lt;/project&gt;:\t&lt;import file=&quot;compile.xml&quot; /&gt;\n\n&lt;/project&gt;:g&#39; build.xml; fi" />
         </exec>

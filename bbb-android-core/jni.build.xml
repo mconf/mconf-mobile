@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="bbb-android-jni" basedir=".">
-	<property name="ndk.dir" value="../../../android-ndk-r6b"/>
-	<!--property name="ndk.dir" value="../../../android-ndk-r4-crystax"/-->
-	<property name="ndk.build" value="${ndk.dir}/ndk-build"/>
+    <property file="../local.properties" />
+	<property name="ndk-build.exec" value="${android.ndk.path}/ndk-build"/>
     <property name="libs.dir" value="libs/armeabi" />
     <property name="prebuilt.dir" value="${libs.dir}/prebuilt" />
 	
@@ -41,7 +40,7 @@
 				<!-- http://groups.google.com/group/android-ndk/browse_thread/thread/983c436239d48704 -->
 				<arg value="APP_STL := gnustl_static" />
 			</exec>
-			<exec executable="${ndk.build}" failonerror="true">
+			<exec executable="${ndk-build.exec}" failonerror="true">
 				<arg value="-j" />
 				<arg value="8" />
 			</exec>
