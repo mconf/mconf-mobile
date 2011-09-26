@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="bbb-java" basedir=".">
-	<property name="target.dir" value="target"/>
-	<property name="classes.dir" value="${target.dir}/classes"/>
-	<property name="lib.dir" value="${target.dir}/${ant.project.name}/lib"/>
+    <property name="src.dir" value="src/main/java"/>
+    <property name="lib.dir" value="lib"/>
+    <property name="test.src.dir" value="src/test/java"/>
+    <property name="target.dir" value="target"/>
+    <property name="classes.dir" value="${target.dir}/classes"/>
+    <property name="test.classes.dir" value="${target.dir}/test-classes"/>
+	<property name="target.lib.dir" value="${target.dir}/${ant.project.name}/lib"/>
 	<property name="flazr.dir" value="../flazr"/>
 	<property name="flazr.lib.dir" value="${flazr.dir}/target/flazr/lib/"/>
 	
     <path id="classpath">
         <fileset dir="${flazr.lib.dir}" includes="**/*.jar"/>
+        <fileset dir="lib" includes="**/*.jar"/>
     </path>	
 	
     <target name="clean">
@@ -20,13 +25,44 @@
     <target name="compile">
     	<ant dir="${flazr.dir}" target="dist"/>
         <mkdir dir="${classes.dir}"/>
-        <javac srcdir="src" destdir="${classes.dir}" debug="true" classpathref="classpath"/> 
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true" classpathref="classpath" includeantruntime="false"/> 
     </target>
 
-	<target name="jar" depends="compile">
-        <mkdir dir="${lib.dir}"/>
-		<delete file="${lib.dir}/${ant.project.name}.jar" failonerror="false"/>
-	    <jar destfile="${lib.dir}/${ant.project.name}.jar">
+    <target name="compile-test" depends="compile">
+        <mkdir dir="${test.classes.dir}"/>
+        <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}" debug="true" includeantruntime="false">
+            <classpath id="test.classpath">
+                <path path="${classes.dir}"/>
+                <path refid="classpath"/>
+            </classpath>
+	    </javac>
+    </target>
+	
+	<target name="test" depends="compile-test">
+        <junit printsummary="yes" haltonfailure="false" showoutput="yes">
+            <classpath> 
+                <pathelement location="${classes.dir}" /> 
+                <pathelement location="${test.classes.dir}" /> 
+                <fileset dir="${flazr.lib.dir}">
+                     <include name="**/*.jar"/>
+                </fileset>
+                <fileset dir="${lib.dir}">
+                     <include name="**/*.jar"/>
+                </fileset>
+            </classpath>                   
+            <formatter type="brief" usefile="false" />
+            <batchtest fork="yes"> 
+                <fileset dir="${test.classes.dir}">
+                    <include name="**/*Test*.class" />
+                </fileset>
+            </batchtest> 
+        </junit>        
+	</target>
+
+	<target name="dist" depends="compile">
+        <mkdir dir="${target.lib.dir}"/>
+		<delete file="${target.lib.dir}/${ant.project.name}-git.jar" failonerror="false"/>
+	    <jar destfile="${target.lib.dir}/${ant.project.name}-git.jar">
 	        <fileset dir="${classes.dir}"/>
 	    </jar>
 	</target>

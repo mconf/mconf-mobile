@@ -1,0 +1,163 @@
+<?xml version="1.0"?>
+
+<project name="Mconf-Mobile Automation Build" basedir=".">
+	
+	<property file="local.properties" />
+	<property name="android.exec" value="${android.sdk.path}/tools/android" />
+	
+	<target name="init">
+		<exec executable="git">
+			<arg value="submodule" />
+			<arg value="init" />
+		</exec>
+		<exec executable="git">
+			<arg value="submodule" />
+			<arg value="update" />
+		</exec>
+	</target>
+	
+    <macrodef name="build-android-lib-project">
+        <attribute name="dir"/>
+    	<attribute name="params" default="" />
+        <sequential>
+			<exec executable="bash" dir="@{dir}" failonerror="true">
+				<arg value="-c" />
+				<arg value="${android.exec} update lib-project --path . --target android-8 @{params}" />
+			</exec>
+			<build-android dir="@{dir}" />
+            <ant target="compile" dir="@{dir}" />
+        </sequential>
+    </macrodef>
+	
+    <macrodef name="build-android-project">
+        <attribute name="dir"/>
+    	<attribute name="params" default="" />
+        <sequential>
+			<exec executable="bash" dir="@{dir}" failonerror="true">
+				<arg value="-c" />
+				<arg value="${android.exec} update project --name @{dir} --path . --target android-8 @{params}" />
+			</exec>
+			<build-android dir="@{dir}" />
+			<ant target="debug" dir="@{dir}" />
+        </sequential>
+    </macrodef>
+	
+	<macrodef name="build-android">
+	    <attribute name="dir"/>
+	    <sequential>
+		    <!--            
+			    character   reference
+			    <   		&lt;
+			    >   		&gt;
+			    "   		&quot;
+			    &   		&amp;
+			    '   		&apos;
+		    -->
+			
+			<!--
+				# http://code.google.com/p/android/issues/detail?id=13024#c21                                                                         
+				sed -i 's#<setup />#<setup />\n\t<path id="android.libraries.src"><path refid="project.libraries.src" /></path>\n\t<path id="android.libraries.jars"><path refid="project.libraries.jars" /></path>#g' build.xml			                                                            
+			-->
+			<exec executable="bash" dir="@{dir}" failonerror="true">
+				<arg value="-c" />
+				<arg value="sed -i &apos;s#&lt;setup /&gt;#&lt;setup /&gt;\n\t&lt;path id=&quot;android.libraries.src&quot;&gt;&lt;path refid=&quot;project.libraries.src&quot; /&gt;&lt;/path&gt;\n\t&lt;path id=&quot;android.libraries.jars&quot;&gt;&lt;path refid=&quot;project.libraries.jars&quot; /&gt;&lt;/path&gt;#g&apos; build.xml" />
+			</exec>
+        </sequential>
+	</macrodef>
+	
+	<target name="build-sipdroid" depends="init" unless="sipdroid-built">
+        <property name="sipdroid-built" value="true" />
+		<build-android-lib-project dir="sipdroid" />
+	</target>
+	
+	<target name="build-flazr" unless="flazr-built">
+    <property name="flazr-built" value="true" />
+		<ant target="dist" dir="flazr" />
+	</target>
+	
+	<target name="test-flazr">
+        <ant target="compile-test" dir="flazr" />
+		
+	    <mkdir dir="flazr/target/temp" />
+	    <get dest="flazr/target/temp/test.flv" src="http://www.mediacollege.com/video-gallery/testclips/20051210-w50s_56K.flv"/>
+	
+		<junit printsummary="yes" haltonfailure="true" showoutput="yes"> 
+	        <classpath> 
+                <pathelement location="flazr/target/test-classes" /> 
+                <fileset dir="flazr/target/flazr/lib">
+                     <include name="**/*.jar"/>
+                </fileset>
+	        </classpath>                   
+		    <formatter type="brief" usefile="false" />
+	        <batchtest fork="yes"> 
+                <!--fileset dir="flazr/src/test/java"> 
+                    <include name="**/*Test*.java"/> 
+                </fileset-->
+        	    <fileset dir="flazr/target/test-classes">
+        	    	<include name="**/*Test*.class" />
+    	        </fileset>
+	        </batchtest> 
+		</junit> 		
+	</target>
+	
+	<target name="build-bbb-java" unless="bbb-java-built">
+        <property name="bbb-java-built" value="true" />
+		<ant target="dist" dir="bbb-java" />
+	</target>
+	
+	<target name="test-bbb-java">
+		<ant target="test" dir="bbb-java" />
+	</target>
+	
+	<target name="build-bbb-android-core" depends="build-sipdroid, build-bbb-java" unless="bbb-android-core-built">
+		<property name="bbb-android-core-built" value="true" />
+		<ant target="build-all" dir="bbb-android-core" antfile="jni.build.xml" />
+	
+		<copy todir="bbb-android-core/libs">
+			<fileset dir="bbb-java/target/bbb-java/lib">
+				<include name="bbb-java-git.jar" />
+			</fileset>
+			<fileset dir="bbb-java/lib">
+				<include name="JSON-java.jar" />
+			</fileset>
+			<fileset dir="flazr/target/flazr/lib">
+				<include name="flazr-git.jar" />
+				<include name="netty-3.2.4.Final.jar" />
+				<include name="commons-cli-1.2.jar" />
+				<include name="commons-codec-1.2.jar" />
+				<include name="commons-httpclient-3.1.jar" />
+				<include name="jcl104-over-slf4j-1.4.2.jar" />
+			</fileset>
+		</copy>
+		
+		<build-android-lib-project dir="bbb-android-core" />
+	</target>
+	
+	<target name="build-bbb-android" depends="build-bbb-android-core">
+		<build-android-project dir="bbb-android" />
+	</target>
+	
+	<target name="test-bbb-android" depends="build-bbb-android">
+        <copy todir="bbb-androidTests/libs" file="flazr/target/flazr/lib/junit-4.8.1.jar" />
+        <exec executable="bash" dir="bbb-androidTests" failonerror="true">
+            <arg value="-c" />
+            <arg value="${android.exec} update test-project --main ../bbb-android --path ." />
+        </exec>
+	    <build-android dir="bbb-androidTests" />
+        <!-- 
+            if [ `cat build.xml | grep '<import file="compile.xml" />' | wc -l` -eq 0 ]; then sed -i 's:</project>:\t<import file="compile.xml" />\n\n</project>:g' build.xml; fi
+        -->
+        <exec executable="bash" dir="bbb-androidTests" failonerror="true">
+            <arg value="-c" />
+            <arg value="if [ `cat build.xml | grep &#39;&lt;import file=&quot;compile.xml&quot; /&gt;&#39; | wc -l` -eq 0 ]; then sed -i &#39;s:&lt;/project&gt;:\t&lt;import file=&quot;compile.xml&quot; /&gt;\n\n&lt;/project&gt;:g&#39; build.xml; fi" />
+        </exec>
+	    <!--ant target="compile" dir="bbb-androidTests" /-->
+	</target>
+	
+	<target name="build-mconf-mobile" depends="build-bbb-android-core">
+		<build-android-project dir="mconf-mobile" />
+	</target>
+	
+	<target name="build-all" depends="build-bbb-android, build-mconf-mobile" />
+	<target name="test-all" depends="test-flazr, test-bbb-java, test-bbb-android" /> 
+</project>

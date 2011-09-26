@@ -1,6 +1,8 @@
 #this directory variable declaration
 LOCAL_PATH := $(call my-dir)
 
+FFMPEG_PREBUILT_PATH := $(LOCAL_PATH)/../libs/armeabi/prebuilt
+
 #mconfnativeshowvideo module START
 include $(CLEAR_VARS)
 
@@ -18,8 +20,8 @@ LOCAL_C_INCLUDES := \
 					$(LOCAL_PATH)/iva/thread \
                     $(LOCAL_PATH)/ffmpeg
 					
-LOCAL_SHARED_LIBRARIES := queue thread common decode avcodec
-LOCAL_LDLIBS := -lGLESv1_CM
+LOCAL_SHARED_LIBRARIES := queue thread common decode
+LOCAL_LDLIBS := -lGLESv1_CM -L$(FFMPEG_PREBUILT_PATH) -lavcodec
 							   
 include $(BUILD_SHARED_LIBRARY)
 #mconfnativeshowvideo module END
@@ -52,10 +54,9 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE    := thread
 
-LOCAL_CPPFLAGS	:= -std=gnu++0x
+LOCAL_CFLAGS	:= -std=gnu++0x
 
 LOCAL_C_INCLUDES := \
-					$(LOCAL_PATH)/iva/thread \
 					$(LOCAL_PATH)/iva/common
 
 LOCAL_SRC_FILES :=  \
@@ -77,16 +78,16 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE    := common
 
-LOCAL_SHARED_LIBRARIES := thread avcodec avutil
+LOCAL_SHARED_LIBRARIES := thread
  
 LOCAL_C_INCLUDES := \
 					$(LOCAL_PATH)/iva/thread \
                     $(LOCAL_PATH)/iva/common \
                     $(LOCAL_PATH)/ffmpeg
 
-LOCAL_LDLIBS := -llog
+LOCAL_LDLIBS += -llog -L$(FFMPEG_PREBUILT_PATH) -lavcodec -lavutil
 
-LOCAL_CXXFLAGS := -D__STDC_CONSTANT_MACROS
+LOCAL_CFLAGS := -D__STDC_CONSTANT_MACROS
 
 LOCAL_SRC_FILES :=  \
                     iva/common/AVConfigs.cpp \
@@ -125,10 +126,9 @@ LOCAL_SHARED_LIBRARIES := thread common
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/iva/thread \
 					$(LOCAL_PATH)/iva/common \
-					$(LOCAL_PATH)/iva/queue \
                     $(LOCAL_PATH)/ffmpeg
 					
-LOCAL_CXXFLAGS := -D__STDC_CONSTANT_MACROS
+LOCAL_CFLAGS := -D__STDC_CONSTANT_MACROS
 
 LOCAL_SRC_FILES :=	iva/queue/queue.cpp \
 					iva/queue/QueueBuffer.cpp \
@@ -146,7 +146,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE    := decode
 
-LOCAL_SHARED_LIBRARIES := thread common queue avcodec avutil swscale
+LOCAL_SHARED_LIBRARIES := thread common queue
 
 LOCAL_C_INCLUDES := \
 					$(LOCAL_PATH)/iva/thread \
@@ -155,7 +155,9 @@ LOCAL_C_INCLUDES := \
 					$(LOCAL_PATH)/iva/decode \
                     $(LOCAL_PATH)/ffmpeg
 
-LOCAL_CXXFLAGS := -D__STDC_CONSTANT_MACROS
+LOCAL_LDLIBS += -L$(FFMPEG_PREBUILT_PATH) -lavcodec -lavutil -lswscale
+
+LOCAL_CFLAGS := -D__STDC_CONSTANT_MACROS
 
 LOCAL_SRC_FILES :=	iva/decode/Decode.cpp \
 					iva/decode/DecodeAudio.cpp \
@@ -169,7 +171,9 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE    := encode
 
-LOCAL_SHARED_LIBRARIES := thread common queue avcodec avformat avutil swscale
+LOCAL_SHARED_LIBRARIES := thread common queue
+
+LOCAL_LDLIBS += -L$(FFMPEG_PREBUILT_PATH) -lavcodec -lavutil -lswscale -lavformat
 
 LOCAL_C_INCLUDES := \
 					$(LOCAL_PATH)/iva/thread \
@@ -178,7 +182,7 @@ LOCAL_C_INCLUDES := \
 					$(LOCAL_PATH)/iva/encode \
                     $(LOCAL_PATH)/ffmpeg
 
-LOCAL_CXXFLAGS := -D__STDC_CONSTANT_MACROS
+LOCAL_CFLAGS := -D__STDC_CONSTANT_MACROS
 
 LOCAL_SRC_FILES :=	iva/encode/Encode.cpp \
 					iva/encode/EncodeAudio.cpp \

@@ -128,7 +128,8 @@ public:
         if (running_) {
 
 #ifdef __linux__
-            ret = pthread_cancel(thread_);
+			// http://gcc.gnu.org/onlinedocs/gcc/Name-lookup.html
+            ret = pthread_cancel(this->thread_);
 #else // _ANDROID e _MSC_VER
             ret = pthread_kill(thread_, sig);
 #endif
