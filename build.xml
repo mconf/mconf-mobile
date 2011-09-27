@@ -3,9 +3,11 @@
 <project name="Mconf-Mobile Automation Build" basedir=".">
 	
 	<property file="local.properties" />
-	<property name="android.exec" value="${android.sdk.path}/tools/android" />
+	<property name="android.exec" value="${sdk.dir}/tools/android" />
+	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
 	
 	<target name="init">
+		<!--echoproperties/-->
 		<exec executable="git">
 			<arg value="submodule" />
 			<arg value="init" />
@@ -45,16 +47,8 @@
 	<macrodef name="build-android">
 	    <attribute name="dir"/>
 	    <sequential>
-		    <!--            
-			    character   reference
-			    <   		&lt;
-			    >   		&gt;
-			    "   		&quot;
-			    &   		&amp;
-			    '   		&apos;
-		    -->
-			
 			<!--
+				# http://coderstoolbox.net/string/
 				# http://code.google.com/p/android/issues/detail?id=13024#c21                                                                         
 				sed -i 's#<setup />#<setup />\n\t<path id="android.libraries.src"><path refid="project.libraries.src" /></path>\n\t<path id="android.libraries.jars"><path refid="project.libraries.jars" /></path>#g' build.xml			                                                            
 			-->
@@ -62,16 +56,21 @@
 				<arg value="-c" />
 				<arg value="sed -i &apos;s#&lt;setup /&gt;#&lt;setup /&gt;\n\t&lt;path id=&quot;android.libraries.src&quot;&gt;&lt;path refid=&quot;project.libraries.src&quot; /&gt;&lt;/path&gt;\n\t&lt;path id=&quot;android.libraries.jars&quot;&gt;&lt;path refid=&quot;project.libraries.jars&quot; /&gt;&lt;/path&gt;#g&apos; build.xml" />
 			</exec>
+			<ant target="clean" dir="@{dir}" />
         </sequential>
 	</macrodef>
 	
 	<target name="build-sipdroid" depends="init" unless="sipdroid-built">
-        <property name="sipdroid-built" value="true" />
+		<property name="sipdroid-built" value="true" />
+		<exec executable="${ndk.dir}/ndk-build" failonerror="true" dir="sipdroid">
+			<arg value="-j" />
+			<arg value="8" />
+		</exec>
 		<build-android-lib-project dir="sipdroid" />
 	</target>
 	
 	<target name="build-flazr" unless="flazr-built">
-    <property name="flazr-built" value="true" />
+		<property name="flazr-built" value="true" />
 		<ant target="dist" dir="flazr" />
 	</target>
 	
@@ -133,6 +132,23 @@
 		<build-android-lib-project dir="bbb-android-core" />
 	</target>
 	
+	<target name="run-findbugs">
+		<property file="bbb-android-core/default.properties" />
+		<mkdir dir="reports" />
+		<findbugs home="${findbugs.home}" output="html" outputFile="reports/findbugs.xml">
+			<auxClasspath>
+				<pathelement location="${sdk.dir}/platforms/${target}/android.jar" />
+				<fileset dir="bbb-android-core/libs">
+					<include name="**/*.jar"/>
+				</fileset>
+				<fileset dir="${java.home}" >
+					<include name="**/*.jar"/>
+				</fileset>
+			</auxClasspath>
+			<class location="bbb-android-core/bin" />
+		</findbugs>		
+	</target>
+	
 	<target name="build-bbb-android" depends="build-bbb-android-core">
 		<build-android-project dir="bbb-android" />
 	</target>
@@ -143,15 +159,17 @@
             <arg value="-c" />
             <arg value="${android.exec} update test-project --main ../bbb-android --path ." />
         </exec>
-	    <build-android dir="bbb-androidTests" />
         <!-- 
-            if [ `cat build.xml | grep '<import file="compile.xml" />' | wc -l` -eq 0 ]; then sed -i 's:</project>:\t<import file="compile.xml" />\n\n</project>:g' build.xml; fi
+            if [ `cat build.xml | grep '<import file="compile.xml" />' | wc -l` -eq 0 ]; then sed -i 's:<property file="default.properties" />:<property file="default.properties" />\n\n    <import file="compile.xml" />:g' build.xml; fi
         -->
         <exec executable="bash" dir="bbb-androidTests" failonerror="true">
             <arg value="-c" />
-            <arg value="if [ `cat build.xml | grep &#39;&lt;import file=&quot;compile.xml&quot; /&gt;&#39; | wc -l` -eq 0 ]; then sed -i &#39;s:&lt;/project&gt;:\t&lt;import file=&quot;compile.xml&quot; /&gt;\n\n&lt;/project&gt;:g&#39; build.xml; fi" />
+            <arg value="if [ `cat build.xml | grep &#39;&lt;import file=&quot;compile.xml&quot; /&gt;&#39; | wc -l` -eq 0 ]; then sed -i &#39;s:&lt;property file=&quot;default.properties&quot; /&gt;:&lt;property file=&quot;default.properties&quot; /&gt;\n\n    &lt;import file=&quot;compile.xml&quot; /&gt;:g&#39; build.xml; fi" />
         </exec>
-	    <!--ant target="compile" dir="bbb-androidTests" /-->
+        <ant target="clean" dir="bbb-androidTests" />
+	    <ant target="run-tests" dir="bbb-androidTests">
+			<property name="haltonerror" value="true" />
+	    </ant>
 	</target>
 	
 	<target name="build-mconf-mobile" depends="build-bbb-android-core">
