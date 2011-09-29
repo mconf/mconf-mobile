@@ -2,7 +2,7 @@
 
 <project name="bbb-android-jni" basedir=".">
     <property file="../local.properties" />
-	<property name="ndk-build.exec" value="${android.ndk.path}/ndk-build"/>
+	<property name="ndk-build.exec" value="${ndk.dir}/ndk-build"/>
     <property name="libs.dir" value="libs/armeabi" />
     <property name="prebuilt.dir" value="${libs.dir}/prebuilt" />
 	
