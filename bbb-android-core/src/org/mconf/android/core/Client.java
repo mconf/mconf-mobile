@@ -190,7 +190,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	private boolean kicked=false;
 	private boolean backToLogin = false;
 	private boolean backToPrivateChat = false;
-
+	private Context context = this;
 	private VideoDialog mVideoDialog;
 	
 	@Override
@@ -294,7 +294,13 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			} else {
 				String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
 				log.debug("Joining error message: " + error);
-				new JoinFailDialog(this).show();
+				runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {
+						new JoinFailDialog(context).show();
+					}
+				});
 				return false;
 			}
 		} else if (getIntent().getExtras() != null) {
@@ -307,31 +313,67 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 			if (username == null
 					|| meetingId == null) {
-				new JoinFailDialog(this).show();
+				runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {
+						new JoinFailDialog(context).show();
+					}
+				});
 				return false;
 			}			
 			
 			if (!getBigBlueButton().getJoinService().join(meetingId, username, moderator)) {
 				if (getBigBlueButton().getJoinService().getJoinedMeeting() != null) {
-					String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
+					final String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
 					log.debug("Joining error message: " + error);
 					if (error != null && !error.equals("null"))
-						new JoinFailDialog(this, error).show();
+						runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								new JoinFailDialog(context,error).show();
+							}
+						});
 					else
-						new JoinFailDialog(this).show();
+						runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								new JoinFailDialog(context).show();
+							}
+						});
 				} else
-					new JoinFailDialog(this).show();
+					runOnUiThread(new Runnable() {
+
+						@Override
+						public void run() {
+							new JoinFailDialog(context).show();
+						}
+					});
 				return false;
 			}
 
 		} else {
-			new JoinFailDialog(this).show();
+			runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					new JoinFailDialog(context).show();
+				}
+			});
 			return false;
 		}
 
 		boolean connected = getBigBlueButton().connectBigBlueButton();
 		if (!connected) {
-			new JoinFailDialog(this).show();
+			runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					new JoinFailDialog(context).show();
+				}
+			});
 			return false;
 		}
 

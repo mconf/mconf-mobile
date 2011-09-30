@@ -25,9 +25,14 @@ public class BigBlueButtonActivity extends Activity {
 		
 	public boolean isNetworkDown() {
 		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		return !(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED 
-				||  connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED);
+		//getNetworkInfo(MOBILE) returns null in xoom, so check null first
+		NetworkInfo mobile_info = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+		NetworkInfo wifi_info = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		
+		return !( (mobile_info!=null && mobile_info.getState() == NetworkInfo.State.CONNECTED)
+		|| (wifi_info!=null && wifi_info.getState() == NetworkInfo.State.CONNECTED) );
 	}
+
 	
 	public void makeToast(final int resId) {
 		makeToast(getResources().getString(resId));
