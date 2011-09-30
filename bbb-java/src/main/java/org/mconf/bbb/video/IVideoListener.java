@@ -88,11 +88,24 @@ public abstract class IVideoListener {
 	public static float getAspectRatio(int userId, String streamName) {
 		String userIdStr = Integer.toString(userId);
 		if (streamName != null && streamName.contains(userIdStr)) {
-			String resStr = streamName.substring(0, streamName.lastIndexOf(userIdStr));
-			String[] res = resStr.split("x");
-			int width = Integer.parseInt(res[0]), 
-				height = Integer.parseInt(res[1]);
-			return width / (float) height;
+			/*
+			 * streamName is in this form: 160x1201-13173
+			 * the timestamp doesn't interest, so we drop it
+			 */
+			if (streamName.matches("\\d+[x]\\d+[-]\\d+")) {
+				streamName = streamName.substring(0, streamName.indexOf("-"));
+			}
+			/*
+			 * streamName is in this form: 160x1201
+			 * remove the userId and get the dimensions
+			 */
+			if (streamName.matches("\\d+[x]\\d+")) {
+				String resStr = streamName.substring(0, streamName.lastIndexOf(userIdStr));
+				String[] res = resStr.split("x");
+				int width = Integer.parseInt(res[0]), 
+					height = Integer.parseInt(res[1]);
+				return width / (float) height;
+			}
 		}		
 		return -1;
 	}

@@ -1,9 +1,11 @@
 package org.mconf.android.core.video;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.mconf.bbb.BigBlueButtonClient;
+import org.mconf.bbb.api.JoinService0Dot8;
 import org.mconf.bbb.video.IVideoPublishListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,8 +101,11 @@ public class VideoPublish extends Thread implements RtmpReader {
     	this.GOP = GOP;
     }
     
-    public void startPublisher(){
-    	videoPublishHandler = new VideoPublishHandler(context.getMyUserId(), width+"x"+height+context.getMyUserId(), this, context);
+    public void startPublisher() {
+    	String streamName = width + "x" + height+context.getMyUserId();
+    	if (context.getJoinService().getClass() == JoinService0Dot8.class)
+    		streamName += "-" + new Date().getTime();
+    	videoPublishHandler = new VideoPublishHandler(context.getMyUserId(), streamName, this, context);
     	videoPublishHandler.start();
     }        	
     
