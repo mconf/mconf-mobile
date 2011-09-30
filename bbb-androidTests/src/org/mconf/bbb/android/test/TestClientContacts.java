@@ -10,6 +10,7 @@ import org.mconf.android.core.CustomListview;
 import org.mconf.android.core.PrivateChat;
 import org.mconf.bbb.users.IParticipant;
 
+import android.app.Activity;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
 import android.view.View;
@@ -57,7 +58,9 @@ public class TestClientContacts extends ActivityInstrumentationTestCase2<LoginPa
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
-		getActivity().finish();
+		for (Activity activity : solo.getAllOpenedActivities()) {
+			activity.finish();
+		}
 		Common.removeContactsFromMeeting();
 		super.tearDown();
 	}
