@@ -164,6 +164,9 @@ public class PrivateChat extends BigBlueButtonActivity {
 		public void onListenerStatusChangeIsMuted(IListener p) {}
 		@Override
 		public void onListenerStatusChangeIsTalking(IListener p) {}
+		@Override
+		public void onException(Throwable throwable) {
+		}
 
 	}
 

@@ -84,6 +84,7 @@
 	
 	<string name="back_pressed">Tecla \"Voltar\" pressionada</string>
 	<string name="back_pressed_action">O que deseja fazer?</string>
+    <string name="disconnected">Você foi desconectado</string>
 
 	<string name="about">
 		BBB-Android é uma implementação do cliente BigBlueButton para Android.

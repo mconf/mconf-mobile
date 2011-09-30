@@ -76,6 +76,7 @@
 	<string name="application_on_background_text">The application is still running</string>
 	<string name="back_pressed">Key \"Back\" pressed</string>
 	<string name="back_pressed_action">Which action do you want to take?</string>
+	<string name="disconnected">You have been disconnected</string>
 	
     <string name="server">Server</string>
 	<string name="meeting_information">Meeting information</string>
