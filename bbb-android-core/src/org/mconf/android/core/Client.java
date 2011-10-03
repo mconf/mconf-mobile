@@ -476,8 +476,11 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			public void onClick(View viewParam) {
 				final EditText chatMessageEdit = (EditText) findViewById(R.id.chatMessage);
 				String chatMessage = chatMessageEdit.getText().toString();
-				if(chatMessage.length()>1) {
-					getBigBlueButton().sendPublicChatMessage(chatMessage);
+				if(chatMessage.length()>1 ) {
+					if(getBigBlueButton().isConnected())
+						getBigBlueButton().sendPublicChatMessage(chatMessage);
+					else
+						Toast.makeText(context, R.string.cant_send_public_message, Toast.LENGTH_SHORT).show();
 					chatMessageEdit.setText("");
 				}
 				chatListView.setSelection(chatListView.getCount());
@@ -1227,6 +1230,18 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		}
 		contactAdapter.sort();
 		contactAdapter.notifyDataSetChanged();
+		Button send = (Button)findViewById(R.id.sendMessage);
+		EditText chatEditText = (EditText)findViewById(R.id.chatMessage);
+		if(!getBigBlueButton().isConnected())
+		{
+			send.setEnabled(false);
+			chatEditText.setEnabled(false);
+		}
+		else
+		{
+			send.setEnabled(true);
+			chatEditText.setEnabled(true);
+		}
 	}
 
 	@Override

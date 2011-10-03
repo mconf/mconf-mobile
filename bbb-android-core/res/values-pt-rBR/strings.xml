@@ -14,6 +14,7 @@
 	<string name="list_participants">Lista de participantes</string>
 	<string name="list_listeners">Lista de ouvintes</string>
 	<string name="public_chat">Bate-papo público</string>
+	<string name="cant_send_public_message">Você está disconectado, não pode mandar mensagens</string>
 	<string name="meeting">Sala:</string>
 
 	<string name="kick">Expulsar</string>
