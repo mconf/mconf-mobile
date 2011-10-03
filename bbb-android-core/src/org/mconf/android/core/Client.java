@@ -172,7 +172,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	protected ContactAdapter contactAdapter = new ContactAdapter();
 	protected ChatAdapter chatAdapter = new ChatAdapter();
 	protected ListenerAdapter listenerAdapter = new ListenerAdapter();
-
+	private Context context = this;
 	protected String username;
 	private boolean moderator;
 	protected String meetingId;
