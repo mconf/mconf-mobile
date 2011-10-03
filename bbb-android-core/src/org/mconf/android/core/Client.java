@@ -21,6 +21,7 @@
 
 package org.mconf.android.core;
 
+import org.acra.ErrorReporter;
 import org.mconf.android.core.video.VideoCapture;
 import org.mconf.android.core.video.VideoCaptureLayout;
 import org.mconf.android.core.video.VideoDialog;
@@ -38,11 +39,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -51,6 +50,7 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.ContextMenu;
@@ -114,7 +114,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public static final String CLOSE_DIALOG_PREVIEW = "org.mconf.bbb.android.Video.CLOSE_DIALOG_PREVIEW";
 	public static final String SEND_TO_BACK = "bbb.android.action.SEND_TO_BACK";
 
-	public static final int ID_DIALOG_RECONNECT = 111000;
 	public static final int ID_DIALOG_QUIT = 222000;
 	
 	//change the contact status when the private chat is closed
@@ -136,14 +135,9 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		} 
 	};
 	
-	private BroadcastReceiver quit = new BroadcastReceiver(){ 
-		public void onReceive(Context context, Intent intent)
-		{ 
-			quit();
-			lastReadNum=-1;
-			sendBroadcast(new Intent(FINISH));
+	private BroadcastReceiver quit = new BroadcastReceiver() { 
+		public void onReceive(Context context, Intent intent) { 
 			finish();
-
 		} 
 	};
 	
@@ -188,9 +182,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	private int addedMessages=0;
 	private boolean dialogShown = false;
 	private boolean kicked=false;
-	private boolean backToLogin = false;
 	private boolean backToPrivateChat = false;
-	private Context context = this;
+
 	private VideoDialog mVideoDialog;
 	
 	@Override
@@ -273,10 +266,10 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 
 	private boolean joinAndConnect() {
-//		if (isNetworkDown()) {
-//			openProperties();
-//			return false;
-//		}
+		if (isNetworkDown()) {
+			openProperties();
+			return false;
+		}
 
 		if (getIntent().getScheme() != null
 				&& getIntent().getScheme().equals(getResources().getString(R.string.protocol))) {
@@ -294,13 +287,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			} else {
 				String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
 				log.debug("Joining error message: " + error);
-				runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-						new JoinFailDialog(context).show();
-					}
-				});
+				showJoinFailDialog(new JoinFailDialog(this));
 				return false;
 			}
 		} else if (getIntent().getExtras() != null) {
@@ -313,71 +300,45 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 			if (username == null
 					|| meetingId == null) {
-				runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-						new JoinFailDialog(context).show();
-					}
-				});
+				showJoinFailDialog(new JoinFailDialog(this));
 				return false;
 			}			
 			
 			if (!getBigBlueButton().getJoinService().join(meetingId, username, moderator)) {
 				if (getBigBlueButton().getJoinService().getJoinedMeeting() != null) {
-					final String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
+					String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
 					log.debug("Joining error message: " + error);
 					if (error != null && !error.equals("null"))
-						runOnUiThread(new Runnable() {
-
-							@Override
-							public void run() {
-								new JoinFailDialog(context,error).show();
-							}
-						});
+						showJoinFailDialog(new JoinFailDialog(this, error));
 					else
-						runOnUiThread(new Runnable() {
-
-							@Override
-							public void run() {
-								new JoinFailDialog(context).show();
-							}
-						});
+						showJoinFailDialog(new JoinFailDialog(this));
 				} else
-					runOnUiThread(new Runnable() {
-
-						@Override
-						public void run() {
-							new JoinFailDialog(context).show();
-						}
-					});
+					showJoinFailDialog(new JoinFailDialog(this));
 				return false;
 			}
 
 		} else {
-			runOnUiThread(new Runnable() {
-
-				@Override
-				public void run() {
-					new JoinFailDialog(context).show();
-				}
-			});
+			showJoinFailDialog(new JoinFailDialog(this));
 			return false;
 		}
 
 		boolean connected = getBigBlueButton().connectBigBlueButton();
 		if (!connected) {
-			runOnUiThread(new Runnable() {
-
-				@Override
-				public void run() {
-					new JoinFailDialog(context).show();
-				}
-			});
+			showJoinFailDialog(new JoinFailDialog(this));
 			return false;
 		}
 
 		return true;
+	}
+
+	private void showJoinFailDialog(final JoinFailDialog dialog) {
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				dialog.show();
+			}
+		});
 	}
 
 	private void endListeners() { // if we have already called setAdapter
@@ -646,6 +607,14 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		getBigBlueButton().disconnect();
 	}
 
+	@Override
+	public void finish() {
+		quit();
+		lastReadNum=-1;
+		sendBroadcast(new Intent(FINISH));
+		super.finish();
+	}
+
 	private void startPrivateChat(final Contact contact) {
 		backToPrivateChat=true;
 		Intent intent = new Intent(getApplicationContext(), PrivateChat.class);
@@ -704,8 +673,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Intent intent= new Intent(FINISH);	
-
 		switch (item.getItemId()) {
 		case MENU_START_VOICE:
 			int ret = getVoiceModule().call(getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge());
@@ -737,9 +704,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			return true;
 
 		case MENU_QUIT:
-			quit();
-			lastReadNum=-1;
-			sendBroadcast(intent);
 			finish();
 			return true;
 
@@ -763,16 +727,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			return true;
 
 		case MENU_RECONNECT:
-			if (!isNetworkDown()) {
-				if (joinAndConnect()) 
-					Toast.makeText(getApplicationContext(), R.string.reconnected, Toast.LENGTH_SHORT).show();
-				else
-					Toast.makeText(getApplicationContext(), R.string.cant_reconnect, Toast.LENGTH_SHORT).show();
-
-			} else {
-				//create dialog to connection properties
-				openProperties();
-			}
+			if (joinAndConnect()) 
+				Toast.makeText(getApplicationContext(), R.string.reconnected, Toast.LENGTH_SHORT).show();
 			return true;
 			
 		case MENU_MUTE_ROOM:
@@ -793,8 +749,14 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 
 	private void openProperties() {
-		NetworkPropertiesDialog networkProperties = new NetworkPropertiesDialog(Client.this);
-		networkProperties.show();
+		runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				NetworkPropertiesDialog networkProperties = new NetworkPropertiesDialog(Client.this);
+				networkProperties.show();
+			}
+		});
 	}
 
 	private void showBackgroundNotification() {
@@ -856,6 +818,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 	@Override
 	public void onConnected() {
+		kicked = false;
 		getVoiceModule().setListener(new OnCallListener() {
 
 			@Override
@@ -908,102 +871,58 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	//created this coded based on this http://bend-ing.blogspot.com/2008/11/properly-handle-progress-dialog-in.html
 	@Override 
 	public void onDisconnected() {
-		log.debug("onDisconnected");
+		setConnectedIcon(R.drawable.disconnected);
+
+		if (kicked) {
+			finish();
+			return;
+		}
+		
+		final AlertDialog.Builder dialog = new AlertDialog.Builder(Client.this);
+		dialog.setTitle(R.string.disconnected);
+		dialog.setMessage(R.string.back_pressed_action);
+		dialog.setNegativeButton(R.string.reconnect, new DialogInterface.OnClickListener() {
+			public void onClick(final DialogInterface dialog, int id) {
+				setConnectedIcon(R.drawable.reconnecting);
+				new AsyncTask<Integer, Integer, Boolean>() {
+					
+					@Override
+					protected Boolean doInBackground(Integer... params) {
+						return joinAndConnect();
+					}
+					
+					@Override
+					protected void onPostExecute(Boolean result) {
+						super.onPostExecute(result);
+						if (result == true)
+							setConnectedIcon(R.drawable.connected);
+						else
+							setConnectedIcon(R.drawable.disconnected);
+						dialog.cancel();
+					}
+				}.execute();
+			}
+	    });
+		dialog.setPositiveButton(R.string.quit, new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int id) {
+	        	finish();
+	        	dialog.cancel();
+	        }
+	    });
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				setConnectedIcon(R.drawable.reconnecting);
-				log.debug("dialog shown");
-				showDialog(ID_DIALOG_RECONNECT);
-				dialogShown=true;
+				dialog.show();
 			}
 		});
-		new Thread(new Runnable() {
-			@Override
-			public void run() {	
-				if(!kicked) {
-					if (isNetworkDown()) {
-						log.debug("no internet connection");
-
-						runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								setConnectedIcon(R.drawable.disconnected);
-								while(!dialogShown);
-								dismissDialog(Client.ID_DIALOG_RECONNECT); //exception:no dialog with this id was shown
-								dialogShown=false;
-								//create dialog to connection properties
-								openProperties();
-							}
-						});
-						log.error("Can't reconnect. Check internet connection");
-						return;
-					}
-
-					//only tries to reconnect if there the phone is connected to the Internet
-					if (!joinAndConnect()) {
-
-						runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								setConnectedIcon(R.drawable.disconnected);
-								Toast.makeText(getApplicationContext(), R.string.cant_reconnect, Toast.LENGTH_SHORT).show();
-								dismissDialog(Client.ID_DIALOG_RECONNECT);
-							}
-						});
-						log.error("Can't reconnect. Check internet connection");
-						return;
-					} else {
-						log.error("successfully reconnected");
-
-						runOnUiThread(new Runnable() { 
-							@Override
-							public void run() {
-								setConnectedIcon(R.drawable.connected);
-								Toast.makeText(getApplicationContext(), R.string.reconnected, Toast.LENGTH_SHORT).show();
-								dismissDialog(Client.ID_DIALOG_RECONNECT);
-							}
-						});
-
-						return;
-					}
-
-				} else {
-					makeToast(R.string.kicked);
-					quit();
-					lastReadNum=-1;
-					sendBroadcast(new Intent(FINISH));
-					finish();
-				}
-			}
-		}).start();
-
-	}
-
-	// so the app won't crash if the phone is rotated while the dialog is being shown
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		if(id == ID_DIALOG_RECONNECT){
-			final ProgressDialog reconnectDialog = new ProgressDialog(this);
-			reconnectDialog.setTitle(R.string.lost_connection);
-			reconnectDialog.setMessage(getResources().getString(R.string.attempting_to_reconnect));
-			return reconnectDialog;
-		}
-
-		return super.onCreateDialog(id);
 	}
 
 	@Override
 	public void onKickUserCallback() {
-		kicked=true;
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				Toast.makeText(getApplicationContext(), R.string.kicked, Toast.LENGTH_SHORT).show();
-			}
-		});
-
+		kicked = true;
+		makeToast(R.string.kicked);
 	}
+	
 	@Override
 	public void onParticipantJoined(final IParticipant p) {
 		runOnUiThread(new Runnable() {
@@ -1152,13 +1071,12 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 				//doesn't notify again for already read messages
 				addedMessages++;
-				if(addedMessages>lastReadNum ) {
+				if (addedMessages > lastReadNum ) {
 					SlidingDrawer slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
 					if (slidingDrawer != null && (!slidingDrawer.isShown() || !slidingDrawer.isOpened())) {
 						showNotification(message, source, false);
 						setPublicChatTitleBackground(R.drawable.public_chat_title_background_up_new_message);
-					}
-					else
+					} else
 						lastReadNum = chatAdapter.getCount();
 
 				}
@@ -1348,16 +1266,10 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		return dialogShown;
 	}
 
-	public void setKicked(boolean kicked) {
-		this.kicked = kicked;
+	@Override
+	public void onException(Throwable throwable) {
+		ErrorReporter.getInstance().handleSilentException(throwable);
 	}
-
-	public boolean isKicked() {
-		return kicked;
-	}
-
-	
-
 }
 
 

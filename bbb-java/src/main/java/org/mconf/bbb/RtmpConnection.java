@@ -6,6 +6,9 @@ import java.util.concurrent.Executors;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.channel.ExceptionEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,13 +42,22 @@ public abstract class RtmpConnection extends ClientHandler {
         	return true;
     }
 	
-
-	
 	public void disconnect() {
-		future.getChannel().close();
-		future.getChannel().getCloseFuture().awaitUninterruptibly();
-		bootstrap.getFactory().releaseExternalResources();
+		if (future.getChannel().isConnected()) {
+			future.getChannel().close();
+			future.getChannel().getCloseFuture().awaitUninterruptibly();
+			bootstrap.getFactory().releaseExternalResources();
+		}
 	}
 	
 	abstract protected ClientBootstrap getBootstrap(final Executor executor);
+	
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
+		super.exceptionCaught(ctx, e);
+
+		for (IBigBlueButtonClientListener l : context.getListeners()) {
+			l.onException(e.getCause());
+		}
+	}	
 }

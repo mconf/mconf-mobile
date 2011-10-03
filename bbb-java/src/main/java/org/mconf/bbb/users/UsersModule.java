@@ -30,6 +30,9 @@ import org.jboss.netty.channel.Channel;
 import org.mconf.bbb.IBigBlueButtonClientListener;
 import org.mconf.bbb.MainRtmpConnection;
 import org.mconf.bbb.Module;
+import org.mconf.bbb.api.JoinService0Dot7;
+import org.mconf.bbb.api.JoinService0Dot8;
+import org.mconf.bbb.api.JoinServiceBase;
 import org.red5.server.api.IAttributeStore;
 import org.red5.server.api.so.IClientSharedObject;
 import org.red5.server.api.so.ISharedObjectBase;
@@ -47,10 +50,13 @@ public class UsersModule extends Module implements ISharedObjectListener {
 
 	private Map<Integer, Participant> participants = new ConcurrentHashMap<Integer, Participant>();
 	private int moderatorCount = 0, participantCount = 0;
+	private Class<? extends JoinServiceBase> joinServiceVersion;
 
 	public UsersModule(MainRtmpConnection handler, Channel channel) {
 		super(handler, channel);
-
+		
+		joinServiceVersion = handler.getContext().getJoinService().getClass();
+		
 		participantsSO = handler.getSharedObject("participantsSO", false);
 		participantsSO.addSharedObjectListener(this);
 		participantsSO.connect(channel);
@@ -111,7 +117,7 @@ public class UsersModule extends Module implements ISharedObjectListener {
 				return;
 			}
 			if (method.equals("participantJoined")) {
-				Participant p = new Participant((Map<String, Object>) params.get(0));
+				Participant p = new Participant((Map<String, Object>) params.get(0), joinServiceVersion);
 				onParticipantJoined(p);
 				return;
 			}
@@ -167,7 +173,7 @@ public class UsersModule extends Module implements ISharedObjectListener {
 			Map<String, Object> participantsMap = (Map<String, Object>) args.get("participants");
 
 			for (Map.Entry<String, Object> entry : participantsMap.entrySet()) {
-				Participant p = new Participant((Map<String, Object>) entry.getValue());
+				Participant p = new Participant((Map<String, Object>) entry.getValue(), joinServiceVersion);
 				onParticipantJoined(p);
 			}
 			return true;
@@ -200,7 +206,7 @@ public class UsersModule extends Module implements ISharedObjectListener {
 				l.onParticipantStatusChangePresenter(p);
 			}
 		} else if (key.equals("hasStream")) {
-			p.getStatus().setHasStream((Boolean) value);
+			p.getStatus().setHasStream(value);
 			for (IBigBlueButtonClientListener l : handler.getContext().getListeners()) {
 				l.onParticipantStatusChangeHasStream(p);
 			}
@@ -234,19 +240,29 @@ public class UsersModule extends Module implements ISharedObjectListener {
 	}
 
 	public void addStream(String streamName) {
-    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "streamName", streamName);
-    	handler.writeCommandExpectingResult(channel, cmd);
-    	
-    	cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "hasStream", true);
-    	handler.writeCommandExpectingResult(channel, cmd);
+		if (joinServiceVersion == JoinService0Dot7.class) {
+	    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "streamName", streamName);
+	    	handler.writeCommandExpectingResult(channel, cmd);
+	    	
+	    	cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "hasStream", true);
+	    	handler.writeCommandExpectingResult(channel, cmd);
+		} else if (joinServiceVersion == JoinService0Dot8.class) {
+	    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "hasStream", "true,stream=" + streamName);
+	    	handler.writeCommandExpectingResult(channel, cmd);
+		}
 	}
 
 	public void removeStream(String streamName) {
-		Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "");
-		handler.writeCommandExpectingResult(channel, cmd);
-
-		cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "hasStream", false);
-		handler.writeCommandExpectingResult(channel, cmd);
+		if (joinServiceVersion == JoinService0Dot7.class) {
+			Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "");
+			handler.writeCommandExpectingResult(channel, cmd);
+	
+			cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "hasStream", false);
+			handler.writeCommandExpectingResult(channel, cmd);
+		} else if (joinServiceVersion == JoinService0Dot8.class) {
+	    	Command cmd = new CommandAmf0("participants.setParticipantStatus", null, handler.getContext().getMyUserId(), "hasStream", "false,stream=" + streamName);
+	    	handler.writeCommandExpectingResult(channel, cmd);
+		}
 	}
 
 	public void kickUser(int userId) {

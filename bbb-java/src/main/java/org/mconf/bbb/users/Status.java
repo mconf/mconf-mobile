@@ -23,6 +23,9 @@ package org.mconf.bbb.users;
 
 import java.util.Map;
 
+import org.mconf.bbb.api.JoinService0Dot8;
+import org.mconf.bbb.api.JoinServiceBase;
+
 public class Status {
 
 	private boolean raiseHand;
@@ -30,8 +33,8 @@ public class Status {
 	private boolean presenter;
 	private String streamName;
 
-	public Status(Map<String, Object> param) {
-		decode(param);
+	public Status(Map<String, Object> param, Class<? extends JoinServiceBase> joinServiceClass) {
+		decode(param, joinServiceClass);
 	}
 	
 	public Status() {
@@ -41,10 +44,11 @@ public class Status {
 	 * example:
 	 * {raiseHand=false, hasStream=false, presenter=true}
 	 */
-	public void decode(Map<String, Object> param) {
+	public void decode(Map<String, Object> param, Class<? extends JoinServiceBase> joinServiceClass) {
 		raiseHand = (Boolean) param.get("raiseHand");
-		hasStream = (Boolean) param.get("hasStream");
-		streamName = hasStream? (String) param.get("streamName") : "";
+		setHasStream(param.get("hasStream"));
+		if (joinServiceClass != JoinService0Dot8.class)
+			streamName = hasStream? (String) param.get("streamName") : "";
 		presenter = (Boolean) param.get("presenter");
 	}
 
@@ -62,6 +66,22 @@ public class Status {
 
 	public void setHasStream(boolean hasStream) {
 		this.hasStream = hasStream;
+	}
+
+	public void setHasStream(Object value) {
+		if (value.getClass() == Boolean.class)
+			hasStream = (Boolean) value;
+		else {
+			String[] params = ((String) value).split(",");
+			hasStream = Boolean.valueOf(params[0]);
+			for (int i = 1; i < params.length; ++i) {
+				String[] tuple = params[i].split("=");
+				if (tuple.length < 2)
+					continue;
+				if (tuple[0].equals("stream"))
+					streamName = tuple[1];
+			}
+		}
 	}
 
 	public String getStreamName() {

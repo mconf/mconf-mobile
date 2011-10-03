@@ -31,6 +31,7 @@ public interface IBigBlueButtonClientListener {
 	public void onPrivateChatMessage(ChatMessage message, IParticipant source);
 	public void onConnected();
 	public void onDisconnected();
+	public void onException(Throwable throwable);
 	public void onKickUserCallback();
 	public void onParticipantLeft(IParticipant p);
 	public void onParticipantJoined(IParticipant p);
@@ -44,5 +45,4 @@ public interface IBigBlueButtonClientListener {
 	void onListenerLeft(IListener p);
 	void onListenerStatusChangeIsMuted(IListener p);
 	void onListenerStatusChangeIsTalking(IListener p);
-	
 }
