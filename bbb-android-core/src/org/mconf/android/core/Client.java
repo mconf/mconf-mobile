@@ -278,15 +278,21 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			String joinUrl = getIntent().getData().toString().replace(getResources().getString(R.string.protocol) + "://", "http://");
 			log.debug("Joining: " + joinUrl);
 			getBigBlueButton().createJoinService(joinUrl);
-			if (getBigBlueButton().getJoinService().standardJoin(joinUrl)) {
+				
+			if (getBigBlueButton().getJoinService()!=null&&getBigBlueButton().getJoinService().standardJoin(joinUrl)) 
+			{
 				username = getBigBlueButton().getJoinService().getJoinedMeeting().getFullname();
 				// can't access the moderator information from the user module because at this point, the user isn't connected to the meeting yet
 				// moderator = getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isModerator();
 				moderator = getBigBlueButton().getJoinService().getJoinedMeeting().getRole().equals("MODERATOR");
 				meetingId = getBigBlueButton().getJoinService().getJoinedMeeting().getMeetingID();
 			} else {
-				String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
-				log.debug("Joining error message: " + error);
+				if(getBigBlueButton().getJoinService()!=null){
+					String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
+					log.debug("Joining error message: " + error);
+				}
+				else
+					log.debug("null JoinService");
 				showJoinFailDialog(new JoinFailDialog(this));
 				return false;
 			}
