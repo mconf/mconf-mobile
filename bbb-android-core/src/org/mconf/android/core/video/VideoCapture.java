@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import org.mconf.android.core.BackgroundManager;
 import org.mconf.android.core.BigBlueButton;
 import org.mconf.android.core.R;
+import org.mconf.bbb.users.Participant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -276,8 +277,10 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	    	log.debug("Setting the capture frame rate to {}", mVideoPublish.frameRate);
 	    	parameters.setPreviewFrameRate(mVideoPublish.frameRate);
 	    	log.debug("Setting the capture size to {}x{}", mVideoPublish.width, mVideoPublish.height);
-	        parameters.setPreviewSize(mVideoPublish.width, mVideoPublish.height); 
-	       	mVideoPublish.mCamera.setParameters(parameters);
+	       //\TODO this seem to be crashing HTC devices and others 
+	    	//parameters.setPreviewSize(mVideoPublish.width, mVideoPublish.height); 
+	       	
+	    	mVideoPublish.mCamera.setParameters(parameters);
 	       	return CaptureConstants.E_OK;
     	} else {
     		log.debug("Error: setParameters() called without an opened camera");
@@ -394,8 +397,11 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	if(mVideoPublish.mCamera != null){
     		log.debug("Ready to start the preview but waiting for the connection to be completely established...");
     		int tries = 0;
-    		while(tries < 50 && 
-    			  !((BigBlueButton) getContext().getApplicationContext()).getHandler().getUsersModule().getParticipants().get(((BigBlueButton) getContext().getApplicationContext()).getHandler().getMyUserId()).getStatus().isHasStream()){
+    		
+    		int myId = ((BigBlueButton) getContext().getApplicationContext()).getHandler().getMyUserId();
+    		Participant myParticipant = ((BigBlueButton) getContext().getApplicationContext()).getHandler().getUsersModule().getParticipants().get(myId);
+    		while(tries < 50 &&   !myParticipant.getStatus().isHasStream()){
+  
     			synchronized(this) {
     				try {
 						this.wait(100);
@@ -405,7 +411,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     			}
     			tries++;
     		}
-    		if(!((BigBlueButton) getContext().getApplicationContext()).getHandler().getUsersModule().getParticipants().get(((BigBlueButton) getContext().getApplicationContext()).getHandler().getMyUserId()).getStatus().isHasStream()){ 
+    		if(!myParticipant.getStatus().isHasStream()){ 
     						 // Means that we waited 5000 ms (50 * 100)
     						 // but the connection was not completely established yet.
     						 // Let's start the preview anyway, because we can not
