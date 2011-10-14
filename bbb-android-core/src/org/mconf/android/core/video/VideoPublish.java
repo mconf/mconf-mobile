@@ -177,7 +177,7 @@ public class VideoPublish extends Thread implements RtmpReader {
    	    video.getHeader().setDeltaTime(interval);
 		video.getHeader().setStreamId(videoPublishHandler.videoConnection.streamId);
 		
-		if(context.getUsersModule().getParticipants().get(context.getMyUserId()).getStatus().isHasStream()
+		if(context.getUsersModule().getParticipants().get(context.getMyUserId()) !=null && context.getUsersModule().getParticipants().get(context.getMyUserId()).getStatus().isHasStream()
 		   && framesListAvailable && framesList != null){
 			framesList.add(video);
 			if(!firstFrameWrote){
