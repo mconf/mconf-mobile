@@ -458,7 +458,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     		
     		int myId = ((BigBlueButton) getContext().getApplicationContext()).getHandler().getMyUserId();
     		Participant myParticipant = ((BigBlueButton) getContext().getApplicationContext()).getHandler().getUsersModule().getParticipants().get(myId);
-    		while(tries < 50 &&   !myParticipant.getStatus().isHasStream()){
+    		while(tries < 50 && myParticipant!=null &&  !myParticipant.getStatus().isHasStream()){
   
     			synchronized(this) {
     				try {
@@ -934,8 +934,9 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     		} else if(usingFaster && mVideoPublish.mCamera != null){
     			mVideoPublish.mCamera.addCallbackBuffer(_data);
     		}
-    		if(((BigBlueButton) getContext().getApplicationContext()).getHandler().getUsersModule().getParticipants().get(((BigBlueButton) getContext().getApplicationContext()).getHandler().getMyUserId()).getStatus().isHasStream()){
-    			enqueueFrame(_data,_data.length);	
+    		Participant myParticipant = ((BigBlueButton) getContext().getApplicationContext()).getHandler().getUsersModule().getParticipants().get(((BigBlueButton) getContext().getApplicationContext()).getHandler().getMyUserId());
+	    		if(myParticipant!=null&&myParticipant.getStatus().isHasStream()){
+	    			enqueueFrame(_data,_data.length);	
     		}    		
     	}
     }
