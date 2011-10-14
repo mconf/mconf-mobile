@@ -10,3 +10,4 @@ bin/
 *.log
 *.orig
 local.properties
+mconf.keystore
