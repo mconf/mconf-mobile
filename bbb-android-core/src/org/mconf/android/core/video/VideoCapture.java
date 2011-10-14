@@ -10,17 +10,24 @@ import org.mconf.bbb.users.Participant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.ImageFormat;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
+import android.hardware.Camera.CameraInfo;
+import android.hardware.Camera.PreviewCallback;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.view.Display;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 
 public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,Camera.PreviewCallback {
@@ -212,21 +219,46 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     }
     
     private int openCameraNormalWay(){
-    	 if(mVideoPublish.mCamera != null){
-         	mVideoPublish.mCamera.release();
+    	if(mVideoPublish.mCamera != null){
+    		mVideoPublish.mCamera.release();
          	mVideoPublish.mCamera = null;
-         }         
-         
-         mVideoPublish.mCamera = Camera.open();
-         if(mVideoPublish.mCamera == null){
-        	 log.debug("Error: could not open camera");
-        	 return CaptureConstants.E_COULD_NOT_OPEN_CAMERA;
-         }
-         Camera.Parameters parameters = mVideoPublish.mCamera.getParameters();
-         parameters.set("camera-id", 2); // this command sets the front facing camera to be used
-         								 // (if the device has one). Else, it sets the default camera.
-         mVideoPublish.mCamera.setParameters(parameters);
-         return CaptureConstants.E_OK;
+    	}         
+             	
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+			int firstFrontCamera = -1;
+			int firstBackCamera = -1;
+			for (int i = 0; i < Camera.getNumberOfCameras(); ++i) {
+				CameraInfo cameraInfo = new CameraInfo();
+				Camera.getCameraInfo(i, cameraInfo);
+				switch (cameraInfo.facing) {
+					case CameraInfo.CAMERA_FACING_FRONT:
+						if (firstFrontCamera == -1) firstFrontCamera = i; break;
+					case CameraInfo.CAMERA_FACING_BACK:
+						if (firstBackCamera == -1) firstBackCamera = i; break;
+				}
+			}
+			
+			if (firstFrontCamera != -1) {
+				mVideoPublish.cameraId = firstFrontCamera;
+			} else if (firstBackCamera != -1) {
+				mVideoPublish.cameraId = firstBackCamera;
+			} else {
+				return CaptureConstants.E_COULD_NOT_OPEN_CAMERA;
+			}
+			mVideoPublish.mCamera = Camera.open(mVideoPublish.cameraId);
+			if (mVideoPublish.mCamera == null)
+				return CaptureConstants.E_COULD_NOT_OPEN_CAMERA;
+		} else {
+			mVideoPublish.mCamera = Camera.open();
+			if (mVideoPublish.mCamera == null)
+				return CaptureConstants.E_COULD_NOT_OPEN_CAMERA;
+
+			Camera.Parameters parameters = mVideoPublish.mCamera.getParameters();
+			parameters.set("camera-id", 2); // this command sets the front facing camera to be used
+	         								// (if the device has one). Else, it sets the default camera.
+			mVideoPublish.mCamera.setParameters(parameters);
+		}
+		return CaptureConstants.E_OK;
     }
     
     private int openCamera(){
@@ -274,13 +306,37 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     private int setParameters(){
     	if(mVideoPublish.mCamera != null){
 	    	Camera.Parameters parameters = mVideoPublish.mCamera.getParameters();
-	    	log.debug("Setting the capture frame rate to {}", mVideoPublish.frameRate);
-	    	parameters.setPreviewFrameRate(mVideoPublish.frameRate);
-	    	log.debug("Setting the capture size to {}x{}", mVideoPublish.width, mVideoPublish.height);
-	       //\TODO this seem to be crashing HTC devices and others 
-	    	//parameters.setPreviewSize(mVideoPublish.width, mVideoPublish.height); 
-	       	
-	    	mVideoPublish.mCamera.setParameters(parameters);
+	    	
+	    	if (!parameters.getSupportedPreviewSizes().isEmpty()) {
+	    		parameters.setPreviewSize(
+	    				parameters.getSupportedPreviewSizes().get(0).width,
+	    				parameters.getSupportedPreviewSizes().get(0).height);
+	    	}
+	    	if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD) {
+		    	if (!parameters.getSupportedPreviewFpsRange().isEmpty())
+		    		parameters.setPreviewFpsRange(
+		    				parameters.getSupportedPreviewFpsRange().get(0)[Camera.Parameters.PREVIEW_FPS_MIN_INDEX], 
+		    				parameters.getSupportedPreviewFpsRange().get(0)[Camera.Parameters.PREVIEW_FPS_MAX_INDEX]);
+//		    	parameters.set("orientation", "portrait");
+//		    	parameters.set("rotation", 180);
+	    	} else {
+	    		if (!parameters.getSupportedPreviewFrameRates().isEmpty())
+	    			parameters.setPreviewFrameRate(parameters.getSupportedPreviewFrameRates().get(0));
+	    	}
+//	    	parameters.setPreviewFormat(ImageFormat.NV21);
+
+    		mVideoPublish.mCamera.setParameters(parameters);
+//			setCameraDisplayOrientation((Activity) context, mVideoPublish.cameraId, mVideoPublish.mCamera);
+    		
+	    	parameters = mVideoPublish.mCamera.getParameters();
+	    	
+	    	parameters.setRotation(90);
+	    	mVideoPublish.frameRate = parameters.getPreviewFrameRate();
+	    	mVideoPublish.height = parameters.getPreviewSize().height;
+	    	mVideoPublish.width = parameters.getPreviewSize().width;
+	    	
+	    	log.debug("Using capture parameters: " + mVideoPublish.width + "x" + mVideoPublish.height + ", {} fps", mVideoPublish.frameRate);
+	    	    		
 	       	return CaptureConstants.E_OK;
     	} else {
     		log.debug("Error: setParameters() called without an opened camera");
@@ -291,8 +347,10 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     private int getBufferSize(){
     	if(mVideoPublish.mCamera != null){
 	    	PixelFormat pixelFormat = new PixelFormat();
-	 		PixelFormat.getPixelFormatInfo(mVideoPublish.mCamera.getParameters().getPreviewFormat(),pixelFormat);
-	 		return mVideoPublish.width*mVideoPublish.height*pixelFormat.bitsPerPixel/8;
+	    	Camera.Parameters param = mVideoPublish.mCamera.getParameters();
+	 		PixelFormat.getPixelFormatInfo(param.getPreviewFormat(), pixelFormat);
+	 		int buffersize = (param.getPreviewSize().width * param.getPreviewSize().height * pixelFormat.bitsPerPixel) / 8;
+	 		return buffersize;
     	} else {
     		log.debug("Error: getBufferSize() called without an opened camera");
     		return CaptureConstants.E_COULD_NOT_GET_BUFSIZE;
@@ -530,7 +588,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	
     	// gets the size of a non encoded frame
     	mVideoPublish.bufSize = getBufferSize();
-    	if(mVideoPublish.bufSize < CaptureConstants.E_OK){
+    	if(mVideoPublish.bufSize < 0){
     		mVideoPublish.state = CaptureConstants.ERROR;
     		return mVideoPublish.bufSize;
     	}
@@ -883,4 +941,30 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     }
     
 	private native int enqueueFrame(byte[] data, int length);
+	
+	public static void setCameraDisplayOrientation(Activity activity,
+			int cameraId, android.hardware.Camera camera) {
+		android.hardware.Camera.CameraInfo info =
+				new android.hardware.Camera.CameraInfo();
+		android.hardware.Camera.getCameraInfo(cameraId, info);
+		int rotation = activity.getWindowManager().getDefaultDisplay()
+				.getRotation();
+		int degrees = 0;
+		switch (rotation) {
+			case Surface.ROTATION_0: degrees = 0; break;
+			case Surface.ROTATION_90: degrees = 90; break;
+			case Surface.ROTATION_180: degrees = 180; break;
+			case Surface.ROTATION_270: degrees = 270; break;
+		}
+
+		int result;
+		if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+			result = (info.orientation + degrees) % 360;
+			result = (360 - result) % 360;  // compensate the mirror
+		} else {  // back-facing
+			result = (info.orientation - degrees + 360) % 360;
+		}
+		
+		camera.setDisplayOrientation(result);
+	}
 }

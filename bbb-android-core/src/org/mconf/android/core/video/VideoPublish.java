@@ -88,6 +88,8 @@ public class VideoPublish extends Thread implements RtmpReader {
     											 // addition of new frames to the list.
     
     private boolean firstFrameWrote = false;
+
+	public int cameraId = -1;
 	        
     public VideoPublish(BigBlueButtonClient context, boolean restartWhenResume, int frameRate, int width, int height, int bitRate, int GOP) {
     	this.context = context;    	 
@@ -138,7 +140,7 @@ public class VideoPublish extends Thread implements RtmpReader {
     										    //So it would be good if we find out the biggest encoded
     											//frame size possible (given the encoding parameters)
     											//in order to initialize the sharedBuffer array as a byte[]
-    											//of the smaller size as possible, to alocate less memory.
+    											//of the smaller size as possible, to allocate less memory.
     	
     	initEncoder(width, height, frameRate, bitRate, GOP);
     	

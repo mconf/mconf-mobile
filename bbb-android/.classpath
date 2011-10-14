@@ -3,6 +3,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry kind="src" path="bbb-android-core_src"/>
+	<classpathentry kind="src" path="sipdroid_src"/>
 	<classpathentry exported="true" kind="lib" path="/bbb-android-core/libs/acra-4.2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="/bbb-android-core/libs/slf4j-android-1.6.1-RC1.jar"/>
 	<classpathentry exported="true" kind="lib" path="/bbb-android-core/libs/commons-cli-1.2.jar"/>
@@ -13,7 +15,5 @@
 	<classpathentry exported="true" kind="lib" path="/bbb-android-core/libs/netty-3.2.4.Final.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/bbb-java"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/flazr"/>
-	<classpathentry kind="src" path="bbb-android-core_src"/>
-	<classpathentry kind="src" path="sipdroid_src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
