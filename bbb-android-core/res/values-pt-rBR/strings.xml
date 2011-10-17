@@ -118,4 +118,5 @@
     <string name="report_crash_title">Enviar dados anônimos</string>
     <string name="report_crash_message">Nós coletamos informações anônimas caso o aplicativo feche inesperadamente a fim de identificar e corrigir o problema. Você concorda em enviar informações anônimas?</string>
 
+	<string name="chat_module_problem">O Módulo de Chat apresentou um problema e será fechado</string>
 </resources> 

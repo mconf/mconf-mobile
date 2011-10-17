@@ -113,4 +113,5 @@ BBB-Android is an Android implementation of the BigBlueButton client.
     <string name="report_crash_title">Send anonymous data</string>
     <string name="report_crash_message">We collect anonymous data when the application crashes in order to trace and solve the problem. Do you agree with sending error data?</string>
 
+	 <string name="chat_module_problem">The Chat Module presented a problem and will be closed</string>
 </resources>
