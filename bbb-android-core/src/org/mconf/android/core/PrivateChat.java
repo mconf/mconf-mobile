@@ -374,14 +374,27 @@ public class PrivateChat extends BigBlueButtonActivity {
 		RemoteParticipant p = participants.get(userId);
 
 		if (p == null)
-			p = createParticipant(userId, username, notified);
-		//		else
-		//			changeView(flipper.indexOfChild(flipper.findViewById(p.getViewId())));
+		{
+			if(getBigBlueButton().getChatModule()!=null)
+				p = createParticipant(userId, username, notified);
+			else
+				chatModuleUnconnected();//will finish the activity
+			
+		}
 
 		log.debug("displaying view of userId=" + userId + " and username=" + username);
 
 		flipper.setDisplayedChild(p.getViewId());
 		cancelNotification(userId);
+	}
+	
+	private void chatModuleUnconnected()
+	{
+		Toast.makeText(getApplicationContext(), R.string.chat_module_problem, Toast.LENGTH_SHORT);
+		Intent bringBackClient = new Intent(this, Client.class);
+		bringBackClient.setAction(Client.BACK_TO_CLIENT);
+		startActivity(bringBackClient);
+		finish(); 
 	}
 
 	private void orientationChanged() {
@@ -621,6 +634,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		else
 			chatClosed.putExtra("userId", -1);
 		sendBroadcast(chatClosed);
+		
 		if(participants.size()>1)
 		{
 			do{
@@ -634,7 +648,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		else 
 		{
 			removeParticipant(getParticipantKeyByViewId(viewID));
-			Intent bringBackClient = new Intent(getApplicationContext(), Client.class);
+			Intent bringBackClient = new Intent(this, Client.class);
 			bringBackClient.setAction(Client.BACK_TO_CLIENT);
 			startActivity(bringBackClient);
 			finish(); 
