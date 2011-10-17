@@ -24,7 +24,7 @@
         <sequential>
 			<exec executable="bash" dir="@{dir}" failonerror="true">
 				<arg value="-c" />
-				<arg value="${android.exec} update lib-project --path . --target android-8 @{params}" />
+				<arg value="${android.exec} update lib-project --path . --target android-9 @{params}" />
 			</exec>
 			<build-android dir="@{dir}" />
             <ant target="compile" dir="@{dir}" />
@@ -37,7 +37,7 @@
         <sequential>
 			<exec executable="bash" dir="@{dir}" failonerror="true">
 				<arg value="-c" />
-				<arg value="${android.exec} update project --name @{dir} --path . --target android-8 @{params}" />
+				<arg value="${android.exec} update project --name @{dir} --path . --target android-9 @{params}" />
 			</exec>
 			<build-android dir="@{dir}" />
 			<ant target="debug" dir="@{dir}" />
