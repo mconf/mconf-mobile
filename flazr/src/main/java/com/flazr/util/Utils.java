@@ -30,9 +30,11 @@ import java.net.Socket;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 
 public class Utils {
@@ -174,18 +176,16 @@ public class Utils {
     }
 
     public static String getOverHttp(String url) {
-        HttpClient client = new HttpClient();
-        String response = null;
-        HttpMethod get = new GetMethod(url);
-        try {
-            client.executeMethod(get);
-            response = get.getResponseBodyAsString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            get.releaseConnection();
-        }
-        return response;
+    	HttpClient client = new DefaultHttpClient();
+		HttpGet method = new HttpGet(url);
+		String result = null;
+		try {
+			HttpResponse response = client.execute(method);
+			result = EntityUtils.toString(response.getEntity());
+		} catch (Exception e) {
+            e.printStackTrace();			
+		}
+		return result;
     }
 
     public static byte[] sha256(final byte[] message, final byte[] key) {

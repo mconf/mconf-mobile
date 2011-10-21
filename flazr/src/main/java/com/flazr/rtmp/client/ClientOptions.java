@@ -19,33 +19,23 @@
 
 package com.flazr.rtmp.client;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.flazr.rtmp.RtmpHandshake;
 import com.flazr.rtmp.RtmpReader;
 import com.flazr.rtmp.RtmpWriter;
 import com.flazr.rtmp.server.ServerStream;
 import com.flazr.rtmp.server.ServerStream.PublishType;
 import com.flazr.util.Utils;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.Options;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ClientOptions {
 
@@ -73,7 +63,7 @@ public class ClientOptions {
     private int loop = 1;
     private int threads = 10;
     private List<ClientOptions> clientOptionsList;
-
+/*
     public static void main(String[] args) {
         ClientOptions co = new ClientOptions();
         co.parseCli(new String[]{
@@ -82,7 +72,7 @@ public class ClientOptions {
         });
         RtmpClient.connect(co);
     }
-
+*/
     public ClientOptions() {}
 
     public ClientOptions(String host, String appName, String streamName, String saveAs) {
@@ -155,7 +145,7 @@ public class ClientOptions {
     }
 
     //==========================================================================
-    
+/*    
     protected static Options getCliOptions() {
         final Options options = new Options();
         options.addOption(new Option("help", "print this message"));
@@ -311,7 +301,7 @@ public class ClientOptions {
         logger.info("options: {}", this);
         return true;
     }
-
+*/
     //==========================================================================
 
     public int getLoad() {

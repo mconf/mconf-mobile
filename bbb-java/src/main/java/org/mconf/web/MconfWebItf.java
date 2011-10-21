@@ -3,7 +3,7 @@ package org.mconf.web;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.httpclient.HttpException;
+import org.apache.http.HttpException;
 import org.json.JSONException;
 
 public interface MconfWebItf {

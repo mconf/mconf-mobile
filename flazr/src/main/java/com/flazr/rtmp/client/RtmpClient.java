@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class RtmpClient {
 
     private static final Logger logger = LoggerFactory.getLogger(RtmpClient.class);
-
+/*
     public static void main(String[] args) {
         System.out.println();
         final ClientOptions options = new ClientOptions();
@@ -83,7 +83,7 @@ public class RtmpClient {
         }
         // TODO graceful shutdown
     }
-
+*/
     public static void connect(final ClientOptions options) {  
         final ClientBootstrap bootstrap = getBootstrap(Executors.newCachedThreadPool(), options);
         final ChannelFuture future = bootstrap.connect(new InetSocketAddress(options.getHost(), options.getPort()));

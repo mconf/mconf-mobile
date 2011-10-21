@@ -22,12 +22,13 @@
         <attribute name="dir"/>
     	<attribute name="params" default="" />
         <sequential>
+			<delete file="@{dir}/build.xml" />
 			<exec executable="bash" dir="@{dir}" failonerror="true">
 				<arg value="-c" />
 				<arg value="${android.exec} update lib-project --path . --target android-9 @{params}" />
 			</exec>
 			<build-android dir="@{dir}" />
-            <ant target="compile" dir="@{dir}" />
+            <ant target="debug" dir="@{dir}" />
         </sequential>
     </macrodef>
 	
@@ -35,6 +36,7 @@
         <attribute name="dir"/>
     	<attribute name="params" default="" />
         <sequential>
+			<delete file="@{dir}/build.xml" />
 			<exec executable="bash" dir="@{dir}" failonerror="true">
 				<arg value="-c" />
 				<arg value="${android.exec} update project --name @{dir} --path . --target android-9 @{params}" />
@@ -117,15 +119,15 @@
 				<include name="bbb-java-git.jar" />
 			</fileset>
 			<fileset dir="bbb-java/lib">
-				<include name="JSON-java.jar" />
+				<include name="*.jar" />
 			</fileset>
 			<fileset dir="flazr/target/flazr/lib">
-				<include name="flazr-git.jar" />
-				<include name="netty-3.2.4.Final.jar" />
-				<include name="commons-cli-1.2.jar" />
-				<include name="commons-codec-1.2.jar" />
-				<include name="commons-httpclient-3.1.jar" />
-				<include name="jcl104-over-slf4j-1.4.2.jar" />
+				<include name="*.jar" />
+				<exclude name="slf4j*.jar" />
+				<exclude name="log4j*.jar" />
+				<exclude name="httpclient*.jar" />
+				<exclude name="httpcore*.jar" />
+				<exclude name="junit*.jar" />
 			</fileset>
 		</copy>
 		
@@ -178,4 +180,12 @@
 	
 	<target name="build-all" depends="build-bbb-android, build-mconf-mobile" />
 	<target name="test-all" depends="test-flazr, test-bbb-java, test-bbb-android" /> 
+	<target name="clean-all">
+        <ant target="clean" dir="flazr" />
+        <ant target="clean" dir="bbb-java" />
+        <ant target="clean" dir="sipdroid" />
+        <ant target="clean" dir="bbb-android-core" />
+        <ant target="clean" dir="bbb-android" />
+        <ant target="clean" dir="mconf-mobile" />
+	</target>
 </project>

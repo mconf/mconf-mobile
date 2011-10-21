@@ -65,5 +65,10 @@
 	    <jar destfile="${target.lib.dir}/${ant.project.name}-git.jar">
 	        <fileset dir="${classes.dir}"/>
 	    </jar>
+		<copy toDir="${target.lib.dir}">
+			<fileset dir="${lib.dir}">
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
 	</target>
 </project>

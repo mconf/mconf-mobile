@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.List;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,7 +107,7 @@ public abstract class JoinServiceBase {
 			
 		joinedMeeting = new JoinedMeeting();
 		try {
-			HttpClient client = new HttpClient();
+			HttpClient client = new DefaultHttpClient();
 			getUrl(client, joinUrl);
 			joinedMeeting.parse(getUrl(client, enterUrl));
 		} catch (Exception e) {
@@ -168,26 +171,25 @@ public abstract class JoinServiceBase {
 		return null;
 	}
 	
-	protected static String getUrl(String url) throws HttpException, IOException {
-		HttpClient client = new HttpClient();
+	protected static String getUrl(String url) throws IOException, ClientProtocolException {
+    	HttpClient client = new DefaultHttpClient();
 		return getUrl(client, url);
 	}
 	
-	protected static String getUrl(HttpClient client, String url) throws HttpException, IOException {
-		HttpMethod method = new GetMethod(url);
-		int returncode = client.executeMethod(method);
-		if (returncode != 200)
-			log.debug("HTTP GET {} return {}", url, returncode);
-		String response = method.getResponseBodyAsString().trim();
-		method.releaseConnection();
-//		log.debug("HTTP GET response\n{}", response);
-		return response;
+	protected static String getUrl(HttpClient client, String url) throws IOException, ClientProtocolException {
+		HttpGet method = new HttpGet(url);
+		HttpResponse httpResponse = client.execute(method);
+		
+		if (httpResponse.getStatusLine().getStatusCode() != 200)
+			log.debug("HTTP GET {} return {}", url, httpResponse.getStatusLine().getStatusCode());
+		
+		return EntityUtils.toString(httpResponse.getEntity());
 	}
 
 	protected static String checksum(String s) {
 		String checksum = "";
 		try {
-			checksum = org.apache.commons.codec.digest.DigestUtils.shaHex(s);
+			checksum = DigestUtils.shaHex(s);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

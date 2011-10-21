@@ -5,9 +5,6 @@ import java.io.ByteArrayInputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -109,11 +106,7 @@ public class JoinService0Dot8 extends JoinServiceBase {
 		log.debug("timestampUrl=" + timestampUrl);
 		String response = "Unknown error";
 		try {
-			HttpClient client = new HttpClient();
-			HttpMethod method = new GetMethod(timestampUrl);
-			client.executeMethod(method);
-			response = method.getResponseBodyAsString().trim();
-			method.releaseConnection();
+			response = getUrl(timestampUrl);
 			parseTimestamp(response);
 			log.debug("timestamp:{}",timestamp);
 			return true;

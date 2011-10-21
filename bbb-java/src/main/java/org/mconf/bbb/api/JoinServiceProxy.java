@@ -5,9 +5,11 @@ import java.io.ByteArrayInputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -69,14 +71,14 @@ public class JoinServiceProxy {
 	
 	public static String getBigBlueButtonVersion(String serverUrl) {
 		try {
-			HttpClient client = new HttpClient();
-			HttpMethod method = new GetMethod(serverUrl + "/bigbluebutton/api");
-			if (client.executeMethod(method) != 200) {
-				method.releaseConnection();
+	    	HttpClient client = new DefaultHttpClient();
+			HttpGet method = new HttpGet(serverUrl + "/bigbluebutton/api");
+			HttpResponse httpResponse = client.execute(method);
+			
+			if (httpResponse.getStatusLine().getStatusCode() != 200)
 				return null;
-			}
-			String response = method.getResponseBodyAsString().trim();
-			method.releaseConnection();
+			
+			String response = EntityUtils.toString(httpResponse.getEntity());
 			
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();

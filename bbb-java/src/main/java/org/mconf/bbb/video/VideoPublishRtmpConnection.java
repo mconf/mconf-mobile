@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
@@ -39,33 +38,25 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.RtmpConnection;
-import org.mconf.bbb.api.JoinedMeeting;
 import org.red5.server.so.SharedObjectMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.flazr.amf.Amf0Object;
-import com.flazr.io.flv.FlvAtom;
 import com.flazr.io.flv.FlvWriter;
 import com.flazr.rtmp.LoopedReader;
 import com.flazr.rtmp.RtmpDecoder;
 import com.flazr.rtmp.RtmpEncoder;
-import com.flazr.rtmp.RtmpHeader;
 import com.flazr.rtmp.RtmpMessage;
 import com.flazr.rtmp.RtmpPublisher;
 import com.flazr.rtmp.RtmpReader;
-import com.flazr.rtmp.RtmpWriter;
 import com.flazr.rtmp.client.ClientHandshakeHandler;
 import com.flazr.rtmp.client.ClientOptions;
-import com.flazr.rtmp.message.AbstractMessage;
 import com.flazr.rtmp.message.BytesRead;
 import com.flazr.rtmp.message.ChunkSize;
 import com.flazr.rtmp.message.Command;
-import com.flazr.rtmp.message.CommandAmf0;
 import com.flazr.rtmp.message.Control;
 import com.flazr.rtmp.message.Metadata;
 import com.flazr.rtmp.message.SetPeerBw;
-import com.flazr.rtmp.message.Video;
 import com.flazr.rtmp.message.WindowAckSize;
 
 public class VideoPublishRtmpConnection extends RtmpConnection {
@@ -98,43 +89,12 @@ public class VideoPublishRtmpConnection extends RtmpConnection {
 
 	@Override
 	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
-		Amf0Object object = AbstractMessage.object(
-                AbstractMessage.pair("app", options.getAppName()),
-                AbstractMessage.pair("flashVer", "WIN 9,0,124,2"),
-                AbstractMessage.pair("tcUrl", options.getTcUrl()),
-                AbstractMessage.pair("fpad", false),
-                AbstractMessage.pair("audioCodecs", 1639.0),
-                AbstractMessage.pair("videoCodecs", 252.0),
-                AbstractMessage.pair("objectEncoding", 0.0),
-                AbstractMessage.pair("capabilities", 15.0),
-                AbstractMessage.pair("videoFunction", 1.0));
-
-//        JoinedMeeting meeting = context.getJoinService().getJoinedMeeting();
-//        Command connect = new CommandAmf0("connect", object, meeting.getFullname(), meeting.getRole(), meeting.getConference(), meeting.getMode(), meeting.getRoom(), meeting.getVoicebridge(), meeting.getRecord().equals("true"), meeting.getExternUserID());
         Command connect = Command.connect(options);
 
         writeCommandExpectingResult(e.getChannel(), connect);
 	}
-	
-    @SuppressWarnings("unchecked")
-	public String connectGetCode(Command command) {
-    	return ((Map<String, Object>) command.getArg(0)).get("code").toString();
-    }
-	
-    public void doGetMyUserId(Channel channel) {
-    	Command command = new CommandAmf0("getMyUserId", null);
-    	writeCommandExpectingResult(channel, command);
-    }
-    
-    public boolean onGetMyUserId(String resultFor, Command command) {
-    	if (resultFor.equals("getMyUserId")) {
-	    	context.setMyUserId(Integer.parseInt((String) command.getArg(0)));
-	    	return true;
-    	} else
-    		return false;
-    }
-           
-    @Override
+
+	@Override
     public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent me) {
     	if(publisher != null && publisher.handle(me)) {
         	return;

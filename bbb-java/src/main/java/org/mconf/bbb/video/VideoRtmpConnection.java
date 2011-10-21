@@ -115,24 +115,6 @@ public class VideoRtmpConnection extends RtmpConnection {
         writeCommandExpectingResult(e.getChannel(), connect);
 	}
 	
-    @SuppressWarnings("unchecked")
-	public String connectGetCode(Command command) {
-    	return ((Map<String, Object>) command.getArg(0)).get("code").toString();
-    }
-	
-    public void doGetMyUserId(Channel channel) {
-    	Command command = new CommandAmf0("getMyUserId", null);
-    	writeCommandExpectingResult(channel, command);
-    }
-    
-    public boolean onGetMyUserId(String resultFor, Command command) {
-    	if (resultFor.equals("getMyUserId")) {
-	    	context.setMyUserId(Integer.parseInt((String) command.getArg(0)));
-	    	return true;
-    	} else
-    		return false;
-    }
-    
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent me) {
         final Channel channel = me.getChannel();
@@ -212,27 +194,6 @@ public class VideoRtmpConnection extends RtmpConnection {
                     log.warn("ignoring server command: {}", command);
                 }
                 break;
-//	                	String code = connectGetCode(command);
-//	                	if (code.equals("NetConnection.Connect.Success"))
-//	                		doGetMyUserId(channel);
-//	                	else {
-//	                		log.error("method connect result in {}, quitting", code);
-//	                		channel.close();
-//	                	}
-//	                	return;
-//	                } else if (onGetMyUserId(resultFor, command)) {
-//	                	context.createUsersModule(this, channel);
-//	                	break;
-//	                } 
-//	                context.onCommand(resultFor, command);
-//                	break;
-//	            }
-//	            break;
-//	            
-//	        case SHARED_OBJECT_AMF0:
-//	        case SHARED_OBJECT_AMF3:
-//	        	onSharedObject(channel, (SharedObjectMessage) message);
-//	        	break;
             case BYTES_READ:
                 log.info("ack from server: {}", message);
                 break;

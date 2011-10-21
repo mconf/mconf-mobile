@@ -51,7 +51,7 @@ public class LoginPage extends BigBlueButtonActivity {
 	private static final int E_NOT_AUTHENTICATED = 1;
 	private static final int E_CANNOT_CONTACT_SERVER = 2;
 	
-	private final String DEFAULT_SERVER = "http://mconf.org";
+	private final String DEFAULT_SERVER = "https://mconf.org";
 	private Authentication auth = null;
 	private String authUsername, authPassword;
 	private ArrayAdapter<String> spinnerAdapter;

@@ -2,7 +2,8 @@ package org.mconf.web;
 
 import java.io.IOException;
 
-import org.apache.commons.httpclient.HttpException;
+import org.apache.http.HttpException;
+
 
 public interface MconfWebServiceItf {
 	

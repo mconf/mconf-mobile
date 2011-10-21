@@ -16,18 +16,14 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.ImageFormat;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
-import android.hardware.Camera.PreviewCallback;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.view.Display;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 
 public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,Camera.PreviewCallback {
@@ -317,6 +313,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 		    		parameters.setPreviewFpsRange(
 		    				parameters.getSupportedPreviewFpsRange().get(0)[Camera.Parameters.PREVIEW_FPS_MIN_INDEX], 
 		    				parameters.getSupportedPreviewFpsRange().get(0)[Camera.Parameters.PREVIEW_FPS_MAX_INDEX]);
+//		    	parameters.setRotation(90);
 //		    	parameters.set("orientation", "portrait");
 //		    	parameters.set("rotation", 180);
 	    	} else {
@@ -330,7 +327,6 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     		
 	    	parameters = mVideoPublish.mCamera.getParameters();
 	    	
-	    	parameters.setRotation(90);
 	    	mVideoPublish.frameRate = parameters.getPreviewFrameRate();
 	    	mVideoPublish.height = parameters.getPreviewSize().height;
 	    	mVideoPublish.width = parameters.getPreviewSize().width;
