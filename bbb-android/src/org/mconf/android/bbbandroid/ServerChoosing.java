@@ -148,7 +148,6 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 			}
 		});
 		addServer("http://demo.bigbluebutton.org", "03b07");
-		addServer("http://mconf.org:8888", "");
 	}
 
 	private void addServer(final String newServer, final String serverPassword) {	
