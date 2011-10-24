@@ -26,7 +26,7 @@ public class Common {
 	public final static String DEFAULT_NAME = "My name";
 	public final static String DEFAULT_TEST_USERS_NAME = "User []";
 	public final static String DEFAULT_TEST_ROOM = "Test meeting";
-	public final static String DEFAULT_SERVER = "http://143.54.85.35:8888";
+	public final static String DEFAULT_SERVER = "http://mconf.org:8888";
 	public final static String DEFAULT_PASSWORD = "03b07";
 	public final static int TIMEOUT_SMALL = 5000;
 	public final static int SLEEP_SMALL = 1000;
