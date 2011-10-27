@@ -93,7 +93,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public static final int MENU_MEETING_INF = Menu.FIRST + 13;
 	public static final int MENU_START_VIDEO = Menu.FIRST + 14;
 	public static final int MENU_STOP_VIDEO = Menu.FIRST + 15;
-
+	public static final int MENU_RESTART_VIDEO = Menu.FIRST + 16;
+	
 	public static final int POPUP_MENU_KICK_USER = Menu.FIRST;
 	public static final int POPUP_MENU_MUTE_LISTENER = Menu.FIRST + 1;
 	public static final int POPUP_MENU_SET_PRESENTER = Menu.FIRST + 2;
@@ -655,11 +656,13 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, R.string.start_voice).setIcon(android.R.drawable.ic_btn_speak_now);
 			}
 			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
-			if (mVideoCapture.isCapturing() && getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).getStatus().isHasStream()){
+			if (mVideoCapture.isCapturing()&&getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).getStatus().isHasStream()){
 				menu.add(Menu.NONE, MENU_STOP_VIDEO, Menu.NONE, R.string.stop_video).setIcon(android.R.drawable.ic_media_pause);
 			} else if(!mVideoCapture.isCapturing() && !getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).getStatus().isHasStream()) {
 				menu.add(Menu.NONE, MENU_START_VIDEO, Menu.NONE, R.string.start_video).setIcon(android.R.drawable.ic_media_play);
 			}
+			else if(!mVideoCapture.isCapturing() && getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).getStatus().isHasStream())
+				menu.add(Menu.NONE, MENU_RESTART_VIDEO, Menu.NONE, R.string.restart_video).setIcon(android.R.drawable.ic_media_play);
 			if (getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isRaiseHand())
 				menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.lower_hand).setIcon(android.R.drawable.ic_menu_myplaces);
 			else
@@ -695,6 +698,10 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			mVideoCapture.startCapture();
 			return true;	
 			
+		case MENU_RESTART_VIDEO:	
+			VideoCapture mVideoCapture2 = (VideoCapture) findViewById(R.id.video_capture);
+			mVideoCapture2.restartCapture();
+			return true;
 		case MENU_STOP_VIDEO:
 			VideoCapture mVideoCapture1 = (VideoCapture) findViewById(R.id.video_capture);
 			mVideoCapture1.stopCapture();			

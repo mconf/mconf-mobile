@@ -52,7 +52,9 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 										   // true when: the preview is being shown on a Dialog
 										   // false otherwise
     
-    private boolean usingFaster, usingHidden;											
+    private boolean usingFaster, usingHidden;
+
+	private boolean restarted;											
 	
 	public VideoCapture(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -662,8 +664,22 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	return err;
     }
     
-    public void stopCapture(){ 
-    	if(isCapturing()){
+    public void restartCapture()
+    {
+    	setRestarted(true);
+    	stopCapture();
+    	startCapture();
+    	setRestarted(false);
+    }
+    
+    
+    private void setRestarted(boolean restarted) {
+		this.restarted=restarted;
+		
+	}
+
+	public void stopCapture(){ 
+    	if(isCapturing()|| isRestarted()){
         	NativeLibsLoader.loadCaptureLibs(context.getPackageName());
     		
 	    	pauseCapture();
@@ -685,7 +701,11 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     	}
     }
     
-    private void pauseCapture(){
+    private boolean isRestarted() {
+		return restarted;
+	}
+
+	private void pauseCapture(){
     	if(mVideoPublish != null && mVideoPublish.mCamera != null && 
     			!(mVideoPublish.state == CaptureConstants.PAUSED)){
     		mVideoPublish.state = CaptureConstants.PAUSED;

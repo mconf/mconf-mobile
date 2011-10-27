@@ -27,6 +27,7 @@
 	<string name="stop_voice">Stop voice</string>
 
 	<string name="start_video">Start video</string>
+	<string name="restart_video">Restart video</string>
 	<string name="stop_video">Stop video</string>
     <string name="publishing_video">Your camera is being published to the session</string>
 
