@@ -36,7 +36,6 @@ import org.sipdroid.sipua.UserAgent;
 import org.sipdroid.sipua.UserAgentProfile;
 import org.sipdroid.sipua.ui.Receiver;
 import org.sipdroid.sipua.ui.Settings;
-import org.sipdroid.sipua.ui.Sipdroid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zoolu.net.IpAddress;
@@ -57,7 +56,6 @@ import org.zoolu.tools.Parser;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.media.AudioManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -77,7 +75,9 @@ public class VoiceModule implements ExtendedCallListener {
 	protected OnCallListener listener;
 
 	public static final int E_OK = 0;
-	public static final int E_INVALID_NUMBER = 1; 
+	public static final int E_INVALID_NUMBER = 1;
+	public static final int E_TIMEOUT = 2; 
+
 
 	public VoiceModule(Context context, String username, String url) {
 		Receiver.mContext = context;
@@ -185,8 +185,12 @@ public class VoiceModule implements ExtendedCallListener {
 	}
 	
 	public void hang() {
-		if (call != null && call.isOnCall())
-			call.hangup();
+		if (call != null) {
+			if (call.isOnCall())
+				call.hangup();
+			else
+				call.cancel();
+		}
 	}
 	
 	private void onHang() {

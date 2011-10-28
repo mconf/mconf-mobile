@@ -42,6 +42,7 @@ import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -680,9 +681,49 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case MENU_START_VOICE:
-			int ret = getVoiceModule().call(getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge());
-			if (ret == VoiceModule.E_INVALID_NUMBER)
-				Toast.makeText(this, "\"" + getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge() + "\" " + getResources().getString(R.string.invalid_number), Toast.LENGTH_SHORT).show();
+			new AsyncTask<String, Integer, Integer>() {
+				private ProgressDialog dialog;
+				protected void onPreExecute() {
+					dialog = new ProgressDialog(Client.this);
+					dialog.setTitle(R.string.wait);
+					dialog.setMessage(getResources().getString(R.string.voice_connecting));
+					dialog.setIndeterminate(true);
+					dialog.setCancelable(false);
+					dialog.show();
+				};
+				
+				@Override
+				protected Integer doInBackground(String... params) {
+					int ret = getVoiceModule().call(params[0]);
+					if (ret != VoiceModule.E_OK)
+						return ret;
+					
+					int cont = 10;
+					while (!getVoiceModule().isOnCall() && cont > 0) {
+						SystemClock.sleep(500);
+						cont--;
+					}
+					if (cont == 0) {
+						getVoiceModule().hang();
+						return VoiceModule.E_TIMEOUT;
+					} else {
+						return VoiceModule.E_OK;
+					}
+				}
+				
+				protected void onPostExecute(Integer result) {
+					dialog.dismiss();
+					switch (result) {
+					case VoiceModule.E_INVALID_NUMBER:
+						makeToast("\"" + getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge() + "\" " + getResources().getString(R.string.invalid_number));
+						break;
+					case VoiceModule.E_TIMEOUT:
+						makeToast(R.string.voice_connection_timeout);
+						break;
+					}
+				};
+			}.execute(getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge());
+			
 			return true;
 
 		case MENU_STOP_VOICE:
