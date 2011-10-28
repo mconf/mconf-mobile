@@ -26,7 +26,6 @@
 	<string name="start_voice">Iniciar voz</string>
 	<string name="stop_voice">Parar voz</string>
 
-	<string name="restart_video">Reiniciar video</string>
 	<string name="start_video">Iniciar video</string>
 	<string name="stop_video">Parar video</string>
     <string name="publishing_video">Seu vídeo está sendo transmitido para a sessão</string>
