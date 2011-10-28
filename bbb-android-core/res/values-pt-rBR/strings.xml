@@ -88,7 +88,7 @@
     <string name="disconnected">Você foi desconectado</string>
 
 	<string name="about">
-		BBB-Android é uma implementação do cliente BigBlueButton para Android.
+		Esse aplicativo é uma implementação do cliente BigBlueButton para Android.
 		\n
 		\nVersão ${VERSION}
 		\n

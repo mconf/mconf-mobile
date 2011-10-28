@@ -88,7 +88,7 @@
 	<string name="moderator_count">Moderator count</string>
     <string name="voicebridge_number">Voice bridge number</string>
 	<string name="about">
-BBB-Android is an Android implementation of the BigBlueButton client.
+This application is an Android implementation of the BigBlueButton client.
 \n
 \nVersion ${VERSION}
 \n
