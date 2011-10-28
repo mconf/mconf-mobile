@@ -115,6 +115,9 @@ BBB-Android is an Android implementation of the BigBlueButton client.
 
 	<string name="chat_module_problem">The Chat Module presented a problem and will be closed</string>
 	
-    <string name="voice_connecting">Connecting to the voice conference</string>
-    <string name="voice_connection_timeout">Voice connection timeout</string>
+	<string name="voice_connecting">Connecting to the voice conference</string>
+	<string name="voice_connection_timeout">Voice connection timeout</string>
+    
+	<string name="video_initializing">Starting video capture</string>
+	<string name="video_failed">Video capture failed. Error ${ERROR}</string>
 </resources>

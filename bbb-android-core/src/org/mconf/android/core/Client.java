@@ -22,6 +22,7 @@
 package org.mconf.android.core;
 
 import org.acra.ErrorReporter;
+import org.mconf.android.core.video.CaptureConstants;
 import org.mconf.android.core.video.VideoCapture;
 import org.mconf.android.core.video.VideoCaptureLayout;
 import org.mconf.android.core.video.VideoDialog;
@@ -732,8 +733,35 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			return true;
 			
 		case MENU_START_VIDEO:
-			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
-			mVideoCapture.startCapture();
+			new AsyncTask<Void, Integer, Integer>() {
+				private ProgressDialog dialog;
+				protected void onPreExecute() {
+					dialog = new ProgressDialog(Client.this);
+					dialog.setTitle(R.string.wait);
+					dialog.setMessage(getResources().getString(R.string.video_initializing));
+					dialog.setIndeterminate(true);
+					dialog.setCancelable(false);
+					dialog.show();
+				};
+				
+				@Override
+				protected Integer doInBackground(Void... params) {
+					VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
+					return mVideoCapture.startCapture();
+				}
+				
+				protected void onPostExecute(Integer result) {
+					dialog.dismiss();
+					switch (result) {
+					case CaptureConstants.E_OK:
+						break;
+					default:
+						makeToast(getResources().getString(R.string.video_failed).replace("${ERROR}", result.toString()));
+					}
+				}
+
+			}.execute();			
+			
 			return true;	
 			
 		case MENU_STOP_VIDEO:

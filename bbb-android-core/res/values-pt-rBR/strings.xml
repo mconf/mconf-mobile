@@ -122,4 +122,7 @@
 
     <string name="voice_connecting">Conectando à conferência de voz</string>
     <string name="voice_connection_timeout">Tempo limite da conexão atingido</string>
+
+	<string name="video_initializing">Inicializando captura de vídeo</string>
+	<string name="video_failed">Falha na captura de vídeo. Erro ${ERROR}</string>
 </resources> 
