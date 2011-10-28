@@ -188,4 +188,9 @@
         <ant target="clean" dir="bbb-android" />
         <ant target="clean" dir="mconf-mobile" />
 	</target>
+	
+	<target name="release" depends="clean-all, build-bbb-android-core">
+		<ant target="release" dir="mconf-mobile" />
+		<ant target="release" dir="bbb-android" />
+	</target>
 </project>
