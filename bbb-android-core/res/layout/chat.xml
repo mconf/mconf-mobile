@@ -9,15 +9,9 @@
 		android:layout_width="fill_parent" android:layout_height="2dp"
 		android:background="@color/title_background"
 		android:layout_alignParentTop="true" />
-	<TextView android:id="@+id/userID" android:layout_height="wrap_content"
-		android:layout_width="wrap_content" android:visibility="invisible"></TextView>
-
-	<TextView android:id="@+id/chatName" android:layout_height="wrap_content"
-		android:layout_width="fill_parent" android:layout_alignParentRight="true"
-		android:layout_alignParentLeft="true" android:layout_alignParentTop="true"></TextView>
 	<ListView android:layout_height="fill_parent"
-		android:layout_above="@+id/bottom_bar" android:layout_below="@+id/chatName"
-		android:layout_alignLeft="@+id/chatName" android:dividerHeight="2dp"
+		android:layout_above="@+id/bottom_bar" android:layout_below="@+id/separator1"
+		android:layout_alignParentLeft="true" android:dividerHeight="2dp"
 		android:id="@+id/messages" android:layout_width="wrap_content"
 		android:divider="@color/title_background_onfocus"
 		android:stackFromBottom="true" android:transcriptMode="normal" android:fastScrollEnabled="true" android:fadeScrollbars="true"/>
