@@ -292,7 +292,7 @@ public class LoginPage extends BigBlueButtonActivity {
 			public void run() {
 				getBigBlueButton().createJoinService(serverUrl, serverPassword);
 				
-				if (getBigBlueButton().getJoinService() == null) {
+				if (getBigBlueButton().getJoinService() == null&&progressDialog.isShowing()) {
 					progressDialog.dismiss();
 					showToast(R.string.login_unsupported_server);
 					return;
@@ -303,8 +303,8 @@ public class LoginPage extends BigBlueButtonActivity {
 					return;
 
 				final List<Meeting> meetings = getBigBlueButton().getJoinService().getMeetings();
-
-				progressDialog.dismiss();
+				if(progressDialog.isShowing())
+					progressDialog.dismiss();
 
 				runOnUiThread(new Runnable() {
 

@@ -325,6 +325,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		p.setChatAdapter(new ChatAdapter());
 		participants.put(userId, p);
 
+		//\TODO problem occuring here http://code.google.com/p/mconf/issues/detail?id=256
 		List<ChatMessage> messages = getBigBlueButton().getChatModule().getPrivateChatMessage().get(userId);
 		if (messages != null) {
 			for (ChatMessage message : messages) {
@@ -390,6 +391,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 	
 	private void chatModuleUnconnected()
 	{
+		//\TODO improve this implementation and track the real problem of http://code.google.com/p/mconf/issues/detail?id=256
 		Toast.makeText(getApplicationContext(), R.string.chat_module_problem, Toast.LENGTH_SHORT);
 		Intent bringBackClient = new Intent(this, Client.class);
 		bringBackClient.setAction(Client.BACK_TO_CLIENT);
@@ -637,9 +639,11 @@ public class PrivateChat extends BigBlueButtonActivity {
 		
 		if(participants.size()>1)
 		{
+			
 			do{
-				flipper.showPrevious();
+				flipper.showPrevious();		
 			}while(flipper.getChildAt(flipper.getDisplayedChild()).getId()==INVALIDATED);
+						
 			removeParticipant(getParticipantKeyByViewId(viewID));
 			viewID=flipper.getDisplayedChild();
 			
@@ -647,10 +651,10 @@ public class PrivateChat extends BigBlueButtonActivity {
 		}
 		else 
 		{
-			removeParticipant(getParticipantKeyByViewId(viewID));
 			Intent bringBackClient = new Intent(this, Client.class);
 			bringBackClient.setAction(Client.BACK_TO_CLIENT);
 			startActivity(bringBackClient);
+			removeParticipant(getParticipantKeyByViewId(viewID));
 			finish(); 
 		}
 	}

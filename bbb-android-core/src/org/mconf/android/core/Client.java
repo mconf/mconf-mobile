@@ -95,7 +95,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public static final int MENU_MEETING_INF = Menu.FIRST + 13;
 	public static final int MENU_START_VIDEO = Menu.FIRST + 14;
 	public static final int MENU_STOP_VIDEO = Menu.FIRST + 15;
-
+	public static final int MENU_RESTART_VIDEO = Menu.FIRST + 16;
+	
 	public static final int POPUP_MENU_KICK_USER = Menu.FIRST;
 	public static final int POPUP_MENU_MUTE_LISTENER = Menu.FIRST + 1;
 	public static final int POPUP_MENU_SET_PRESENTER = Menu.FIRST + 2;
@@ -186,6 +187,15 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	private boolean backToPrivateChat = false;
 
 	private VideoDialog mVideoDialog;
+	
+	private boolean connected;
+	
+	private boolean isConnected()
+	{
+
+		return connected;
+	} //poor solution for the problem that getBigBlueButton().isConnected() wasn't working for the menu
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -514,7 +524,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		super.onCreateContextMenu(menu, view, menuInfo);
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 
-		if (getBigBlueButton().isConnected()) {
+		if (isConnected()) {
 			if (view.getId() == R.id.contacts_list) {
 				final Contact contact = (Contact) contactAdapter.getItem(info.position);
 				if (contact.getUserId() != getBigBlueButton().getMyUserId())
@@ -631,10 +641,11 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		startActivity(intent);
 	}
 
+	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
-		if (getBigBlueButton().isConnected()) {
+		if (isConnected()) {
 			if (getVoiceModule().isOnCall()) {
 //				if (getVoiceModule().isMuted())
 //					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.unmute).setIcon(android.R.drawable.ic_lock_silent_mode_off);
@@ -657,11 +668,13 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, R.string.start_voice).setIcon(android.R.drawable.ic_btn_speak_now);
 			}
 			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
-			if (mVideoCapture.isCapturing() && getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).getStatus().isHasStream()){
+			if (mVideoCapture.isCapturing()&&getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).getStatus().isHasStream()){
 				menu.add(Menu.NONE, MENU_STOP_VIDEO, Menu.NONE, R.string.stop_video).setIcon(android.R.drawable.ic_media_pause);
 			} else if(!mVideoCapture.isCapturing() && !getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).getStatus().isHasStream()) {
 				menu.add(Menu.NONE, MENU_START_VIDEO, Menu.NONE, R.string.start_video).setIcon(android.R.drawable.ic_media_play);
 			}
+			else if(!mVideoCapture.isCapturing() && getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).getStatus().isHasStream())
+				menu.add(Menu.NONE, MENU_RESTART_VIDEO, Menu.NONE, R.string.restart_video).setIcon(android.R.drawable.ic_media_play);
 			if (getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isRaiseHand())
 				menu.add(Menu.NONE, MENU_RAISE_HAND, Menu.NONE, R.string.lower_hand).setIcon(android.R.drawable.ic_menu_myplaces);
 			else
@@ -764,6 +777,10 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			
 			return true;	
 			
+		case MENU_RESTART_VIDEO:	
+			VideoCapture mVideoCapture2 = (VideoCapture) findViewById(R.id.video_capture);
+			mVideoCapture2.restartCapture();
+			return true;
 		case MENU_STOP_VIDEO:
 			VideoCapture mVideoCapture1 = (VideoCapture) findViewById(R.id.video_capture);
 			mVideoCapture1.stopCapture();			
@@ -892,6 +909,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 	@Override
 	public void onConnected() {
+		connected=true;
 		kicked = false;
 		getVoiceModule().setListener(new OnCallListener() {
 
@@ -945,6 +963,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	//created this coded based on this http://bend-ing.blogspot.com/2008/11/properly-handle-progress-dialog-in.html
 	@Override 
 	public void onDisconnected() {
+		connected=false;
 		setConnectedIcon(R.drawable.disconnected);
 
 		if (kicked) {
@@ -1228,7 +1247,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		contactAdapter.notifyDataSetChanged();
 		Button send = (Button)findViewById(R.id.sendMessage);
 		EditText chatEditText = (EditText)findViewById(R.id.chatMessage);
-		if(!getBigBlueButton().isConnected())
+		if(!isConnected())
 		{
 			send.setEnabled(false);
 			chatEditText.setEnabled(false);
