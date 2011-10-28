@@ -186,6 +186,15 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 	private VideoDialog mVideoDialog;
 	
+	private boolean connected;
+	
+	private boolean isConnected()
+	{
+
+		return connected;
+	} //poor solution for the problem that getBigBlueButton().isConnected() wasn't working for the menu
+	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -513,7 +522,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		super.onCreateContextMenu(menu, view, menuInfo);
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 
-		if (getBigBlueButton().isConnected()) {
+		if (isConnected()) {
 			if (view.getId() == R.id.contacts_list) {
 				final Contact contact = (Contact) contactAdapter.getItem(info.position);
 				if (contact.getUserId() != getBigBlueButton().getMyUserId())
@@ -630,10 +639,11 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		startActivity(intent);
 	}
 
+	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
-		if (getBigBlueButton().isConnected()) {
+		if (isConnected()) {
 			if (getVoiceModule().isOnCall()) {
 //				if (getVoiceModule().isMuted())
 //					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.unmute).setIcon(android.R.drawable.ic_lock_silent_mode_off);
@@ -830,6 +840,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 	@Override
 	public void onConnected() {
+		connected=true;
 		kicked = false;
 		getVoiceModule().setListener(new OnCallListener() {
 
@@ -883,6 +894,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	//created this coded based on this http://bend-ing.blogspot.com/2008/11/properly-handle-progress-dialog-in.html
 	@Override 
 	public void onDisconnected() {
+		connected=false;
 		setConnectedIcon(R.drawable.disconnected);
 
 		if (kicked) {
@@ -1166,7 +1178,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		contactAdapter.notifyDataSetChanged();
 		Button send = (Button)findViewById(R.id.sendMessage);
 		EditText chatEditText = (EditText)findViewById(R.id.chatMessage);
-		if(!getBigBlueButton().isConnected())
+		if(!isConnected())
 		{
 			send.setEnabled(false);
 			chatEditText.setEnabled(false);
