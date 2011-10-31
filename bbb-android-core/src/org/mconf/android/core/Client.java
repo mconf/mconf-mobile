@@ -212,7 +212,6 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			getBigBlueButton().addListener(this);
 
 			if (joinAndConnect()) {
-				connected=true;
 				Toast.makeText(getApplicationContext(),getResources().getString(R.string.welcome) + ", " + username, Toast.LENGTH_SHORT).show();
 			}
 		}
@@ -469,7 +468,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			}
 		});
 
-		setConnectedIcon(isConnected()? R.drawable.connected: R.drawable.disconnected);
+		setConnectedIcon(getBigBlueButton().isConnected()? R.drawable.connected: R.drawable.disconnected);
 	}
 
 	@Override
