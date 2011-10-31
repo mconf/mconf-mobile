@@ -86,8 +86,12 @@ public class Meeting {
 //</meetings>	
 	public boolean parse(Element elementMeeting) {
 		returncode = ParserUtils.getNodeValue(elementMeeting, "returncode");
+		messageKey = ParserUtils.getNodeValue(elementMeeting, "messageKey");
+		message = ParserUtils.getNodeValue(elementMeeting, "message");
+
 		if (!returncode.equals("SUCCESS"))
 			return false;
+		
 		meetingName = ParserUtils.getNodeValue(elementMeeting, "meetingName");
 		meetingID = ParserUtils.getNodeValue(elementMeeting, "meetingID");
 		createTime = new Date(Long.parseLong(ParserUtils.getNodeValue(elementMeeting, "createTime", true)));
@@ -123,9 +127,6 @@ public class Meeting {
 		if (nodeMetadata.getLength() > 0)
 			metadata.parse((Element) nodeMetadata.item(0));
 
-		messageKey = ParserUtils.getNodeValue(elementMeeting, "messageKey");
-		message = ParserUtils.getNodeValue(elementMeeting, "message");
-		
 		return true;
 	}
 	
