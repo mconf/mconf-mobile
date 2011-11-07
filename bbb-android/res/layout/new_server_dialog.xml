@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content" android:layout_height="wrap_content">
+	<TextView android:layout_alignParentTop="true"
+	android:layout_width="wrap_content" android:text="@string/type_id"
+ android:layout_height="wrap_content"
+		android:id="@+id/type_Id" android:layout_alignLeft="@+id/server_Id"
+		android:layout_alignRight="@+id/server_Id"></TextView>
+	<EditText  android:id="@+id/server_Id" android:layout_below="@+id/type_Id"
+		android:layout_height="wrap_content" android:layout_width="fill_parent"
+		android:layout_marginRight="15dp" android:layout_marginLeft="15dp"
+		android:layout_marginBottom="5dp"></EditText>
+	<TextView android:layout_width="wrap_content" android:text="@string/type_url"
+		android:layout_below="@+id/server_Id" android:layout_height="wrap_content"
+		android:id="@+id/type_Url" android:layout_alignLeft="@+id/server_Url"
+		android:layout_alignRight="@+id/server_Url"></TextView>
+	<EditText android:layout_below="@+id/type_Url" android:id="@+id/server_Url"
+		android:layout_height="wrap_content" android:layout_width="fill_parent"
+		android:layout_marginRight="15dp" android:layout_marginLeft="15dp"
+		android:layout_marginBottom="5dp"></EditText>
+	<TextView android:layout_width="wrap_content" android:text="@string/type_salt"
+		android:layout_below="@+id/server_Url" android:layout_height="wrap_content"
+		android:id="@+id/type_salt" android:layout_alignLeft="@+id/server_salt"
+		android:layout_alignRight="@+id/server_salt"></TextView>
+	<EditText android:layout_below="@+id/type_salt" android:id="@+id/server_salt"
+		android:layout_height="wrap_content" android:layout_width="fill_parent"
+		android:layout_marginRight="15dp" android:layout_marginLeft="15dp"
+		android:layout_marginBottom="5dp"></EditText>
+	
+	<LinearLayout android:id="@+id/buttonLayout"
+		android:layout_below="@+id/server_salt" android:background="@color/title_background_onfocus"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:padding="5dp">
+		<Button android:id="@+id/ok_password" android:text="@string/ok"
+			android:layout_height="wrap_content" android:layout_width="fill_parent"></Button>
+	</LinearLayout>
+</RelativeLayout>
+
+

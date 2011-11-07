@@ -11,11 +11,15 @@
 
 	<string name="choose_server">Escolha um servidor para conectar:</string>
 	<string name="connect">Conectar</string>
+	<string name="edit">Editar</string>
+	<string name="new_server">Novo</string>
 	<string name="type_server">Ou digite o endereço do servidor:</string>
-	<string name="choose_a_server">Escolha um servidor</string>
+	<string name="test_server">Testar servidor</string>
+	<string name="edit_server">Editar servidor</string>
 	<string name="delete_server">Apagar servidor</string>
 
 	<string name="choose_a_server_to_login">Escolha um servidor para conectar</string>
-	<string name="server_password">Digite a senha do servidor</string>
+	<string name="new_edit_server">Novo/Editar servidor</string>
+
 	<string name="change_password">Mude a senha do servidor</string>
 </resources> 

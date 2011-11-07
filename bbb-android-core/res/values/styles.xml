@@ -39,4 +39,9 @@
     </style>
     <style name="RoomListName" parent="@style/ParticipantNameStyle">
     </style>
+    <style name="ServerInformations" parent="@android:style/TextAppearance.Medium">
+    <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:typeface">sans</item></style>
 </resources>

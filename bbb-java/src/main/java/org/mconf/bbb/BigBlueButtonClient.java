@@ -68,6 +68,12 @@ public class BigBlueButtonClient {
 		return mainConnection;
 	}
 
+	public boolean isBigBlueButtonServer(String serverUrl)
+	{
+		return joinServiceProxy.isBigBlueButtonServer(serverUrl);
+	}
+	
+	
 	public int getMyUserId() {
 		return myUserId;
 	}

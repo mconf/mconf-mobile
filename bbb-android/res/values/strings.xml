@@ -11,11 +11,17 @@
 
 	<string name="choose_server">Choose a server to connect:</string>
 	<string name="connect">Connect</string>
+	<string name="edit">Edit</string>
+	<string name="new_server">New</string>
 	<string name="type_server">Or type a server URL:</string>
-	<string name="choose_a_server">Choose a server</string>
+	<string name="test_server">Test server</string>
+	<string name="edit_server">Edit server</string>
 	<string name="delete_server">Delete server</string>
 
 	<string name="choose_a_server_to_login">Choose a server to login</string>
-	<string name="server_password">Type the server password</string>
-	<string name="change_password">Change the server password</string>
+	<string name="new_edit_server">New/Edit server</string>
+	<string name="choose_a_server">Choose a server</string>
+	<string name="type_id">Type the ID</string>
+	<string name="type_url">Type the URL</string>
+	<string name="type_salt">Type the Salt</string>
 </resources>
