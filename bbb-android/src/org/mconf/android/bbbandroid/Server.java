@@ -12,12 +12,14 @@ public class Server {
 	private String Id;
 	private int viewID;
 	private int status;
+	private String version;
 	
 	Server(String ID, String Url, String password)
 	{
 		this.setId(ID);
 		this.setUrl(Url);
 		this.setPassword(password);
+		this.status=SERVER_UNKNOWN;
 	}
 	
 	public String getUrl() {
@@ -49,6 +51,14 @@ public class Server {
 	}
 	public int getStatus() {
 		return status;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public String getVersion() {
+		return version;
 	}
 	
 	

@@ -102,8 +102,7 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 			@Override
 			public void onInformation(String ID, String url, String password) {
 				deleteServer(server);
-				if(password.length()>1)
-					server.setPassword(password);
+				server.setPassword(password);
 				if(url.length()>1)
 					server.setUrl(url);
 				if(ID.length()>1)
@@ -167,8 +166,10 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 				@Override
 				protected void onPostExecute(Boolean result) {
 					super.onPostExecute(result);
-					if (result == true)
+					if (result == true){
 						server.setStatus(Server.SERVER_UP);
+						server.setVersion(getBigBlueButton().getBigBlueButtonVersion(server.getUrl()));
+					}
 					else
 						server.setStatus(Server.SERVER_DOWN);
 					serverAdapter.notifyDataSetChanged();
@@ -193,13 +194,25 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 				serverAdapter.clear();
 				for (Entry<String, ?> entry : getPreferences().getAll().entrySet()) {
 					String ID= entry.getKey();
-					String[] temp = ((String) entry.getValue()).split("@");
-					String Url = temp[0];
-					String password = temp[1];
-					Server loadedServer = new Server(ID, Url, password);
-					loadedServer.setStatus(Server.SERVER_UNKNOWN);
+					if(((String) entry.getValue()).contains("@")){
+						
+						String[] temp = ((String) entry.getValue()).split("@");
 					
-					serverAdapter.addSection(loadedServer);
+						String Url = temp[0];
+						String password="";
+						if(temp.length>1)
+							password=temp[1];
+						Server loadedServer = new Server(ID, Url, password);
+						loadedServer.setStatus(Server.SERVER_UNKNOWN);
+						
+						serverAdapter.addSection(loadedServer);
+					}
+					else //old style
+					{
+						SharedPreferences.Editor serverEditor = getPreferences().edit();
+						serverEditor.remove(entry.getKey());
+						serverEditor.commit();
+					}
 				}
 				serverAdapter.notifyDataSetChanged();
 			}

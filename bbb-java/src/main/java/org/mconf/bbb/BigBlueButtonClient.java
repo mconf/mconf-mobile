@@ -68,6 +68,11 @@ public class BigBlueButtonClient {
 		return mainConnection;
 	}
 
+	public String getBigBlueButtonVersion ( String serverUrl)
+	{
+		return JoinServiceProxy.getBigBlueButtonVersion(serverUrl);
+	}
+	
 	public boolean isBigBlueButtonServer(String serverUrl)
 	{
 		return joinServiceProxy.isBigBlueButtonServer(serverUrl);

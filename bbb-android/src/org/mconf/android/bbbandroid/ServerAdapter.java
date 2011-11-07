@@ -81,12 +81,15 @@ public class ServerAdapter extends BaseAdapter{
 		TextView idText =(TextView) convertView.findViewById(R.id.serverID); 
 		TextView urlText = (TextView) convertView.findViewById(R.id.serverUrl);
 		TextView passwordText = (TextView) convertView.findViewById(R.id.serverSalt);
-		ImageView serverStatus = (ImageView) convertView.findViewById(R.id.serverStatus);
+		TextView versionText = (TextView) convertView.findViewById(R.id.serverVersion);
+		ImageView serverStatus = (ImageView) convertView.findViewById(R.id.serverStatusIcon);
 
+		
 		idText.setText(server.getId());
 		urlText.setText(server.getUrl());
 		passwordText.setText(server.getPassword());
-
+		versionText.setText(server.getVersion());
+		
 		switch(server.getStatus())
 		{
 			case Server.SERVER_UP:
@@ -102,7 +105,7 @@ public class ServerAdapter extends BaseAdapter{
 				serverStatus.setImageDrawable(parent.getContext().getResources().getDrawable(R.drawable.unknown));
 				break;
 		}
-			
+		server.setViewID(convertView.getId());
 		return convertView;
 	}
 
