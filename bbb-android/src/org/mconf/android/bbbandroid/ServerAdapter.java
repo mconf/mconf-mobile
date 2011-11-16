@@ -6,6 +6,7 @@ import java.util.List;
 import org.mconf.android.core.R;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,8 @@ import android.widget.TextView;
 
 public class ServerAdapter extends BaseAdapter{
 
-
+	private static int selectedPosition =-1;
+	
 	private List<Server> listServer = new ArrayList<Server>();
 
 
@@ -105,23 +107,29 @@ public class ServerAdapter extends BaseAdapter{
 				serverStatus.setImageDrawable(parent.getContext().getResources().getDrawable(R.drawable.unknown));
 				break;
 		}
-		server.setViewID(convertView.getId());
+		
+		// change the row color based on selected state
+        if(selectedPosition == position){
+        	convertView.setBackgroundColor(Color.argb(128,21, 193, 253));
+        }else{
+        	convertView.setBackgroundResource(R.color.background);
+        }
 		return convertView;
 	}
 
 	public void clear() {
 		listServer.clear();
 	}
-	
-	public Server getServer( int viewID)
-	{
-		for(Server server : listServer)
-		{
-			if(server!=null)
-				if(server.getViewID()==viewID)
-					return server;
-		}
-		return null;
+
+	public void setSelectedPosition(int selectedPosition) {
+		ServerAdapter.selectedPosition = selectedPosition;
+		notifyDataSetChanged();
 	}
+
+	public int getSelectedPosition() {
+		return selectedPosition;
+	}
+	
+	
 
 }

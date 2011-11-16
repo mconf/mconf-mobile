@@ -10,7 +10,7 @@
 	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="wrap_content" android:layout_height="75dip"
 		android:minHeight="75dip" android:id="@+id/serverInfo"
-		android:layout_alignParentLeft="true" android:background="@color/background"
+		android:layout_alignParentLeft="true"
 		android:layout_below="@+id/serverID" android:layout_marginLeft="5dp">
 		<TextView android:id="@+id/serverUrl" android:layout_height="wrap_content"
 			android:layout_marginLeft="5dp" android:textAppearance="@style/ServerInformations"
@@ -34,7 +34,6 @@
 	</RelativeLayout>
 	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
-		android:background="@color/background"
 		android:layout_alignParentRight="true" android:layout_toRightOf="@+id/serverInfo"
 		android:layout_marginRight="5dp" android:layout_alignParentTop="true"
 		android:layout_marginTop="5dp">

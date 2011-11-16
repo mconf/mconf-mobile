@@ -17,7 +17,10 @@ import android.view.View;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -41,10 +44,20 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 		serverListView = (ListView) findViewById(R.id.servers);
 		serverListView.setTextFilterEnabled(true);
 		serverListView.setAdapter(serverAdapter);
-		serverListView.setFocusableInTouchMode(true);
+		
 		loadServers();
 		registerForContextMenu(serverListView);
 		
+				
+		serverListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+					long id) {
+				serverAdapter.setSelectedPosition(position);
+			}
+			
+		});
 		Button newServer = (Button) findViewById(R.id.new_server);
 		newServer.setOnClickListener(new OnClickListener() {
 			
@@ -57,10 +70,13 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 					
 					@Override
 					public void onInformation(String ID, String Url, String password) {
+						if(ID.length()>0|| Url.length()>0)
+						{
 						Server server = new Server(ID, Url, password);
 						
 						server.setStatus(Server.SERVER_UNKNOWN);
 						addServer(server);
+						}
 					}
 				});
 				newServerDialog.show();
@@ -74,7 +90,7 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 			
 			@Override
 			public void onClick(View arg0) {
-				focusedServer = serverAdapter.getServer(serverListView.getFocusedChild().getId());
+				focusedServer = (Server)serverAdapter.getItem(serverAdapter.getSelectedPosition());
 				serverEdition(focusedServer);
 			}
 		});
@@ -84,8 +100,8 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 		connect.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				focusedServer = serverAdapter.getServer(serverListView.getFocusedChild().getId());
 				
+				focusedServer = (Server)serverAdapter.getItem(serverAdapter.getSelectedPosition());
 				backToLogin();
 		
 			}
@@ -226,18 +242,22 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 	
 	
 	private void addServer(final Server newServer) {	
+
 		SharedPreferences.Editor serverEditor = getPreferences().edit();
-		serverEditor.putString(newServer.getId(), newServer.getUrl()+"@"+newServer.getPassword());
-		serverEditor.commit();
-		
-		runOnUiThread(new Runnable() {
-			
-			@Override
-			public void run() {
-				serverAdapter.addSection(newServer);
-				serverAdapter.notifyDataSetChanged();
-			}
-		});
+		if(!getPreferences().contains(newServer.getId()))
+		{
+			serverEditor.putString(newServer.getId(), newServer.getUrl()+"@"+newServer.getPassword());
+			serverEditor.commit();
+
+			runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					serverAdapter.addSection(newServer);
+					serverAdapter.notifyDataSetChanged();
+				}
+			});
+		}
 	}
 
 

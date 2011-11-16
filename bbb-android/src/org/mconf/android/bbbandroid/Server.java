@@ -10,7 +10,6 @@ public class Server {
 	private String url;
 	private String password;
 	private String Id;
-	private int viewID;
 	private int status;
 	private String version;
 	
@@ -34,12 +33,7 @@ public class Server {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public void setViewID(int viewID) {
-		this.viewID = viewID;
-	}
-	public int getViewID() {
-		return viewID;
-	}
+	
 	public void setId(String id) {
 		Id = id;
 	}
