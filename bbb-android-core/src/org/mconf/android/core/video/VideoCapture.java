@@ -2,6 +2,7 @@ package org.mconf.android.core.video;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import org.mconf.android.core.BackgroundManager;
 import org.mconf.android.core.BigBlueButton;
@@ -16,6 +17,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.ImageFormat;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
@@ -309,18 +311,20 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	    				parameters.getSupportedPreviewSizes().get(0).height);
 	    	}
 	    	if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD) {
-		    	if (!parameters.getSupportedPreviewFpsRange().isEmpty())
+	    		List<int[]> fpsRange = parameters.getSupportedPreviewFpsRange();
+		    	if (fpsRange != null && !fpsRange.isEmpty())
 		    		parameters.setPreviewFpsRange(
-		    				parameters.getSupportedPreviewFpsRange().get(0)[Camera.Parameters.PREVIEW_FPS_MIN_INDEX], 
-		    				parameters.getSupportedPreviewFpsRange().get(0)[Camera.Parameters.PREVIEW_FPS_MAX_INDEX]);
+		    				fpsRange.get(0)[Camera.Parameters.PREVIEW_FPS_MIN_INDEX], 
+		    				fpsRange.get(0)[Camera.Parameters.PREVIEW_FPS_MAX_INDEX]);
 //		    	parameters.setRotation(90);
 //		    	parameters.set("orientation", "portrait");
 //		    	parameters.set("rotation", 180);
 	    	} else {
-	    		if (!parameters.getSupportedPreviewFrameRates().isEmpty())
-	    			parameters.setPreviewFrameRate(parameters.getSupportedPreviewFrameRates().get(0));
+	    		List<Integer> fps = parameters.getSupportedPreviewFrameRates();
+	    		if (fps != null && !fps.isEmpty())
+	    			parameters.setPreviewFrameRate(fps.get(0));
 	    	}
-//	    	parameters.setPreviewFormat(ImageFormat.NV21);
+	    	parameters.setPreviewFormat(ImageFormat.NV21);
 
     		mVideoPublish.mCamera.setParameters(parameters);
 //			setCameraDisplayOrientation((Activity) context, mVideoPublish.cameraId, mVideoPublish.mCamera);
@@ -434,7 +438,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
         //In mconf we want compatibility with API levels lower than 8.
         //The setPreviewCallbackWithBuffer method is implemented on a Debug class on API levels lower than 8.
         //In order to use it on API levels lower than 8, we need to use Java Reflection.      
-		if (Integer.parseInt(Build.VERSION.SDK) >= 8){ //if(2.2 or higher){
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) { //if(2.2 or higher){
 			setCallbackBest();
 	    } else if(HiddenCallbackWithBuffer()) { //} else if(has the methods hidden){
 	    	if(setCallbackHidden() != CaptureConstants.E_OK){

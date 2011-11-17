@@ -33,6 +33,9 @@ public class BigBlueButton extends Application {
 		// The following line triggers the initialization of ACRA
 		if (!isDebug())
 			ACRA.init(this);
+		
+		// http://stackoverflow.com/questions/2879455/android-2-2-and-bad-address-family-on-socket-connect
+		System.setProperty("java.net.preferIPv6Addresses", "false");
         super.onCreate();
 	}
 	
