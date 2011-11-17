@@ -1,5 +1,7 @@
 package org.mconf.android.bbbandroid;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map.Entry;
 
 import org.mconf.android.bbbandroid.NewServerDialog.OnInformationEntered;
@@ -172,32 +174,47 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 			final Server server = ((Server) serverAdapter.getItem(info.position));
 			server.setStatus(Server.SERVER_TESTING);
 			serverAdapter.notifyDataSetChanged();
-			new AsyncTask<Integer, Integer, Boolean>() {
-				
-				@Override
-				protected Boolean doInBackground(Integer... params) {
-					return getBigBlueButton().isBigBlueButtonServer(server.getUrl());
-				}
-				
-				@Override
-				protected void onPostExecute(Boolean result) {
-					super.onPostExecute(result);
-					if (result == true){
-						server.setStatus(Server.SERVER_UP);
-						server.setVersion(getBigBlueButton().getBigBlueButtonVersion(server.getUrl()));
-					}
-					else
-						server.setStatus(Server.SERVER_DOWN);
-					serverAdapter.notifyDataSetChanged();
-				}
-			}.execute();
-			
+			testServer(server);
 			return true;
 			
 		}
 		return super.onContextItemSelected(item);
 	}
 
+	private void testServer(final Server server)
+	{
+		new AsyncTask<Integer, Integer, Boolean>() {
+			
+			@Override
+			protected Boolean doInBackground(Integer... params) {
+				return getBigBlueButton().isBigBlueButtonServer(server.getUrl());
+			}
+			
+			@Override
+			protected void onPostExecute(Boolean result) {
+				super.onPostExecute(result);
+				if (result == true){
+					server.setStatus(Server.SERVER_UP);
+					server.setVersion(getBigBlueButton().getBigBlueButtonVersion(server.getUrl()));
+				}
+				else
+					server.setStatus(Server.SERVER_DOWN);
+				
+				serverAdapter.notifyDataSetChanged();
+				String hour = getHour();
+				server.setLastUpdate(hour);
+			}
+		}.execute();
+		
+		
+	}
+	
+	public String getHour()
+	{
+		String currentTimeString = new SimpleDateFormat("HH:mm").format(new Date());
+		return currentTimeString;
+	}
+	
 	public SharedPreferences getPreferences() {
 		return getSharedPreferences("storedServers", MODE_PRIVATE);
 	}

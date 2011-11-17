@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent" android:layout_height="90dip"
-	android:minHeight="90dip" android:background="@color/background"
+	android:layout_width="fill_parent" android:layout_height="130dip"
+	android:minHeight="120dip" android:background="@color/background"
 	android:gravity="center">
 	<TextView android:id="@+id/serverID" android:layout_height="wrap_content"
 		android:layout_marginLeft="5dp" android:textAppearance="@style/MyNameStyle"
@@ -10,13 +10,13 @@
 	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="wrap_content" android:layout_height="75dip"
 		android:minHeight="75dip" android:id="@+id/serverInfo"
-		android:layout_alignParentLeft="true"
-		android:layout_below="@+id/serverID" android:layout_marginLeft="5dp">
+		android:layout_alignParentLeft="true" android:layout_below="@+id/serverID"
+		android:layout_marginLeft="5dp">
 		<TextView android:id="@+id/serverUrl" android:layout_height="wrap_content"
 			android:layout_marginLeft="5dp" android:textAppearance="@style/ServerInformations"
 			android:textColor="@color/text_color" android:text="url"
-			android:layout_alignParentTop="true" android:layout_width="wrap_content"
-			android:layout_alignParentLeft="true"></TextView>
+			android:scrollHorizontally="true" android:layout_alignParentTop="true"
+			android:layout_width="wrap_content" android:layout_alignParentLeft="true"></TextView>
 		<TextView xmlns:android="http://schemas.android.com/apk/res/android"
 			android:id="@+id/serverSalt" android:text="salt"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -31,27 +31,27 @@
 			android:layout_marginLeft="5dp" android:layout_below="@+id/serverSalt"
 			android:layout_alignParentLeft="true"
 			android:layout_alignParentBottom="true"></TextView>
-	</RelativeLayout>
-	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		android:layout_width="wrap_content" android:layout_height="wrap_content"
-		android:layout_alignParentRight="true" android:layout_toRightOf="@+id/serverInfo"
-		android:layout_marginRight="5dp" android:layout_alignParentTop="true"
-		android:layout_marginTop="5dp">
-
-
-		<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-			android:id="@+id/serverStatus" android:text="Status"
+		<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:textColor="@color/text_color" android:textAppearance="@style/ServerInformations"
-			android:layout_marginRight="5dp" android:layout_alignParentRight="true"></TextView>
-		<ImageView android:src="@drawable/testing" android:id="@+id/serverStatusIcon"
-			android:layout_height="wrap_content" android:layout_width="wrap_content"
-			android:layout_below="@+id/serverStatus" android:layout_alignLeft="@+id/serverStatus"
-			android:layout_alignRight="@+id/serverStatus"></ImageView>
-		<TextView android:id="@+id/serverLastUpdate" android:layout_height="wrap_content"
-			android:layout_alignParentBottom="true" android:text="lastUpdate"
-			android:layout_marginBottom="5dp"
-			android:layout_width="wrap_content" android:layout_alignParentRight="true"
-			></TextView>
+			android:layout_alignParentRight="true" android:layout_below="@+id/serverUrl"
+			android:layout_marginRight="5dp" android:layout_alignParentBottom="true">
+
+
+			<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+				android:id="@+id/serverStatus" android:text="Status"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:textColor="@color/text_color" android:textAppearance="@style/ServerInformations"
+				android:layout_marginRight="5dp" android:layout_alignParentRight="true"></TextView>
+			<ImageView android:layout_height="wrap_content" android:id="@+id/serverStatusIcon"
+				android:layout_width="wrap_content" android:src="@drawable/testing"
+				android:layout_toLeftOf="@+id/serverStatus" android:layout_alignTop="@+id/serverStatus"
+				></ImageView>
+			<TextView android:id="@+id/serverLastUpdate"
+				android:maxLines="1" android:layout_height="wrap_content"
+				android:text="lastUpdate" android:layout_below="@+id/serverStatusIcon"
+				android:layout_marginBottom="2dp" android:layout_width="wrap_content"
+				android:layout_alignParentRight="true"
+				android:layout_alignParentBottom="true"></TextView>
+		</RelativeLayout>
 	</RelativeLayout>
 </RelativeLayout>

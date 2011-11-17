@@ -10,8 +10,9 @@ public class Server {
 	private String url;
 	private String password;
 	private String Id;
-	private int status;
+	private int status=SERVER_UNKNOWN;
 	private String version;
+	private String lastUpdate;
 	
 	Server(String ID, String Url, String password)
 	{
@@ -53,6 +54,14 @@ public class Server {
 
 	public String getVersion() {
 		return version;
+	}
+
+	public void setLastUpdate(String lastUpdate) {
+		this.lastUpdate = lastUpdate;
+	}
+
+	public String getLastUpdate() {
+		return lastUpdate;
 	}
 	
 	
