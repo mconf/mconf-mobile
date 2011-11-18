@@ -1,8 +1,5 @@
 [submodule "sipdroid"]
 	path = sipdroid
-	# read+write access
-#	url = git@github.com:mconf/sipdroid.git
-	# read-only access
 	url = git://github.com/mconf/sipdroid.git
 [submodule "flazr"]
 	path = flazr
