@@ -22,10 +22,10 @@
         <attribute name="dir"/>
     	<attribute name="params" default="" />
         <sequential>
-			<delete file="@{dir}/build.xml" />
+			<delete file="@{dir}/build.xml" failonerror="false"/>
 			<exec executable="bash" dir="@{dir}" failonerror="true">
 				<arg value="-c" />
-				<arg value="${android.exec} update lib-project --path . --target android-9 @{params}" />
+				<arg value="${android.exec} update lib-project --path . --target android-10 @{params}" />
 			</exec>
 			<build-android dir="@{dir}" />
             <ant target="debug" dir="@{dir}" />
@@ -36,10 +36,10 @@
         <attribute name="dir"/>
     	<attribute name="params" default="" />
         <sequential>
-			<delete file="@{dir}/build.xml" />
+			<delete file="@{dir}/build.xml" failonerror="false"/>
 			<exec executable="bash" dir="@{dir}" failonerror="true">
 				<arg value="-c" />
-				<arg value="${android.exec} update project --name @{dir} --path . --target android-9 @{params}" />
+				<arg value="${android.exec} update project --name @{dir} --path . --target android-10 @{params}" />
 			</exec>
 			<build-android dir="@{dir}" />
 			<ant target="debug" dir="@{dir}" />
