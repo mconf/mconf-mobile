@@ -15,12 +15,15 @@
 				android:id="@+id/participants"
 				android:layout_alignParentTop="true">
 
+				<!-- we needed to add the padding = 0 to make the .9 patch images working again
+					http://stackoverflow.com/a/4285121 -->
 				<TextView android:layout_height="wrap_content"
 					android:layout_width="fill_parent" android:id="@+id/label_participants"
 					android:layout_alignParentTop="true" android:textAppearance="@style/TitleStyle"
 					android:text="@string/list_participants" android:gravity="center"
 					android:background="@drawable/disconnected"
-					android:minHeight="42dp" />
+					android:minHeight="42dp"
+					android:padding="0dip" />
 
 				<LinearLayout android:id="@+id/separator1"
 					xmlns:android="http://schemas.android.com/apk/res/android"
@@ -81,7 +84,8 @@
 				android:layout_height="wrap_content" android:id="@id/handle"
 				android:text="@string/public_chat" style="@style/TitleStyle"
 				android:background="@drawable/public_chat_title_background_up"
-				android:gravity="center" android:minHeight="42dp" android:padding="0dip" />
+				android:gravity="center" android:minHeight="42dp" 
+				android:padding="0dip" />
 
 			<!-- http://developer.android.com/resources/articles/layout-tricks-reuse.html -->
 			<include layout="@layout/chat" />
