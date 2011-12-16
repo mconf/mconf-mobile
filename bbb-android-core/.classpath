@@ -8,7 +8,7 @@
 	<classpathentry kind="lib" path="libs/commons-codec-1.2.jar"/>
 	<classpathentry kind="lib" path="libs/jcl104-over-slf4j-1.4.2.jar"/>
 	<classpathentry kind="lib" path="libs/JSON-java.jar"/>
-	<classpathentry kind="lib" path="libs/netty-3.2.4.Final.jar"/>
+	<classpathentry kind="lib" path="libs/netty-3.2.6.Final.jar"/>
 	<classpathentry kind="lib" path="libs/slf4j-android-1.6.1-RC1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/bbb-java"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/flazr"/>

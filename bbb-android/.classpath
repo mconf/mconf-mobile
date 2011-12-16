@@ -9,7 +9,7 @@
 	<classpathentry exported="true" kind="lib" path="/bbb-android-core/libs/commons-codec-1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="/bbb-android-core/libs/jcl104-over-slf4j-1.4.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="/bbb-android-core/libs/JSON-java.jar"/>
-	<classpathentry exported="true" kind="lib" path="/bbb-android-core/libs/netty-3.2.4.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/bbb-android-core/libs/netty-3.2.6.Final.jar"/>
 	<classpathentry exported="true" kind="lib" path="/bbb-android-core/libs/slf4j-android-1.6.1-RC1.jar"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="output" path="bin/classes"/>

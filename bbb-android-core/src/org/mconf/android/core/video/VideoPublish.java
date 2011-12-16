@@ -266,4 +266,16 @@ public class VideoPublish extends Thread implements RtmpReader {
 	private native int initEncoder(int width, int height, int frameRate, int bitRate, int GOP);
 	private native int endEncoder();
     private native int initSenderLoop();
+
+	@Override
+	public int getWidth() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getHeight() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }
