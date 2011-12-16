@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -116,6 +117,12 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public static final String SEND_TO_BACK = "bbb.android.action.SEND_TO_BACK";
 
 	public static final int ID_DIALOG_QUIT = 222000;
+	
+	private static final int CLOSE_DIALOG = 4545;
+	private static final int ABOUT_DIALOG = 4646;
+	private static final int MEETING_INF_DIALOG = 4747;
+	private static final int NETWORK_PROPERTIES_DIALOG = 4848;
+	private static final int JOIN_FAIL_DIALOG = 4949;
 	
 	//change the contact status when the private chat is closed
 	private BroadcastReceiver chatClosed = new BroadcastReceiver(){ 
@@ -243,37 +250,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			mVideoDialog.resume();
 	}
 	
-	private class JoinFailDialog extends AlertDialog.Builder {
-
-		public JoinFailDialog(Context context) {
-			super(context);
-			setMessage(R.string.login_cant_join);
-			initListener();
-		}
-
-		public JoinFailDialog(Context context, String message) {
-			super(context);
-			setTitle(R.string.login_cant_join);
-			setMessage(message);
-			initListener();
-		}
-
-		private void initListener() {
-			setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
-
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-//					if (getGlobalContext().getLaunchedBy() == BigBlueButton.LAUNCHED_BY_APPLICATION) {
-//						Intent login = new Intent(getGlobalContext(), LoginPage.class);
-//						startActivity(login);
-//					}
-					if (getGlobalContext().getLaunchedBy() == BigBlueButton.LAUNCHED_USING_URL)
-						finish();
-				}
-			});
-		}
-
-	}
+	
 
 	private boolean joinAndConnect() {
 		if (isNetworkDown()) {
@@ -738,7 +715,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			return true;
 
 		case MENU_ABOUT:
-			new AboutDialog(this).show();
+			showDialog(ABOUT_DIALOG);
 			return true;
 
 		case MENU_AUDIO_CONFIG:
@@ -761,9 +738,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			getBigBlueButton().muteUnmuteRoom(false);
 			return true;
 		case MENU_MEETING_INF:
-			MeetingInfDialog meeting = new MeetingInfDialog(this);
-			meeting.show();
-			meeting.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.hurricane_transparent);
+			showDialog(MEETING_INF_DIALOG);
 			return true;
 		default:			
 			return super.onOptionsItemSelected(item);
@@ -776,8 +751,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			
 			@Override
 			public void run() {
-				NetworkPropertiesDialog networkProperties = new NetworkPropertiesDialog(Client.this);
-				networkProperties.show();
+				showDialog(NETWORK_PROPERTIES_DIALOG);
 			}
 		});
 	}
@@ -808,22 +782,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
-			CloseDialog closeDialog = new CloseDialog(this);
-			closeDialog.setNegativeButton(R.string.minimize, new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
-					showBackgroundNotification();
-					sendBroadcast(new Intent(SEND_TO_BACK));
-					moveTaskToBack(true);
-					dialog.cancel();
-				}
-		    });
-			closeDialog.setPositiveButton(R.string.quit, new DialogInterface.OnClickListener() {
-		        public void onClick(DialogInterface dialog, int id) {
-		        	finish();
-		        	dialog.cancel();
-		        }
-		    });
-			closeDialog.show();
+			showDialog(CLOSE_DIALOG);
 			return true;
 //    	case KeyEvent.KEYCODE_VOLUME_DOWN:
 //    	case KeyEvent.KEYCODE_VOLUME_UP:
@@ -1299,6 +1258,56 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public void onException(Throwable throwable) {
 		ErrorReporter.getInstance().handleSilentException(throwable);
 	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+	    switch (id) {
+	    	case ABOUT_DIALOG:
+	    		 return new AboutDialog(this);
+	    	case CLOSE_DIALOG:
+	    		CloseDialog closeDialog = new CloseDialog(this);
+				closeDialog.setNegativeButton(R.string.minimize, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						showBackgroundNotification();
+						sendBroadcast(new Intent(SEND_TO_BACK));
+						moveTaskToBack(true);
+						dialog.cancel();
+					}
+			    });
+				closeDialog.setPositiveButton(R.string.quit, new DialogInterface.OnClickListener() {
+			        public void onClick(DialogInterface dialog, int id) {
+			        	finish();
+			        	dialog.cancel();
+			        }
+			    });
+				return closeDialog.create();
+	    	case MEETING_INF_DIALOG:
+	    		MeetingInfDialog meeting = new MeetingInfDialog(this);
+				return meeting;
+				
+	    	case NETWORK_PROPERTIES_DIALOG:
+	    		NetworkPropertiesDialog networkProperties = new NetworkPropertiesDialog(Client.this);
+				return networkProperties.create();
+	    	//case JOIN_FAIL_DIALOG:
+	    }
+		return null;
+	}
+	
+	@Override
+	protected void onPrepareDialog(int id, Dialog dialog)
+	{
+		switch (id)
+		{
+		case MEETING_INF_DIALOG:
+			dialog.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.hurricane_transparent);
+			break;
+		}
+	}
+	
+
 }
+	
+	
+
 
 
