@@ -953,7 +953,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		}
 		VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
 		mVideoCapture.stopCapture();
-		if(mVideoDialog.isShowing())
+		if(mVideoDialog != null && mVideoDialog.isShowing())
 			mVideoDialog.dismiss();
 		
 		final AlertDialog.Builder dialog = new AlertDialog.Builder(Client.this);
