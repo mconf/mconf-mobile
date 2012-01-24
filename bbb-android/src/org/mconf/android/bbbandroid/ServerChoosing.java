@@ -50,7 +50,7 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 				EditText editTextServer = (EditText)findViewById(R.id.serverURL);
 				if (editTextServer.getText().toString().length() > 0) {
 					
-					serverURL = editTextServer.getText().toString();
+					serverURL = editTextServer.getText().toString().toLowerCase();
 					
 					if (!getPreferences().contains(serverURL)) {
 						ServerPasswordDialog passwordDialog = new ServerPasswordDialog(ServerChoosing.this, "");
