@@ -69,6 +69,8 @@
 	<string name="login_in">Log in</string>
 	<string name="install_bar_code">Do you want to install it?</string>
 	<string name="bar_code_no_found">Barcode Scanner not found</string>
+	<string name="market_not_found">Market not found</string>
+	<string name="you_have_no_market">Your device has no market installed to download a barcode scanner</string> 
 	<string name="invalid_join_url">Invalid scanned code</string>
 	
 	<string name="show_video">Show video</string>

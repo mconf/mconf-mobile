@@ -34,7 +34,18 @@ public class BarcodeHandler {
 	    	public void onClick(DialogInterface dialogInterface, int i) {
 		        Uri uri = Uri.parse("market://search?q=pname:" + "com.google.zxing.client.android");
 		        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-		        context.startActivity(intent);
+		        
+				try {
+					context.startActivity(intent);
+				} catch (ActivityNotFoundException e) {
+					//creates a small window to notify there is no market in this device
+					AlertDialog.Builder itHasNoMarketDialog = new AlertDialog.Builder(context);
+				    itHasNoMarketDialog.setTitle(R.string.market_not_found);
+				    itHasNoMarketDialog.setMessage(R.string.you_have_no_market);				    
+				    itHasNoMarketDialog.setNeutralButton(R.string.ok, null);
+				    itHasNoMarketDialog.show();
+				}   
+		        
 	    	}
 	    });
 	    downloadDialog.setNegativeButton(R.string.no, null);
