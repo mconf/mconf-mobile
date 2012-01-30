@@ -452,36 +452,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     }
         
     private int beginPreview(){
-    	if(mVideoPublish.mCamera != null){
-    		log.debug("Ready to start the preview but waiting for the connection to be completely established...");
-    		int tries = 0;
-    		
-    		int myId = ((BigBlueButton) getContext().getApplicationContext()).getHandler().getMyUserId();
-    		Participant myParticipant = ((BigBlueButton) getContext().getApplicationContext()).getHandler().getUsersModule().getParticipants().get(myId);
-    		while(tries < 50 && myParticipant!=null &&  !myParticipant.getStatus().isHasStream()){
-  
-    			synchronized(this) {
-    				try {
-						this.wait(100);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-    			}
-    			tries++;
-    		}
-    		if(!myParticipant.getStatus().isHasStream()){ 
-    						 // Means that we waited 5000 ms (50 * 100)
-    						 // but the connection was not completely established yet.
-    						 // Let's start the preview anyway, because we can not
-    						 // stay on the above loop forever. It is safe to start the preview
-    						 // because frames won't be added to the queue while the connection
-    					   	 // is not established, so the memory won't grow and the encoder
-    						 // won't run.
-    						 // The connection may still be in a process of becoming
-    						 // completely established. When it happens, frames will be
-    						 // added to the queue and the video will be transmited normally
-    			log.debug("Warning: preview started but the connection is not completely established yet");
-    		}
+    	if(mVideoPublish.mCamera != null){    		    		
     		log.debug("Preview starting");
     		mVideoPublish.mCamera.startPreview();
     		log.debug("Preview started");
