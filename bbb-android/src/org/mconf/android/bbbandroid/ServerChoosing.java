@@ -50,7 +50,12 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 				EditText editTextServer = (EditText)findViewById(R.id.serverURL);
 				if (editTextServer.getText().toString().length() > 0) {
 					
+					
 					serverURL = editTextServer.getText().toString().toLowerCase();
+					
+					if(!URLHasHttp())
+						 serverURL = putHttp();
+					
 					
 					if (!getPreferences().contains(serverURL)) {
 						ServerPasswordDialog passwordDialog = new ServerPasswordDialog(ServerChoosing.this, "");
@@ -179,6 +184,16 @@ public class ServerChoosing extends BigBlueButtonActivity  {
 				serverAdapter.notifyDataSetChanged();
 			}
 		});
+	}
+	
+	private boolean URLHasHttp()
+	{		
+		return serverURL.contains("http://");
+	}
+	
+	private String putHttp()
+	{
+		return "http://" + serverURL;										
 	}
 
 }
