@@ -95,6 +95,7 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 						//intent.putExtra("name", name);
 						//intent.setAction(Client.BACK_TO_VIDEO_DIALOG);
 						//startActivity(intent);
+						
 						finish();
 					}
 					
@@ -115,6 +116,7 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 							//intent.putExtra("name", name);
 							//intent.setAction(Client.BACK_TO_VIDEO_DIALOG);
 							//startActivity(intent);
+						 
 							finish();
 					 }
 					
