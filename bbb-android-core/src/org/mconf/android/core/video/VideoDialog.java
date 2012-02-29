@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.view.View;
 import android.view.Window;
 
 public class VideoDialog extends Dialog {	
@@ -38,12 +39,17 @@ public class VideoDialog extends Dialog {
 	private int userId;
 	private String name;
 	public boolean isPreview;
+    private final Context context;
+    
+    VideoCaptureLayout videocaplayout;
+    
 	
-	public VideoDialog(Context context, int userId, int myId, String name) {
-		super(context);
+	public VideoDialog(Context mContext, int mUserId, int myId, String mName) {
+		super(mContext);
 		
-		this.userId = userId;
-		this.name = name;
+		this.context = mContext;
+		this.userId = mUserId;
+		this.name = mName;
 		
 		if(userId == myId){
 			isPreview = true;
@@ -53,13 +59,52 @@ public class VideoDialog extends Dialog {
 		
 		requestWindowFeature(Window.FEATURE_NO_TITLE); //Removes the title from the Dialog
 		
+		
 		if(isPreview){
 			setContentView(R.layout.video_capture);
+			
+			videocaplayout = (VideoCaptureLayout) findViewById(R.id.video_capture_layout);			
+			videocaplayout.setOnClickListener(		
+					
+					 new View.OnClickListener() {
+
+					 @Override
+					 public void onClick(View v) {
+						
+						 dismiss();
+						 
+						 Intent intent = new Intent(context, VideoFullScreen.class);
+						 intent.putExtra("userId", userId);
+						 intent.putExtra("name", name);
+						 context.startActivity(intent);							 
+					 }
+					
+				                                  });	
+			
 		} else {
 			setContentView(R.layout.video_window);
 			
 			videoWindow = (VideoSurface) findViewById(R.id.video_window);
+			videoWindow.setOnClickListener(		
+					
+					 new View.OnClickListener() {
+
+					 @Override
+					 public void onClick(View v) {
+						
+						 dismiss();
+						 
+						 Intent intent = new Intent(context, VideoFullScreen.class);
+						 intent.putExtra("userId", userId);
+						 intent.putExtra("name", name);
+						 context.startActivity(intent);	
+					 }
+					
+				                                  });	
+													
 		}
+		
+		
 		
 		android.view.WindowManager.LayoutParams windowAttributes = getWindow().getAttributes();		
 		windowAttributes.flags = android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON; //Makes the video brigth
@@ -115,8 +160,7 @@ public class VideoDialog extends Dialog {
 	}
 	
 	public void resume() {
-		if(isPreview){
-			VideoCaptureLayout videocaplayout = (VideoCaptureLayout) findViewById(R.id.video_capture_layout);
+		if(isPreview){						
 			videocaplayout.show(40);
 		} else {
 			videoWindow.start(userId, true);

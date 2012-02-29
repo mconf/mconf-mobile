@@ -115,6 +115,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public static final String CLOSE_VIDEO = "org.mconf.bbb.android.Video.CLOSE";
 	public static final String CLOSE_DIALOG_PREVIEW = "org.mconf.bbb.android.Video.CLOSE_DIALOG_PREVIEW";
 	public static final String SEND_TO_BACK = "bbb.android.action.SEND_TO_BACK";
+	public static final String BACK_TO_VIDEO_DIALOG = "org.mconf.bbb.android.Video.BACK_TO_VIDEO_DIALOG";
 
 	public static final int ID_DIALOG_QUIT = 222000;
 	
@@ -311,7 +312,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				return false;
 			}			
 			
-			if (!getBigBlueButton().getJoinService().join(meetingId, username, moderator)) {
+			if (!getBigBlueButton().getJoinService().join(meetingId, username, moderator)) { //null pointer exception
 				if (getBigBlueButton().getJoinService().getJoinedMeeting() != null) {
 					String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
 					log.debug("Joining error message: " + error);
@@ -471,7 +472,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		setConnectedIcon(getBigBlueButton().isConnected()? R.drawable.connected: R.drawable.disconnected);
 	}
 
-	@Override
+	/*@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		endListeners();
 		
@@ -487,7 +488,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			mVideoDialog=null;
 			showVideo(false, videoId, videoName);
 		}
-	}
+	}*/
 
 	@Override
 	protected void onDestroy() {
@@ -592,13 +593,8 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			}
 			case POPUP_MENU_SHOW_VIDEO:
 			{
-				Contact contact = (Contact) contactAdapter.getItem(info.position);
-				
-				if(getResources().getConfiguration().orientation==Configuration.ORIENTATION_PORTRAIT)
-					showVideo(true, contact.getUserId(), contact.getName());
-				else 
-					showVideo(false, contact.getUserId(), contact.getName());
-				
+				Contact contact = (Contact) contactAdapter.getItem(info.position);				
+				showVideo(true, contact.getUserId(), contact.getName());				
 				return true;
 			}
 		}
@@ -635,7 +631,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
 		if (getBigBlueButton().isConnected()) {
-			if (getVoiceModule().isOnCall()) {
+			if (getVoiceModule().isOnCall()) { //null pointer exception
 //				if (getVoiceModule().isMuted())
 //					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.unmute).setIcon(android.R.drawable.ic_lock_silent_mode_off);
 //				else
@@ -659,7 +655,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
 			if (mVideoCapture.isCapturing() && getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).getStatus().isHasStream()){
 				menu.add(Menu.NONE, MENU_STOP_VIDEO, Menu.NONE, R.string.stop_video).setIcon(android.R.drawable.ic_media_pause);
-			} else if(!mVideoCapture.isCapturing() && !getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).getStatus().isHasStream()) {
+			} else if(!mVideoCapture.isCapturing() && !getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).getStatus().isHasStream()) { // null pointer exception
 				menu.add(Menu.NONE, MENU_START_VIDEO, Menu.NONE, R.string.start_video).setIcon(android.R.drawable.ic_media_play);
 			}
 			if (getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isRaiseHand())
@@ -1073,16 +1069,37 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 			contactAdapter.notifyDataSetChanged();
 		}
+		
 		else if (intent.getAction().equals(ACTION_TO_FOREGROUND)) {
-			hideBackgroundNotification();
-		} else if (intent.getAction().equals(ACTION_OPEN_SLIDER)) {
+			hideBackgroundNotification();			
+		} 
+		
+		else if (intent.getAction().equals(ACTION_OPEN_SLIDER)) {
 			SlidingDrawer slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
 			if (slidingDrawer != null && (!slidingDrawer.isShown() || !slidingDrawer.isOpened())) {
 				slidingDrawer.open();
 				openedDrawer();
 				setPublicChatTitleBackground(R.drawable.public_chat_title_background_down);
 			}
-		} else
+		}
+		
+		else if (intent.getAction().equals(BACK_TO_VIDEO_DIALOG)) {
+			/*Bundle extras = intent.getExtras();
+			
+			if(extras != null)
+			{
+				final int id = extras.getInt("userId");
+				final String name = extras.getString("name");
+							
+				
+				mVideoDialog = null;
+				mVideoDialog = new VideoDialog(this, id, getBigBlueButton().getMyUserId(), name );
+				mVideoDialog.show();				
+								
+			}*/
+		}
+		
+		else
 			log.debug("onNewIntent discarding: {}" + intent.getAction());
 	}
 
