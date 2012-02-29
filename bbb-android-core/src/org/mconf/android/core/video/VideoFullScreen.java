@@ -33,6 +33,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.View;
 
 public class VideoFullScreen extends BigBlueButtonActivity {	
 	private static final Logger log = LoggerFactory.getLogger(VideoFullScreen.class);
@@ -41,6 +42,8 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 	private int userId;
 	private String name;
 	private boolean isPreview;
+	
+	VideoCaptureLayout videocaplayout;
 
 	private BroadcastReceiver closeVideo = new BroadcastReceiver() {
 
@@ -78,12 +81,45 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 		registerReceiver(closeVideo, closeVideoFilter);
 		
 		if(isPreview){
-			setContentView(R.layout.video_capture);	
+			setContentView(R.layout.video_capture);
+			videocaplayout = (VideoCaptureLayout) findViewById(R.id.video_capture_layout);
+			videocaplayout.setOnClickListener(		
+					
+					new View.OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						
+						//Intent intent = new Intent(getApplicationContext(), Client.class);
+						//intent.putExtra("userId", userId);
+						//intent.putExtra("name", name);
+						//intent.setAction(Client.BACK_TO_VIDEO_DIALOG);
+						//startActivity(intent);
+						finish();
+					}
+					
+				                                });		
+		
 		} else {
-			setContentView(R.layout.video_window_fullscreen);
-			
-			videoWindow = (VideoSurface) findViewById(R.id.video_window);	
-		}		
+			setContentView(R.layout.video_window_fullscreen);			
+			videoWindow = (VideoSurface) findViewById(R.id.video_window);
+			videoWindow.setOnClickListener(		
+					
+					 new View.OnClickListener() {
+
+					 @Override
+					 public void onClick(View v) {
+						 						   						
+							//Intent intent = new Intent(getApplicationContext(), Client.class);
+							//intent.putExtra("userId", userId);
+							//intent.putExtra("name", name);
+							//intent.setAction(Client.BACK_TO_VIDEO_DIALOG);
+							//startActivity(intent);
+							finish();
+					 }
+					
+				                                  });			
+		}
 	}
 	
 	@Override
@@ -100,7 +136,6 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 		super.onResume();
 
 		if(isPreview){
-			VideoCaptureLayout videocaplayout = (VideoCaptureLayout) findViewById(R.id.video_capture_layout);
 			videocaplayout.show(0);
 		} else {
 			videoWindow.start(userId, false);
@@ -118,8 +153,7 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 
-		if(isPreview){
-			VideoCaptureLayout videocaplayout = (VideoCaptureLayout) findViewById(R.id.video_capture_layout);
+		if(isPreview){			
 			videocaplayout.show(0);
 		} else {
 			videoWindow.updateLayoutParams(false);
