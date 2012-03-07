@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.api.JoinService0Dot8;
-import org.mconf.bbb.video.IVideoPublishListener;
+import org.mconf.bbb.video.BbbVideoPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,14 +17,7 @@ import com.flazr.rtmp.message.Metadata;
 import com.flazr.rtmp.message.Video;
 
 public class VideoPublish extends Thread implements RtmpReader {
-	private class VideoPublishHandler extends IVideoPublishListener {
-		
-		public VideoPublishHandler(int userId, String streamName, RtmpReader reader, BigBlueButtonClient context) {			
-			super(userId, streamName, reader, context);
-		}
-				
-	}
-	
+
 	private static final Logger log = LoggerFactory.getLogger(VideoPublish.class);
 	
 	public int frameRate = CaptureConstants.DEFAULT_FRAME_RATE;
@@ -35,7 +28,7 @@ public class VideoPublish extends Thread implements RtmpReader {
     	
 	private List<Video> framesList = new ArrayList<Video>();
 	
-	private VideoPublishHandler videoPublishHandler;
+	private BbbVideoPublisher videoPublishHandler;
 	
 	private BigBlueButtonClient context;
 	
@@ -104,10 +97,10 @@ public class VideoPublish extends Thread implements RtmpReader {
     }
     
     public void startPublisher() {
-    	String streamName = width + "x" + height+context.getMyUserId();
+    	String streamName = width + "x" + height + context.getMyUserId();
     	if (context.getJoinService().getClass() == JoinService0Dot8.class)
     		streamName += "-" + new Date().getTime();
-    	videoPublishHandler = new VideoPublishHandler(context.getMyUserId(), streamName, this, context);
+    	videoPublishHandler = new BbbVideoPublisher(context, this, streamName);
     	videoPublishHandler.start();
     }        	
     
@@ -116,7 +109,7 @@ public class VideoPublish extends Thread implements RtmpReader {
 			this.notifyAll();
 		}
     	if(videoPublishHandler != null){
-    		videoPublishHandler.stop(context);
+    		videoPublishHandler.stop();
     	}
     }
     
