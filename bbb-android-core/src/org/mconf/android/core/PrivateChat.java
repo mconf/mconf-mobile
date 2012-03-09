@@ -104,7 +104,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		@Override
 		public void onParticipantLeft(final IParticipant p) {
 			//se o participante que saiu é o que está sendo mostrado o chat
-			if(p.getUserId()==userId && getParticipantByViewId(flipper.getDisplayedChild()).getUserId()==userId && !movedToBack)
+			if(p.getUserId()==userId && getParticipantByViewId(flipper.getDisplayedChild()).getUserId()==userId && !movedToBack) //null pointer exeption
 			{
 				
 				showPartcicipantLeftDialog();//works fine
@@ -385,7 +385,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 
 		log.debug("displaying view of userId=" + userId + " and username=" + username);
 
-		flipper.setDisplayedChild(p.getViewId());
+		flipper.setDisplayedChild(p.getViewId()); //null pointer exception
 		cancelNotification(userId);
 	}
 	
