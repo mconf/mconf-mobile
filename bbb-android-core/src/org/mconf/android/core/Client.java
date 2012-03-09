@@ -21,6 +21,9 @@
 
 package org.mconf.android.core;
 
+import java.util.List;
+import java.util.Map;
+
 import org.acra.ErrorReporter;
 import org.mconf.android.core.video.CaptureConstants;
 import org.mconf.android.core.video.VideoCapture;
@@ -31,11 +34,24 @@ import org.mconf.android.core.voip.AudioBarLayout;
 import org.mconf.android.core.voip.AudioControlDialog;
 import org.mconf.android.core.voip.OnCallListener;
 import org.mconf.android.core.voip.VoiceModule;
-import org.mconf.bbb.IBigBlueButtonClientListener;
+import org.mconf.bbb.BigBlueButtonClient;
+import org.mconf.bbb.BigBlueButtonClient.OnConnectedListener;
+import org.mconf.bbb.BigBlueButtonClient.OnDisconnectedListener;
+import org.mconf.bbb.BigBlueButtonClient.OnExceptionListener;
+import org.mconf.bbb.BigBlueButtonClient.OnKickUserListener;
+import org.mconf.bbb.BigBlueButtonClient.OnListenerJoinedListener;
+import org.mconf.bbb.BigBlueButtonClient.OnListenerLeftListener;
+import org.mconf.bbb.BigBlueButtonClient.OnListenerStatusChangeListener;
+import org.mconf.bbb.BigBlueButtonClient.OnParticipantJoinedListener;
+import org.mconf.bbb.BigBlueButtonClient.OnParticipantLeftListener;
+import org.mconf.bbb.BigBlueButtonClient.OnParticipantStatusChangeListener;
+import org.mconf.bbb.BigBlueButtonClient.OnPrivateChatMessageListener;
+import org.mconf.bbb.BigBlueButtonClient.OnPublicChatMessageListener;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.listeners.IListener;
 import org.mconf.bbb.listeners.Listener;
 import org.mconf.bbb.users.IParticipant;
+import org.mconf.bbb.users.Participant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +93,19 @@ import android.widget.SlidingDrawer.OnDrawerCloseListener;
 import android.widget.SlidingDrawer.OnDrawerOpenListener;
 
 
-public class Client extends BigBlueButtonActivity implements IBigBlueButtonClientListener {
+public class Client extends BigBlueButtonActivity implements 
+		OnConnectedListener,
+		OnDisconnectedListener,
+		OnKickUserListener,
+		OnExceptionListener,
+		OnParticipantJoinedListener,
+		OnParticipantLeftListener,
+		OnPrivateChatMessageListener,
+		OnPublicChatMessageListener,
+		OnParticipantStatusChangeListener,
+		OnListenerJoinedListener,
+		OnListenerLeftListener,
+		OnListenerStatusChangeListener {
 	private static final Logger log = LoggerFactory.getLogger(Client.class);
 
 	public static final int MENU_QUIT = Menu.FIRST;
@@ -209,12 +237,27 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		initListeners();
 
 		if (!getBigBlueButton().isConnected()) {
-			getBigBlueButton().addListener(this);
+			registerListeners(getBigBlueButton());
 
 			if (joinAndConnect()) {
 				Toast.makeText(getApplicationContext(),getResources().getString(R.string.welcome) + ", " + username, Toast.LENGTH_SHORT).show();
 			}
 		}
+	}
+
+	private void registerListeners(BigBlueButtonClient bigBlueButton) {
+		bigBlueButton.addConnectedListener(this);
+		bigBlueButton.addDisconnectedListener(this);
+		bigBlueButton.addKickUserListener(this);
+		bigBlueButton.addExceptionListener(this);
+		bigBlueButton.addParticipantJoinedListener(this);
+		bigBlueButton.addParticipantLeftListener(this);
+		bigBlueButton.addPrivateChatMessageListener(this);
+		bigBlueButton.addPublicChatMessageListener(this);
+		bigBlueButton.addParticipantStatusChangeListener(this);
+		bigBlueButton.addListenerJoinedListener(this);
+		bigBlueButton.addListenerLeftListener(this);
+		bigBlueButton.addListenerStatusChangeListener(this);
 	}
 
 	@Override
@@ -610,8 +653,23 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 		mVideoCapture.stopCapture();
 		
 		getGlobalContext().invalidateVoiceModule();
-		getBigBlueButton().removeListener(this);
+		unregisterListeners(getBigBlueButton());
 		getBigBlueButton().disconnect();
+	}
+
+	private void unregisterListeners(BigBlueButtonClient bigBlueButton) {
+		bigBlueButton.removeConnectedListener(this);
+		bigBlueButton.removeDisconnectedListener(this);
+		bigBlueButton.removeKickUserListener(this);
+		bigBlueButton.removeExceptionListener(this);
+		bigBlueButton.removeParticipantJoinedListener(this);
+		bigBlueButton.removeParticipantLeftListener(this);
+		bigBlueButton.removePrivateChatMessageListener(this);
+		bigBlueButton.removePublicChatMessageListener(this);
+		bigBlueButton.removeParticipantStatusChangeListener(this);
+		bigBlueButton.removeListenerJoinedListener(this);
+		bigBlueButton.removeListenerLeftListener(this);
+		bigBlueButton.removeListenerStatusChangeListener(this);
 	}
 
 	@Override
@@ -891,7 +949,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 
 	@Override
-	public void onConnected() {
+	public void onConnectedSuccessfully() {
 		kicked = false;
 		getVoiceModule().setListener(new OnCallListener() {
 
@@ -929,6 +987,12 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 				listenerAdapter.notifyDataSetInvalidated();
 			}
 		});
+	}
+
+	@Override
+	public void onConnectedUnsuccessfully() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void setConnectedIcon(final int resid) {
@@ -996,11 +1060,17 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 
 	@Override
-	public void onKickUserCallback() {
+	public void onKickMyself() {
 		kicked = true;
 		makeToast(R.string.kicked);
 	}
 	
+	@Override
+	public void onKickUser(IParticipant p) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	@Override
 	public void onParticipantJoined(final IParticipant p) {
 		runOnUiThread(new Runnable() {
@@ -1142,30 +1212,51 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 
 			@Override
 			public void run() {
-
-
 				chatAdapter.add(message);
-				chatAdapter.notifyDataSetChanged();
-
-				//doesn't notify again for already read messages
 				addedMessages++;
-				if (addedMessages > lastReadNum ) {
-					SlidingDrawer slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
-					if (slidingDrawer != null && (!slidingDrawer.isShown() || !slidingDrawer.isOpened())) {
-						showNotification(message, source, false);
-						setPublicChatTitleBackground(R.drawable.public_chat_title_background_up_new_message);
-					} else
-						lastReadNum = chatAdapter.getCount();
-
-				}
+				chatAdapter.notifyDataSetChanged();
+				
+				createPublicChatNotification(message, source);
 			}
+
 		});
+	}
 
+	private void createPublicChatNotification(ChatMessage message,
+			IParticipant source) {
+		// doesn't notify again for already read messages
+		if (addedMessages > lastReadNum ) {
+			SlidingDrawer slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);
+			if (slidingDrawer != null && (!slidingDrawer.isShown() || !slidingDrawer.isOpened())) {
+				showNotification(message, source, false);
+				setPublicChatTitleBackground(R.drawable.public_chat_title_background_up_new_message);
+			} else
+				lastReadNum = chatAdapter.getCount();
 
+		}
 	}
 
 	@Override
-	public void onParticipantStatusChangePresenter(final IParticipant p) {
+	public void onPublicChatMessage(final List<ChatMessage> publicChatMessages,
+			final Map<Integer, Participant> participants) {
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				for (ChatMessage message : publicChatMessages) {
+					chatAdapter.add(message);
+					addedMessages++;
+				}
+				chatAdapter.notifyDataSetChanged();
+				ChatMessage lastMessage = publicChatMessages.get(publicChatMessages.size() - 1);
+				IParticipant source = participants.get(lastMessage.getUserId());
+				createPublicChatNotification(lastMessage, source);
+			}
+		});
+	}
+
+	@Override
+	public void onChangePresenter(final IParticipant p) {
 		runOnUiThread(new Runnable() {
 
 			@Override
@@ -1185,7 +1276,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 	
 	@Override
-	public void onParticipantStatusChangeHasStream(final IParticipant p) {
+	public void onChangeHasStream(final IParticipant p) {
 		if (!p.getStatus().isHasStream())
 			sendBroadcastCloseVideo(p);
 
@@ -1201,7 +1292,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 
 	@Override
-	public void onParticipantStatusChangeRaiseHand(final IParticipant p) {
+	public void onChangeRaiseHand(final IParticipant p) {
 		runOnUiThread(new Runnable() {
 
 			@Override
@@ -1269,7 +1360,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 
 	@Override
-	public void onListenerStatusChangeIsTalking(final IListener p) {
+	public void onChangeIsTalking(final IListener p) {
 		runOnUiThread(new Runnable() {
 
 			@Override
@@ -1281,7 +1372,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	}
 
 	@Override
-	public void onListenerStatusChangeIsMuted(final IListener p) {
+	public void onChangeIsMuted(final IListener p) {
 		runOnUiThread(new Runnable() {
 
 			@Override
@@ -1348,6 +1439,7 @@ public class Client extends BigBlueButtonActivity implements IBigBlueButtonClien
 	public void onException(Throwable throwable) {
 		ErrorReporter.getInstance().handleSilentException(throwable);
 	}
+
 }
 
 

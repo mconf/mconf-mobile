@@ -25,9 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mconf.bbb.IBigBlueButtonClientListener;
+import org.mconf.bbb.BigBlueButtonClient;
+import org.mconf.bbb.BigBlueButtonClient.OnParticipantLeftListener;
+import org.mconf.bbb.BigBlueButtonClient.OnPrivateChatMessageListener;
 import org.mconf.bbb.chat.ChatMessage;
-import org.mconf.bbb.listeners.IListener;
 import org.mconf.bbb.users.IParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,15 +43,13 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.View.OnClickListener;
-import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -62,7 +61,9 @@ public class PrivateChat extends BigBlueButtonActivity {
 
 
 
-	private class RemoteParticipant implements IBigBlueButtonClientListener {
+	private class RemoteParticipant implements
+			OnParticipantLeftListener,
+			OnPrivateChatMessageListener {
 		private int userId;
 		private int viewId;
 		private String username;
@@ -94,14 +95,6 @@ public class PrivateChat extends BigBlueButtonActivity {
 			this.chatAdapter = chatAdapter;
 		}
 		@Override
-		public void onConnected() {}
-		@Override
-		public void onDisconnected() {}
-		@Override
-		public void onKickUserCallback() {}
-		@Override
-		public void onParticipantJoined(IParticipant p) {}
-		@Override
 		public void onParticipantLeft(final IParticipant p) {
 			//se o participante que saiu é o que está sendo mostrado o chat
 			if(p.getUserId()==userId && getParticipantByViewId(flipper.getDisplayedChild()).getUserId()==userId && !movedToBack) //null pointer exeption
@@ -124,13 +117,6 @@ public class PrivateChat extends BigBlueButtonActivity {
 			}
 
 		}
-		@Override
-		public void onParticipantStatusChangeHasStream(IParticipant p) {}
-		@Override
-		public void onParticipantStatusChangePresenter(IParticipant p) {}
-		@Override
-		public void onParticipantStatusChangeRaiseHand(IParticipant p) {}
-
 		public void onPrivateChatMessage(final ChatMessage message) {
 			log.debug("private message handled");
 			runOnUiThread(new Runnable() {
@@ -153,21 +139,14 @@ public class PrivateChat extends BigBlueButtonActivity {
 					cancelNotification(userId);
 			}
 		}
-
-		@Override
-		public void onPublicChatMessage(ChatMessage message, IParticipant source) {}
-		@Override
-		public void onListenerJoined(IListener p) {}
-		@Override
-		public void onListenerLeft(IListener p) {}
-		@Override
-		public void onListenerStatusChangeIsMuted(IListener p) {}
-		@Override
-		public void onListenerStatusChangeIsTalking(IListener p) {}
-		@Override
-		public void onException(Throwable throwable) {
+		public void registerListeners(BigBlueButtonClient bigBlueButton) {
+			bigBlueButton.addParticipantLeftListener(this);
+			bigBlueButton.addPrivateChatMessageListener(this);
 		}
-
+		public void unregisterListeners(BigBlueButtonClient bigBlueButton) {
+			bigBlueButton.removeParticipantLeftListener(this);
+			bigBlueButton.removePrivateChatMessageListener(this);
+		}
 	}
 
 	private static final Logger log = LoggerFactory.getLogger(PrivateChat.class);
@@ -290,7 +269,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		RemoteParticipant p = participants.get(key);
 		if (p != null) {
 			//was starting a concurrent modification exception
-			getBigBlueButton().removeListener(p);
+			p.unregisterListeners(getBigBlueButton());
 			flipper.getChildAt(p.getViewId()).setId(INVALIDATED);
 			participants.remove(key);
 		}
@@ -344,7 +323,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		});
 		chatListView.setAdapter(p.getChatAdapter()); 
 
-		getBigBlueButton().addListener(p); 
+		p.registerListeners(getBigBlueButton());
 		Button send = (Button) flipper.getChildAt(p.getViewId()).findViewById(R.id.sendMessage);
 		send.setOnClickListener(new OnClickListener() {
 			@Override
@@ -422,8 +401,8 @@ public class PrivateChat extends BigBlueButtonActivity {
 					return gestureDetector.onTouchEvent(event);
 				}
 			});
-			chatListView.setAdapter(p.getChatAdapter()); 
-			getBigBlueButton().addListener(p);
+			chatListView.setAdapter(p.getChatAdapter());
+			p.registerListeners(getBigBlueButton());
 			Button send = (Button) flipper.getChildAt(p.getViewId()).findViewById(R.id.sendMessage);
 			send.setOnClickListener(new OnClickListener() {
 				@Override

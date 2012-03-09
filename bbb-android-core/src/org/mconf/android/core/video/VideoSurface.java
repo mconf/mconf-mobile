@@ -2,9 +2,11 @@ package org.mconf.android.core.video;
 
 import org.mconf.android.core.BigBlueButton;
 import org.mconf.bbb.BigBlueButtonClient;
-import org.mconf.bbb.video.IVideoListener;
+import org.mconf.bbb.video.BbbVideoReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.flazr.rtmp.message.Video;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
@@ -15,29 +17,15 @@ import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 
 public class VideoSurface extends GLSurfaceView {
-	
-	private class VideoHandler extends IVideoListener {
 
-		public VideoHandler(int userId, BigBlueButtonClient context) {
-			super(userId, context);
-		}
-
-		@Override
-		public void onVideo(byte[] data) {
-			enqueueFrame(data,data.length);
-		}
-		
-	}
-	
-	
 	private static final Logger log = LoggerFactory.getLogger(VideoSurface.class);
 	private VideoRenderer mRenderer;		
-	private VideoHandler videoHandler;
 	private int userId;
 	private boolean inDialog;
 	private boolean showing = false;
 	public static final float DEFAULT_ASPECT_RATIO = 4 / (float) 3;
 	private float aspectRatio = DEFAULT_ASPECT_RATIO;
+	private BbbVideoReceiver videoReceiver;
 	
 	public VideoSurface(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -73,14 +61,19 @@ public class VideoSurface extends GLSurfaceView {
 			stop();
 		
 		BigBlueButtonClient bbb = ((BigBlueButton) getContext().getApplicationContext()).getHandler();
-		videoHandler = new VideoHandler(userId, bbb);
-		float tmp = videoHandler.getAspectRatio();
+		videoReceiver = new BbbVideoReceiver(userId, bbb) {
+			@Override
+			protected void onVideo(Video video) {
+				byte[] data = video.getBody();
+				enqueueFrame(data,data.length);
+			}
+		};
+		float tmp = videoReceiver.getAspectRatio();
 		aspectRatio = (tmp > 0? tmp: DEFAULT_ASPECT_RATIO);
 
 		updateLayoutParams(inDialog);		
 
-		bbb.addVideoListener(videoHandler);
-		videoHandler.start();
+		videoReceiver.start();
 		
 		showing = true;
 	}
@@ -106,9 +99,7 @@ public class VideoSurface extends GLSurfaceView {
 	
 	public void stop() {
 		if (showing) {
-			BigBlueButtonClient bbb = ((BigBlueButton) getContext().getApplicationContext()).getHandler();
-			videoHandler.stop();
-			bbb.removeVideoListener(videoHandler);
+			videoReceiver.stop();
 			
 			log.debug("VideoSurface.stop().endDrawer()");
 			endDrawer();
