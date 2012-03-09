@@ -1,5 +1,5 @@
 /*
- * GT-Mconf: Multiconference system for interoperable web and mobile
+mobil * GT-Mconf: Multiconference system for interoperable web and mobile
  * http://www.inf.ufrgs.br/prav/gtmconf
  * PRAV Labs - UFRGS
  * 
@@ -29,6 +29,7 @@ import org.mconf.android.core.BarcodeHandler;
 import org.mconf.android.core.BigBlueButtonActivity;
 import org.mconf.android.core.Client;
 import org.mconf.android.core.NetworkPropertiesDialog;
+import org.mconf.android.core.R;
 import org.mconf.android.core.ReportCrashDialog;
 import org.mconf.bbb.api.Meeting;
 import org.slf4j.Logger;
@@ -43,6 +44,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -69,6 +72,8 @@ public class LoginPage extends BigBlueButtonActivity {
 	public static final String SERVER_CHOSED ="org.mconf.bbb.android.Client.SERVER_CHOSED";
 	public static final int MENU_QR_CODE = Menu.FIRST;
 	public static final int MENU_ABOUT = Menu.FIRST + 1;
+	
+	private static final int TIMESTAMP_FAILED = -1;
 
 	private ArrayAdapter<String> spinnerAdapter;
 	private boolean moderator;
@@ -286,10 +291,24 @@ public class LoginPage extends BigBlueButtonActivity {
 		final ProgressDialog progressDialog = new ProgressDialog(this);
 		progressDialog.setTitle(R.string.wait);
 		progressDialog.setMessage(getResources().getString(R.string.login_updating));
+		
+		
+		final Handler h = new Handler() {
+
+	    @Override
+	    public void handleMessage(Message msg) {
+	        switch (msg.what) {
+	            case TIMESTAMP_FAILED:
+	            	showTimestampFailedDialog();
+	                
+	            }
+	        }
+	    };
 
 		final Thread updateThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
+				
 				getBigBlueButton().createJoinService(serverUrl, serverPassword);
 				
 				if (getBigBlueButton().getJoinService() == null) {
@@ -297,7 +316,16 @@ public class LoginPage extends BigBlueButtonActivity {
 					showToast(R.string.login_unsupported_server);
 					return;
 				}
-				getBigBlueButton().getJoinService().load();
+				
+				if(!getBigBlueButton().getJoinService().load())
+				{
+					log.debug("timestamp failed on android");
+
+					if (progressDialog.isShowing()) 
+						progressDialog.dismiss();
+					h.sendEmptyMessage(TIMESTAMP_FAILED);
+					return;
+				}
 
 				if (Thread.interrupted())
 					return;
@@ -338,7 +366,7 @@ public class LoginPage extends BigBlueButtonActivity {
 				});
 			}
 		});
-
+		
 		progressDialog.setButton(ProgressDialog.BUTTON_POSITIVE, getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -348,7 +376,7 @@ public class LoginPage extends BigBlueButtonActivity {
 		});
 
 		progressDialog.show();
-		updateThread.start();		
+		updateThread.start();
 	}
  
 	@Override
@@ -379,7 +407,6 @@ public class LoginPage extends BigBlueButtonActivity {
 	
 	private void loadUserPreferences(){
 		username = getPreferences().getString("username", username);
-		serverUrl = getPreferences().getString("serverUrl", "");
 		serverPassword = getPreferences().getString("serverPassword", "");
 	}
 	
@@ -395,5 +422,14 @@ public class LoginPage extends BigBlueButtonActivity {
 		if (barcodeHandler.handle(requestCode, resultCode, intent)) {
 			// handled
 		}
+	}
+	
+	private void showTimestampFailedDialog()
+	{	
+				AlertDialog.Builder timestampFailed = new AlertDialog.Builder(LoginPage.this);
+				timestampFailed.setTitle("Failed to connect");
+				timestampFailed.setMessage("Failed to connect - Did you enter the correct password for this server?");				    
+				timestampFailed.setNeutralButton(R.string.ok, null);
+				timestampFailed.show();	
 	}
 }
