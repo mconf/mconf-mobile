@@ -222,6 +222,7 @@ public class LoginPage extends BigBlueButtonActivity {
 				myIntent.putExtra("username", username);
 				myIntent.putExtra("moderator", moderator);
 				myIntent.putExtra("meetingId", meetingId);
+				log.debug(meetingId);
 				startActivity(myIntent);
 			}
 		});
@@ -407,6 +408,7 @@ public class LoginPage extends BigBlueButtonActivity {
 	
 	private void loadUserPreferences(){
 		username = getPreferences().getString("username", username);
+		serverUrl = getPreferences().getString("serverUrl", "");
 		serverPassword = getPreferences().getString("serverPassword", "");
 	}
 	
