@@ -66,7 +66,8 @@ public class MeetingInfDialog extends Dialog {
 		
 		JoinedMeeting joinedMeeting = bigbluebutton.getJoinService().getJoinedMeeting();
 		if (joinedMeeting != null) {
-			meetingAdapter.addSection(context.getResources().getString(R.string.server), bigbluebutton.getJoinService().getServerUrl() + (bigbluebutton.getJoinService().getPort() != 80? ":" + bigbluebutton.getJoinService().getPort(): "" ));
+			meetingAdapter.addSection(context.getResources().getString(R.string.api_server), bigbluebutton.getJoinService().getApiServerUrl() + (bigbluebutton.getJoinService().getPort() != 80? ":" + bigbluebutton.getJoinService().getPort(): "" ));
+			meetingAdapter.addSection(context.getResources().getString(R.string.application_server), bigbluebutton.getJoinService().getApplicationService().getServerUrl());
 			meetingAdapter.addSection(context.getResources().getString(R.string.meeting_id), joinedMeeting.getConfname());
 			meetingAdapter.addSection(context.getResources().getString(R.string.voicebridge_number), joinedMeeting.getVoicebridge());
 			Meeting meeting = bigbluebutton.getJoinService().getMeetingByName(joinedMeeting.getConfname());

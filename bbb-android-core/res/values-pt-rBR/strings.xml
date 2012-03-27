@@ -74,8 +74,9 @@
     <string name="application_on_background">BigBlueButton</string>
 	<string name="application_on_background_text">O aplicativo ainda está rodando</string>
     
-    <string name="server">Servidor</string>
-	<string name="meeting_information">Informações da sala</string>
+    <string name="api_server">Servidor (API)</string>
+    <string name="application_server">Servidor (red5)</string>
+    <string name="meeting_information">Informações da sala</string>
 	<string name="meeting_id">Identificação da sala</string>
 	<string name="meeting_message">Mensagem</string>
 	<string name="start_time">Horário de início</string>

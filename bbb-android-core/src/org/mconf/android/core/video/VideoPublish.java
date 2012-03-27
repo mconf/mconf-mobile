@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.mconf.bbb.BigBlueButtonClient;
-import org.mconf.bbb.api.JoinService0Dot8;
+import org.mconf.bbb.api.ApplicationService;
 import org.mconf.bbb.video.BbbVideoPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,7 +98,9 @@ public class VideoPublish extends Thread implements RtmpReader {
     
     public void startPublisher() {
     	String streamName = width + "x" + height + context.getMyUserId();
-    	if (context.getJoinService().getClass() == JoinService0Dot8.class)
+    	if (context.getJoinService().getApplicationService().getVersion().equals(ApplicationService.VERSION_0_7)) {
+    		// do nothing
+    	} else
     		streamName += "-" + new Date().getTime();
     	videoPublishHandler = new BbbVideoPublisher(context, this, streamName);
     	videoPublishHandler.start();
@@ -239,7 +241,7 @@ public class VideoPublish extends Thread implements RtmpReader {
 
 	@Override
 	public Video next() {
-		if(framesListAvailable && framesList != null){
+		if(framesListAvailable && framesList != null && !framesList.isEmpty()){
 			return framesList.remove(0);
 		} else {
 			Video emptyVideo = new Video();

@@ -323,7 +323,7 @@ public class Client extends BigBlueButtonActivity implements
 			log.debug("Joining: " + joinUrl);
 			getBigBlueButton().createJoinService(joinUrl);
 				
-			if (getBigBlueButton().getJoinService()!=null&&getBigBlueButton().getJoinService().standardJoin(joinUrl)) 
+			if (getBigBlueButton().getJoinService()!=null && getBigBlueButton().getJoinService().standardJoin(joinUrl)) 
 			{
 				username = getBigBlueButton().getJoinService().getJoinedMeeting().getFullname();
 				// can't access the moderator information from the user module because at this point, the user isn't connected to the meeting yet
