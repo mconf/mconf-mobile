@@ -66,21 +66,33 @@ import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 //page where the user chooses the room, the name, and connects to a conference
 public class LoginPage extends BigBlueButtonActivity {
+	
+	private final int E_OK = 0;
+	//private final int E_CHECKSUM_NOT_INFORMED = 1;
+	private final int E_INVALID_CHECKSUM = 2;
+	//private final int E_INVALID_TIMESTAMP = 3;
+	private final int E_EMPTY_SECURITY_KEY = 4;
+	//private final int E_MISSING_PARAM_MEETINGID = 5;
+	//private final int E_MISSING_PARAM_FULLNAME = 6;
+	//private final int E_MISSING_PARAM_PASSWORD = 7;
+	//private final int E_MISSING_PARAM_TIMESTAMP = 8;
+	//private final int E_INVALID_URL = 9;
+	//private final int E_SERVER_UNREACHABLE = 10;
+	private final int E_MOBILE_NOT_SUPPORTED = 11;
+	//public static final int E_UNKNOWN_ERROR = 12;
 
 	private static final Logger log = LoggerFactory.getLogger(LoginPage.class);
 
 	public static final String SERVER_CHOSED ="org.mconf.bbb.android.Client.SERVER_CHOSED";
 	public static final int MENU_QR_CODE = Menu.FIRST;
 	public static final int MENU_ABOUT = Menu.FIRST + 1;
-	
-	private static final int TIMESTAMP_FAILED = -1;
 
 	private ArrayAdapter<String> spinnerAdapter;
 	private boolean moderator;
 	private String username = "Android";
 	private String serverUrl = "";
 	private String serverPassword = "";
-	private String createdMeeting = "";
+	private String createdMeeting = "";	
 	
 	BroadcastReceiver serverChosed = new BroadcastReceiver(){ 
 		public void onReceive(Context context, Intent intent)
@@ -160,7 +172,7 @@ public class LoginPage extends BigBlueButtonActivity {
 						public void onClick(DialogInterface dialog, int which) {
 							createdMeeting = input.getText().toString().trim();
 							
-							if (!getBigBlueButton().getJoinService().createMeeting(createdMeeting)) {
+							if (getBigBlueButton().getJoinService().createMeeting(createdMeeting) != E_OK) { //.
 								AlertDialog.Builder builder = new AlertDialog.Builder(LoginPage.this);
 								builder.setCancelable(false)
 								       .setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
@@ -296,19 +308,63 @@ public class LoginPage extends BigBlueButtonActivity {
 		
 		final Handler h = new Handler() {
 
-	    @Override
-	    public void handleMessage(Message msg) {
-	        switch (msg.what) {
-	            case TIMESTAMP_FAILED:
-	            	showTimestampFailedDialog();
-	                
-	            }
+			@Override
+			public void handleMessage(Message msg) {
+	            	showTimestampFailedDialog(setCorrectMsg(msg.what));	                				
 	        }
+			
+			private String setCorrectMsg(int errorCode)
+			{
+				String message= getString(R.string.server_unreachable);
+				switch(errorCode) 
+				{
+	            	case E_INVALID_CHECKSUM:
+	            		message = getString(R.string.checksum_error);
+	            		break;
+	            		
+	            	case E_EMPTY_SECURITY_KEY:
+	            		message = getString(R.string.empty_security_key);
+	            		break;
+	            		
+	            	case E_MOBILE_NOT_SUPPORTED:
+	            		message = getString(R.string.mobile_not_supported);
+	            		break;
+	            		
+//	            	case E_CHECKSUM_NOT_INFORMED:
+//	            		//message = 
+//	            		break;
+//	            		
+//	            	case E_INVALID_TIMESTAMP:
+//	            		//message = 
+//	            		break;
+//	            		
+//	            	case E_MISSING_PARAM_MEETINGID:
+//	            		//message = 
+//	            		break;
+//	            		
+//	            	case E_MISSING_PARAM_FULLNAME:
+//	            		//message = 
+//	            		break;
+//	            		
+//	            	case E_MISSING_PARAM_PASSWORD:
+//	            		//message = 
+//	            		break;
+//	            		
+//	            	case E_MISSING_PARAM_TIMESTAMP:
+//	            		//message = 
+//	            		break;
+//	            		
+//	            	case E_INVALID_URL:
+//	            		//message = 
+//	            		break;	            			               			   				
+				}
+				return message;
+			}
 	    };
 
 		final Thread updateThread = new Thread(new Runnable() {
 			@Override
-			public void run() {
+			public void run() { //.
 				
 				getBigBlueButton().createJoinService(serverUrl, serverPassword);
 				
@@ -318,13 +374,16 @@ public class LoginPage extends BigBlueButtonActivity {
 					return;
 				}
 				
-				if(!getBigBlueButton().getJoinService().load())
+				int returnCode = getBigBlueButton().getJoinService().load();
+				
+				if(returnCode != E_OK)
 				{
 					log.debug("timestamp failed on android");
 
 					if (progressDialog.isShowing()) 
 						progressDialog.dismiss();
-					h.sendEmptyMessage(TIMESTAMP_FAILED);
+					
+					h.sendEmptyMessage(returnCode);
 					return;
 				}
 
@@ -426,11 +485,11 @@ public class LoginPage extends BigBlueButtonActivity {
 		}
 	}
 	
-	private void showTimestampFailedDialog()
+	private void showTimestampFailedDialog(String message)
 	{	
 				AlertDialog.Builder timestampFailed = new AlertDialog.Builder(LoginPage.this);
-				timestampFailed.setTitle("Failed to connect");
-				timestampFailed.setMessage("Failed to connect - Did you enter the correct password for this server?");				    
+				timestampFailed.setTitle(R.string.failed_to_connect);
+				timestampFailed.setMessage(message);				    
 				timestampFailed.setNeutralButton(R.string.ok, null);
 				timestampFailed.show();	
 	}

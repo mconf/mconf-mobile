@@ -47,6 +47,7 @@ import org.mconf.bbb.BigBlueButtonClient.OnParticipantLeftListener;
 import org.mconf.bbb.BigBlueButtonClient.OnParticipantStatusChangeListener;
 import org.mconf.bbb.BigBlueButtonClient.OnPrivateChatMessageListener;
 import org.mconf.bbb.BigBlueButtonClient.OnPublicChatMessageListener;
+import org.mconf.bbb.api.JoinServiceBase;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.listeners.IListener;
 import org.mconf.bbb.listeners.Listener;
@@ -354,7 +355,7 @@ public class Client extends BigBlueButtonActivity implements
 				return false;
 			}			
 			
-			if (!getBigBlueButton().getJoinService().join(meetingId, username, moderator)) {
+			if (getBigBlueButton().getJoinService().join(meetingId, username, moderator) != JoinServiceBase.E_OK) { //.
 				if (getBigBlueButton().getJoinService().getJoinedMeeting() != null) {
 					String error = getBigBlueButton().getJoinService().getJoinedMeeting().getMessage();
 					log.debug("Joining error message: " + error);
