@@ -28,12 +28,10 @@ import org.mconf.bbb.api.Meeting;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.util.TypedValue;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.View; 
 import android.view.Window;
 import android.widget.Button;
-import android.widget.RelativeLayout;
+import android.widget.ListView;
 
 public class MeetingInfDialog extends Dialog {
 
@@ -60,8 +58,8 @@ public class MeetingInfDialog extends Dialog {
  
 		BigBlueButtonClient bigbluebutton = ((BigBlueButton) getContext().getApplicationContext()).getHandler();
 		
-		RelativeLayout relative = (RelativeLayout)findViewById(R.id.meeting_information);
-		CustomListview meetingInfList = (CustomListview)findViewById(R.id.meeting_infs_list);
+		//RelativeLayout relative = (RelativeLayout)findViewById(R.id.meeting_information);
+		ListView meetingInfList = (ListView)findViewById(R.id.meeting_infs_list);
 		meetingInfList.setAdapter(meetingAdapter);
 		
 		JoinedMeeting joinedMeeting = bigbluebutton.getJoinService().getJoinedMeeting();
@@ -82,11 +80,11 @@ public class MeetingInfDialog extends Dialog {
 			meetingAdapter.addSection(context.getResources().getString(R.string.participant_count), Integer.toString(bigbluebutton.getUsersModule().getParticipantCount()));
 		}
 		
-		ViewGroup.LayoutParams  params = relative.getLayoutParams();
-		int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, ROW_HEIGHT, context.getResources().getDisplayMetrics());
-		params.height= (meetingAdapter.getCount()+1)*px+(meetingInfList.getDividerHeight() * (meetingAdapter.getCount() - 1));
-		relative.setLayoutParams(params);
-		relative.requestLayout();  
+		//ViewGroup.LayoutParams  params = relative.getLayoutParams();
+		//int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, ROW_HEIGHT, context.getResources().getDisplayMetrics());
+		//params.height= (meetingAdapter.getCount()+1)*px+(meetingInfList.getDividerHeight() * (meetingAdapter.getCount() - 1));
+		//relative.setLayoutParams(params);
+		//relative.requestLayout();  
 		
 	}
 }
