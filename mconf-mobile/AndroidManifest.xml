@@ -29,7 +29,8 @@
 		
 		<activity android:name="org.mconf.android.core.Client" android:launchMode="singleTask" android:alwaysRetainTaskState="true"  android:configChanges="orientation|keyboardHidden">
 			<intent-filter>
-			    <data android:scheme="@string/protocol" />
+			    <!-- data android:scheme="@string/protocol" /-->
+			    <data android:scheme="bigbluebutton" />
 			    <action android:name="android.intent.action.VIEW" />
 			    <category android:name="android.intent.category.DEFAULT" />
 			    <category android:name="android.intent.category.BROWSABLE" />
