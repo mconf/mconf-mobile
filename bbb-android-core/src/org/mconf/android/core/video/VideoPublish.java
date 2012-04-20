@@ -97,7 +97,8 @@ public class VideoPublish extends Thread implements RtmpReader {
     }
     
     public void startPublisher() {
-    	String streamName = width + "x" + height + context.getMyUserId();
+//    	String streamName = width + "x" + height + context.getMyUserId();
+    	String streamName = height + "x" + width + context.getMyUserId();
     	if (context.getJoinService().getApplicationService().getVersion().equals(ApplicationService.VERSION_0_7)) {
     		// do nothing
     	} else

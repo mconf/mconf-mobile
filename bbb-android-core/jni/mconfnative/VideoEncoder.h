@@ -23,6 +23,7 @@ private:
 
 	int pixels, halfpixels, quarterpixels, halfby;
 	uint8_t *aux;
+	int width, height;
 
 public:
 	VideoEncoder(JNIEnv *env, jobject obj, jint width, jint height, jint frameRate, jint bitRate, jint GOP)
@@ -30,7 +31,7 @@ public:
 		Log("VideoEncoder() begin");
 
 		EncodeVideoParams * paramsVideo = new EncodeVideoParams();
-		setVideoParams(width, height, frameRate, bitRate, GOP, &paramsVideo);
+		setVideoParams(height, width, frameRate, bitRate, GOP, &paramsVideo);
 
 		initNV21toYUV420P(width, height);
 
@@ -172,6 +173,30 @@ public:
 
 	void enqueueFrame(uint8_t* data, int length) {
 		NV21toYUV420P(&data);
+		uint8_t *rotation_buffer = (uint8_t *) malloc(length);
+		memcpy(rotation_buffer, data, length);
+		memset(data, '\0', length);
+		
+		
+/*
+string[,] orig = new string[n, m]; // altura largura
+string[,] rot = new string[m, n];
+
+...
+
+for ( int i=0; i < n; i++ )
+  for ( int j=0; j < m; j++ )
+    rot[j, n - i - 1] = orig[i, j];
+*/    	
+		
+		int n = height;
+		int m = width;
+    	for (int i=0; i < n; ++i)
+    		for (int j=0; j < m; ++j)
+    			data[j * n + n - i - 1] = rotation_buffer[i * m + j];
+		
+		free(rotation_buffer);
+		
 	    if (queue_enqueue(decoded_video, (uint8_t*)data, length, Milliseconds().getTime(), NULL) != E_OK) {
 	        Log("enqueueFrame() fail");
 	        return;
@@ -227,6 +252,9 @@ public:
 	// This method must be called only once, from an initializing function.
 	// This method should also be called if the w or h changes.
 	void initNV21toYUV420P(int w, int h){
+		width = w;
+		height = h;
+	
 		pixels = w*h;
 		halfpixels = pixels/2;
 		quarterpixels = pixels/4;
