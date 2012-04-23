@@ -136,10 +136,4 @@ This application is an Android implementation of the BigBlueButton client.
         <item>180°</item>
         <item>90° counterclockwise</item>
     </string-array>
-    <string-array name="rotation_values">
-        <item>0</item>
-        <item>90</item>
-        <item>180</item>
-        <item>270</item>
-    </string-array>
 </resources>

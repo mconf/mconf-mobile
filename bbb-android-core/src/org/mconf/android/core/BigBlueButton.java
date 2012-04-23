@@ -8,7 +8,9 @@ import org.mconf.android.core.voip.VoiceModule;
 import org.mconf.bbb.BigBlueButtonClient;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
+import android.preference.PreferenceManager;
 
 @ReportsCrashes(formKey="dHVlSktWX2lUb1pWMzFIb1kxcE5YblE6MQ")
 public class BigBlueButton extends Application {
@@ -17,11 +19,11 @@ public class BigBlueButton extends Application {
 	private VideoPublish mVideoPublish = null;
 	private boolean restartCaptureWhenAppResumes = false;
 	
-	private int frameRate = CaptureConstants.DEFAULT_FRAME_RATE;
+	private int framerate = CaptureConstants.DEFAULT_FRAME_RATE;
     private int width = CaptureConstants.DEFAULT_WIDTH;
     private int height = CaptureConstants.DEFAULT_HEIGHT;
-    private int bitRate = CaptureConstants.DEFAULT_BIT_RATE;
-    private int GOP = CaptureConstants.DEFAULT_GOP;
+    private int bitrate = CaptureConstants.DEFAULT_BIT_RATE;
+    private int gop = CaptureConstants.DEFAULT_GOP;
 	
 	private int launchedBy = LAUNCHED_BY_NON_SPECIFIED;
 	public static final int LAUNCHED_BY_NON_SPECIFIED = 0;
@@ -63,7 +65,8 @@ public class BigBlueButton extends Application {
 	
 	public VideoPublish getVideoPublish() {
 		if(mVideoPublish == null) {
-			mVideoPublish = new VideoPublish(getHandler(), restartCaptureWhenAppResumes, frameRate, width, height, bitRate, GOP);
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+			mVideoPublish = new VideoPublish(getHandler(), restartCaptureWhenAppResumes, framerate, width, height, bitrate, gop, Integer.parseInt(prefs.getString("video_rotation", "0")));
 		}
 		return mVideoPublish;
 	}
@@ -72,11 +75,11 @@ public class BigBlueButton extends Application {
 		if(mVideoPublish != null){
 			restartCaptureWhenAppResumes = mVideoPublish.restartWhenResume;
 			
-			frameRate = mVideoPublish.frameRate;
-			width = mVideoPublish.width;
-			height = mVideoPublish.height;
-			bitRate = mVideoPublish.bitRate;
-			GOP = mVideoPublish.GOP;
+			framerate = mVideoPublish.getFramerate();
+			width = mVideoPublish.getWidth();
+			height = mVideoPublish.getHeight();
+			bitrate = mVideoPublish.getBitrate();
+			gop = mVideoPublish.getGop();
 			
 			mVideoPublish = null;
 		}

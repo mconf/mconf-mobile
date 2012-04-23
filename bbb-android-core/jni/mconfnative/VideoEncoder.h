@@ -180,6 +180,7 @@ public:
 	}
 
 	void enqueueFrame(uint8_t* data, int length, int width, int height, int rotation) {
+/*	
         // reset the video params in case of changing width/height
         if (rotation != _rotation) {
             if (rotation % 180 == 0) {
@@ -198,6 +199,7 @@ public:
             _width = width;
             _height = height;
         }
+*/
         _rotator.process(data, width, height, rotation);
 		
 	    if (queue_enqueue(decoded_video, (uint8_t*)data, length, Milliseconds().getTime(), NULL) != E_OK) {

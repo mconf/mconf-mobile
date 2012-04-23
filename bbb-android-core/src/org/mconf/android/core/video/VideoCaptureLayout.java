@@ -36,7 +36,7 @@ public class VideoCaptureLayout extends LinearLayout {
     	}
 		
 		VideoCentering mVideoCentering = new VideoCentering();
-    	mVideoCentering.setAspectRatio(mVideoPublish.width/(float)mVideoPublish.height);
+    	mVideoCentering.setAspectRatio(mVideoPublish.getWidth()/(float)mVideoPublish.getHeight());
     	ViewGroup.LayoutParams layoutParams = mVideoCentering.getVideoLayoutParams(mVideoCentering.getDisplayMetrics(getContext(),margin), getLayoutParams());
 		setLayoutParams(layoutParams);
 
