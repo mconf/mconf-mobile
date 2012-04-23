@@ -34,6 +34,7 @@ import org.mconf.android.core.voip.AudioBarLayout;
 import org.mconf.android.core.voip.AudioControlDialog;
 import org.mconf.android.core.voip.OnCallListener;
 import org.mconf.android.core.voip.VoiceModule;
+import org.mconf.android.core.Preferences;
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.BigBlueButtonClient.OnConnectedListener;
 import org.mconf.bbb.BigBlueButtonClient.OnDisconnectedListener;
@@ -124,6 +125,7 @@ public class Client extends BigBlueButtonActivity implements
 	public static final int MENU_MEETING_INF = Menu.FIRST + 13;
 	public static final int MENU_START_VIDEO = Menu.FIRST + 14;
 	public static final int MENU_STOP_VIDEO = Menu.FIRST + 15;
+	public static final int MENU_SETTINGS = Menu.FIRST + 16;
 
 	public static final int POPUP_MENU_KICK_USER = Menu.FIRST;
 	public static final int POPUP_MENU_MUTE_LISTENER = Menu.FIRST + 1;
@@ -733,6 +735,7 @@ public class Client extends BigBlueButtonActivity implements
 			menu.add(Menu.NONE, MENU_QUIT, Menu.NONE, R.string.quit).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 			menu.add(Menu.NONE, MENU_RECONNECT, Menu.NONE, R.string.reconnect).setIcon(android.R.drawable.ic_menu_rotate);
 		}
+		menu.add(Menu.NONE, MENU_SETTINGS, Menu.NONE, R.string.preferences).setIcon(android.R.drawable.ic_menu_preferences);
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -873,6 +876,10 @@ public class Client extends BigBlueButtonActivity implements
 			MeetingInfDialog meeting = new MeetingInfDialog(this);
 			meeting.show();
 			meeting.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.hurricane_transparent);
+			return true;
+		case MENU_SETTINGS:
+			Intent settingsActivity = new Intent(getBaseContext(), Preferences.class);
+			startActivity(settingsActivity);
 			return true;
 		default:			
 			return super.onOptionsItemSelected(item);

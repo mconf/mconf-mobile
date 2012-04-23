@@ -14,10 +14,10 @@ jint Java_org_mconf_android_core_video_VideoPublish_initEncoder(JNIEnv *env, job
 	return 0;
 }
 
-jint Java_org_mconf_android_core_video_VideoCapture_enqueueFrame(JNIEnv *env, jobject obj, jbyteArray data, jint length) {
+jint Java_org_mconf_android_core_video_VideoCapture_enqueueFrame(JNIEnv *env, jobject obj, jbyteArray data, jint length, jint width, jint height, jint rotation) {
 	if (videoEncoder) {
 		jbyte *javaData = env->GetByteArrayElements(data, 0);
-		videoEncoder->enqueueFrame((uint8_t*) javaData, length);
+		videoEncoder->enqueueFrame((uint8_t*) javaData, length, width, height, rotation);
 		env->ReleaseByteArrayElements(data, javaData, JNI_ABORT);
 	}
 	return 0;

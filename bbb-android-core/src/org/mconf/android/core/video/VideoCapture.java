@@ -907,12 +907,12 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     		}
     		Participant myParticipant = ((BigBlueButton) getContext().getApplicationContext()).getHandler().getUsersModule().getParticipants().get(((BigBlueButton) getContext().getApplicationContext()).getHandler().getMyUserId());
 	    		if(myParticipant!=null&&myParticipant.getStatus().isHasStream()){
-	    			enqueueFrame(_data,_data.length);	
+	    			enqueueFrame(_data, _data.length, mVideoPublish.width, mVideoPublish.height, 270);
     		}    		
     	}
     }
     
-	private native int enqueueFrame(byte[] data, int length);
+	private native int enqueueFrame(byte[] data, int length, int width, int height, int rotation);
 	
 	public static void setCameraDisplayOrientation(Activity activity,
 			int cameraId, android.hardware.Camera camera) {

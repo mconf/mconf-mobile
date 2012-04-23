@@ -5,6 +5,7 @@
 
 #include "iva/encode/EncodeVideo.h"
 #include "iva/encode/EncodeVideoParams.h"
+#include "ImageRotator.h"
 
 class VideoEncoder {
 
@@ -21,25 +22,32 @@ private:
 	jobject JavaSenderClass;
 	jmethodID JavaOnReadyFrame;
 
-	int pixels, halfpixels, quarterpixels, halfby;
-	uint8_t *aux;
-	int width, height;
+	int _width, _height, _rotation;
+	ImageRotator _rotator;
+	EncodeVideoParams* _params_video;
 
 public:
 	VideoEncoder(JNIEnv *env, jobject obj, jint width, jint height, jint frameRate, jint bitRate, jint GOP)
-					: encoding(false) {
+					: encoding(false)
+					, _rotator()
+					, _width(width)
+					, _height(height)
+					, _rotation(0) {
 		Log("VideoEncoder() begin");
 
-		EncodeVideoParams * paramsVideo = new EncodeVideoParams();
-		setVideoParams(height, width, frameRate, bitRate, GOP, &paramsVideo);
-
-		initNV21toYUV420P(width, height);
+        _params_video = new EncodeVideoParams();
+		_params_video->setCodec(COMMON_CODEC_VIDEO_FLV);
+		_params_video->setBitRate(bitRate);
+		_params_video->setFrameRate(frameRate);
+		_params_video->setWidth(width);
+		_params_video->setHeight(height);
+		_params_video->setGopSize(GOP);
 
 		decoded_video = queue_create();
 		encoded_video = queue_create();
 
 		video_enc = new EncodeVideo();
-		int ret = video_enc->open(paramsVideo);
+		int ret = video_enc->open(_params_video);
 		if (ret != E_OK){
 			Log("Error on opening the parameters");
 			return;
@@ -171,113 +179,31 @@ public:
 		encoding = false;
 	}
 
-	void enqueueFrame(uint8_t* data, int length) {
-		NV21toYUV420P(&data);
-		uint8_t *rotation_buffer = (uint8_t *) malloc(length);
-		memcpy(rotation_buffer, data, length);
-		memset(data, '\0', length);
-		
-		
-/*
-string[,] orig = new string[n, m]; // altura largura
-string[,] rot = new string[m, n];
-
-...
-
-for ( int i=0; i < n; i++ )
-  for ( int j=0; j < m; j++ )
-    rot[j, n - i - 1] = orig[i, j];
-*/    	
-		
-		int n = height;
-		int m = width;
-    	for (int i=0; i < n; ++i)
-    		for (int j=0; j < m; ++j)
-    			data[j * n + n - i - 1] = rotation_buffer[i * m + j];
-		
-		free(rotation_buffer);
+	void enqueueFrame(uint8_t* data, int length, int width, int height, int rotation) {
+        // reset the video params in case of changing width/height
+        if (rotation != _rotation) {
+            if (rotation % 180 == 0) {
+                _params_video->setWidth(width);
+                _params_video->setHeight(height);
+            } else {
+                _params_video->setWidth(height);
+                _params_video->setHeight(width);
+            }
+            int ret = video_enc->setParams(_params_video);
+	        if (ret != E_OK){
+		        Log("Error on setting the parameters");
+		        return;
+	        }
+            _rotation = rotation;
+            _width = width;
+            _height = height;
+        }
+        _rotator.process(data, width, height, rotation);
 		
 	    if (queue_enqueue(decoded_video, (uint8_t*)data, length, Milliseconds().getTime(), NULL) != E_OK) {
 	        Log("enqueueFrame() fail");
 	        return;
 	    }
-//	    Log("enqueueFrame() done");
-	}
-
-	void setVideoParams(jint width, jint height, jint frameRate, jint bitRate, jint GOP, EncodeVideoParams ** paramsVideo){
-		(*paramsVideo)->setCodec(COMMON_CODEC_VIDEO_FLV);
-
-//		bitrate:
-//		default:COMMON_VIDEO_DEFAULT_BITRATE
-//		possible:
-//		COMMON_VIDEO_DEFAULT_BITRATE          1400000                   ///< Default (bit/s)
-//		iva docs: any value between 100000 and 4000000
-		(*paramsVideo)->setBitRate(bitRate);
-
-//		framerate:
-//		default:COMMON_VIDEO_DEFAULT_FPS
-//		possible:
-//		COMMON_VIDEO_DEFAULT_FPS              30                        ///< default
-//		COMMON_CODEC_VIDEO_MIN_FPS          2       ///< lowest
-//		COMMON_CODEC_VIDEO_MAX_FPS          60      ///< highest
-//		iva docs: any value between 1 and 60
-		(*paramsVideo)->setFrameRate(frameRate);
-
-//		width:
-//		default:COMMON_VIDEO_DEFAULT_WIDTH
-//		possible:
-//		COMMON_VIDEO_DEFAULT_WIDTH            720                       ///< Default
-//		COMMON_CODEC_VIDEO_MIN_WIDTH        180     ///< lowest
-//		COMMON_CODEC_VIDEO_MAX_WIDTH        1440    ///< highest
-//		iva docs: 1280, 720 and 360 are allowed
-		(*paramsVideo)->setWidth(width);
-
-//		heigth:
-//		default:COMMON_VIDEO_DEFAULT_HEIGHT
-//		possible:
-//		COMMON_VIDEO_DEFAULT_HEIGHT           480                       ///< default
-//		COMMON_CODEC_VIDEO_MIN_HEIGHT       120     ///< Lowest
-//		COMMON_CODEC_VIDEO_MAX_HEIGHT       960     ///< Highest
-//		iva docs: 720, 480 e 240 are allowed
-		(*paramsVideo)->setHeight(height);
-
-//		gop:
-//		default:COMMON_VIDEO_DEFAULT_GOP
-//		possible:
-//		COMMON_VIDEO_DEFAULT_GOP              12                        ///< GOP default
-		(*paramsVideo)->setGopSize(GOP);
-	}
-
-	// Initializes global vars to optimize the conversion.
-	// This method must be called only once, from an initializing function.
-	// This method should also be called if the w or h changes.
-	void initNV21toYUV420P(int w, int h){
-		width = w;
-		height = h;
-	
-		pixels = w*h;
-		halfpixels = pixels/2;
-		quarterpixels = pixels/4;
-		halfby = quarterpixels+pixels;
-
-		if(aux){
-			aux = NULL;
-			free(aux);
-		}
-		aux = (uint8_t *) malloc(halfpixels);
-	}
-
-	// converts in (passed as reference) from nv21 (yuv420sp) to yuv420p.
-	// initNV21toYUV420p must be called before using this function for the first time
-	// and when w or h changes.
-	void NV21toYUV420P(uint8_t **in){
-		memcpy(aux,&(*in)[pixels],halfpixels);
-		int count = -pixels;
-		for(int i = pixels; i < halfby; i++){
-			(*in)[i+quarterpixels] = aux[i+count];
-			count++;
-			(*in)[i] = aux[i+count];
-		}
 	}
 };
 
