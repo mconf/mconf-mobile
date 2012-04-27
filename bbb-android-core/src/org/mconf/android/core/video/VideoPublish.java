@@ -80,6 +80,8 @@ public class VideoPublish extends Thread implements RtmpReader {
     											 // close the reader. When false, this boolean prevents the
     											 // addition of new frames to the list.
     
+    private boolean firstFrameWrote = true;
+
 	public int cameraId = -1;
 	        
     public VideoPublish(BigBlueButtonClient context, boolean restartWhenResume, int frameRate, int width, int height, int bitRate, int GOP) {
@@ -173,6 +175,10 @@ public class VideoPublish extends Thread implements RtmpReader {
 
    	    if (framesListAvailable) {
    	    	framesList.add(video);
+			if (firstFrameWrote) {
+				firstFrameWrote = false;
+				videoPublishHandler.fireFirstFrame();
+			}
 			synchronized(this) {
 				this.notifyAll();
 			}
