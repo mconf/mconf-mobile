@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -34,12 +36,29 @@ public class VideoCaptureLayout extends LinearLayout {
     		log.debug("Error: could not show capture preview. Reason: could not get or instantiate a VideoPublisher");
     		return;
     	}
+
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+		int rotation = Integer.parseInt(prefs.getString("preview_rotation", "0"));
+		log.debug("PREVIEW ROTATION ={}",rotation);
 		
 		VideoCentering mVideoCentering = new VideoCentering();
-    	mVideoCentering.setAspectRatio(mVideoPublish.getWidth()/(float)mVideoPublish.getHeight());
+		if (rotation % 180 == 0) 
+			mVideoCentering.setAspectRatio(mVideoPublish.getWidth()/(float)mVideoPublish.getHeight());
+		else
+			mVideoCentering.setAspectRatio(mVideoPublish.getHeight()/(float)mVideoPublish.getWidth());
+			
     	ViewGroup.LayoutParams layoutParams = mVideoCentering.getVideoLayoutParams(mVideoCentering.getDisplayMetrics(getContext(),margin), getLayoutParams());
 		setLayoutParams(layoutParams);
+		
+		//this would be the ideal =(
+//		if(mVideoPublish.mCamera != null)
+//		{
+//			mVideoPublish.mCamera.stopPreview();		
+//			//mVideoPublish.mCamera.setDisplayOrientation(rotation);			
+//			mVideoPublish.mCamera.startPreview();
+//		}
 
+		
 		//ViewGroup.LayoutParams params = getLayoutParams();
 		//params.width = 320;
 		//params.height = 240;

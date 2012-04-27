@@ -11,19 +11,19 @@ import org.mconf.bbb.users.Participant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.ImageFormat;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.util.AttributeSet;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup.LayoutParams;
@@ -50,8 +50,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 										   // true when: the preview is being shown on a Dialog
 										   // false otherwise
     
-    private boolean usingFaster, usingHidden;											
-	
+    private boolean usingFaster, usingHidden;
 	public VideoCapture(Context context, AttributeSet attrs) {
         super(context, attrs);
         
@@ -232,7 +231,15 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	    	parameters.setPreviewFormat(ImageFormat.NV21);
 
     		mVideoPublish.mCamera.setParameters(parameters);
+    		
+    		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+    		int rotation = Integer.parseInt(prefs.getString("preview_rotation", "0"));
+    		mVideoPublish.mCamera.setDisplayOrientation(rotation);
+    		
 //			setCameraDisplayOrientation((Activity) context, mVideoPublish.cameraId, mVideoPublish.mCamera);
+    		
+    		
+    		
     		
 	    	parameters = mVideoPublish.mCamera.getParameters();
 	    	
@@ -819,7 +826,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     
 	private native int enqueueFrame(byte[] data, int length, int width, int height, int rotation);
 	
-	public static void setCameraDisplayOrientation(Activity activity,
+	/*public static void setCameraDisplayOrientation(Activity activity,
 			int cameraId, android.hardware.Camera camera) {
 		android.hardware.Camera.CameraInfo info =
 				new android.hardware.Camera.CameraInfo();
@@ -843,5 +850,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 		}
 		
 		camera.setDisplayOrientation(result);
-	}
+	}*/
+	
+
 }

@@ -66,7 +66,9 @@ public class BigBlueButton extends Application {
 	public VideoPublish getVideoPublish() {
 		if(mVideoPublish == null) {
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-			mVideoPublish = new VideoPublish(getHandler(), restartCaptureWhenAppResumes, framerate, width, height, bitrate, gop, Integer.parseInt(prefs.getString("video_rotation", "0")));
+			mVideoPublish = new VideoPublish(getHandler(), restartCaptureWhenAppResumes, 
+											 framerate, width, height, bitrate, gop, 
+											 Integer.parseInt(prefs.getString("video_rotation", "0")));
 		}
 		return mVideoPublish;
 	}
