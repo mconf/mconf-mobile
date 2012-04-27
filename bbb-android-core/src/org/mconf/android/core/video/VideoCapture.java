@@ -220,9 +220,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 		    		parameters.setPreviewFpsRange(
 		    				fpsRange.get(0)[Camera.Parameters.PREVIEW_FPS_MIN_INDEX], 
 		    				fpsRange.get(0)[Camera.Parameters.PREVIEW_FPS_MAX_INDEX]);
-//		    	parameters.setRotation(90);
 //		    	parameters.set("orientation", "portrait");
-//		    	parameters.set("rotation", 180);
 	    	} else {
 	    		List<Integer> fps = parameters.getSupportedPreviewFrameRates();
 	    		if (fps != null && !fps.isEmpty())
@@ -234,12 +232,16 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     		
     		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
     		int rotation = Integer.parseInt(prefs.getString("preview_rotation", "0"));
-    		mVideoPublish.mCamera.setDisplayOrientation(rotation);
+    		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO)
+    			mVideoPublish.mCamera.setDisplayOrientation(rotation);
+    		else {
+    			// doesn't apply any rotation
+    			// \TODO apply the preferred rotation
+//    			parameters.setRotation(rotation);
+//		    	parameters.set("rotation", rotation);
+    		}
     		
 //			setCameraDisplayOrientation((Activity) context, mVideoPublish.cameraId, mVideoPublish.mCamera);
-    		
-    		
-    		
     		
 	    	parameters = mVideoPublish.mCamera.getParameters();
 	    	
