@@ -21,6 +21,10 @@
 
 package org.mconf.android.core;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -70,18 +74,24 @@ public class AboutDialog extends AlertDialog {
 	    final String unknown = "Unknown";
 	
 	    if (context == null) {
-	            return unknown;
+            return unknown;
 	    }
 	
 	    try {
 		    String ret = context.getPackageManager()
-		               .getPackageInfo(context.getPackageName(), 0)
-		               .versionName;
+	               .getPackageInfo(context.getPackageName(), 0)
+	               .versionName;
 		    if (ret.contains(" + "))
-		            ret = ret.substring(0,ret.indexOf(" + "))+"b";
+	            ret = ret.substring(0, ret.indexOf(" + ")) + "b";
+		    if (((BigBlueButton) context.getApplicationContext()).isDebug()) {
+//		    	DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		    	ret += "dev";
+//	    		ret += "\n" + dateFormat.format(new Date());
+		    			
+		    }
 		    return ret;
-		    } catch(NameNotFoundException ex) {}
-	
-	    return unknown;
+	    } catch(NameNotFoundException ex) {
+		    return unknown;
+	    }
 	}
 }
