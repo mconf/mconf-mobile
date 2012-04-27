@@ -1246,20 +1246,21 @@ public class Client extends BigBlueButtonActivity implements
 	@Override
 	public void onPublicChatMessage(final List<ChatMessage> publicChatMessages,
 			final Map<Integer, Participant> participants) {
-		runOnUiThread(new Runnable() {
-
-			@Override
-			public void run() {
-				for (ChatMessage message : publicChatMessages) {
-					chatAdapter.add(message);
-					addedMessages++;
+		if (!publicChatMessages.isEmpty())
+			runOnUiThread(new Runnable() {
+	
+				@Override
+				public void run() {
+					for (ChatMessage message : publicChatMessages) {
+						chatAdapter.add(message);
+						addedMessages++;
+					}
+					chatAdapter.notifyDataSetChanged();
+					ChatMessage lastMessage = publicChatMessages.get(publicChatMessages.size() - 1);
+					IParticipant source = participants.get(lastMessage.getUserId());
+					createPublicChatNotification(lastMessage, source);
 				}
-				chatAdapter.notifyDataSetChanged();
-				ChatMessage lastMessage = publicChatMessages.get(publicChatMessages.size() - 1);
-				IParticipant source = participants.get(lastMessage.getUserId());
-				createPublicChatNotification(lastMessage, source);
-			}
-		});
+			});
 	}
 
 	@Override
