@@ -489,14 +489,14 @@ public class Client extends BigBlueButtonActivity implements
 			public void onClick(View viewParam) {
 				final EditText chatMessageEdit = (EditText) findViewById(R.id.chatMessage);
 				String chatMessage = chatMessageEdit.getText().toString();
-				if(chatMessage.length()>1 ) {
+				if (chatMessage.length() > 0) {
 					if(getBigBlueButton().isConnected())
 						getBigBlueButton().sendPublicChatMessage(chatMessage);
 					else
 						Toast.makeText(Client.this, R.string.cant_send_public_message, Toast.LENGTH_SHORT).show();
 					chatMessageEdit.setText("");
+					chatListView.setSelection(chatListView.getCount());
 				}
-				chatListView.setSelection(chatListView.getCount());
 			} 
 		});
 
