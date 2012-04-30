@@ -37,6 +37,7 @@
 			</intent-filter>
 		</activity>
 		<activity android:name="org.mconf.android.core.PrivateChat" android:launchMode="singleInstance" android:configChanges="orientation|keyboardHidden"/> 
+		<activity android:name="org.mconf.android.core.Preferences" android:launchMode="singleInstance" android:configChanges="orientation|keyboardHidden" android:label="@string/preferences"/> 
 		<activity android:name="org.mconf.android.core.video.VideoFullScreen" android:configChanges="orientation|keyboardHidden" android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
 	</application>
     
