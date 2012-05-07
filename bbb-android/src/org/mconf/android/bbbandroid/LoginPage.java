@@ -106,7 +106,7 @@ public class LoginPage extends BigBlueButtonActivity {
 		}
 	};
 
-	private BarcodeHandler barcodeHandler = new BarcodeHandler();
+	private BarcodeHandler barcodeHandler;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -264,6 +264,8 @@ public class LoginPage extends BigBlueButtonActivity {
 
 		IntentFilter filter = new IntentFilter(SERVER_CHOSED); 
 		registerReceiver(serverChosed, filter); 
+		
+		barcodeHandler = new BarcodeHandler(getApplicationContext());
 	}
 
 	@Override
@@ -454,7 +456,7 @@ public class LoginPage extends BigBlueButtonActivity {
 			new AboutDialog(this).show();
 			return true; 
 		case MENU_QR_CODE: 
-			barcodeHandler.scan(this);
+			barcodeHandler.scan();
 			return true;
 		default:			
 			return super.onOptionsItemSelected(item);

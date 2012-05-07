@@ -12,10 +12,13 @@ import android.widget.Toast;
 public class BarcodeHandler {
 	private Context context;
 	public static final int REQUEST_CODE = 0;
-
-	public void scan(Context context) {
+	
+	public BarcodeHandler(Context context)
+	{
 		this.context = context;
-		
+	}
+
+	public void scan() {		
 		Intent intent = new Intent("com.google.zxing.client.android.SCAN");
         intent.setPackage("com.google.zxing.client.android");
         intent.putExtra("SCAN_MODE", "QR_CODE_MODE"); 

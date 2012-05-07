@@ -57,7 +57,7 @@ public class LoginPage extends BigBlueButtonActivity {
 	private ArrayAdapter<String> spinnerAdapter;
 	private Room selectedRoom = null;
 	private MconfWebItf mconf = new MconfWebImpl();
-	private BarcodeHandler barcodeHandler = new BarcodeHandler();
+	private BarcodeHandler barcodeHandler;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -251,7 +251,9 @@ public class LoginPage extends BigBlueButtonActivity {
 		account.setText(Html.fromHtml("<a href=\"" + DEFAULT_SERVER + "\">" + getResources().getString(R.string.dont_have_account) + "</a>"));
 		account.setMovementMethod(LinkMovementMethod.getInstance());
 		account.setLinkTextColor(Color.YELLOW);
-	}
+		
+		barcodeHandler = new BarcodeHandler(getApplicationContext());
+	} 
 	
 	private int checkAuthentication() {
 		final EditText editTextUsername = (EditText) findViewById(R.id.editTextUsername);
@@ -329,7 +331,7 @@ public class LoginPage extends BigBlueButtonActivity {
 			new AboutDialog(this).show();
 			return true; 
 		case MENU_QR_CODE: 
-			barcodeHandler.scan(this);
+			barcodeHandler.scan();
 			return true;
 		default:			
 			return super.onOptionsItemSelected(item);
