@@ -40,8 +40,8 @@ public class VideoPublish extends Thread implements RtmpReader {
 	
 	public Camera mCamera;
 	
-	private int firstTimeStamp = 0;
-	private int lastTimeStamp = 0;
+	private int firstTimestamp = 0;
+	private int lastTimestamp = 0;
 	    
     public int state = CaptureConstants.STOPPED;
         
@@ -80,7 +80,7 @@ public class VideoPublish extends Thread implements RtmpReader {
     											 // close the reader. When false, this boolean prevents the
     											 // addition of new frames to the list.
     
-    private boolean firstFrameWrote = false;
+    private boolean firstFrameWrote = true;
 
 	public int cameraId = -1;
 	        
@@ -158,40 +158,31 @@ public class VideoPublish extends Thread implements RtmpReader {
     	return sharedBuffer;
 	}
     
-    public int onReadyFrame (int bufferSize, int timeStamp)
+    public int onReadyFrame (int bufferSize, int timestamp)
     {    	
-    	if(firstTimeStamp == 0){
-    		firstTimeStamp = timeStamp;
+    	if(firstTimestamp == 0){
+    		firstTimestamp = timestamp;
     	}    	
-    	timeStamp = timeStamp - firstTimeStamp;
-    	int interval = timeStamp - lastTimeStamp;
-    	lastTimeStamp = timeStamp;
+    	timestamp = timestamp - firstTimestamp;
+    	int interval = timestamp - lastTimestamp;
+    	lastTimestamp = timestamp;
     	
     	byte[] aux = new byte[bufferSize];
     	System.arraycopy(sharedBuffer, 0, aux, 0, bufferSize); //\TODO see if we can avoid this copy
     	
-       	Video video = new Video(timeStamp, aux, bufferSize);
+       	Video video = new Video(timestamp, aux, bufferSize);
    	    video.getHeader().setDeltaTime(interval);
-		video.getHeader().setStreamId(videoPublishHandler.videoConnection.streamId);
-		
-		if(context.getUsersModule().getParticipants().get(context.getMyUserId()) !=null && context.getUsersModule().getParticipants().get(context.getMyUserId()).getStatus().isHasStream()
-		   && framesListAvailable && framesList != null){
-			framesList.add(video);
-			if(!firstFrameWrote){
-				if(videoPublishHandler != null && videoPublishHandler.videoConnection != null
-						&& videoPublishHandler.videoConnection.publisher != null
-						&& videoPublishHandler.videoConnection.publisher.isStarted()) {
-					firstFrameWrote = true;
-					videoPublishHandler.videoConnection.publisher.fireNext(videoPublishHandler.videoConnection.publisher.channel, 0);
-				} else {
-					log.debug("Warning: tried to fireNext but video publisher is not started");
-				}
+
+   	    if (framesListAvailable) {
+   	    	framesList.add(video);
+			if (firstFrameWrote) {
+				firstFrameWrote = false;
+				videoPublishHandler.fireFirstFrame();
 			}
 			synchronized(this) {
 				this.notifyAll();
 			}
-		}
-		
+   	    }
     	return 0;
     }
 
