@@ -331,7 +331,7 @@ public class LoginPage extends BigBlueButtonActivity {
 			new AboutDialog(this).show();
 			return true; 
 		case MENU_QR_CODE: 
-			barcodeHandler.scan();
+			barcodeHandler.scan(this);
 			return true;
 		default:			
 			return super.onOptionsItemSelected(item);
