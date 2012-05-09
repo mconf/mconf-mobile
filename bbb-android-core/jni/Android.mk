@@ -33,7 +33,8 @@ LOCAL_MODULE    := mconfnativeencodevideo
 
 LOCAL_SRC_FILES := \
 				   mconfnative/EncoderManager.cpp \
-				   mconfnative/VideoEncoder.cpp
+				   mconfnative/VideoEncoder.cpp \
+                                   mconfnative/ImageRotator.cpp
 				  
 LOCAL_CXXFLAGS := -D__STDC_CONSTANT_MACROS
 

@@ -14,9 +14,10 @@
 		<activity android:name=".Client" android:launchMode="singleTask" android:alwaysRetainTaskState="true"  android:configChanges="orientation|keyboardHidden" />
 		<activity android:name=".PrivateChat" android:launchMode="singleInstance" android:configChanges="orientation|keyboardHidden"/> 
 		<activity android:name=".video.VideoFullScreen" android:configChanges="orientation|keyboardHidden" android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
-
+		<activity android:name=".PrivateChat" android:launchMode="singleInstance" android:configChanges="orientation|keyboardHidden"/> 
+				
 	</application>
-	<supports-screens  android:smallScreens="true" android:normalScreens="true" android:largeScreens="true" />
+	<supports-screens android:smallScreens="true" android:normalScreens="true" android:largeScreens="true" />
 
 	
 	<uses-sdk android:minSdkVersion="5" />

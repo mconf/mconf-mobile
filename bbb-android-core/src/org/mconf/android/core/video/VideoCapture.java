@@ -11,19 +11,19 @@ import org.mconf.bbb.users.Participant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.ImageFormat;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.util.AttributeSet;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup.LayoutParams;
@@ -50,8 +50,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 										   // true when: the preview is being shown on a Dialog
 										   // false otherwise
     
-    private boolean usingFaster, usingHidden;											
-	
+    private boolean usingFaster, usingHidden;
 	public VideoCapture(Context context, AttributeSet attrs) {
         super(context, attrs);
         
@@ -83,101 +82,6 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 		return false;
 	}	
 	
-    public int setFrameRate(int fr){
-    	if(mVideoPublish != null){
-    		mVideoPublish.frameRate = fr;
-    		return CaptureConstants.E_OK;
-    	} else {
-    		log.debug("Error: could not set frame rate");
-    	    return CaptureConstants.E_COULD_NOT_SET_FR;
-    	}    	
-    }
-    
-    public int setWidth(int w){
-    	if(mVideoPublish != null){
-	    	mVideoPublish.width = w;
-	    	return CaptureConstants.E_OK;
-		} else {
-			log.debug("Error: could not set width");
-		    return CaptureConstants.E_COULD_NOT_SET_W;
-		}    	
-    }
-    
-    public int setHeight(int h){
-    	if(mVideoPublish != null){
-	    	mVideoPublish.height = h;
-	    	return CaptureConstants.E_OK;
-		} else {
-			log.debug("Error: could not set height");
-		    return CaptureConstants.E_COULD_NOT_SET_H;
-		}    	
-    }
-    
-    public int setBitRate(int br){
-    	if(mVideoPublish != null){
-	    	mVideoPublish.bitRate = br;
-	    	return CaptureConstants.E_OK;
-		} else {
-			log.debug("Error: could not set bitrate");
-		    return CaptureConstants.E_COULD_NOT_SET_BR;
-		}    	
-    }
-    
-    public int setGOP(int g){
-    	if(mVideoPublish != null){
-    		mVideoPublish.GOP = g;
-    		return CaptureConstants.E_OK;
-		} else {
-			log.debug("Error: could not set gop");
-		    return CaptureConstants.E_COULD_NOT_SET_GOP;
-		}    	
-    }
-    
-    public int getFrameRate(int fr){
-    	if(mVideoPublish != null){
-    		return mVideoPublish.frameRate;
-       	} else {
-    		log.debug("Error: could not get frame rate");
-    	    return CaptureConstants.E_COULD_NOT_GET_FR;
-    	}    	
-    }
-    
-    public int getWidth(int w){
-    	if(mVideoPublish != null){
-	    	return mVideoPublish.width;
-		} else {
-			log.debug("Error: could not get width");
-		    return CaptureConstants.E_COULD_NOT_GET_W;
-		}    	
-    }
-    
-    public int getHeight(int h){
-    	if(mVideoPublish != null){
-	    	return mVideoPublish.height;
-		} else {
-			log.debug("Error: could not get height");
-		    return CaptureConstants.E_COULD_NOT_GET_H;
-		}    	
-    }
-    
-    public int getBitRate(int br){
-    	if(mVideoPublish != null){
-	    	return mVideoPublish.bitRate;
-	    } else {
-			log.debug("Error: could not get bitrate");
-		    return CaptureConstants.E_COULD_NOT_GET_BR;
-		}    	
-    }
-    
-    public int getGOP(int g){
-    	if(mVideoPublish != null){
-    		return mVideoPublish.GOP;
-		} else {
-			log.debug("Error: could not get gop");
-		    return CaptureConstants.E_COULD_NOT_GET_GOP;
-		}    	
-    }
-    
 	// Centers the preview on the screen keeping the capture aspect ratio.
     // Remember to call this function after you change the width or height if
     // you want to keep the aspect and the video centered
@@ -187,7 +91,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     public int centerPreview() {
     	if(mVideoPublish != null){
 	    	VideoCentering mVideoCentering = new VideoCentering();
-	    	mVideoCentering.setAspectRatio(mVideoPublish.width/(float)mVideoPublish.height);
+	    	mVideoCentering.setAspectRatio(mVideoPublish.getWidth()/(float)mVideoPublish.getHeight());
 	    	LayoutParams layoutParams = mVideoCentering.getVideoLayoutParams(mVideoCentering.getDisplayMetrics(this.getContext(),40), this.getLayoutParams());
 			setLayoutParams(layoutParams);
 			return CaptureConstants.E_OK;
@@ -316,9 +220,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 		    		parameters.setPreviewFpsRange(
 		    				fpsRange.get(0)[Camera.Parameters.PREVIEW_FPS_MIN_INDEX], 
 		    				fpsRange.get(0)[Camera.Parameters.PREVIEW_FPS_MAX_INDEX]);
-//		    	parameters.setRotation(90);
 //		    	parameters.set("orientation", "portrait");
-//		    	parameters.set("rotation", 180);
 	    	} else {
 	    		List<Integer> fps = parameters.getSupportedPreviewFrameRates();
 	    		if (fps != null && !fps.isEmpty())
@@ -327,15 +229,27 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 	    	parameters.setPreviewFormat(ImageFormat.NV21);
 
     		mVideoPublish.mCamera.setParameters(parameters);
+    		
+    		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+    		int rotation = Integer.parseInt(prefs.getString("preview_rotation", "0"));
+    		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO)
+    			mVideoPublish.mCamera.setDisplayOrientation(rotation);
+    		else {
+    			// doesn't apply any rotation
+    			// \TODO apply the preferred rotation
+//    			parameters.setRotation(rotation);
+//		    	parameters.set("rotation", rotation);
+    		}
+    		
 //			setCameraDisplayOrientation((Activity) context, mVideoPublish.cameraId, mVideoPublish.mCamera);
     		
 	    	parameters = mVideoPublish.mCamera.getParameters();
 	    	
-	    	mVideoPublish.frameRate = parameters.getPreviewFrameRate();
-	    	mVideoPublish.height = parameters.getPreviewSize().height;
-	    	mVideoPublish.width = parameters.getPreviewSize().width;
+	    	mVideoPublish.setFramerate(parameters.getPreviewFrameRate());
+	    	mVideoPublish.setHeight(parameters.getPreviewSize().height);
+	    	mVideoPublish.setWidth(parameters.getPreviewSize().width);
 	    	
-	    	log.debug("Using capture parameters: " + mVideoPublish.width + "x" + mVideoPublish.height + ", {} fps", mVideoPublish.frameRate);
+	    	log.debug("Using capture parameters: " + mVideoPublish.getWidth() + "x" + mVideoPublish.getHeight() + ", {} fps", mVideoPublish.getFramerate());
 	    	    		
 	       	return CaptureConstants.E_OK;
     	} else {
@@ -907,14 +821,14 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     		}
     		Participant myParticipant = ((BigBlueButton) getContext().getApplicationContext()).getHandler().getUsersModule().getParticipants().get(((BigBlueButton) getContext().getApplicationContext()).getHandler().getMyUserId());
 	    		if(myParticipant!=null&&myParticipant.getStatus().isHasStream()){
-	    			enqueueFrame(_data,_data.length);	
+	    			enqueueFrame(_data, _data.length, mVideoPublish.getWidth(), mVideoPublish.getHeight(), mVideoPublish.getRotation());
     		}    		
     	}
     }
     
-	private native int enqueueFrame(byte[] data, int length);
+	private native int enqueueFrame(byte[] data, int length, int width, int height, int rotation);
 	
-	public static void setCameraDisplayOrientation(Activity activity,
+	/*public static void setCameraDisplayOrientation(Activity activity,
 			int cameraId, android.hardware.Camera camera) {
 		android.hardware.Camera.CameraInfo info =
 				new android.hardware.Camera.CameraInfo();
@@ -938,5 +852,7 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
 		}
 		
 		camera.setDisplayOrientation(result);
-	}
+	}*/
+	
+
 }

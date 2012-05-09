@@ -20,11 +20,12 @@ public class VideoPublish extends Thread implements RtmpReader {
 
 	private static final Logger log = LoggerFactory.getLogger(VideoPublish.class);
 	
-	public int frameRate = CaptureConstants.DEFAULT_FRAME_RATE;
-    public int width = CaptureConstants.DEFAULT_WIDTH;
-    public int height = CaptureConstants.DEFAULT_HEIGHT;
-    public int bitRate = CaptureConstants.DEFAULT_BIT_RATE;
-    public int GOP = CaptureConstants.DEFAULT_GOP;
+	private int framerate = CaptureConstants.DEFAULT_FRAME_RATE;
+    private int width = CaptureConstants.DEFAULT_WIDTH;
+    private int height = CaptureConstants.DEFAULT_HEIGHT;
+    private int bitrate = CaptureConstants.DEFAULT_BIT_RATE;
+    private int gop = CaptureConstants.DEFAULT_GOP;
+    private int rotation = 0;
     	
 	private List<Video> framesList = new ArrayList<Video>();
 	
@@ -84,20 +85,26 @@ public class VideoPublish extends Thread implements RtmpReader {
 
 	public int cameraId = -1;
 	        
-    public VideoPublish(BigBlueButtonClient context, boolean restartWhenResume, int frameRate, int width, int height, int bitRate, int GOP) {
+    public VideoPublish(BigBlueButtonClient context, boolean restartWhenResume, int framerate, int width, int height, int bitrate, int gop, int rotation) {
     	this.context = context;    	 
     	 	
     	this.restartWhenResume = restartWhenResume;
     	
-    	this.frameRate = frameRate;
+    	this.framerate = framerate;
     	this.width = width;
     	this.height = height;
-    	this.bitRate = bitRate;
-    	this.GOP = GOP;
+    	this.bitrate = bitrate;
+    	this.gop = gop;
+    	this.rotation = rotation;
     }
     
     public void startPublisher() {
-    	String streamName = width + "x" + height + context.getMyUserId();
+    	String streamName;
+    	if (rotation % 180 == 0)
+    		streamName = width + "x" + height + context.getMyUserId();
+    	else
+    		streamName = height + "x" + width + context.getMyUserId();
+
     	if (context.getJoinService().getApplicationService().getVersion().equals(ApplicationService.VERSION_0_7)) {
     		// do nothing
     	} else
@@ -137,7 +144,10 @@ public class VideoPublish extends Thread implements RtmpReader {
     											//in order to initialize the sharedBuffer array as a byte[]
     											//of the smaller size as possible, to allocate less memory.
     	
-    	initEncoder(width, height, frameRate, bitRate, GOP);
+    	if (rotation % 180 == 0)
+    		initEncoder(width, height, framerate, bitrate, gop);
+    	else
+    		initEncoder(height, width, framerate, bitrate, gop);
     	
     	nativeEncoderInitialized = true;
     }
@@ -255,13 +265,39 @@ public class VideoPublish extends Thread implements RtmpReader {
 
 	@Override
 	public int getWidth() {
-		// TODO Auto-generated method stub
-		return 0;
+		return width;
 	}
 
 	@Override
 	public int getHeight() {
-		// TODO Auto-generated method stub
-		return 0;
+		return height;
+	}
+
+	public void setFramerate(int framerate) {
+		this.framerate = framerate;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getFramerate() {
+		return framerate;
+	}
+
+	public int getBitrate() {
+		return bitrate;
+	}
+
+	public int getGop() {
+		return gop;
+	}
+
+	public int getRotation() {
+		return rotation;
 	}
 }

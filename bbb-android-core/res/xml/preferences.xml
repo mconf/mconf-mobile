@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceCategory android:title="@string/preferences_video_category">      
+        <ListPreference
+             android:title="@string/preferences_preview_rotation"
+             android:summary="@string/preferences_preview_summary"
+             android:key="preview_rotation"
+             android:defaultValue="0"
+             android:entries="@array/rotation_keys"
+             android:entryValues="@array/rotation_values"
+            />
+        <ListPreference
+             android:title="@string/preferences_video_rotation"
+             android:summary="@string/preferences_video_summary"
+             android:key="video_rotation"
+             android:defaultValue="0"
+             android:entries="@array/rotation_keys"
+             android:entryValues="@array/rotation_values"
+            />
+    </PreferenceCategory>
+</PreferenceScreen>

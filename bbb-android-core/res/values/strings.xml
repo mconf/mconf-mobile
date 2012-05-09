@@ -124,4 +124,16 @@ This application is an Android implementation of the BigBlueButton client.
 	<string name="video_initializing">Starting video capture</string>
 	<string name="video_failed">Video capture failed. Error ${ERROR}</string>
 	
+	<string name="preferences">Preferences</string>
+    <string name="preferences_video_category">Video preferences</string>
+	<string name="preferences_preview_rotation">Video preview rotation</string>
+	<string name="preferences_preview_summary">Rotation applied to the video preview</string>
+    <string name="preferences_video_rotation">Transmitted video rotation</string>
+    <string name="preferences_video_summary">Rotation applied to the transmitted video</string>
+    <string-array name="rotation_keys">
+        <item>No rotation</item>
+        <item>90° clockwise</item>
+        <item>180°</item>
+        <item>90° counterclockwise</item>
+    </string-array>
 </resources>

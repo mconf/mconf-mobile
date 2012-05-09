@@ -126,4 +126,17 @@
 
 	<string name="video_initializing">Inicializando captura de vídeo</string>
 	<string name="video_failed">Falha na captura de vídeo. Erro ${ERROR}</string>
+	
+	<string name="preferences">Preferências</string>
+    <string name="preferences_video_category">Preferências de vídeo</string>
+	<string name="preferences_preview_rotation">Rotação da visualização de vídeo</string>
+	<string name="preferences_preview_summary">Rotação aplicada à visualização do vídeo</string>
+    <string name="preferences_video_rotation">Rotação da transmissão de vídeo</string>
+    <string name="preferences_video_summary">Rotação aplicada ao vídeo transmitido</string>
+    <string-array name="rotation_keys">
+        <item>Sem rotação</item>
+        <item>90° horário</item>
+        <item>180°</item>
+        <item>90° anti-horário</item>
+    </string-array>
 </resources> 
