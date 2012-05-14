@@ -18,7 +18,8 @@ public class BarcodeHandler {
 		this.context = context;
 	}
 
-	public void scan() {		
+	public void scan(Context context) {		
+		this.context = context;
 		Intent intent = new Intent("com.google.zxing.client.android.SCAN");
         intent.setPackage("com.google.zxing.client.android");
         intent.putExtra("SCAN_MODE", "QR_CODE_MODE"); 
@@ -68,6 +69,7 @@ public class BarcodeHandler {
 	            	Intent joinAndLogin = new Intent(context.getApplicationContext(), Client.class);
 		            joinAndLogin.addCategory("android.intent.category.BROWSABLE");
 		            joinAndLogin.setData(meetingAdress);
+		            joinAndLogin.addFlags(intent.FLAG_ACTIVITY_NEW_TASK);
 		            context.startActivity(joinAndLogin);
 	            } else {
 	            	Toast.makeText(context, R.string.invalid_join_url, Toast.LENGTH_SHORT).show();
