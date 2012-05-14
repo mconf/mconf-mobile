@@ -10,6 +10,7 @@ bin/
 gen/
 obj/
 proguard.cfg
+proguard-project.txt
 *.log
 *.orig
 local.properties

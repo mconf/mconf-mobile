@@ -13,8 +13,9 @@ function deploy
     copy_language $1 en values
     copy_language $1 pt-br values-pt-rBR
     copy_language $1 es values-es
+    copy_language $1 fa values-fa
 
-    rm -r locale-$1.zip
+    rm -r locale-$1.zip locale-$1/
 }
 
 deploy bbb-android 05d7e8bc27e2a666fae7868ffa5e640b91bc0fdfdc4755faa3831b8786a5bcd6

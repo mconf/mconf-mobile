@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">BBB-Android</string>
+	<string name="login_name">Nombre:</string>
+	<string name="login_empty_name">Nombre de usuario vacío</string>
+	<string name="login_select_meeting">Por favor seleccione una conferencia</string>
+	<string name="login_updating">Actualizando la lista de conferencias</string>
+	<string name="login_unsupported_server">Este servidor no suministra acceso para móviles</string>
+	<string name="choose_server">Elija un servidor para conectarse:</string>
+	<string name="connect">Conectar</string>
+	<string name="type_server">O ingrese una URL de servidor:</string>
+	<string name="choose_a_server">Seleccione un servidor</string>
+	<string name="delete_server">Eliminar servidor</string>
+	<string name="choose_a_server_to_login">Seleccione un servidor para acceder</string>
+	<string name="server_password">Ingrese la contraseña del servidor</string>
+	<string name="change_password">Cambiar la contraseña del servidor</string>
+	<string name="failed_to_connect">Falló al conectar</string>
+	<string name="checksum_error">Clave inválida para este servidor</string>
+	<string name="empty_security_key">Contacte al administrador. El soporte para móviles está temporalmente deshabilitado</string>
+	<string name="mobile_not_supported">El servidor no soporta servicio móvil</string>
+	<string name="server_unreachable">No puede conectarse al servidor</string>
+</resources>

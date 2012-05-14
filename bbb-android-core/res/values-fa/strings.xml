@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="protocol">bigbluebutton</string>
+	<string name="login_cant_join">امکان ورود به کلاس وجود ندارد</string>
+	<string name="login_button_join">ورود</string>
+	<string name="login_cant_contact_server">امکان اتصال به سرور وجود ندارد. دوباره تلاش کنید</string>
+	<string name="wait">لطفا منتظر بمانید</string>
+	<string name="welcome">خوش آمدید</string>
+	<string name="cancel">لغو</string>
+	<string name="you">شما</string>
+	<string name="send_message">ارسال</string>
+	<string name="list_participants">لیست شرکت کنندگان</string>
+	<string name="list_listeners">لیست شنوندگان</string>
+	<string name="public_chat">گفتگو عمومی</string>
+	<string name="cant_send_public_message">اتصال شما قطع شد. امکان ارسال پیام وجود ندارد</string>
+	<string name="meeting">جلسه:</string>
+	<string name="kick">اخراج</string>
+	<string name="mute">قطع صدا</string>
+	<string name="unmute">وصل صدا</string>
+	<string name="assign_presenter">انتساب ارائه کننده</string>
+	<string name="not_implemented">این مشخصه پیاده سازی نشده است</string>
+	<string name="speaker">بلندگو</string>
+	<string name="start_voice">شروع پخش صدا</string>
+	<string name="stop_voice">توقف صدا</string>
+	<string name="start_video">شروع پخش ویدئو</string>
+	<string name="stop_video">توقف تصویر</string>
+	<string name="publishing_video">تصویر شما در حال انتشار در جلسه می باشد</string>
+	<string name="quit">خروج</string>
+	<string name="minimize">کمینه کردن</string>
+	<string name="logout">خروج</string>
+	<string name="raise_hand">بلند کردن دست</string>
+	<string name="lower_hand">پایین آوردن دست</string>
+	<string name="open_private_chat">باز کردن گفتگو خصوصی</string>
+	<string name="lost_connection">قطع اتصال</string>
+	<string name="attempting_to_reconnect">اتصال مجدد....</string>
+	<string name="private_chat_notification">یک پیغام خصوصی جدید از</string>
+	<string name="public_chat_notification">در یافت یک پیغام عمومی از</string>
+	<string name="private_chat_title">گفتگو خصوصی با</string>
+	<string name="close_chat">خروج از گفتگو متنی</string>
+	<string name="connection_established">اتصال برقرار شد</string>
+	<string name="connection_closed">اتصال قطع شد</string>
+	<string name="connection_refused">اتصال رد شد</string>
+	<string name="error">خطا</string>
+	<string name="invalid_number">عدد وُیپ معتبر نیست</string>
+	<string name="no_options">گزینه ای وجود ندارد</string>
+	<string name="not_moderator">شما اجازه کافی ندارید</string>
+	<string name="cant_reconnect">امکان اتصال مجدد وجود ندارد. اتصال شبکه خود را بررسی کنید</string>
+	<string name="reconnected">اتصال با موفقیت برقرار شد</string>
+	<string name="reconnect">اتصال مجدد</string>
+	<string name="no_connection">اتصال به اینترنت وجود ندارد</string>
+	<string name="open_properties">آیا ویژگیهای شبکه باز شود؟</string>
+	<string name="kicked">شما از جلسه اخراج شدید</string>
+	<string name="new_meeting">ایجاد یک جلسه جدید</string>
+	<string name="create">ایجاد</string>
+	<string name="taptospeak">برای صحبت کردن کلیک کنید</string>
+	<string name="lockspeak">قفل کردن صحبت کردن</string>
+	<string name="ok">تایید</string>
+	<string name="participant_left">اتصال کاربر قطع شد. در حال خروج از گفتگو</string>
+	<string name="user_disconnected">اتصال کاربر قطع شد</string>
+	<string name="mute_room">قطع صدای جلسه</string>
+	<string name="unmute_room">وصل صدای جلسه</string>
+	<string name="qrcode">کد کیو.آر</string>
+	<string name="login_in">ورود</string>
+	<string name="install_bar_code">آیا مایل به نصب هستید؟</string>
+	<string name="bar_code_no_found">پویشگر بارکد یافت نشد</string>
+	<string name="market_not_found">بازار یافت نشد</string>
+	<string name="you_have_no_market">دستگاه شما برای بارگذاری پویشگر بارکد در مارکت عضو نیست</string>
+	<string name="invalid_join_url">کد پویش شده نامعتبر است</string>
+	<string name="show_video">نمایش تصویر</string>
+	<string name="application_on_background">بیگ بلو باتن</string>
+	<string name="application_on_background_text">برنامه هنوز در حال اجرا است</string>
+	<string name="back_pressed">کلید \"عقب\" فشرده شد</string>
+	<string name="back_pressed_action">مایل به انجام کدام عمل هستید؟</string>
+	<string name="disconnected">اتصال شما قطع شده است</string>
+	<string name="api_server">سرور ( اِی.پی.آی)</string>
+	<string name="application_server">سرور (رد5)</string>
+	<string name="meeting_information">اطلاعات جلسه</string>
+	<string name="meeting_id">مشخصه ی جلسه</string>
+	<string name="meeting_message">پیغام جلسه</string>
+	<string name="start_time">زمان شروع</string>
+	<string name="participant_count">تعداد شرکت کنندگان</string>
+	<string name="moderator_count">تعداد مدیران</string>
+	<string name="voicebridge_number">عدد پل صوتی</string>
+	<string name="about">This application is an Android implementation of the BigBlueButton client.
+\n
+\nVersion ${VERSION}
+\n
+\nIt was developed by PRAV Labs as part of the GT-Mconf project (http://inf.ufrgs.br/prav/gtmconf) supported by RNP (http://www.rnp.br).
+\n
+\nThe source code is licensed under the GNU General Public License (GPL) and it is available at https://github.com/mconf.
+\n
+\nThe audio implementation is based on Sipdroid, an open-source SIP client for Android (http://sipdroid.org).
+\n
+\nIt uses Flazr, a Java implementation of multimedia streaming protocols (http://flazr.com).
+\n
+\nIt uses BBB-Java, a client-side Java API for BigBlueButton.</string>
+	<string name="moderator">مدیر</string>
+	<string name="viewer">بیننده</string>
+	<string name="close">خروج</string>
+	<string name="audio_config">تنظیمات صدا</string>
+	<string name="speaker_volume">صدای بلندگو</string>
+	<string name="earphone_volume">صدای هدفون</string>
+	<string name="mic_gain">تقویت میکروفن</string>
+	<string name="report_crash_title">ارسال داده به صورت ناشناس</string>
+	<string name="report_crash_message">ما به منظور حل مشکلات، هنگامی که برنامه از کار می افتد، به صورت ناشناس اطلاعاتی جمع آوری می کنیم. آیا شما با ارسال اطلاعات خطا موافق هستید؟</string>
+	<string name="chat_module_problem">ماژول گفتگو دچار مشکل شده و بسته خواهد شد</string>
+	<string name="voice_connecting">در حال اتصال به کنفرانس صوتی</string>
+	<string name="voice_connection_timeout">عدم اتصال به صدا</string>
+	<string name="video_initializing">آغاز ضبط ویدئو</string>
+	<string name="video_failed">عدم موفقیت در دریافت تصویر. خطای ${ERROR}</string>
+</resources>

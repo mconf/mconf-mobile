@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources>
 	<string name="protocol">bigbluebutton</string>
-
 	<string name="login_cant_join">Não foi possível entrar na sala</string>
 	<string name="login_button_join">Entrar</string>
 	<string name="login_cant_contact_server">Não foi possível conectar ao servidor. Tente novamente mais tarde</string>
@@ -16,7 +14,6 @@
 	<string name="public_chat">Bate-papo público</string>
 	<string name="cant_send_public_message">Você está disconectado, não pode mandar mensagens</string>
 	<string name="meeting">Sala:</string>
-
 	<string name="kick">Expulsar</string>
 	<string name="mute">Sem som</string>
 	<string name="unmute">Com som</string>
@@ -25,19 +22,17 @@
 	<string name="speaker">Alto-falante</string>
 	<string name="start_voice">Iniciar voz</string>
 	<string name="stop_voice">Parar voz</string>
-
 	<string name="start_video">Iniciar video</string>
 	<string name="stop_video">Parar video</string>
-    <string name="publishing_video">Seu vídeo está sendo transmitido para a sessão</string>
-
+	<string name="publishing_video">Seu vídeo está sendo transmitido para a sessão</string>
 	<string name="quit">Fechar</string>
 	<string name="minimize">Minimizar</string>
 	<string name="logout">Sair da sala</string>
 	<string name="raise_hand">Levantar a mão</string>
 	<string name="lower_hand">Abaixar a mão</string>
 	<string name="open_private_chat">Abrir o chat privado</string>
-    <string name="lost_connection">Conexão perdida</string>
-    <string name="attempting_to_reconnect">Reconectando...</string>
+	<string name="lost_connection">Conexão perdida</string>
+	<string name="attempting_to_reconnect">Reconectando...</string>
 	<string name="private_chat_notification">Nova mensagem privada de&#160;</string>
 	<string name="public_chat_notification">Nova mensagem pública de&#160;</string>
 	<string name="private_chat_title">Bate-papo privado com&#160;</string>
@@ -45,7 +40,7 @@
 	<string name="connection_established">Conexão estabelecida</string>
 	<string name="connection_closed">Conexão fechada</string>
 	<string name="connection_refused">Conexão rejeitada</string>
-    <string name="error">Erro</string>
+	<string name="error">Erro</string>
 	<string name="invalid_number">não é um número VoIP válido</string>
 	<string name="no_options">Nenhuma opção disponível</string>
 	<string name="not_moderator">Sem permissão para executar essa operação</string>
@@ -59,35 +54,33 @@
 	<string name="create">Criar</string>
 	<string name="taptospeak">Pressione para falar</string>
 	<string name="lockspeak">Fala contínua</string>
-    <string name="ok">OK</string>
-    <string name="participant_left">Usuário se desconectou. Fechando o chat</string>
+	<string name="ok">OK</string>
+	<string name="participant_left">Usuário se desconectou. Fechando o chat</string>
 	<string name="user_disconnected">Usuário se desconectou</string>
 	<string name="mute_room">Sala sem som</string>
 	<string name="unmute_room">Sala com som</string>
+	<string name="qrcode">QR code</string>
 	<string name="login_in">Entrando</string>
 	<string name="install_bar_code">Deseja instalar?</string>
 	<string name="bar_code_no_found">Barcode Scanner não encontrado</string>
+	<string name="market_not_found">Google Play não encontrado</string>
+	<string name="you_have_no_market">Seu dispositivo não possui o Google Play para instalar um leitor de código de barras</string>
 	<string name="invalid_join_url">Código escaneado inválido</string>
-	
 	<string name="show_video">Exibir vídeo</string>
-
-    <string name="application_on_background">BigBlueButton</string>
+	<string name="application_on_background">BigBlueButton</string>
 	<string name="application_on_background_text">O aplicativo ainda está rodando</string>
-    
-    <string name="api_server">Servidor (API)</string>
-    <string name="application_server">Servidor (red5)</string>
-    <string name="meeting_information">Informações da sala</string>
+	<string name="back_pressed">Tecla \"Voltar\" pressionada</string>
+	<string name="back_pressed_action">O que deseja fazer?</string>
+	<string name="disconnected">Você foi desconectado</string>
+	<string name="api_server">Servidor (API)</string>
+	<string name="application_server">Servidor (red5)</string>
+	<string name="meeting_information">Informações da sala</string>
 	<string name="meeting_id">Identificação da sala</string>
 	<string name="meeting_message">Mensagem</string>
 	<string name="start_time">Horário de início</string>
 	<string name="participant_count">Contagem de participantes</string>
 	<string name="moderator_count">Contagem de moderadores</string>
-    <string name="voicebridge_number">Conferência de voz</string>
-	
-	<string name="back_pressed">Tecla \"Voltar\" pressionada</string>
-	<string name="back_pressed_action">O que deseja fazer?</string>
-    <string name="disconnected">Você foi desconectado</string>
-
+	<string name="voicebridge_number">Conferência de voz</string>
 	<string name="about">
 		Esse aplicativo é uma implementação do cliente BigBlueButton para Android.
 		\n
@@ -115,28 +108,23 @@
 	<string name="speaker_volume">Volume do speaker</string>
 	<string name="earphone_volume">Volume do earphone</string>
 	<string name="mic_gain">Ganho do microfone</string>
-
-    <string name="report_crash_title">Enviar dados anônimos</string>
-    <string name="report_crash_message">Nós coletamos informações anônimas caso o aplicativo feche inesperadamente a fim de identificar e corrigir o problema. Você concorda em enviar informações anônimas?</string>
-
+	<string name="report_crash_title">Enviar dados anônimos</string>
+	<string name="report_crash_message">Nós coletamos informações anônimas caso o aplicativo feche inesperadamente a fim de identificar e corrigir o problema. Você concorda em enviar informações anônimas?</string>
 	<string name="chat_module_problem">O Módulo de Chat apresentou um problema e será fechado</string>
-
-    <string name="voice_connecting">Conectando à conferência de voz</string>
-    <string name="voice_connection_timeout">Tempo limite da conexão atingido</string>
-
+	<string name="voice_connecting">Conectando à conferência de voz</string>
+	<string name="voice_connection_timeout">Tempo limite da conexão atingido</string>
 	<string name="video_initializing">Inicializando captura de vídeo</string>
 	<string name="video_failed">Falha na captura de vídeo. Erro ${ERROR}</string>
-	
 	<string name="preferences">Preferências</string>
-    <string name="preferences_video_category">Preferências de vídeo</string>
+	<string name="preferences_video_category">Preferências de vídeo</string>
 	<string name="preferences_preview_rotation">Rotação da visualização de vídeo</string>
 	<string name="preferences_preview_summary">Rotação aplicada à visualização do vídeo</string>
-    <string name="preferences_video_rotation">Rotação da transmissão de vídeo</string>
-    <string name="preferences_video_summary">Rotação aplicada ao vídeo transmitido</string>
-    <string-array name="rotation_keys">
-        <item>Sem rotação</item>
-        <item>90° horário</item>
-        <item>180°</item>
-        <item>90° anti-horário</item>
-    </string-array>
-</resources> 
+	<string name="preferences_video_rotation">Rotação da transmissão de vídeo</string>
+	<string name="preferences_video_summary">Rotação aplicada ao vídeo transmitido</string>
+	<string-array name="rotation_keys">
+		<item>Sem rotação</item>
+		<item>90° horário</item>
+		<item>180°</item>
+		<item>90° anti-horário</item>
+	</string-array>
+</resources>

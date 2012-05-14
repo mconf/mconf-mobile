@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">Mconf-Mobile</string>
+	<string name="username">Nombre de usuario</string>
+	<string name="password">Contraseña</string>
+	<string name="remember">Recordarme</string>
+	<string name="rooms">Salas</string>
+	<string name="no_rooms">No hay salas disponibles</string>
+	<string name="login_updating">Autenticando y actualizando la lista de salas</string>
+	<string name="invalid_password">Nombre de usuario y/o contraseña inválida</string>
+	<string name="select_room">Por favor seleccione una sala</string>
+	<string name="invalid_room">Sala inválida</string>
+	<string name="cant_join">No puede unirse a la conferencia en este momento</string>
+	<string name="rooms_user">Salas de usuario</string>
+	<string name="rooms_user_spaces">Salas de espacios de usuario</string>
+	<string name="rooms_public_spaces">Salas de espacios públicos</string>
+	<string name="dont_have_account">Crear una cuenta</string>
+	<string name="no_running_meeting">Usted debe esperar un moderador para ingresar a la conferencia</string>
+</resources>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="protocol">bigbluebutton</string>
+	<string name="login_cant_join">No puede ingresar a la conferencia</string>
+	<string name="login_button_join">Ingresar</string>
+	<string name="login_cant_contact_server">No puede hacer contacto con el servidor. Trate más tarde</string>
+	<string name="wait">Por favor esperar</string>
+	<string name="welcome">Bienvenido</string>
+	<string name="cancel">Cancelar</string>
+	<string name="you">usted</string>
+	<string name="send_message">Enviar</string>
+	<string name="list_participants">Lista de participantes</string>
+	<string name="list_listeners">Lista de Oyentes</string>
+	<string name="public_chat">Chat Público</string>
+	<string name="cant_send_public_message">Usted está desconectado, no puede enviar mensajes</string>
+	<string name="meeting">Conferencia:</string>
+	<string name="kick">Expulsar</string>
+	<string name="mute">Silenciar</string>
+	<string name="unmute">Activar sonido</string>
+	<string name="assign_presenter">Seleccionar como presentador</string>
+	<string name="not_implemented">Funcionalidad no implementada</string>
+	<string name="speaker">Altoparlante</string>
+	<string name="start_voice">Iniciar voz</string>
+	<string name="stop_voice">Detener voz</string>
+	<string name="start_video">Iniciar video</string>
+	<string name="stop_video">Detener video</string>
+	<string name="publishing_video">Su cámara es pública en la sesión</string>
+	<string name="quit">Terminar</string>
+	<string name="minimize">Minimizar</string>
+	<string name="logout">Desconectar</string>
+	<string name="raise_hand">Levantar la mano</string>
+	<string name="lower_hand">Bajar la mano</string>
+	<string name="open_private_chat">Abrir chat privado</string>
+	<string name="lost_connection">Conexión perdida</string>
+	<string name="attempting_to_reconnect">Reconectando</string>
+	<string name="private_chat_notification">Nuevo mensaje desde el chat privado&#160;</string>
+	<string name="public_chat_notification">Nuevo mensaje desde el chat público&#160;</string>
+	<string name="private_chat_title">Chat privado con&#160;</string>
+	<string name="close_chat">Cerrar chat</string>
+	<string name="connection_established">Conexión establecida</string>
+	<string name="connection_closed">Conexión cerrada</string>
+	<string name="connection_refused">Conexión rechazada</string>
+	<string name="error">Error</string>
+	<string name="invalid_number">este no es un número VoIP válido</string>
+	<string name="no_options">No hay opciones disponibles</string>
+	<string name="not_moderator">Usted no tiene suficientes permisos</string>
+	<string name="cant_reconnect">No puede reconectar. Verifique su conexión a internet</string>
+	<string name="reconnected">Exitosamente reconectado</string>
+	<string name="reconnect">Reconectar</string>
+	<string name="no_connection">No hay conexión a internet</string>
+	<string name="open_properties">Abrir propiedades de redes?</string>
+	<string name="kicked">Usted ha sido expulsado</string>
+	<string name="new_meeting">Crear nueva conferencia</string>
+	<string name="create">Crear</string>
+	<string name="taptospeak">Pulse para hablar</string>
+	<string name="lockspeak">Bloquear sonido</string>
+	<string name="ok">ACEPTAR</string>
+	<string name="participant_left">Usuario se ha desconectado. Cerrando el chat</string>
+	<string name="user_disconnected">Usuario se ha desconectado</string>
+	<string name="mute_room">Sala silenciada</string>
+	<string name="unmute_room">Sala con sonido activado</string>
+	<string name="qrcode">Código QR</string>
+	<string name="login_in">Acceder</string>
+	<string name="install_bar_code">Usted quiere instalarlo?</string>
+	<string name="bar_code_no_found">Lector de código de barras no encontrado</string>
+	<string name="market_not_found">Market no encontrado</string>
+	<string name="you_have_no_market">Su dispositivo no tiene un market instalado para descargar un lector de código de barras</string>
+	<string name="invalid_join_url">Código leído inválido</string>
+	<string name="show_video">Mostrar video</string>
+	<string name="application_on_background">BigBlueButton</string>
+	<string name="application_on_background_text">La aplicación aún está corriendo</string>
+	<string name="back_pressed">Presionó tecla \"Retroceder\"</string>
+	<string name="back_pressed_action">Qué acción desea tomar?</string>
+	<string name="disconnected">Usted ha sido desconectado</string>
+	<string name="api_server">Server (API)</string>
+	<string name="application_server">Server (red5)</string>
+	<string name="meeting_information">Información de la conferencia</string>
+	<string name="meeting_id">ID de la conferencia</string>
+	<string name="meeting_message">Mensaje de la conferencia</string>
+	<string name="start_time">Hora de inicio</string>
+	<string name="participant_count">Contador de participantes</string>
+	<string name="moderator_count">Contador de moderadores</string>
+	<string name="voicebridge_number">Número de la conferencia en el SIP server</string>
+	<string name="about">Esta aplicación es una implementación del cliente BigBlueButton.
+\n
+\nVersión ${VERSION}
+\n
+\nEsta fué deasarrollada por PRAV Labs como parte del proyacto GT-Mconf (http://inf.ufrgs.br/prav/gtmconf) soportado por RNP (http://www.rnp.br).
+\n
+\nEl código fuente está bajo licencia GNU General Public License (GPL) y está disponible en https://github.com/mconf.
+\n
+\nLa implementación de audio está basada en Sipdroid, un cliente SIP open-source para Android (http://sipdroid.org).
+\n
+\nEste usa Flazr, a implementation Java de protocolos de streaming multimedia (http://flazr.com).
+\n
+\nEste usa BBB-Java, una API cliente Java para BigBlueButton.</string>
+	<string name="moderator">Moderador</string>
+	<string name="viewer">Visor</string>
+	<string name="close">Cerrar</string>
+	<string name="audio_config">Configuración de audio</string>
+	<string name="speaker_volume">Volumen del altoparlante</string>
+	<string name="earphone_volume">Volumen del audífono</string>
+	<string name="mic_gain">Ganancia del micrófono</string>
+	<string name="report_crash_title">Enviar datos anónimos</string>
+	<string name="report_crash_message">Nosotros coleccionamos datos anónimos cuando la aplicación falla con el fin de hacer seguimiento y resolver el problema. Usted está de acuerdo con enviar datos de errores?</string>
+	<string name="chat_module_problem">El Módulo de Chat presentó un problema y será cerrado</string>
+	<string name="voice_connecting">Conectando al grupo de oyentes</string>
+	<string name="voice_connection_timeout">Conexión de voz excede tiempo de espera</string>
+	<string name="video_initializing">Iniciando captura de video</string>
+	<string name="video_failed">Captura de video falló. Error ${ERROR}</string>
+</resources>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">بی.بی.بی-اندروید</string>
+	<string name="login_name">نام:</string>
+	<string name="login_empty_name">نام کاربری خالی است</string>
+	<string name="login_select_meeting">لطفا یک جلسه را انتخاب کنید</string>
+	<string name="login_updating">در حال بارگزاری لیست جلسات</string>
+	<string name="login_unsupported_server">سرور امکان دسترسی از طریق موبایل را ندارد</string>
+	<string name="choose_server">یک سرور را جهت اتصال انتخاب کنید</string>
+	<string name="connect">اتصال</string>
+	<string name="type_server">یا آدرس یک سرور را تایپ کنید</string>
+	<string name="choose_a_server">یک سرور را انتخاب کنید</string>
+	<string name="delete_server">حذف سرور</string>
+	<string name="choose_a_server_to_login">یک سرور را جهت ورود انتخاب کنید</string>
+	<string name="server_password">رمز عبور سرور را وارد کنید</string>
+	<string name="change_password">تغییر رمز عبور سرور</string>
+	<string name="failed_to_connect">عدم موفقیت در اتصال</string>
+	<string name="checksum_error">رمز عبور برای این سرور نامعتبر است</string>
+	<string name="empty_security_key">با مدبر تماس بگیرید - پیشتیبانی از طریق موبایل موقتاً غیر فعال است</string>
+	<string name="mobile_not_supported">سرور امکان پیشتیبانی از خدمات موبایل را ندارد</string>
+	<string name="server_unreachable">امکان اتصال به سرور وجود ندارد</string>
+</resources>

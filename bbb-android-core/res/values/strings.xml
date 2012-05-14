@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources>
 	<string name="protocol">bigbluebutton</string>
-
 	<string name="login_cant_join">Can\'t join the meeting</string>
 	<string name="login_button_join">Join</string>
 	<string name="login_cant_contact_server">Can\'t contact the server. Try it later</string>
@@ -16,7 +14,6 @@
 	<string name="public_chat">Public chat</string>
 	<string name="cant_send_public_message">You are disconnected, can\'t send messages</string>
 	<string name="meeting">Meeting:</string>
-
 	<string name="kick">Kick</string>
 	<string name="mute">Mute</string>
 	<string name="unmute">Unmute</string>
@@ -25,11 +22,9 @@
 	<string name="speaker">Loudspeaker</string>
 	<string name="start_voice">Start voice</string>
 	<string name="stop_voice">Stop voice</string>
-
 	<string name="start_video">Start video</string>
 	<string name="stop_video">Stop video</string>
-    <string name="publishing_video">Your camera is being published to the session</string>
-
+	<string name="publishing_video">Your camera is being published to the session</string>
 	<string name="quit">Quit</string>
 	<string name="minimize">Minimize</string>
 	<string name="logout">Logout</string>
@@ -54,7 +49,6 @@
 	<string name="reconnect">Reconnect</string>
 	<string name="no_connection">No internet connection</string>
 	<string name="open_properties">Open network properties?</string>
-
 	<string name="kicked">You have been kicked</string>
 	<string name="new_meeting">Create new meeting</string>
 	<string name="create">Create</string>
@@ -70,26 +64,23 @@
 	<string name="install_bar_code">Do you want to install it?</string>
 	<string name="bar_code_no_found">Barcode Scanner not found</string>
 	<string name="market_not_found">Market not found</string>
-	<string name="you_have_no_market">Your device has no market installed to download a barcode scanner</string> 
+	<string name="you_have_no_market">Your device has no market installed to download a barcode scanner</string>
 	<string name="invalid_join_url">Invalid scanned code</string>
-	
 	<string name="show_video">Show video</string>
-
 	<string name="application_on_background">BigBlueButton</string>
 	<string name="application_on_background_text">The application is still running</string>
 	<string name="back_pressed">Key \"Back\" pressed</string>
 	<string name="back_pressed_action">Which action do you want to take?</string>
 	<string name="disconnected">You have been disconnected</string>
-	
-    <string name="api_server">Server (API)</string>
-    <string name="application_server">Server (red5)</string>
-    <string name="meeting_information">Meeting information</string>
+	<string name="api_server">Server (API)</string>
+	<string name="application_server">Server (red5)</string>
+	<string name="meeting_information">Meeting information</string>
 	<string name="meeting_id">Meeting ID</string>
 	<string name="meeting_message">Meeting message</string>
 	<string name="start_time">Start time</string>
 	<string name="participant_count">Participant count</string>
 	<string name="moderator_count">Moderator count</string>
-    <string name="voicebridge_number">Voice bridge number</string>
+	<string name="voicebridge_number">Voice bridge number</string>
 	<string name="about">
 This application is an Android implementation of the BigBlueButton client.
 \n
@@ -112,28 +103,23 @@ This application is an Android implementation of the BigBlueButton client.
 	<string name="speaker_volume">Speaker volume</string>
 	<string name="earphone_volume">Earphone volume</string>
 	<string name="mic_gain">Microphone gain</string>
-
-    <string name="report_crash_title">Send anonymous data</string>
-    <string name="report_crash_message">We collect anonymous data when the application crashes in order to trace and solve the problem. Do you agree with sending error data?</string>
-
+	<string name="report_crash_title">Send anonymous data</string>
+	<string name="report_crash_message">We collect anonymous data when the application crashes in order to trace and solve the problem. Do you agree with sending error data?</string>
 	<string name="chat_module_problem">The Chat Module presented a problem and will be closed</string>
-	
 	<string name="voice_connecting">Connecting to the voice conference</string>
 	<string name="voice_connection_timeout">Voice connection timeout</string>
-    
 	<string name="video_initializing">Starting video capture</string>
 	<string name="video_failed">Video capture failed. Error ${ERROR}</string>
-	
 	<string name="preferences">Preferences</string>
-    <string name="preferences_video_category">Video preferences</string>
+	<string name="preferences_video_category">Video preferences</string>
 	<string name="preferences_preview_rotation">Video preview rotation</string>
 	<string name="preferences_preview_summary">Rotation applied to the video preview</string>
-    <string name="preferences_video_rotation">Transmitted video rotation</string>
-    <string name="preferences_video_summary">Rotation applied to the transmitted video</string>
-    <string-array name="rotation_keys">
-        <item>No rotation</item>
-        <item>90° clockwise</item>
-        <item>180°</item>
-        <item>90° counterclockwise</item>
-    </string-array>
+	<string name="preferences_video_rotation">Transmitted video rotation</string>
+	<string name="preferences_video_summary">Rotation applied to the transmitted video</string>
+	<string-array name="rotation_keys">
+		<item>No rotation</item>
+		<item>90° clockwise</item>
+		<item>180°</item>
+		<item>90° counterclockwise</item>
+	</string-array>
 </resources>

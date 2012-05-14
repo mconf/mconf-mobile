@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">ام کانف-موبایل</string>
+	<string name="username">نام کاربری</string>
+	<string name="password">رمز عبور</string>
+	<string name="remember">مرا به خاطر بسپار</string>
+	<string name="rooms">اتاق ها</string>
+	<string name="no_rooms">هیچ جلسه ای موجود نیست</string>
+	<string name="login_updating">در حال احراز هویت و به روز رسانی لیست جلسات</string>
+	<string name="invalid_password">نام کاربری و/یا رمز عبور نا معتیر است</string>
+	<string name="select_room">لطفا یک جلسه را انتخاب کنید</string>
+	<string name="invalid_room">جلسه نامعتبر است</string>
+	<string name="cant_join">شما در حال حاضر امکان دسترسی به جلسه را ندارید</string>
+	<string name="rooms_user">جلسات کاربر</string>
+	<string name="rooms_user_spaces">جلسات فضاهای کاربر</string>
+	<string name="rooms_public_spaces">جلسات فضاهای عمومی</string>
+	<string name="dont_have_account">ایجاد یک حساب کاربری</string>
+	<string name="no_running_meeting">شما می بایست تا ورود مدیر منتظر بمانید</string>
+</resources>
