@@ -10,8 +10,8 @@
 	<classpathentry kind="lib" path="libs/JSON-java.jar"/>
 	<classpathentry kind="lib" path="libs/netty-3.2.7.Final.jar"/>
 	<classpathentry kind="lib" path="libs/slf4j-android-1.6.1-RC1.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/bbb-java"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/flazr"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/bbb-java"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/flazr"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
