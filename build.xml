@@ -194,12 +194,22 @@
 	    <attribute name="version"/>
 	    <sequential>
             <ant target="release" dir="@{dir}" />
-            <move file="@{dir}/bin/@{dir}-release.apk" tofile="@{dir}@{version}.apk" />
+            <move file="@{dir}/bin/@{dir}-release.apk" tofile="@{dir}@{version}.apk" overwrite="true" />
 	    </sequential>
 	</macrodef>
 
 	<target name="release" depends="clean-all, build-bbb-android-core">
-	    <input message="Application version: " addproperty="app.version" />
+        <input message="Application version: " addproperty="app.version" />
+        <input
+                message="Please enter keystore password: "
+                addproperty="key.store.password">
+            <handler classname="org.apache.tools.ant.input.SecureInputHandler" />
+        </input>
+        <input
+                message="Please enter password for alias: "
+                addproperty="key.alias.password">
+            <handler classname="org.apache.tools.ant.input.SecureInputHandler" />
+        </input>
         <release-android dir="bbb-android" version="${app.version}" />
         <release-android dir="mconf-mobile" version="${app.version}" />
 	</target>
