@@ -189,8 +189,18 @@
         <ant target="clean" dir="mconf-mobile" />
 	</target>
 	
+	<macrodef name="release-android">
+	    <attribute name="dir"/>
+	    <attribute name="version"/>
+	    <sequential>
+            <ant target="release" dir="@{dir}" />
+            <move file="@{dir}/bin/@{dir}-release.apk" tofile="@{dir}@{version}.apk" />
+	    </sequential>
+	</macrodef>
+
 	<target name="release" depends="clean-all, build-bbb-android-core">
-		<ant target="release" dir="mconf-mobile" />
-		<ant target="release" dir="bbb-android" />
+	    <input message="Application version: " addproperty="app.version" />
+        <release-android dir="bbb-android" version="${app.version}" />
+        <release-android dir="mconf-mobile" version="${app.version}" />
 	</target>
 </project>
