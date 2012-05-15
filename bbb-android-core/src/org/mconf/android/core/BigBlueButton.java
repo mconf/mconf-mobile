@@ -12,7 +12,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.preference.PreferenceManager;
 
-@ReportsCrashes(formKey="dHVlSktWX2lUb1pWMzFIb1kxcE5YblE6MQ")
+@ReportsCrashes(formKey="dE9TbndoWGNRaVdYNW43eGFyVVpHZ1E6MQ")
 public class BigBlueButton extends Application {
 	private BigBlueButtonClient handler = null;
 	private VoiceModule voice = null;
