@@ -16,7 +16,7 @@
 	<string name="change_password">Change the server password</string>
 	<string name="failed_to_connect">Failed to connect</string>
 	<string name="checksum_error">Invalid password for this server</string>
-	<string name="empty_security_key">Contact the administrator - The mobile support is temporary disabled</string>
+	<string name="empty_security_key">Contact the administrator - The mobile support is temporarily disabled</string>
 	<string name="mobile_not_supported">The server does not support mobile service</string>
 	<string name="server_unreachable">Could not connect the server</string>
 </resources>
