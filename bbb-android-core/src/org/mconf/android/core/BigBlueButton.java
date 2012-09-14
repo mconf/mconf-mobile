@@ -58,7 +58,7 @@ public class BigBlueButton extends Application {
 				&& getHandler().getJoinService().getJoinedMeeting() != null
 				&& getHandler().getJoinService().getJoinedMeeting().getReturncode().equals("SUCCESS"))
 			voice = new VoiceModule(this,
-					getHandler().getJoinService().getJoinedMeeting().getFullname(),
+					getHandler().getMyUserId() + "-" + getHandler().getJoinService().getJoinedMeeting().getFullname(),
 					getHandler().getJoinService().getApplicationService().getServerUrl()); 
 		return voice;
 	}
