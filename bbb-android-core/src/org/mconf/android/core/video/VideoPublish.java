@@ -100,15 +100,39 @@ public class VideoPublish extends Thread implements RtmpReader {
     
     public void startPublisher() {
     	String streamName;
+    	
     	if (rotation % 180 == 0)
-    		streamName = width + "x" + height + context.getMyUserId();
+    		streamName = width + "x" + height;
     	else
-    		streamName = height + "x" + width + context.getMyUserId();
-
-    	if (context.getJoinService().getApplicationService().getVersion().equals(ApplicationService.VERSION_0_7)) {
-    		// do nothing
-    	} else
-    		streamName += "-" + new Date().getTime();
+    		streamName = height + "x" + width;
+    	
+    	String version = context.getJoinService().getApplicationService().getVersion();
+    	
+    	// 0.81	<= version -> 160x120-1-120892666
+    	// 0.8	<= version < 0.81 -> 160x1201-120892666
+    	// 0.7	<= version < 0.8 -> 160x1201
+    	
+    	if(version.compareTo(ApplicationService.VERSION_0_81) > 0 || version.equals(ApplicationService.VERSION_0_81)) {
+    		//0.81
+    		streamName += "-" + context.getMyUserId() + "-" + new Date().getTime();
+    		
+    	} else if(version.compareTo(ApplicationService.VERSION_0_8) > 0 || version.equals(ApplicationService.VERSION_0_8)) {
+    		//0.8
+    		streamName += context.getMyUserId() + "-" + new Date().getTime();
+    		
+    	} else if(version.compareTo(ApplicationService.VERSION_0_7) > 0 || version.equals(ApplicationService.VERSION_0_7)) {
+    		//0.7
+    		streamName += context.getMyUserId();
+    	}
+    	 	
+    	log.debug("\n\n\n");
+    	log.debug("Stream name: {}", streamName);
+    	log.debug("\n\n\n"); 
+ 
+    	log.debug("\n\n\n");
+    	log.debug("Application Service Version: {}", version);
+    	log.debug("\n\n\n");
+    	
     	videoPublishHandler = new BbbVideoPublisher(context, this, streamName);
     	videoPublishHandler.start();
     }        	
