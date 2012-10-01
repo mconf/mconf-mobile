@@ -33,7 +33,10 @@ import org.mconf.android.core.video.VideoFullScreen;
 import org.mconf.android.core.voip.AudioBarLayout;
 import org.mconf.android.core.voip.AudioControlDialog;
 import org.mconf.android.core.voip.OnCallListener;
+import org.mconf.android.core.voip.RtmpAudioPlayer;
+import org.mconf.android.core.voip.VoiceInterface;
 import org.mconf.android.core.voip.VoiceModule;
+import org.mconf.android.core.voip.VoiceOverRtmp;
 import org.mconf.android.core.Preferences;
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.BigBlueButtonClient.OnConnectedListener;
@@ -57,6 +60,8 @@ import org.mconf.bbb.users.IParticipant;
 import org.mconf.bbb.users.Participant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.flazr.rtmp.message.Audio;
 
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -218,7 +223,8 @@ public class Client extends BigBlueButtonActivity implements
 	private boolean backToPrivateChat = false;
 
 	private VideoDialog mVideoDialog;
-	private BbbVoiceConnection bvc;
+	
+	private VoiceInterface voiceItf = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -540,8 +546,8 @@ public class Client extends BigBlueButtonActivity implements
 	protected void onDestroy() {
 		log.debug("onDestroy");
 		
-		if(bvc != null)
-			bvc.stop();
+		if (voiceItf != null)
+			voiceItf.stop();
 
 		quit();
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -700,7 +706,8 @@ public class Client extends BigBlueButtonActivity implements
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
 		if (getBigBlueButton().isConnected()) {
-			if (getVoiceModule().isOnCall()) {
+			if (voiceItf != null && voiceItf.isOnCall()) {
+//			if (getVoiceModule().isOnCall()) {
 //				if (getVoiceModule().isMuted())
 //					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.unmute).setIcon(android.R.drawable.ic_lock_silent_mode_off);
 //				else
@@ -791,14 +798,16 @@ public class Client extends BigBlueButtonActivity implements
 //				};
 //			}.execute(getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge());
 			
-			bvc = new BbbVoiceConnection(getBigBlueButton(), null);
-			bvc.start();					
+			voiceItf = new VoiceOverRtmp(getBigBlueButton());
+			voiceItf.start();
 			
 			return true;
 
 		case MENU_STOP_VOICE:
-			if (getVoiceModule().isOnCall())
-				getVoiceModule().hang();
+			if (voiceItf != null && voiceItf.isOnCall())
+				voiceItf.stop();
+//			if (getVoiceModule().isOnCall())
+//				getVoiceModule().hang();
 			return true;
 			
 		case MENU_START_VIDEO:
