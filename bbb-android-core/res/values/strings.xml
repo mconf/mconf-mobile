@@ -81,6 +81,8 @@
 	<string name="participant_count">Participant count</string>
 	<string name="moderator_count">Moderator count</string>
 	<string name="voicebridge_number">Voice bridge number</string>
+	<string name="video_not_available">Video not available!</string>
+	<string name="video_is_only_presenter">The server is configured to accept only videos from presenters </string>
 	<string name="about">
 This application is an Android implementation of the BigBlueButton client.
 \n

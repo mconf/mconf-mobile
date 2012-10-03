@@ -242,7 +242,7 @@ public class Client extends BigBlueButtonActivity implements
 		if (!getBigBlueButton().isConnected()) {
 			registerListeners(getBigBlueButton());
 
-			if (joinAndConnect()) {
+			if (joinAndConnect()) {				
 				Toast.makeText(getApplicationContext(),getResources().getString(R.string.welcome) + ", " + username, Toast.LENGTH_SHORT).show();
 			}
 		}
@@ -379,6 +379,10 @@ public class Client extends BigBlueButtonActivity implements
 			showJoinFailDialog(new JoinFailDialog(this));
 			return false;
 		}
+		
+		if(getBigBlueButton().getJoinService().setServerConfiguration() != JoinServiceBase.E_OK)			
+			return false;
+		
 
 		return true;
 	}
@@ -742,50 +746,8 @@ public class Client extends BigBlueButtonActivity implements
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case MENU_START_VOICE:
-			new AsyncTask<String, Integer, Integer>() {
-				private ProgressDialog dialog;
-				protected void onPreExecute() {
-					dialog = new ProgressDialog(Client.this);
-					dialog.setTitle(R.string.wait);
-					dialog.setMessage(getResources().getString(R.string.voice_connecting));
-					dialog.setIndeterminate(true);
-					dialog.setCancelable(false);
-					dialog.show();
-				};
-				
-				@Override
-				protected Integer doInBackground(String... params) {
-					int ret = getVoiceModule().call(params[0]);
-					if (ret != VoiceModule.E_OK)
-						return ret;
-					
-					int cont = 10;
-					while (!getVoiceModule().isOnCall() && cont > 0) {
-						SystemClock.sleep(500);
-						cont--;
-					}
-					if (cont == 0) {
-						getVoiceModule().hang();
-						return VoiceModule.E_TIMEOUT;
-					} else {
-						return VoiceModule.E_OK;
-					}
-				}
-				
-				protected void onPostExecute(Integer result) {
-					dialog.dismiss();
-					switch (result) {
-					case VoiceModule.E_INVALID_NUMBER:
-						makeToast("\"" + getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge() + "\" " + getResources().getString(R.string.invalid_number));
-						break;
-					case VoiceModule.E_TIMEOUT:
-						makeToast(R.string.voice_connection_timeout);
-						break;
-					}
-				};
-			}.execute(getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge());
-			
+		case MENU_START_VOICE:			
+			startAudio();
 			return true;
 
 		case MENU_STOP_VOICE:
@@ -794,34 +756,15 @@ public class Client extends BigBlueButtonActivity implements
 			return true;
 			
 		case MENU_START_VIDEO:
-			new AsyncTask<Void, Integer, Integer>() {
-				private ProgressDialog dialog;
-				protected void onPreExecute() {
-					dialog = new ProgressDialog(Client.this);
-					dialog.setTitle(R.string.wait);
-					dialog.setMessage(getResources().getString(R.string.video_initializing));
-					dialog.setIndeterminate(true);
-					dialog.setCancelable(false);
-					dialog.show();
-				};
-				
-				@Override
-				protected Integer doInBackground(Void... params) {
-					VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
-					return mVideoCapture.startCapture();
-				}
-				
-				protected void onPostExecute(Integer result) {
-					dialog.dismiss();
-					switch (result) {
-					case CaptureConstants.E_OK:
-						break;
-					default:
-						makeToast(getResources().getString(R.string.video_failed).replace("${ERROR}", result.toString()));
-					}
-				}
+			if(getBigBlueButton().getJoinService().getServerConfiguration() != null && 
+			   getBigBlueButton().getJoinService().getServerConfiguration().videoIsPresenterShareOnly() &&
+			   !getBigBlueButton().getMyself().isPresenter())		
+						notifyOnlyPresenterCanShareVideo();			    				
+			
+			
+			else
+				 startVideo();
 
-			}.execute();			
 			
 			return true;	
 			
@@ -992,8 +935,24 @@ public class Client extends BigBlueButtonActivity implements
 
 				listenerAdapter.clearList();
 				listenerAdapter.notifyDataSetInvalidated();
+				
+				//auto-starts
+				if(	  getBigBlueButton().getJoinService().getServerConfiguration() != null && 
+						  getBigBlueButton().getJoinService().getServerConfiguration().audioIsAutoJoin())
+										startAudio();
+						
+					if( getBigBlueButton().getJoinService().getServerConfiguration() != null && 
+						getBigBlueButton().getJoinService().getServerConfiguration().videoIsAutoStart()) 
+					{	
+							if ( !getBigBlueButton().getJoinService().getServerConfiguration().videoIsPresenterShareOnly()
+								 || getBigBlueButton().getMyself().isPresenter())
+									startVideo();
+			
+					}
 			}
 		});
+		
+		
 	}
 
 	@Override
@@ -1447,6 +1406,94 @@ public class Client extends BigBlueButtonActivity implements
 	public void onException(Throwable throwable) {
 		ErrorReporter.getInstance().handleSilentException(throwable);
 	}
+	
+	private void startAudio()
+	{
+		new AsyncTask<String, Integer, Integer>() {
+			private ProgressDialog dialog;
+			protected void onPreExecute() {
+				dialog = new ProgressDialog(Client.this);
+				dialog.setTitle(R.string.wait);
+				dialog.setMessage(getResources().getString(R.string.voice_connecting));
+				dialog.setIndeterminate(true);
+				dialog.setCancelable(false);
+				dialog.show();
+			};
+			
+			@Override
+			protected Integer doInBackground(String... params) {
+				int ret = getVoiceModule().call(params[0]);
+				if (ret != VoiceModule.E_OK)
+					return ret;
+				
+				int cont = 10;
+				while (!getVoiceModule().isOnCall() && cont > 0) {
+					SystemClock.sleep(500);
+					cont--;
+				}
+				if (cont == 0) {
+					getVoiceModule().hang();
+					return VoiceModule.E_TIMEOUT;
+				} else {
+					return VoiceModule.E_OK;
+				}
+			}
+			
+			protected void onPostExecute(Integer result) {
+				dialog.dismiss();
+				switch (result) {
+				case VoiceModule.E_INVALID_NUMBER:
+					makeToast("\"" + getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge() + "\" " + getResources().getString(R.string.invalid_number));
+					break;
+				case VoiceModule.E_TIMEOUT:
+					makeToast(R.string.voice_connection_timeout);
+					break;
+				}
+			};
+		}.execute(getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge());		
+	}
+	
+	private void startVideo()
+	{
+		new AsyncTask<Void, Integer, Integer>() {
+			private ProgressDialog dialog;
+			protected void onPreExecute() {
+				dialog = new ProgressDialog(Client.this);
+				dialog.setTitle(R.string.wait);
+				dialog.setMessage(getResources().getString(R.string.video_initializing));
+				dialog.setIndeterminate(true);
+				dialog.setCancelable(false);
+				dialog.show();
+			};
+			
+			@Override
+			protected Integer doInBackground(Void... params) {
+				VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
+				return mVideoCapture.startCapture();
+			}
+			
+			protected void onPostExecute(Integer result) {
+				dialog.dismiss();
+				switch (result) {
+				case CaptureConstants.E_OK:
+					break;
+				default:
+					makeToast(getResources().getString(R.string.video_failed).replace("${ERROR}", result.toString()));
+				}
+			}
+
+		}.execute();
+	}
+	
+	void notifyOnlyPresenterCanShareVideo()
+	{
+		AlertDialog.Builder onlyPresenterCanVideoDialog = new AlertDialog.Builder(this);
+	    onlyPresenterCanVideoDialog.setTitle(R.string.video_not_available);
+	    onlyPresenterCanVideoDialog.setMessage(R.string.video_is_only_presenter);				    
+	    onlyPresenterCanVideoDialog.setNeutralButton(R.string.ok, null);
+	    onlyPresenterCanVideoDialog.show();			
+	}
+	
 
 }
 
