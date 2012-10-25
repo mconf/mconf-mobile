@@ -4,4 +4,5 @@ public interface VoiceInterface {
 	public void start();
 	public void stop();
 	public boolean isOnCall();
+	public void setListener(OnCallListener listener);
 }

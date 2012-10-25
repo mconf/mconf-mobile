@@ -4,7 +4,9 @@ import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
 import org.mconf.android.core.video.CaptureConstants;
 import org.mconf.android.core.video.VideoPublish;
+import org.mconf.android.core.voip.VoiceInterface;
 import org.mconf.android.core.voip.VoiceModule;
+import org.mconf.android.core.voip.VoiceOverRtmp;
 import org.mconf.bbb.BigBlueButtonClient;
 
 import android.app.Application;
@@ -29,6 +31,8 @@ public class BigBlueButton extends Application {
 	public static final int LAUNCHED_BY_NON_SPECIFIED = 0;
 	public static final int LAUNCHED_USING_DEMO = 1;
 	public static final int LAUNCHED_USING_URL = 2;
+	
+	private VoiceInterface voiceItf = null;
 	
 	@Override
 	public void onCreate() {
@@ -61,6 +65,22 @@ public class BigBlueButton extends Application {
 					getHandler().getJoinService().getJoinedMeeting().getFullname(),
 					getHandler().getJoinService().getApplicationService().getServerUrl()); 
 		return voice;
+	}
+	
+	public VoiceInterface getVoiceInterface(BigBlueButtonClient bbb)
+	{
+		if (voiceItf == null 
+				&& getHandler().getJoinService() != null
+				&& getHandler().getJoinService().getJoinedMeeting() != null
+				&& getHandler().getJoinService().getJoinedMeeting().getReturncode().equals("SUCCESS")) {
+			
+			//SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+			//log.debug("\n\n\n {} \n\n\n", prefs.getString("audio_connection", "sip"));
+			
+			voiceItf = new VoiceOverRtmp(bbb);
+		}
+		
+		return voiceItf;
 	}
 	
 	public VideoPublish getVideoPublish() {

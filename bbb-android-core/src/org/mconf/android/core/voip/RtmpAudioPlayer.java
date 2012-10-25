@@ -37,11 +37,11 @@ public class RtmpAudioPlayer {
 			maxjitter = 2*2*BUFFER_SIZE*3*mu;
 		audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, codec.samp_rate(), AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT,
 				maxjitter, AudioTrack.MODE_STREAM);
-		AudioManager am = (AudioManager) Receiver.mContext.getSystemService(Context.AUDIO_SERVICE);
-		if (Integer.parseInt(Build.VERSION.SDK) >= 5)
-			am.setSpeakerphoneOn(true);
-		else
-			am.setMode(AudioManager.MODE_NORMAL);
+//		AudioManager am = (AudioManager) Receiver.mContext.getSystemService(Context.AUDIO_SERVICE);
+//		if (Integer.parseInt(Build.VERSION.SDK) >= 5)
+//			am.setSpeakerphoneOn(true);
+//		else
+//			am.setMode(AudioManager.MODE_NORMAL);
 		audioTrack.play();
 
 		running = true;

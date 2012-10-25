@@ -1,5 +1,6 @@
 package org.mconf.android.core;
 
+import org.mconf.android.core.voip.VoiceInterface;
 import org.mconf.android.core.voip.VoiceModule;
 import org.mconf.bbb.BigBlueButtonClient;
 
@@ -21,6 +22,11 @@ public class BigBlueButtonActivity extends Activity {
 	
 	protected VoiceModule getVoiceModule() {
 		return getGlobalContext().getVoiceModule();
+	}
+	
+	protected VoiceInterface getVoiceInterface()
+	{
+		return getGlobalContext().getVoiceInterface(getBigBlueButton());
 	}
 		
 	public boolean isNetworkDown() {

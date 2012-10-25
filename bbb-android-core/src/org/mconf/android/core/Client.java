@@ -33,10 +33,7 @@ import org.mconf.android.core.video.VideoFullScreen;
 import org.mconf.android.core.voip.AudioBarLayout;
 import org.mconf.android.core.voip.AudioControlDialog;
 import org.mconf.android.core.voip.OnCallListener;
-import org.mconf.android.core.voip.RtmpAudioPlayer;
-import org.mconf.android.core.voip.VoiceInterface;
 import org.mconf.android.core.voip.VoiceModule;
-import org.mconf.android.core.voip.VoiceOverRtmp;
 import org.mconf.android.core.Preferences;
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.BigBlueButtonClient.OnConnectedListener;
@@ -55,14 +52,10 @@ import org.mconf.bbb.api.JoinServiceBase;
 import org.mconf.bbb.chat.ChatMessage;
 import org.mconf.bbb.listeners.IListener;
 import org.mconf.bbb.listeners.Listener;
-import org.mconf.bbb.phone.BbbVoiceConnection;
 import org.mconf.bbb.users.IParticipant;
 import org.mconf.bbb.users.Participant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.flazr.rtmp.message.Audio;
-
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -223,8 +216,6 @@ public class Client extends BigBlueButtonActivity implements
 	private boolean backToPrivateChat = false;
 
 	private VideoDialog mVideoDialog;
-	
-	private VoiceInterface voiceItf = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -545,9 +536,6 @@ public class Client extends BigBlueButtonActivity implements
 	@Override
 	protected void onDestroy() {
 		log.debug("onDestroy");
-		
-		if (voiceItf != null)
-			voiceItf.stop();
 
 		quit();
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -665,6 +653,9 @@ public class Client extends BigBlueButtonActivity implements
 		VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
 		mVideoCapture.stopCapture();
 		
+		if(getVoiceInterface() == null)
+			getVoiceInterface().stop();
+		
 		getGlobalContext().invalidateVoiceModule();
 		unregisterListeners(getBigBlueButton());
 		getBigBlueButton().disconnect();
@@ -706,7 +697,7 @@ public class Client extends BigBlueButtonActivity implements
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
 		if (getBigBlueButton().isConnected()) {
-			if (voiceItf != null && voiceItf.isOnCall()) {
+			if (getVoiceInterface() != null && getVoiceInterface().isOnCall()) {
 //			if (getVoiceModule().isOnCall()) {
 //				if (getVoiceModule().isMuted())
 //					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.unmute).setIcon(android.R.drawable.ic_lock_silent_mode_off);
@@ -755,19 +746,19 @@ public class Client extends BigBlueButtonActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case MENU_START_VOICE:
-//			new AsyncTask<String, Integer, Integer>() {
-//				private ProgressDialog dialog;
-//				protected void onPreExecute() {
-//					dialog = new ProgressDialog(Client.this);
-//					dialog.setTitle(R.string.wait);
-//					dialog.setMessage(getResources().getString(R.string.voice_connecting));
-//					dialog.setIndeterminate(true);
-//					dialog.setCancelable(false);
-//					dialog.show();
-//				};
-//				
-//				@Override
-//				protected Integer doInBackground(String... params) {
+			new AsyncTask<String, Integer, Integer>() {
+				private ProgressDialog dialog;
+				protected void onPreExecute() {
+					dialog = new ProgressDialog(Client.this);
+					dialog.setTitle(R.string.wait);
+					dialog.setMessage(getResources().getString(R.string.voice_connecting));
+					dialog.setIndeterminate(true);
+					dialog.setCancelable(false);
+					dialog.show();
+				};
+				
+				@Override
+				protected Integer doInBackground(String... params) {
 //					int ret = getVoiceModule().call(params[0]);
 //					if (ret != VoiceModule.E_OK)
 //						return ret;
@@ -783,29 +774,31 @@ public class Client extends BigBlueButtonActivity implements
 //					} else {
 //						return VoiceModule.E_OK;
 //					}
-//				}
-//			
-//				protected void onPostExecute(Integer result) {
-//					dialog.dismiss();
-//					switch (result) {
-//					case VoiceModule.E_INVALID_NUMBER:
-//						makeToast("\"" + getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge() + "\" " + getResources().getString(R.string.invalid_number));
-//						break;
-//					case VoiceModule.E_TIMEOUT:
-//						makeToast(R.string.voice_connection_timeout);
-//						break;
-//					}
-//				};
-//			}.execute(getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge());
+					
+					getVoiceInterface().start();
+					return VoiceModule.E_OK;
+					
+				}
 			
-			voiceItf = new VoiceOverRtmp(getBigBlueButton());
-			voiceItf.start();
+				protected void onPostExecute(Integer result) {
+					dialog.dismiss();
+					switch (result) {
+					case VoiceModule.E_INVALID_NUMBER:
+						makeToast("\"" + getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge() + "\" " + getResources().getString(R.string.invalid_number));
+						break;
+					case VoiceModule.E_TIMEOUT:
+						makeToast(R.string.voice_connection_timeout);
+						break;
+					}
+				};
+			}.execute();
+			//}.execute(getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge());
 			
 			return true;
 
 		case MENU_STOP_VOICE:
-			if (voiceItf != null && voiceItf.isOnCall())
-				voiceItf.stop();
+			if (getVoiceInterface() != null && getVoiceInterface().isOnCall())
+				getVoiceInterface().stop();
 //			if (getVoiceModule().isOnCall())
 //				getVoiceModule().hang();
 			return true;
@@ -975,8 +968,8 @@ public class Client extends BigBlueButtonActivity implements
 	@Override
 	public void onConnectedSuccessfully() {
 		kicked = false;
-		getVoiceModule().setListener(new OnCallListener() {
-
+		getVoiceInterface().setListener(new OnCallListener() {
+		//getVoiceModule().setListener(new OnCallListener() {
 			@Override
 			public void onCallStarted() {
 				updateAudioBar();
@@ -1428,9 +1421,11 @@ public class Client extends BigBlueButtonActivity implements
 
 			@Override
 			public void run() {
-				AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);
-				if (getVoiceModule() != null && getVoiceModule().isOnCall())
-					audiolayout.show(getVoiceModule().isMuted());
+				AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);			
+				if (getVoiceInterface() != null && getVoiceInterface().isOnCall())
+				//if(getVoiceModule() != null && getVoiceModule().isOnCall())
+					//audiolayout.show(getVoiceModule().isMuted());
+					audiolayout.show(false);
 				else
 					audiolayout.hide();
 			}
