@@ -18,4 +18,15 @@
              android:entryValues="@array/rotation_values"
             />
     </PreferenceCategory>
+    
+    <PreferenceCategory android:title="@string/preferences_audio_category">      
+        <ListPreference
+             android:title="@string/preferences_audio_connection"
+             android:summary="@string/preferences_audio_connection_summary"
+             android:key="audio_connection"
+             android:defaultValue="sip"
+             android:entries="@array/audio_connection_keys"
+             android:entryValues="@array/audio_connection_values"
+            />
+    </PreferenceCategory>
 </PreferenceScreen>

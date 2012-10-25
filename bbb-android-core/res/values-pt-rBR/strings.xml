@@ -116,7 +116,7 @@
 	<string name="video_initializing">Inicializando captura de vídeo</string>
 	<string name="video_failed">Falha na captura de vídeo. Erro ${ERROR}</string>
 	<string name="preferences">Preferências</string>
-	<string name="preferences_video_category">Preferências de vídeo</string>
+	<string name="preferences_video_category">Preferências de vídeo (reinicie o video para aplicá-las)</string>
 	<string name="preferences_preview_rotation">Rotação da visualização de vídeo</string>
 	<string name="preferences_preview_summary">Rotação aplicada à visualização do vídeo</string>
 	<string name="preferences_video_rotation">Rotação da transmissão de vídeo</string>
@@ -127,4 +127,12 @@
 		<item>180°</item>
 		<item>90° anti-horário</item>
 	</string-array>
+	
+	<string name="preferences_audio_category">Preferências de áudio (reinicie o áudio para aplicá-las)</string>
+	<string name="preferences_audio_connection">Conexão do áudio</string>
+	<string name="preferences_audio_connection_summary">O modo de conexão que o áudio usará</string>	
+	<string-array name="audio_connection_keys">
+		<item>via RTMP</item>
+		<item>via SIP</item>
+	</string-array>	
 </resources>

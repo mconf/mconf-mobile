@@ -6,4 +6,8 @@
         <item>180</item>
         <item>270</item>
     </string-array>
+    <string-array name="audio_connection_values">
+        <item>rtmp</item>
+        <item>sip</item>
+    </string-array>
 </resources>
