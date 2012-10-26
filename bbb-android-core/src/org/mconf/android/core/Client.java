@@ -746,6 +746,26 @@ public class Client extends BigBlueButtonActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case MENU_START_VOICE:
+			getVoiceInterface().setListener(new OnCallListener() {
+			//getVoiceModule().setListener(new OnCallListener() {
+					@Override
+					public void onCallStarted() {
+						updateAudioBar();
+						makeToast(R.string.connection_established);
+					}
+
+					@Override
+					public void onCallFinished() {
+						updateAudioBar();
+						makeToast(R.string.connection_closed);
+					}
+
+					@Override
+					public void onCallRefused() {
+						makeToast(R.string.connection_refused);
+					}
+				});
+			
 			new AsyncTask<String, Integer, Integer>() {
 				private ProgressDialog dialog;
 				protected void onPreExecute() {
@@ -755,7 +775,7 @@ public class Client extends BigBlueButtonActivity implements
 					dialog.setIndeterminate(true);
 					dialog.setCancelable(false);
 					dialog.show();
-				};
+				}
 				
 				@Override
 				protected Integer doInBackground(String... params) {
@@ -968,26 +988,6 @@ public class Client extends BigBlueButtonActivity implements
 	@Override
 	public void onConnectedSuccessfully() {
 		kicked = false;
-		getVoiceInterface().setListener(new OnCallListener() {
-		//getVoiceModule().setListener(new OnCallListener() {
-			@Override
-			public void onCallStarted() {
-				updateAudioBar();
-				makeToast(R.string.connection_established);
-			}
-
-			@Override
-			public void onCallFinished() {
-				updateAudioBar();
-				makeToast(R.string.connection_closed);
-			}
-
-			@Override
-			public void onCallRefused() {
-				makeToast(R.string.connection_refused);
-			}
-		});
-
 		setConnectedIcon(R.drawable.connected);
 		log.debug("connected");
 		runOnUiThread(new Runnable() {
