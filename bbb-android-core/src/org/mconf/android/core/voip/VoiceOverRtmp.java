@@ -3,6 +3,7 @@ package org.mconf.android.core.voip;
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.phone.BbbVoiceConnection;
 
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.flazr.rtmp.message.Audio;
@@ -31,9 +32,23 @@ public class VoiceOverRtmp implements VoiceInterface {
 	}
 
 	@Override
-	public void start() {
+	public int start() {
 		player.start();
 		connection.start();
+		
+		int cont = 10;
+		while (!onCall && cont > 0) {
+			SystemClock.sleep(500);
+			cont--;
+		}
+		if (cont == 0) {
+			stop();
+			return E_TIMEOUT;
+		} 
+		
+		else 
+			return E_OK;
+		
 	}
 
 	@Override

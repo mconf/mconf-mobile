@@ -795,8 +795,7 @@ public class Client extends BigBlueButtonActivity implements
 //						return VoiceModule.E_OK;
 //					}
 					
-					getVoiceInterface().start();
-					return VoiceModule.E_OK;
+					return getVoiceInterface().start();
 					
 				}
 			
