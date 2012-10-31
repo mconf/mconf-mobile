@@ -1,7 +1,7 @@
 package org.mconf.android.core;
 
 import org.mconf.android.core.voip.VoiceInterface;
-import org.mconf.android.core.voip.VoiceModule;
+import org.mconf.android.core.voip.VoiceOverSip;
 import org.mconf.bbb.BigBlueButtonClient;
 
 import android.app.Activity;
@@ -20,14 +20,20 @@ public class BigBlueButtonActivity extends Activity {
 		return getGlobalContext().getHandler();
 	}
 	
-	protected VoiceModule getVoiceModule() {
+	protected VoiceOverSip getVoiceModule() {
 		return getGlobalContext().getVoiceModule();
+	}
+	
+	protected VoiceInterface startVoiceInterface()
+	{
+		return getGlobalContext().startVoiceInterface(getBigBlueButton());
 	}
 	
 	protected VoiceInterface getVoiceInterface()
 	{
-		return getGlobalContext().getVoiceInterface(getBigBlueButton());
+		return getGlobalContext().getVoiceInterface();
 	}
+	
 		
 	public boolean isNetworkDown() {
 		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

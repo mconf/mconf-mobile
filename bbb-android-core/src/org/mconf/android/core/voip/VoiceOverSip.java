@@ -58,10 +58,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Build;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 
-public class VoiceModule implements ExtendedCallListener {
-	private static final Logger log = LoggerFactory.getLogger(VoiceModule.class);
+public class VoiceOverSip implements ExtendedCallListener, VoiceInterface {
+	private static final Logger log = LoggerFactory.getLogger(VoiceOverSip.class);
 
 	protected SipProvider sip_provider;
 	protected UserAgentProfile user_profile;
@@ -73,14 +74,18 @@ public class VoiceModule implements ExtendedCallListener {
 
 	protected boolean mute;
 	protected OnCallListener listener;
+	
+	protected String voiceBridge;
 
-	public static final int E_OK = 0;
-	public static final int E_INVALID_NUMBER = 1;
-	public static final int E_TIMEOUT = 2; 
+//	public static final int E_OK = 0;
+//	public static final int E_INVALID_NUMBER = 1;
+//	public static final int E_TIMEOUT = 2; 
 
 
-	public VoiceModule(Context context, String username, String url) {
+	public VoiceOverSip(Context context, String username, String url, String bridge) {
 		Receiver.mContext = context;
+		
+		voiceBridge = bridge;
 		
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 		if (!preferences.contains(Settings.PREF_MICGAIN)) {
@@ -179,10 +184,7 @@ public class VoiceModule implements ExtendedCallListener {
 		
 		return E_OK;
 	}
-	
-	public boolean isOnCall() {
-		return Receiver.call_state == UserAgent.UA_STATE_INCALL;
-	}
+
 	
 	public void hang() {
 		if (call != null) {
@@ -423,8 +425,44 @@ public class VoiceModule implements ExtendedCallListener {
 		RtpStreamReceiver.speakermode = mode;
 	}
 	
+	@Override
 	public void setListener(OnCallListener listener) {
 		this.listener = listener;
+	}
+
+	@Override
+	public int start() {
+		// TODO Auto-generated method stub
+		
+		int ret = call(voiceBridge);
+		
+		if (ret != E_OK)
+			return ret;
+		
+		int cont = 10;
+		while (!isOnCall() && cont > 0) {
+			SystemClock.sleep(500);
+			
+			
+			cont--;
+		}
+		if (cont == 0) {
+			hang();
+			return E_TIMEOUT;
+		} else {
+			return E_OK;
+		}
+	}
+
+	@Override
+	public void stop() {
+		// TODO Auto-generated method stub
+		hang();
+	}
+	
+	@Override
+	public boolean isOnCall() {
+		return Receiver.call_state == UserAgent.UA_STATE_INCALL;
 	}
 
 }

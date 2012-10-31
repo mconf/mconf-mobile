@@ -33,7 +33,7 @@ import org.mconf.android.core.video.VideoFullScreen;
 import org.mconf.android.core.voip.AudioBarLayout;
 import org.mconf.android.core.voip.AudioControlDialog;
 import org.mconf.android.core.voip.OnCallListener;
-import org.mconf.android.core.voip.VoiceModule;
+import org.mconf.android.core.voip.VoiceOverSip;
 import org.mconf.android.core.Preferences;
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.BigBlueButtonClient.OnConnectedListener;
@@ -66,12 +66,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
@@ -653,7 +655,7 @@ public class Client extends BigBlueButtonActivity implements
 		VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
 		mVideoCapture.stopCapture();
 		
-		if(getVoiceInterface() == null)
+		if(getVoiceInterface() != null)
 			getVoiceInterface().stop();
 		
 		getGlobalContext().invalidateVoiceModule();
@@ -697,6 +699,11 @@ public class Client extends BigBlueButtonActivity implements
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
 		if (getBigBlueButton().isConnected()) {
+			
+			log.debug("\n\n\n");
+			log.debug("Is on call: {}", getVoiceInterface().isOnCall());
+			log.debug("\n\n\n");
+			
 			if (getVoiceInterface() != null && getVoiceInterface().isOnCall()) {
 //			if (getVoiceModule().isOnCall()) {
 //				if (getVoiceModule().isMuted())
@@ -746,8 +753,7 @@ public class Client extends BigBlueButtonActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case MENU_START_VOICE:
-			getVoiceInterface().setListener(new OnCallListener() {
-			//getVoiceModule().setListener(new OnCallListener() {
+			startVoiceInterface().setListener(new OnCallListener() {
 					@Override
 					public void onCallStarted() {
 						updateAudioBar();
@@ -778,23 +784,7 @@ public class Client extends BigBlueButtonActivity implements
 				}
 				
 				@Override
-				protected Integer doInBackground(String... params) {
-//					int ret = getVoiceModule().call(params[0]);
-//					if (ret != VoiceModule.E_OK)
-//						return ret;
-//					
-//					int cont = 10;
-//					while (!getVoiceModule().isOnCall() && cont > 0) {
-//						SystemClock.sleep(500);
-//						cont--;
-//					}
-//					if (cont == 0) {
-//						getVoiceModule().hang();
-//						return VoiceModule.E_TIMEOUT;
-//					} else {
-//						return VoiceModule.E_OK;
-//					}
-					
+				protected Integer doInBackground(String... params) {					
 					return getVoiceInterface().start();
 					
 				}
@@ -802,24 +792,22 @@ public class Client extends BigBlueButtonActivity implements
 				protected void onPostExecute(Integer result) {
 					dialog.dismiss();
 					switch (result) {
-					case VoiceModule.E_INVALID_NUMBER:
+					case VoiceOverSip.E_INVALID_NUMBER:
 						makeToast("\"" + getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge() + "\" " + getResources().getString(R.string.invalid_number));
 						break;
-					case VoiceModule.E_TIMEOUT:
+					case VoiceOverSip.E_TIMEOUT:
 						makeToast(R.string.voice_connection_timeout);
 						break;
 					}
 				};
 			}.execute();
-			//}.execute(getBigBlueButton().getJoinService().getJoinedMeeting().getVoicebridge());
 			
 			return true;
 
 		case MENU_STOP_VOICE:
 			if (getVoiceInterface() != null && getVoiceInterface().isOnCall())
 				getVoiceInterface().stop();
-//			if (getVoiceModule().isOnCall())
-//				getVoiceModule().hang();
+			
 			return true;
 			
 		case MENU_START_VIDEO:

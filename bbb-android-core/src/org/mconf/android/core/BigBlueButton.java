@@ -5,7 +5,7 @@ import org.acra.annotation.ReportsCrashes;
 import org.mconf.android.core.video.CaptureConstants;
 import org.mconf.android.core.video.VideoPublish;
 import org.mconf.android.core.voip.VoiceInterface;
-import org.mconf.android.core.voip.VoiceModule;
+import org.mconf.android.core.voip.VoiceOverSip;
 import org.mconf.android.core.voip.VoiceOverRtmp;
 import org.mconf.bbb.BigBlueButtonClient;
 
@@ -17,7 +17,7 @@ import android.preference.PreferenceManager;
 @ReportsCrashes(formKey="dE9TbndoWGNRaVdYNW43eGFyVVpHZ1E6MQ")
 public class BigBlueButton extends Application {
 	private BigBlueButtonClient handler = null;
-	private VoiceModule voice = null;
+	private VoiceOverSip voice = null;
 	private VideoPublish mVideoPublish = null;
 	private boolean restartCaptureWhenAppResumes = false;
 	
@@ -26,6 +26,7 @@ public class BigBlueButton extends Application {
     private int height = CaptureConstants.DEFAULT_HEIGHT;
     private int bitrate = CaptureConstants.DEFAULT_BIT_RATE;
     private int gop = CaptureConstants.DEFAULT_GOP;
+    
 	
 	private int launchedBy = LAUNCHED_BY_NON_SPECIFIED;
 	public static final int LAUNCHED_BY_NON_SPECIFIED = 0;
@@ -55,31 +56,44 @@ public class BigBlueButton extends Application {
 		return handler;
 	}
 	
-	public VoiceModule getVoiceModule() {
+	public VoiceOverSip getVoiceModule() {
 		// the application could call getVoiceModule before connect to a meeting, so additional tests must be applied
 		if (voice == null 
 				&& getHandler().getJoinService() != null
 				&& getHandler().getJoinService().getJoinedMeeting() != null
 				&& getHandler().getJoinService().getJoinedMeeting().getReturncode().equals("SUCCESS"))
-			voice = new VoiceModule(this,
+			voice = new VoiceOverSip(this,
 					getHandler().getJoinService().getJoinedMeeting().getFullname(),
-					getHandler().getJoinService().getApplicationService().getServerUrl()); 
+					getHandler().getJoinService().getApplicationService().getServerUrl(),
+					getHandler().getJoinService().getJoinedMeeting().getVoicebridge()); 
 		return voice;
 	}
 	
-	public VoiceInterface getVoiceInterface(BigBlueButtonClient bbb)
+	public VoiceInterface startVoiceInterface(BigBlueButtonClient bbb)
 	{
-		if (voiceItf == null 
-				&& getHandler().getJoinService() != null
-				&& getHandler().getJoinService().getJoinedMeeting() != null
-				&& getHandler().getJoinService().getJoinedMeeting().getReturncode().equals("SUCCESS")) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);	
+		String option = prefs.getString("audio_connection", "sip");
 			
-			//SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-			//log.debug("\n\n\n {} \n\n\n", prefs.getString("audio_connection", "sip"));
-			
-			voiceItf = new VoiceOverRtmp(bbb);
+		
+		if(getHandler().getJoinService() != null
+		   && getHandler().getJoinService().getJoinedMeeting() != null
+		   && getHandler().getJoinService().getJoinedMeeting().getReturncode().equals("SUCCESS")) {
+					
+					if( option.equals("sip")) 
+						    voiceItf = new VoiceOverSip(this,
+														getHandler().getJoinService().getJoinedMeeting().getFullname(),
+														getHandler().getJoinService().getApplicationService().getServerUrl(),
+														getHandler().getJoinService().getJoinedMeeting().getVoicebridge());						
+					
+					else 
+						voiceItf = new VoiceOverRtmp(bbb);
+					
 		}
 		
+		return voiceItf;
+	}
+	
+	public VoiceInterface getVoiceInterface() {
 		return voiceItf;
 	}
 	
