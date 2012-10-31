@@ -698,12 +698,7 @@ public class Client extends BigBlueButtonActivity implements
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
-		if (getBigBlueButton().isConnected()) {
-			
-			log.debug("\n\n\n");
-			log.debug("Is on call: {}", getVoiceInterface().isOnCall());
-			log.debug("\n\n\n");
-			
+		if (getBigBlueButton().isConnected()) {	
 			if (getVoiceInterface() != null && getVoiceInterface().isOnCall()) {
 //			if (getVoiceModule().isOnCall()) {
 //				if (getVoiceModule().isMuted())

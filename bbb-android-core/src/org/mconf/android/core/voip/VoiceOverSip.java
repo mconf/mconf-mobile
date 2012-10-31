@@ -77,10 +77,6 @@ public class VoiceOverSip implements ExtendedCallListener, VoiceInterface {
 	
 	protected String voiceBridge;
 
-//	public static final int E_OK = 0;
-//	public static final int E_INVALID_NUMBER = 1;
-//	public static final int E_TIMEOUT = 2; 
-
 
 	public VoiceOverSip(Context context, String username, String url, String bridge) {
 		Receiver.mContext = context;
@@ -431,9 +427,7 @@ public class VoiceOverSip implements ExtendedCallListener, VoiceInterface {
 	}
 
 	@Override
-	public int start() {
-		// TODO Auto-generated method stub
-		
+	public int start() {	
 		int ret = call(voiceBridge);
 		
 		if (ret != E_OK)
@@ -456,7 +450,6 @@ public class VoiceOverSip implements ExtendedCallListener, VoiceInterface {
 
 	@Override
 	public void stop() {
-		// TODO Auto-generated method stub
 		hang();
 	}
 	

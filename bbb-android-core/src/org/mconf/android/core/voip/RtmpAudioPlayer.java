@@ -57,7 +57,9 @@ public class RtmpAudioPlayer {
 		running = false;
 		
 		codec.close();
-		audioTrack.stop();
+		
+		if(audioTrack.getState() == AudioTrack.STATE_INITIALIZED)
+				audioTrack.stop();
 		audioTrack.release();
 	}
 	
