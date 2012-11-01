@@ -63,7 +63,29 @@ public class VoiceOverRtmp implements VoiceInterface {
 	public boolean isOnCall() {
 		return onCall;
 	}
-	
+
+	@Override
+	public boolean isMuted() {
+		return true;
+	}
+
+	@Override
+	public void muteCall(boolean mute) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getSpeaker() {
+		return 0;
+	}
+
+	@Override
+	public void setSpeaker(int mode) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	@Override
 	public void setListener(OnCallListener listener) {
 		this.listener = listener;	

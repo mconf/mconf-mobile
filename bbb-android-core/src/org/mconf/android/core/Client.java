@@ -442,20 +442,20 @@ public class Client extends BigBlueButtonActivity implements
 
 			@Override
 			public void muteCall(boolean mute) {
-				getVoiceModule().muteCall(mute);
+				getVoiceInterface().muteCall(mute);
 			}
 
 			@Override
 			public boolean isOnCall() {
-				if (getVoiceModule() != null)
-					return getVoiceModule().isOnCall();
+				if (getVoiceInterface() != null)
+					return getVoiceInterface().isOnCall();
 				else
 					return false;
 			}
 
 			@Override
 			public boolean isMuted() {
-				return getVoiceModule().isMuted();
+				return getVoiceInterface().isMuted();
 			}
 		});
 
@@ -700,12 +700,12 @@ public class Client extends BigBlueButtonActivity implements
 		menu.clear();
 		if (getBigBlueButton().isConnected()) {	
 			if (getVoiceInterface() != null && getVoiceInterface().isOnCall()) {
-//			if (getVoiceModule().isOnCall()) {
-//				if (getVoiceModule().isMuted())
+//			if (getVoiceInterface().isOnCall()) {
+//				if (getVoiceInterface().isMuted())
 //					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.unmute).setIcon(android.R.drawable.ic_lock_silent_mode_off);
 //				else
 //					menu.add(Menu.NONE, MENU_MUTE, Menu.NONE, R.string.mute).setIcon(android.R.drawable.ic_lock_silent_mode);
-				if (getVoiceModule().getSpeaker() == AudioManager.MODE_NORMAL)
+				if (getVoiceInterface().getSpeaker() == AudioManager.MODE_NORMAL)
 					menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, R.string.speaker).setIcon(android.R.drawable.button_onoff_indicator_on);
 				else
 					menu.add(Menu.NONE, MENU_SPEAKER, Menu.NONE, R.string.speaker).setIcon(android.R.drawable.button_onoff_indicator_off);
@@ -843,11 +843,11 @@ public class Client extends BigBlueButtonActivity implements
 			return true;	
 
 		case MENU_MUTE:
-			getVoiceModule().muteCall(!getVoiceModule().isMuted());
+			getVoiceInterface().muteCall(!getVoiceInterface().isMuted());
 			return true;
 
 		case MENU_SPEAKER:
-			getVoiceModule().setSpeaker(getVoiceModule().getSpeaker() != AudioManager.MODE_NORMAL? AudioManager.MODE_NORMAL: AudioManager.MODE_IN_CALL);
+			getVoiceInterface().setSpeaker(getVoiceInterface().getSpeaker() != AudioManager.MODE_NORMAL? AudioManager.MODE_NORMAL: AudioManager.MODE_IN_CALL);
 			return true;
 
 		case MENU_QUIT:
@@ -1405,9 +1405,7 @@ public class Client extends BigBlueButtonActivity implements
 			public void run() {
 				AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);			
 				if (getVoiceInterface() != null && getVoiceInterface().isOnCall())
-				//if(getVoiceModule() != null && getVoiceModule().isOnCall())
-					//audiolayout.show(getVoiceModule().isMuted());
-					audiolayout.show(false);
+					audiolayout.show(getVoiceInterface().isMuted());
 				else
 					audiolayout.hide();
 			}

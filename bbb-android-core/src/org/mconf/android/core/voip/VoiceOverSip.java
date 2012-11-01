@@ -390,40 +390,12 @@ public class VoiceOverSip implements ExtendedCallListener, VoiceInterface {
 	public void onCallTimeout(Call call) {
 		log.debug("===========> onCallTimeout");
 	}
-
-	public boolean isMuted() {
-		if (!isOnCall())
-			return true;
-		return mute;
-	}
-	
-	public void muteCall(boolean mute) {
-		if (audio_app != null && mute != this.mute) {
-			this.mute = mute;
-			audio_app.muteMedia();
-		}
-	}
 	
 	private void closeMediaApplication() {
 		if (audio_app != null) {
 			audio_app.stopMedia();
 			audio_app = null;
 		}
-	}
-
-	public int getSpeaker() {
-		return RtpStreamReceiver.speakermode;
-	}
-
-	public void setSpeaker(int mode) {
-		if (audio_app != null)
-			audio_app.speakerMedia(mode);
-		RtpStreamReceiver.speakermode = mode;
-	}
-	
-	@Override
-	public void setListener(OnCallListener listener) {
-		this.listener = listener;
 	}
 
 	@Override
@@ -456,6 +428,38 @@ public class VoiceOverSip implements ExtendedCallListener, VoiceInterface {
 	@Override
 	public boolean isOnCall() {
 		return Receiver.call_state == UserAgent.UA_STATE_INCALL;
+	}
+	
+	@Override
+	public boolean isMuted() {
+		if (!isOnCall())
+			return true;
+		return mute;
+	}
+	
+	@Override
+	public void muteCall(boolean mute) {
+		if (audio_app != null && mute != this.mute) {
+			this.mute = mute;
+			audio_app.muteMedia();
+		}
+	}
+	
+	@Override
+	public int getSpeaker() {
+		return RtpStreamReceiver.speakermode;
+	}
+
+	@Override
+	public void setSpeaker(int mode) {
+		if (audio_app != null)
+			audio_app.speakerMedia(mode);
+		RtpStreamReceiver.speakermode = mode;
+	}
+	
+	@Override
+	public void setListener(OnCallListener listener) {
+		this.listener = listener;
 	}
 
 }

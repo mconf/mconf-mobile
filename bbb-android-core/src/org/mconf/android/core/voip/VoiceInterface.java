@@ -9,5 +9,9 @@ public interface VoiceInterface {
 	public int start();
 	public void stop();
 	public boolean isOnCall();
+	public boolean isMuted();
+	public void muteCall(boolean mute);
+	public int getSpeaker();
+	public void setSpeaker(int mode);
 	public void setListener(OnCallListener listener);
 }

@@ -60,6 +60,7 @@ public class RtmpAudioPlayer {
 		
 		if(audioTrack.getState() == AudioTrack.STATE_INITIALIZED)
 				audioTrack.stop();
+		
 		audioTrack.release();
 	}
 	

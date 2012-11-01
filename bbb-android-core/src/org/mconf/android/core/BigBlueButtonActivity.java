@@ -20,9 +20,9 @@ public class BigBlueButtonActivity extends Activity {
 		return getGlobalContext().getHandler();
 	}
 	
-	protected VoiceOverSip getVoiceModule() {
-		return getGlobalContext().getVoiceModule();
-	}
+//	protected VoiceOverSip getVoiceModule() {
+//		return getGlobalContext().getVoiceModule();
+//	}
 	
 	protected VoiceInterface startVoiceInterface()
 	{
