@@ -437,27 +437,27 @@ public class Client extends BigBlueButtonActivity implements
 		listenerListView.setHeight();
 		registerForContextMenu(listenerListView);
 
-		final AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);
-		audiolayout.initListener(new AudioBarLayout.Listener() {
-
-			@Override
-			public void muteCall(boolean mute) {
-				getVoiceInterface().muteCall(mute);
-			}
-
-			@Override
-			public boolean isOnCall() {
-				if (getVoiceInterface() != null)
-					return getVoiceInterface().isOnCall();
-				else
-					return false;
-			}
-
-			@Override
-			public boolean isMuted() {
-				return getVoiceInterface().isMuted();
-			}
-		});
+//		final AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);
+//		audiolayout.initListener(new AudioBarLayout.Listener() {
+//
+//			@Override
+//			public void muteCall(boolean mute) {
+//				getVoiceInterface().muteCall(mute);
+//			}
+//
+//			@Override
+//			public boolean isOnCall() {
+//				if (getVoiceInterface() != null)
+//					return getVoiceInterface().isOnCall();
+//				else
+//					return false;
+//			}
+//
+//			@Override
+//			public boolean isMuted() {
+//				return getVoiceInterface().isMuted();
+//			}
+//		});
 
 		final SlidingDrawer slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);	
 		if (slidingDrawer != null) { 
@@ -748,7 +748,32 @@ public class Client extends BigBlueButtonActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case MENU_START_VOICE:
-			startVoiceInterface().setListener(new OnCallListener() {
+			
+			initVoiceInterface();
+			
+			final AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);
+			audiolayout.initListener(new AudioBarLayout.Listener() {
+
+				@Override
+				public void muteCall(boolean mute) {
+					getVoiceInterface().muteCall(mute);
+				}
+
+				@Override
+				public boolean isOnCall() {
+					if (getVoiceInterface() != null)
+						return getVoiceInterface().isOnCall();
+					else
+						return false;
+				}
+
+				@Override
+				public boolean isMuted() {
+					return getVoiceInterface().isMuted();
+				}
+			});
+			
+			getVoiceInterface().setListener(new OnCallListener() {
 					@Override
 					public void onCallStarted() {
 						updateAudioBar();

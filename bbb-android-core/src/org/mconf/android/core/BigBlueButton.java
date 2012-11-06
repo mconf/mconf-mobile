@@ -69,7 +69,7 @@ public class BigBlueButton extends Application {
 		return voice;
 	}
 	
-	public VoiceInterface startVoiceInterface(BigBlueButtonClient bbb)
+	public void initVoiceInterface(BigBlueButtonClient bbb)
 	{
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);	
 		String option = prefs.getString("audio_connection", "sip");
@@ -89,8 +89,6 @@ public class BigBlueButton extends Application {
 						voiceItf = new VoiceOverRtmp(bbb);
 					
 		}
-		
-		return voiceItf;
 	}
 	
 	public VoiceInterface getVoiceInterface() {

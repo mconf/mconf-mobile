@@ -24,9 +24,9 @@ public class BigBlueButtonActivity extends Activity {
 //		return getGlobalContext().getVoiceModule();
 //	}
 	
-	protected VoiceInterface startVoiceInterface()
+	protected void initVoiceInterface()
 	{
-		return getGlobalContext().startVoiceInterface(getBigBlueButton());
+		getGlobalContext().initVoiceInterface(getBigBlueButton());
 	}
 	
 	protected VoiceInterface getVoiceInterface()
