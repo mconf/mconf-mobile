@@ -27,7 +27,6 @@ import java.util.List;
 import org.mconf.bbb.chat.ChatMessage;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,7 +75,7 @@ public class ChatAdapter extends BaseAdapter {
 		return convertView;
 	}
 
-	public boolean hasUser(int userId)
+	public boolean hasUser(String userId)
 	{
 		for(ChatMessage chatMessage:list)
 		{

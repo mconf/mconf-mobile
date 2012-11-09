@@ -64,15 +64,15 @@ public class PrivateChat extends BigBlueButtonActivity {
 	private class RemoteParticipant implements
 			OnParticipantLeftListener,
 			OnPrivateChatMessageListener {
-		private int userId;
+		private String userId;
 		private int viewId;
 		private String username;
 		private ChatAdapter chatAdapter;
 
-		public int getUserId() {
+		public String getUserId() {
 			return userId;
 		}
-		public void setUserId(int userId) {
+		public void setUserId(String userId) {
 			this.userId = userId;
 		}
 		public int getViewId() {
@@ -97,14 +97,14 @@ public class PrivateChat extends BigBlueButtonActivity {
 		@Override
 		public void onParticipantLeft(final IParticipant p) {
 			//se o participante que saiu é o que está sendo mostrado o chat
-			if(p.getUserId()==userId && getParticipantByViewId(flipper.getDisplayedChild()).getUserId()==userId && !movedToBack) //null pointer exeption
+			if(p.getUserId().equals(userId) && getParticipantByViewId(flipper.getDisplayedChild()).getUserId().equals(userId) && !movedToBack) //null pointer exeption
 			{
 				
 				showPartcicipantLeftDialog();//works fine
 			} 
 			
 			//se o participante saiu, mas está por trás nas abas de chat
-			else if(p.getUserId()==userId && getParticipantByViewId(flipper.getDisplayedChild()).getUserId()!=userId)
+			else if(p.getUserId().equals(userId) && !getParticipantByViewId(flipper.getDisplayedChild()).getUserId().equals(userId))
 			{
 				runOnUiThread(new Runnable() {
 
@@ -133,7 +133,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		public void onPrivateChatMessage(final ChatMessage message,
 				IParticipant source) {
 
-			if (source.getUserId() == userId) {
+			if (source.getUserId().equals(userId)) {
 				onPrivateChatMessage(message);
 				if (flipper.isShown() && flipper.getDisplayedChild() == viewId)
 					cancelNotification(userId);
@@ -152,7 +152,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 	private static final Logger log = LoggerFactory.getLogger(PrivateChat.class);
 
 	// userId x remote participant
-	protected static Map<Integer, RemoteParticipant> participants = new HashMap<Integer, RemoteParticipant>();
+	protected static Map<String, RemoteParticipant> participants = new HashMap<String, RemoteParticipant>();
 
 	private static final int SWIPE_MIN_DISTANCE = 120;
 	private static final int SWIPE_MAX_OFF_PATH = 400;
@@ -179,11 +179,11 @@ public class PrivateChat extends BigBlueButtonActivity {
 	// \TODO review the needed of these kind of flags
 	private boolean movedToBack=false;
 	
-	public static boolean hasUserOnPrivateChat(int userId)
+	public static boolean hasUserOnPrivateChat(String userId)
 	{
 		for(RemoteParticipant part:participants.values())
 		{
-			if(part.getUserId()==userId)
+			if(part.getUserId().equals(userId))
 				return true;
 		}
 		return false;
@@ -237,7 +237,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		{ 
 			log.debug("closing a chat");
 			Bundle extras = intent.getExtras();
-			int userId = extras.getInt("userId");
+			String userId = extras.getString("userId");
 			if(hasUserOnPrivateChat(userId))
 				removeParticipant(userId);
 			
@@ -265,18 +265,27 @@ public class PrivateChat extends BigBlueButtonActivity {
 	}
 
 	//remove one participant
-	private void removeParticipant(Integer key) {
-		RemoteParticipant p = participants.get(key);
-		if (p != null) {
-			//was starting a concurrent modification exception
+	private void removeParticipant(String key) {
+		if (!removeParticipant(participants.get(key))) {
+			log.warn("Tryed to remove the participant {} from private chat, but couldn't find him", key);
+		}
+	}
+	
+	private boolean removeParticipant(RemoteParticipant p) {
+		log.debug("Invalidating a remote participant");
+		if (p == null) {
+			log.warn("Removing participant that is null");
+			return false;
+		} else {
 			p.unregisterListeners(getBigBlueButton());
 			flipper.getChildAt(p.getViewId()).setId(INVALIDATED);
-			participants.remove(key);
+			participants.remove(p.getUserId());
+			return true;
 		}
 	}
 
 	//get the participant key associated with a viewFlipper view
-	private Integer getParticipantKeyByViewId(int viewId) {
+	private String getParticipantKeyByViewId(int viewId) {
 		for (RemoteParticipant p : participants.values()) {
 			
 			if (p.getViewId() == viewId)
@@ -286,7 +295,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 	}
 
 	private RemoteParticipant getParticipantByViewId(int viewId) {
-		Integer key = getParticipantKeyByViewId(viewId);
+		String key = getParticipantKeyByViewId(viewId);
 		if (key != null)
 			return participants.get(key);
 		else
@@ -294,7 +303,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 	}
 
 	//create a new participant when a new chat is opened
-	private RemoteParticipant createParticipant(int userId, String username, boolean notified) {
+	private RemoteParticipant createParticipant(String userId, String username, boolean notified) {
 		log.debug("creating a new remote participant");
 
 		final RemoteParticipant p = new RemoteParticipant();
@@ -304,7 +313,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 		p.setChatAdapter(new ChatAdapter());
 		participants.put(userId, p);
 
-		//\TODO problem occuring here http://code.google.com/p/mconf/issues/detail?id=256
+		//\TODO problem occurring here http://code.google.com/p/mconf/issues/detail?id=256
 		List<ChatMessage> messages = getBigBlueButton().getChatModule().getPrivateChatMessage().get(userId);
 		if (messages != null) {
 			for (ChatMessage message : messages) {
@@ -345,7 +354,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 
 	//show a specific participant, or creates him if he doesn't already exists
 	private void displayView(Bundle extras) {
-		int userId = extras.getInt("userId");
+		String userId = extras.getString("userId");
 		String username = extras.getString("username");
 		boolean notified = extras.getBoolean("notified");
 
@@ -371,7 +380,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 	private void chatModuleUnconnected()
 	{
 		//\TODO improve this implementation and track the real problem of http://code.google.com/p/mconf/issues/detail?id=256
-		Toast.makeText(getApplicationContext(), R.string.chat_module_problem, Toast.LENGTH_SHORT);
+		Toast.makeText(getApplicationContext(), R.string.chat_module_problem, Toast.LENGTH_SHORT).show();
 		Intent bringBackClient = new Intent(this, Client.class);
 		bringBackClient.setAction(Client.BACK_TO_CLIENT);
 		startActivity(bringBackClient);
@@ -380,7 +389,7 @@ public class PrivateChat extends BigBlueButtonActivity {
 
 	private void orientationChanged() {
 		flipper.removeAllViews();
-		for(Integer userId:participants.keySet())
+		for(String userId:participants.keySet())
 		{
 			final RemoteParticipant p= participants.get(userId);
 			p.setChatAdapter(new ChatAdapter());
@@ -476,11 +485,10 @@ public class PrivateChat extends BigBlueButtonActivity {
 
 
 
-	private void cancelNotification(int userId) {
+	private void cancelNotification(String userId) {
 		log.debug("cancelling notification from " + userId);
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		notificationManager.cancel(Client.CHAT_NOTIFICATION_ID + userId);
-
+		notificationManager.cancel(Client.CHAT_NOTIFICATION_ID + userId.hashCode());
 	}
 
 	@Override
@@ -606,14 +614,16 @@ public class PrivateChat extends BigBlueButtonActivity {
 
 	}
 
-	void closeChat()
-	{
+	private void closeChat() {
+		log.debug("Closing a chat view");
 		int viewID =flipper.getDisplayedChild();
 		Intent chatClosed = new Intent(CHAT_CLOSED);
-		if(getParticipantByViewId(viewID)!=null)
-			chatClosed.putExtra("userId", getParticipantByViewId(viewID).getUserId());
+		RemoteParticipant participant = getParticipantByViewId(viewID);
+		
+		if(participant != null)
+			chatClosed.putExtra("userId", participant.getUserId());
 		else
-			chatClosed.putExtra("userId", -1);
+			chatClosed.putExtra("userId", "");
 		sendBroadcast(chatClosed);
 		
 		if(participants.size()>1)
@@ -623,17 +633,18 @@ public class PrivateChat extends BigBlueButtonActivity {
 				flipper.showPrevious();		
 			}while(flipper.getChildAt(flipper.getDisplayedChild()).getId()==INVALIDATED);
 						
-			removeParticipant(getParticipantKeyByViewId(viewID));
+			removeParticipant(participant);
 			viewID=flipper.getDisplayedChild();
-			
-			setTitle(getResources().getString(R.string.private_chat_title) + getParticipantByViewId(viewID).getUsername());
+			RemoteParticipant new_participant = getParticipantByViewId(viewID);
+					
+			setTitle(getResources().getString(R.string.private_chat_title) + new_participant.getUsername());
 		}
 		else 
 		{
 			Intent bringBackClient = new Intent(this, Client.class);
 			bringBackClient.setAction(Client.BACK_TO_CLIENT);
 			startActivity(bringBackClient);
-			removeParticipant(getParticipantKeyByViewId(viewID));
+			removeParticipant(participant);
 			finish(); 
 		}
 	}

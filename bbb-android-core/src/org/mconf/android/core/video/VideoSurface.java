@@ -20,7 +20,7 @@ public class VideoSurface extends GLSurfaceView {
 
 	private static final Logger log = LoggerFactory.getLogger(VideoSurface.class);
 	private VideoRenderer mRenderer;		
-	private int userId;
+	private String userId;
 	private boolean inDialog;
 	private boolean showing = false;
 	public static final float DEFAULT_ASPECT_RATIO = 4 / (float) 3;
@@ -53,7 +53,7 @@ public class VideoSurface extends GLSurfaceView {
 		return params;		
 	}
 	
-	public void start(int userId, boolean inDialog) {
+	public void start(String userId, boolean inDialog) {
 		this.userId = userId;
 		this.inDialog = inDialog;
 		

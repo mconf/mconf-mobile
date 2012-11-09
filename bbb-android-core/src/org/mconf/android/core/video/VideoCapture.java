@@ -819,8 +819,8 @@ public class VideoCapture extends SurfaceView implements SurfaceHolder.Callback,
     		} else if(usingFaster && mVideoPublish.mCamera != null){
     			mVideoPublish.mCamera.addCallbackBuffer(_data);
     		}
-    		Participant myParticipant = ((BigBlueButton) getContext().getApplicationContext()).getHandler().getUsersModule().getParticipants().get(((BigBlueButton) getContext().getApplicationContext()).getHandler().getMyUserId());
-	    		if(myParticipant!=null&&myParticipant.getStatus().isHasStream()){
+    		Participant myself = ((BigBlueButton) getContext().getApplicationContext()).getHandler().getMyself();
+	    		if(myself!=null&&myself.getStatus().doesHaveStream()){
 	    			enqueueFrame(_data, _data.length, mVideoPublish.getWidth(), mVideoPublish.getHeight(), mVideoPublish.getRotation());
     		}    		
     	}

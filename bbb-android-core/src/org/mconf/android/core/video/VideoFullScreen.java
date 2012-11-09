@@ -39,7 +39,7 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 	private static final Logger log = LoggerFactory.getLogger(VideoFullScreen.class);
 	
 	private VideoSurface videoWindow;
-	private int userId;
+	private String userId;
 	private String name;
 	private boolean isPreview;
 	
@@ -50,8 +50,8 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Bundle extras = intent.getExtras();
-			int userId= extras.getInt("userId");
-			if (VideoFullScreen.this.userId == userId) {
+			String userId= extras.getString("userId");
+			if (VideoFullScreen.this.userId.equals(userId)) {
 				if(!isPreview){
 					videoWindow.stop();
 				}
@@ -67,11 +67,11 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 		
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-			userId = extras.getInt("userId");
+			userId = extras.getString("userId");
 			name = extras.getString("name");
 		}
 		
-		if(userId == getBigBlueButton().getMyUserId()){
+		if(getBigBlueButton().isMyself(userId)){
 			isPreview = true;
 		} else {
 			isPreview = false;

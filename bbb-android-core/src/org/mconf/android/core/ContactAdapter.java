@@ -47,7 +47,7 @@ public class ContactAdapter extends BaseAdapter {
 	//list of contacts on the meeting
 	private List<IParticipant> listContact = new ArrayList<IParticipant>();
 
-	private int myUserId = -1;
+	private String myUserId = null;
 
 	public ContactAdapter() {
 	}
@@ -57,7 +57,7 @@ public class ContactAdapter extends BaseAdapter {
 	 * "Your name (you)" in bold font style
 	 * @param userId
 	 */
-	public void setMyUserId(int userId) {
+	public void setMyUserId(String userId) {
 		this.myUserId  = userId;
 	}
 
@@ -89,20 +89,22 @@ public class ContactAdapter extends BaseAdapter {
 	}
 
 	public long getItemId(int position) {
-		return getUserId(position);
+//		return getUserId(position);
+		// \TODO check this return
+		return 0;
 	}
 	
-	public int getPositionById(int userId) {
+	public int getPositionById(String userId) {
 		for (int i = 0; i < listContact.size(); ++i) {
-			if (listContact.get(i).getUserId() == userId)
+			if (listContact.get(i).getUserId().equals(userId))
 				return i;
 		}
 		return -1;
 	}
 
-	public Contact getUserById(int id) {
+	public Contact getUserById(String id) {
 		for (IParticipant contact : listContact) {
-			if (contact.getUserId() == id)
+			if (contact.getUserId().equals(id))
 				return (Contact) contact;
 		}
 		return null;
@@ -119,7 +121,7 @@ public class ContactAdapter extends BaseAdapter {
 		String name = entry.getName();
 		TextView contactName = (TextView) convertView.findViewById(R.id.contact_name);
 		// indicates who you are on the list
-		if (entry.getUserId() == myUserId) {
+		if (entry.getUserId().equals(myUserId)) {
 			name += " (" + viewGroup.getContext().getResources().getString(R.string.you) + ")";
 			contactName.setTextAppearance(viewGroup.getContext(), R.style.MyNameStyle);
 		} else
@@ -188,17 +190,17 @@ public class ContactAdapter extends BaseAdapter {
 
 	}
 
-	public void setChatStatus(int userId, int chatStatus) {
+	public void setChatStatus(String userId, int chatStatus) {
 		if(getUserById(userId)!=null)
 			getUserById(userId).setChatStatus(chatStatus);
 	}
 
 	public int getChatStatus(int position) {
-		int userId = listContact.get(position).getUserId();
+		String userId = listContact.get(position).getUserId();
 		return getUserById(userId).getChatStatus();
 	}
 
-	public int getUserId (int position) {
+	public String getUserId (int position) {
 		return listContact.get(position).getUserId();
 	}
 

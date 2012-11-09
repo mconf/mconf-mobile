@@ -35,17 +35,17 @@ public class VideoDialog extends Dialog {
 	private static final Logger log = LoggerFactory.getLogger(VideoDialog.class);
 		
 	private VideoSurface videoWindow;
-	private int userId;
+	private String userId;
 	private String name;
 	public boolean isPreview;
 	
-	public VideoDialog(Context context, int userId, int myId, String name) {
+	public VideoDialog(Context context, String userId, String myId, String name) {
 		super(context);
 		
 		this.userId = userId;
 		this.name = name;
 		
-		if(userId == myId){
+		if(userId.equals(myId)){
 			isPreview = true;
 		} else {
 			isPreview = false;
@@ -78,7 +78,7 @@ public class VideoDialog extends Dialog {
 		getContext().sendBroadcast(intent);
 	}
 	
-	private void setVideoId(int userIdLocal){
+	private void setVideoId(String userIdLocal){
 		userId = userIdLocal;
 	}
 	
@@ -86,7 +86,7 @@ public class VideoDialog extends Dialog {
 		name = userName;
 	}
 	
-	public int getVideoId(){
+	public String getVideoId(){
 		return userId;
 	}
 	

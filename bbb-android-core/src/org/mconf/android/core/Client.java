@@ -154,9 +154,8 @@ public class Client extends BigBlueButtonActivity implements
 		public void onReceive(Context context, Intent intent)
 		{ 
 			Bundle extras = intent.getExtras();
-			int userId= extras.getInt("userId");
-			if(userId!=-1)
-			{
+			String userId= extras.getString("userId");
+			if(userId != null) {
 				if(chatAdapter.hasUser(userId))
 					contactAdapter.setChatStatus(userId, Contact.CONTACT_ON_PUBLIC_MESSAGE);
 				else
@@ -181,8 +180,8 @@ public class Client extends BigBlueButtonActivity implements
 			log.debug("Client.closeVideo.onReceive()");
 			
 			Bundle extras = intent.getExtras();
-			int userId= extras.getInt("userId");
-			if (mVideoDialog != null && mVideoDialog.isShowing() && mVideoDialog.getVideoId() == userId) {
+			String userId= extras.getString("userId");
+			if (mVideoDialog != null && mVideoDialog.isShowing() && mVideoDialog.getVideoId().equals(userId)) {
 				log.debug("Client.closeVideo.onReceive().dismissing()");
 				mVideoDialog.dismiss();
 				mVideoDialog = null;
@@ -512,7 +511,7 @@ public class Client extends BigBlueButtonActivity implements
 				final Contact contact = (Contact) contactAdapter.getItem(position); 
 
 				// if the clicked person's ID is different from mine
-				if (contact.getUserId() != getBigBlueButton().getMyUserId())
+				if (!getBigBlueButton().isMyself(contact.getUserId()))
 					startPrivateChat(contact);
 			}
 		});
@@ -530,7 +529,7 @@ public class Client extends BigBlueButtonActivity implements
 
 		if (newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE
 				&& mVideoDialog != null && mVideoDialog.isShowing()) {
-			int videoId = mVideoDialog.getVideoId();
+			String videoId = mVideoDialog.getVideoId();
 			String videoName = mVideoDialog.getVideoName();						
 			mVideoDialog.dismiss();
 			mVideoDialog=null;
@@ -566,17 +565,17 @@ public class Client extends BigBlueButtonActivity implements
 		if (getBigBlueButton().isConnected()) {
 			if (view.getId() == R.id.contacts_list) {
 				final Contact contact = (Contact) contactAdapter.getItem(info.position);
-				if (contact.getUserId() != getBigBlueButton().getMyUserId())
+				if (!getBigBlueButton().isMyself(contact.getUserId()))
 					menu.add(0, POPUP_MENU_OPEN_PRIVATE_CHAT, 0, R.string.open_private_chat);
 				if (moderator) {
 					if(contact.isRaiseHand())
 						menu.add(0, POPUP_MENU_LOWER_HAND, 0, R.string.lower_hand);
-					if (contact.getUserId() != getBigBlueButton().getMyUserId())
+					if (!getBigBlueButton().isMyself(contact.getUserId()))
 						menu.add(0, POPUP_MENU_KICK_USER, 0, R.string.kick);
 					if (!contact.isPresenter())
 						menu.add(0, POPUP_MENU_SET_PRESENTER, 0, R.string.assign_presenter);
 				}
-				if (contact.getStatus().isHasStream()) {
+				if (contact.getStatus().doesHaveStream()) {
 					menu.add(0, POPUP_MENU_SHOW_VIDEO, 0, R.string.show_video);
 				}
 			} else {
@@ -721,9 +720,9 @@ public class Client extends BigBlueButtonActivity implements
 				menu.add(Menu.NONE, MENU_START_VOICE, Menu.NONE, R.string.start_voice).setIcon(android.R.drawable.ic_btn_speak_now);
 			}
 			VideoCapture mVideoCapture = (VideoCapture) findViewById(R.id.video_capture);
-			if (mVideoCapture.isCapturing() && getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).getStatus().isHasStream()){
+			if (mVideoCapture.isCapturing() && getBigBlueButton().getMyself().getStatus().doesHaveStream()){
 				menu.add(Menu.NONE, MENU_STOP_VIDEO, Menu.NONE, R.string.stop_video).setIcon(android.R.drawable.ic_media_pause);
-			} else if(!mVideoCapture.isCapturing() && !getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).getStatus().isHasStream()) {
+			} else if(!mVideoCapture.isCapturing() && !getBigBlueButton().getMyself().getStatus().doesHaveStream()) {
 				menu.add(Menu.NONE, MENU_START_VIDEO, Menu.NONE, R.string.start_video).setIcon(android.R.drawable.ic_media_play);
 			}
 			if (getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isRaiseHand())
@@ -786,7 +785,7 @@ public class Client extends BigBlueButtonActivity implements
 			return true;
 
 		case MENU_RAISE_HAND:
-			if (getBigBlueButton().getUsersModule().getParticipants().get(getBigBlueButton().getMyUserId()).isRaiseHand())
+			if (getBigBlueButton().getMyself().isRaiseHand())
 				getBigBlueButton().raiseHand(false);
 			else
 				getBigBlueButton().raiseHand(true);
@@ -1055,7 +1054,7 @@ public class Client extends BigBlueButtonActivity implements
 	}
 	@Override
 	public void onParticipantLeft(final IParticipant p) {
-		if (p.getStatus().isHasStream())
+		if (p.getStatus().doesHaveStream())
 			sendBroadcastCloseVideo(p);
 
 		runOnUiThread(new Runnable() {
@@ -1079,7 +1078,7 @@ public class Client extends BigBlueButtonActivity implements
 	public void onPrivateChatMessage(ChatMessage message, IParticipant source) {
 
 		// if the message received was sent from me, don't show any notification
-		if (message.getUserId() == getBigBlueButton().getMyUserId())
+		if (getBigBlueButton().isMyself(message.getUserId()))
 			return;
 
 		showNotification(message, source, true);
@@ -1161,7 +1160,8 @@ public class Client extends BigBlueButtonActivity implements
 
 			PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(),0, notificationIntent,Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
 			notification.setLatestEventInfo(getApplicationContext(), contentTitle, message.getMessage(), contentIntent);
-			notificationManager.notify(CHAT_NOTIFICATION_ID + message.getUserId(), notification);
+			// \TODO check if this solution using the hashCode over the userId is working properly
+			notificationManager.notify(CHAT_NOTIFICATION_ID + message.getUserId().hashCode(), notification);
 		} else {
 			notificationIntent = new Intent(getApplicationContext(), Client.class);
 			notificationIntent.setAction(ACTION_OPEN_SLIDER);
@@ -1204,7 +1204,7 @@ public class Client extends BigBlueButtonActivity implements
 
 	@Override
 	public void onPublicChatMessage(final List<ChatMessage> publicChatMessages,
-			final Map<Integer, Participant> participants) {
+			final Map<String, Participant> participants) {
 		if (!publicChatMessages.isEmpty())
 			runOnUiThread(new Runnable() {
 	
@@ -1244,14 +1244,14 @@ public class Client extends BigBlueButtonActivity implements
 	
 	@Override
 	public void onChangeHasStream(final IParticipant p) {
-		if (!p.getStatus().isHasStream())
+		if (!p.getStatus().doesHaveStream())
 			sendBroadcastCloseVideo(p);
 
 		runOnUiThread(new Runnable() {
 
 			@Override
 			public void run() {
-				contactAdapter.getUserById(p.getUserId()).getStatus().setHasStream(p.getStatus().isHasStream());
+				contactAdapter.getUserById(p.getUserId()).getStatus().setHasStream(p.getStatus().doesHaveStream());
 				contactAdapter.getUserById(p.getUserId()).getStatus().setStreamName(p.getStatus().getStreamName());
 				contactAdapter.notifyDataSetChanged();
 			}
@@ -1350,9 +1350,9 @@ public class Client extends BigBlueButtonActivity implements
 		});
 	}
 
-	private void showVideo(boolean inDialog, int videoId, String videoName){
+	private void showVideo(boolean inDialog, String videoId, String videoName){
 		if(inDialog){
-			if(videoId ==  getBigBlueButton().getMyUserId()){
+			if(videoId.equals(getBigBlueButton().getMyUserId())) {
 				destroyCaptureSurface(true);
 			}
 			mVideoDialog = new VideoDialog(this, videoId, getBigBlueButton().getMyUserId(), videoName);
@@ -1489,7 +1489,7 @@ public class Client extends BigBlueButtonActivity implements
 	{
 		AlertDialog.Builder onlyPresenterCanVideoDialog = new AlertDialog.Builder(this);
 	    onlyPresenterCanVideoDialog.setTitle(R.string.video_not_available);
-	    onlyPresenterCanVideoDialog.setMessage(R.string.video_is_only_presenter);				    
+	    onlyPresenterCanVideoDialog.setMessage(R.string.video_is_only_presenter);
 	    onlyPresenterCanVideoDialog.setNeutralButton(R.string.ok, null);
 	    onlyPresenterCanVideoDialog.show();			
 	}
