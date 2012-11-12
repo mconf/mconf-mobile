@@ -42,7 +42,7 @@ public class RtmpAudioPlayer {
 //			am.setSpeakerphoneOn(true);
 //		else
 //			am.setMode(AudioManager.MODE_NORMAL);
-		audioTrack.play();
+		//audioTrack.play();
 
 		running = true;
 	}
@@ -62,6 +62,7 @@ public class RtmpAudioPlayer {
 				audioTrack.stop();
 		
 		audioTrack.release();
+		audioTrack = null;
 	}
 	
 	public void onAudio(Audio audio) {
@@ -79,6 +80,8 @@ public class RtmpAudioPlayer {
 			int decodedSize = codec.decode(pktBuffer, decodedBuffer, audioData.length - offset);
 			
 			write(decodedBuffer, 0, decodedSize);
+			
+			audioTrack.play();
 		}
 	}
 }
