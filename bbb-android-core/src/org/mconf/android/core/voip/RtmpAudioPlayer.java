@@ -54,15 +54,20 @@ public class RtmpAudioPlayer {
 	}
 	
 	public void stop() {
-		running = false;
+		log.debug("rtmp player stop.");
 		
+		running = false;
 		codec.close();
 		
-		if(audioTrack.getState() == AudioTrack.STATE_INITIALIZED)
+		if(audioTrack != null) {
+			log.debug("Releasing audio track resources");
+			
+			if(audioTrack.getState() == AudioTrack.STATE_INITIALIZED)
 				audioTrack.stop();
-		
-		audioTrack.release();
-		audioTrack = null;
+			
+			audioTrack.release();
+			audioTrack = null;
+		}
 	}
 	
 	public void onAudio(Audio audio) {
