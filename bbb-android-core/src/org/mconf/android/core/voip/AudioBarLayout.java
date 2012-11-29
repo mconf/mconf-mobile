@@ -75,10 +75,10 @@ public class AudioBarLayout extends LinearLayout {
 			}
 		});
 		
-		if (listener.isOnCall()) {
-			show(listener.isMuted());
-		} else
-			hide();
+//		if (listener.isOnCall()) {
+//			show(listener.isMuted());
+//		} else
+//			hide();
 	}
 	
 }

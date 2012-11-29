@@ -109,6 +109,7 @@ public class Client extends BigBlueButtonActivity implements
 		OnListenerJoinedListener,
 		OnListenerLeftListener,
 		OnListenerStatusChangeListener {
+	
 	private static final Logger log = LoggerFactory.getLogger(Client.class);
 
 	public static final int MENU_QUIT = Menu.FIRST;
@@ -436,28 +437,8 @@ public class Client extends BigBlueButtonActivity implements
 		listenerListView.setAdapter(listenerAdapter);
 		listenerListView.setHeight();
 		registerForContextMenu(listenerListView);
-
-//		final AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);
-//		audiolayout.initListener(new AudioBarLayout.Listener() {
-//
-//			@Override
-//			public void muteCall(boolean mute) {
-//				getVoiceInterface().muteCall(mute);
-//			}
-//
-//			@Override
-//			public boolean isOnCall() {
-//				if (getVoiceInterface() != null)
-//					return getVoiceInterface().isOnCall();
-//				else
-//					return false;
-//			}
-//
-//			@Override
-//			public boolean isMuted() {
-//				return getVoiceInterface().isMuted();
-//			}
-//		});
+		
+		audioLayoutListenerConfig();
 
 		final SlidingDrawer slidingDrawer = (SlidingDrawer) findViewById(R.id.slide);	
 		if (slidingDrawer != null) { 
@@ -519,11 +500,16 @@ public class Client extends BigBlueButtonActivity implements
 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
+		
+		log.debug("onConfigurationChanged");
+		
 		endListeners();
 
 		super.onConfigurationChanged(newConfig);
 
 		initListeners();
+		
+		updateAudioBar();
 
 		if (newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE
 				&& mVideoDialog != null && mVideoDialog.isShowing()) {
@@ -751,27 +737,7 @@ public class Client extends BigBlueButtonActivity implements
 			
 			initVoiceInterface();
 			
-			final AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);
-			audiolayout.initListener(new AudioBarLayout.Listener() {
-
-				@Override
-				public void muteCall(boolean mute) {
-					getVoiceInterface().muteCall(mute);
-				}
-
-				@Override
-				public boolean isOnCall() {
-					if (getVoiceInterface() != null)
-						return getVoiceInterface().isOnCall();
-					else
-						return false;
-				}
-
-				@Override
-				public boolean isMuted() {
-					return getVoiceInterface().isMuted();
-				}
-			});
+			audioLayoutListenerConfig();
 			
 			getVoiceInterface().setListener(new OnCallListener() {
 					@Override
@@ -1464,7 +1430,31 @@ public class Client extends BigBlueButtonActivity implements
 	public void onException(Throwable throwable) {
 		ErrorReporter.getInstance().handleSilentException(throwable);
 	}
+	
+	private void audioLayoutListenerConfig() {
+		
+		final AudioBarLayout audiolayout = (AudioBarLayout) findViewById(R.id.audio_bar);
+		audiolayout.initListener(new AudioBarLayout.Listener() {
 
+			@Override
+			public void muteCall(boolean mute) {
+				getVoiceInterface().muteCall(mute);
+			}
+
+			@Override
+			public boolean isOnCall() {
+				if (getVoiceInterface() != null)
+					return getVoiceInterface().isOnCall();
+				else
+					return false;
+			}
+
+			@Override
+			public boolean isMuted() {
+				return getVoiceInterface().isMuted();
+			}
+		});
+	}
 }
 
 
