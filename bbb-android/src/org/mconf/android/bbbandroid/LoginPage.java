@@ -29,7 +29,6 @@ import org.mconf.android.core.BarcodeHandler;
 import org.mconf.android.core.BigBlueButtonActivity;
 import org.mconf.android.core.Client;
 import org.mconf.android.core.NetworkPropertiesDialog;
-import org.mconf.android.core.R;
 import org.mconf.android.core.ReportCrashDialog;
 import org.mconf.bbb.api.Meeting;
 import org.slf4j.Logger;
