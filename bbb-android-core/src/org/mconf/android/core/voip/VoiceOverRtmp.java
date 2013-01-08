@@ -11,7 +11,8 @@ import com.flazr.rtmp.message.Audio;
 public class VoiceOverRtmp implements VoiceInterface {
 
 	private BbbVoiceConnection connection;
-	private RtmpAudioPlayer audioReceiver = new RtmpAudioPlayer();
+	private RtmpAudioPlayer audioPlayer = new RtmpAudioPlayer();
+	private RtmpMicBufferReader micBufferReader = new RtmpMicBufferReader();
 	protected boolean onCall = false;
 	protected OnCallListener listener;
 	
@@ -19,7 +20,7 @@ public class VoiceOverRtmp implements VoiceInterface {
 		connection = new BbbVoiceConnection(bbb, null) {
 			@Override
 			protected void onAudio(Audio audio) {
-				audioReceiver.onAudio(audio);
+				audioPlayer.onAudio(audio);
 			}
 			
 			@Override
@@ -47,7 +48,7 @@ public class VoiceOverRtmp implements VoiceInterface {
 		
 		else 
 		{
-			audioReceiver.start();
+			audioPlayer.start();
 			return E_OK;
 		}
 		
@@ -57,7 +58,7 @@ public class VoiceOverRtmp implements VoiceInterface {
 	public void stop() {
 		onCall = false;
 		connection.stop();
-		audioReceiver.stop();
+		audioPlayer.stop();
 		listener.onCallFinished();
 	}
 
@@ -68,12 +69,15 @@ public class VoiceOverRtmp implements VoiceInterface {
 
 	@Override
 	public boolean isMuted() {
-		return true;
+		return micBufferReader.isMuted();
 	}
 
 	@Override
 	public void muteCall(boolean mute) {
-		//aqui tenho que dar um send.mute()
+		if(mute)
+			micBufferReader.mute();
+		else
+			micBufferReader.unmute();
 		
 	}
 
