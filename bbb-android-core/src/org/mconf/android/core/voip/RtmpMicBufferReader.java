@@ -40,18 +40,14 @@ public class RtmpMicBufferReader implements RtmpReader {
 														 AudioFormat.CHANNEL_CONFIGURATION_MONO, 
 														 AudioFormat.ENCODING_PCM_16BIT);
 		
+		frame_size = 160; //initial frame size of the speex codec according to RtpStreamSender
+		minBufferSize = updateFrameSize(minBufferSize);
+		
 		record = new AudioRecord(MediaRecorder.AudioSource.MIC, codec.samp_rate(), AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, 
 				minBufferSize);
 		
-		
-		frame_size = 160; //initial frame size of the speex codec according to RtpStreamSender		
-		updateFrameSize(minBufferSize);
-		
-		frame_rate = codec.samp_rate()/frame_size; 
-		frame_rate *= 1.5;
-		
-		audioEncoded = new byte[frame_size];
-		audioData = new short[frame_size*(frame_rate+1)];
+		audioEncoded = new byte[12 + frame_size];
+		audioData = new short[frame_size];
 		
 		codec.init();
 		
@@ -101,8 +97,6 @@ public class RtmpMicBufferReader implements RtmpReader {
 		
 		if(!isMuted())
 		{
-//			initialPosition = (ring+delay*frame_rate*frame_size)%(frame_size*(frame_rate+1));	
-//			numOfReadShorts = record.read(audioData,initialPosition,frame_size);
 			numOfReadShorts = record.read(audioData,0,frame_size);
 			
 			return (numOfReadShorts != AudioRecord.ERROR_BAD_VALUE &&
@@ -121,27 +115,24 @@ public class RtmpMicBufferReader implements RtmpReader {
 		log.debug("next");
 		log.debug("\n");
 		
-//		int sizeEncodedAudio = codec.encode(audioData,
-//											ring%(frame_size*(frame_rate+1)), 
-//											audioEncoded, 
-//											numOfReadShorts);
+		//audioData : audio "grande" (short)
+		//leitura de audioData começa em audioData[0] até audioData[numOfReadShorts-1]
+		//audioEncoded: audio onde será colocado o audio encodado (byte), 
+		//conteúdo de áudio vai de audioEncoded[12] até audioEncoded[sizeEncodedAudio-1]
+		int sizeEncodedAudio = codec.encode(audioData, 0, audioEncoded, numOfReadShorts);
 		
-		// O que é o último parâmetro (int frames) ?
-		int sizeEncodedAudio = codec.encode(audioData, 0, audioEncoded, 1);
+//		String firstRawBytes = "";
+//   		for( int i =0; i < audioData.length; i++ )
+//   			firstRawBytes += Short.toString(audioData[i]) + " ";
+//   		log.debug("\n Raw: {} \n", firstRawBytes);
+//   		
+//   		String firstEncodedBytes = "";
+//   		for( int i =0; i < sizeEncodedAudio; i++ )
+//	   		firstEncodedBytes += Byte.toString(audioEncoded[i])  + " ";
+//   		log.debug("\n Encoded: {} \n", firstEncodedBytes);
 		   
-		ring += frame_size;
-		
-		String firstRawBytes = "";
-   		for( int i =0; i < 10; i++ )
-   			firstRawBytes += Short.toString(audioData[i]);
-   		log.debug("\n Raw: {} \n", firstRawBytes);
-   		
-   		String firstEncodedBytes = "";
-   		for( int i =0; i < sizeEncodedAudio+12; i++ )
-	   		firstEncodedBytes += Byte.toString(audioEncoded[i]);
-   		log.debug("\n Encoded: {} \n", firstEncodedBytes);
-		   
-		//usar sizeEncodedAudio e o array audioEncoded e fazer uma nova rmtp message	e mandar...
+		//lembrar que conteúdo de áudio vai de audioEncoded[12] até audioEncoded[sizeEncodedAudio-1]
+		//talvez tenha que ajeitar ake
 		final byte[] validBytes = new byte[sizeEncodedAudio];
 		System.arraycopy(audioEncoded, 0, validBytes, 0, sizeEncodedAudio);
 		
@@ -199,7 +190,7 @@ public class RtmpMicBufferReader implements RtmpReader {
 		return 0;
 	}
 	
-	private void updateFrameSize(int min)
+	private int updateFrameSize(int min)
 	{
 		if (min == 640) {
 			if (frame_size == 960) frame_size = 320;
@@ -219,7 +210,9 @@ public class RtmpMicBufferReader implements RtmpReader {
 			 * this parameter is to avoid the log message "RecordThread: buffer overflow"
 			 */
 			min *= 4;
-		}		
+		}
+		
+		return min;
 	}
 		
 		
