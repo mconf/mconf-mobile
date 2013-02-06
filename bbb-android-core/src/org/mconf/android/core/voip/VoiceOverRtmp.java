@@ -12,12 +12,16 @@ public class VoiceOverRtmp implements VoiceInterface {
 
 	private BbbVoiceConnection connection;
 	private RtmpAudioPlayer audioPlayer = new RtmpAudioPlayer();
-	private RtmpMicBufferReader micBufferReader = new RtmpMicBufferReader();
+	//private RtmpMicBufferReader micBufferReader = new RtmpMicBufferReader();
+	private RtmpAudioPublisher micBufferReader = new RtmpAudioPublisher();
 	protected boolean onCall = false;
 	protected OnCallListener listener;
 	
 	public VoiceOverRtmp(BigBlueButtonClient bbb) {
-		connection = new BbbVoiceConnection(bbb, null) {
+		
+		micBufferReader.start();	
+		
+		connection = new BbbVoiceConnection(bbb, micBufferReader) {
 			@Override
 			protected void onAudio(Audio audio) {
 				audioPlayer.onAudio(audio);
@@ -57,6 +61,7 @@ public class VoiceOverRtmp implements VoiceInterface {
 	@Override
 	public void stop() {
 		onCall = false;
+		micBufferReader.stopRunning();
 		connection.stop();
 		audioPlayer.stop();
 		listener.onCallFinished();
