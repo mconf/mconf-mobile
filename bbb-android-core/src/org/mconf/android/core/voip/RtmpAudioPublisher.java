@@ -33,11 +33,15 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 	private int sampRate; // Hertz
 	private int frameSize; // byte
 	private int frameRate; // FPS
-	private long baseDelay; // ms
+	private long frameDuration; // ms
 	
 	private boolean running;
 	
 	private boolean muted = true;
+	
+	private int currentTimestamp = 0;
+	private int lastTimestamp = 0;
+	private int interval;
 	
 	public RtmpAudioPublisher() {
 		
@@ -47,7 +51,7 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 		codec.init();
 
 		sampRate = codec.samp_rate();
-		frameSize = codec.frame_size(); //frame size 
+		frameSize = codec.frame_size();
 		
 		/*
 		 * sampling rate * sample size / frame size
@@ -57,7 +61,7 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 		/*
 		 * Base delay used in the audio reading loop
 		 */
-		baseDelay = (long) 1000/frameRate;
+		frameDuration = (long) 1000/frameRate;
 		
 		int minBufferSize =	AudioRecord.getMinBufferSize(sampRate,
 							AudioFormat.CHANNEL_CONFIGURATION_MONO,
@@ -119,12 +123,20 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 					Audio audioPacket = new Audio(dataToSend);
 					
 					/* Cabeçalho e tal... Tem que ver */
-					audioPacket.getHeader().setDeltaTime(42);
+					audioPacket.getHeader().setTime(currentTimestamp);
+					//currentTimestamp += frameSize;
 					
-					log.debug("\n\n\ncolocou novo audio\n\n\n");
+					interval = currentTimestamp - lastTimestamp;
+					audioPacket.getHeader().setDeltaTime(interval);
+					//log.debug("\n\n\n\ncurrentTimestamp = " + currentTimestamp + "  lastTimestamp = " + lastTimestamp + "  interval = "  + interval + "\n\n\n");					
+					
+					lastTimestamp = currentTimestamp;
+					currentTimestamp += frameSize;
+					
+					//log.debug("adding new audio on the list...\n\n\n\n");
 					messageBuffer.add(audioPacket);
 					
-					delayToUse = baseDelay-(System.currentTimeMillis()-startTime);
+					delayToUse = frameDuration-(System.currentTimeMillis()-startTime);
 					
 					if(delayToUse > 0) {
 						try {
@@ -201,20 +213,11 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 
 	@Override
 	public boolean hasNext() {
-		log.debug("\n\n");
-		log.debug("Calling hasNext()");
-		log.debug("\n\n");
-		
 		return running;
-		//return messageBuffer.isEmpty() ? false : true;
 	}
 
 	@Override
 	public RtmpMessage next() {
-		
-		log.debug("\n\n");
-		log.debug("Calling next()");
-		log.debug("\n\n");
 		
 		while(messageBuffer.isEmpty())
 		{
@@ -226,6 +229,9 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 			}
 		}
 		
+		//log.debug("\n\n\n************returning audio*****************");
+		
+		//log.debug("returned audio timestamp = " + messageBuffer.get(0).getHeader().getTime() + "\n\n\n");
 		return messageBuffer.remove(0);
 		
 		//if(!messageBuffer.isEmpty()) {
