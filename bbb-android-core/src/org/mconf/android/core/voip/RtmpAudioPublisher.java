@@ -82,22 +82,21 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 	@Override
 	public void run() {
 		
-		android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
-		
-		recorder.startRecording();
-		
-		running = true;
-		
+		//android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
+
 		int readShorts = 0;
 		int encodedSize = 0;
 		
 		long startTime = 0;
 		long delayToUse = 0;
 		
+		running = true;
+		recorder.startRecording();
+		
 		while(running)
 		{
 			
-			while(muted)
+			while(muted && running)
 			{
 				try {
 					sleep(50);
@@ -107,6 +106,12 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 				}
 			}
 			
+			
+			//necessary to end this thread properly: 
+			//user may have closed the audio service while the loop above was active
+			if(!running)
+				break;
+				
 			startTime = System.currentTimeMillis();
 			
 			readShorts = recorder.read(recordBuffer, 0, frameSize);
@@ -122,22 +127,18 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 					
 					Audio audioPacket = new Audio(dataToSend);
 					
-					/* Cabeçalho e tal... Tem que ver */
 					audioPacket.getHeader().setTime(currentTimestamp);
-					//currentTimestamp += frameSize;
 					
 					interval = currentTimestamp - lastTimestamp;
 					audioPacket.getHeader().setDeltaTime(interval);
-					//log.debug("\n\n\n\ncurrentTimestamp = " + currentTimestamp + "  lastTimestamp = " + lastTimestamp + "  interval = "  + interval + "\n\n\n");					
 					
 					lastTimestamp = currentTimestamp;
 					currentTimestamp += frameSize;
 					
-					//log.debug("adding new audio on the list...\n\n\n\n");
+					log.debug("@@@@@@@@@@@@@@ adding new audio on the list... @@@@@@@@@@@@@@@@@@");
 					messageBuffer.add(audioPacket);
 					
-					delayToUse = frameDuration-(System.currentTimeMillis()-startTime);
-					
+					delayToUse = frameDuration-(System.currentTimeMillis()-startTime);					
 					if(delayToUse > 0) {
 						try {
 							Thread.sleep(delayToUse);
@@ -146,10 +147,13 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 							e.printStackTrace();
 						}
 					}		
+						
 			}
 		}
 		
-		//stopAudioCapture();
+		messageBuffer.clear();
+		messageBuffer = null;
+		
 	}
 	
 	public void mute()
@@ -205,9 +209,6 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 
 	@Override
 	public void close() {
-		
-		messageBuffer.clear();
-		messageBuffer = null;
 		stopAudioCapture();
 	}
 
@@ -219,30 +220,30 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 	@Override
 	public RtmpMessage next() {
 		
-		while(messageBuffer.isEmpty())
+		if(messageBuffer != null)
 		{
-			try {
-				sleep(50);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if(messageBuffer.isEmpty())
+			{
+				Audio foo = new Audio(new byte[0]);
+				
+				foo.getHeader().setTime(currentTimestamp);
+				
+				interval = currentTimestamp - lastTimestamp;
+				foo.getHeader().setDeltaTime(interval);
+				
+				lastTimestamp = currentTimestamp;
+				currentTimestamp += frameSize;
+				
+				log.debug("**********sending dummy**********");
+				return foo;
 			}
+			
+			log.debug("#########sending audio##########");
+			return messageBuffer.remove(0);
 		}
 		
-		//log.debug("\n\n\n************returning audio*****************");
-		
-		//log.debug("returned audio timestamp = " + messageBuffer.get(0).getHeader().getTime() + "\n\n\n");
-		return messageBuffer.remove(0);
-		
-		//if(!messageBuffer.isEmpty()) {
-			
-			//log.debug("\n\n\nretirou e mandou audio\n\n\n");
-			//return messageBuffer.remove(0);
-		//}
-		//else{
-			//log.debug("\n\n\nmandou dummy\n\n\n");
-			//return new Audio(new byte[0]);	
-		//}
+		//log.debug("\n\n\n###############publisher stopped running => send null to finish connection");	
+		return null;
 	}
 
 	@Override
