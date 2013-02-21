@@ -30,9 +30,12 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 	private short[] recordBuffer;
 	private byte[] encodedBuffer;
 	
+	private int sampSize; // bytes
 	private int sampRate; // Hertz
-	private int frameSize; // byte
+	
+	private int frameSize; // samples
 	private int frameRate; // FPS
+	
 	private long frameDuration; // ms
 	
 	private boolean running;
@@ -49,14 +52,12 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 		
 		codec = new Speex();
 		codec.init();
-
-		sampRate = codec.samp_rate();
-		frameSize = codec.frame_size();
 		
-		/*
-		 * sampling rate * sample size / frame size
-		 */
-		frameRate = ( sampRate * 2 ) / frameSize;
+		sampSize = 2;
+		sampRate = codec.samp_rate();
+		
+		frameSize = codec.frame_size();
+		frameRate = sampRate / frameSize;
 		
 		/*
 		 * Base delay used in the audio reading loop
@@ -67,16 +68,14 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 							AudioFormat.CHANNEL_CONFIGURATION_MONO,
 							AudioFormat.ENCODING_PCM_16BIT);
 		
-		minBufferSize *= 2;
-		
 		recorder =	new AudioRecord(AudioSource.MIC, sampRate,
 						AudioFormat.CHANNEL_CONFIGURATION_MONO,
 						AudioFormat.ENCODING_PCM_16BIT, minBufferSize);
 		
 		messageBuffer = new ArrayList<Audio>();
 		
-		recordBuffer = new short[frameSize];
-		encodedBuffer = new byte[12 + frameSize];
+		recordBuffer = new short[frameSize*(sampSize/2)];
+		encodedBuffer = new byte[12 + frameSize*sampSize];
 	}
 	
 	@Override
@@ -95,7 +94,6 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 		
 		while(running)
 		{
-			
 			while(muted && running)
 			{
 				try {
@@ -122,8 +120,10 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 			{
 					encodedSize = codec.encode(recordBuffer, 0, encodedBuffer, readShorts);
 					
-					final byte[] dataToSend = new byte[encodedSize];
-					System.arraycopy(encodedBuffer, 12, dataToSend, 0, encodedSize);
+					int offset = 1; // Aquele mesmo offset que tem no RtmpAudioPlayer.
+					
+					final byte[] dataToSend = new byte[encodedSize+offset];
+					System.arraycopy(encodedBuffer, 12, dataToSend, offset, encodedSize);
 					
 					Audio audioPacket = new Audio(dataToSend);
 					
@@ -133,9 +133,10 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 					audioPacket.getHeader().setDeltaTime(interval);
 					
 					lastTimestamp = currentTimestamp;
-					currentTimestamp += frameSize;
+					//currentTimestamp += frameSize;
+					currentTimestamp += 1;
 					
-					log.debug("@@@@@@@@@@@@@@ adding new audio on the list... @@@@@@@@@@@@@@@@@@");
+					
 					messageBuffer.add(audioPacket);
 					
 					delayToUse = frameDuration-(System.currentTimeMillis()-startTime);					
@@ -224,7 +225,7 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 		{
 			if(messageBuffer.isEmpty())
 			{
-				Audio foo = new Audio(new byte[0]);
+				Audio foo = Audio.empty();
 				
 				foo.getHeader().setTime(currentTimestamp);
 				
@@ -234,15 +235,11 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 				lastTimestamp = currentTimestamp;
 				currentTimestamp += frameSize;
 				
-				log.debug("**********sending dummy**********");
 				return foo;
 			}
-			
-			log.debug("#########sending audio##########");
 			return messageBuffer.remove(0);
 		}
 		
-		//log.debug("\n\n\n###############publisher stopped running => send null to finish connection");	
 		return null;
 	}
 
@@ -261,7 +258,6 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 	private void stopAudioCapture() {
 		
 		if(recorder != null) {
-			
 			recorder.stop();
 			recorder.release();
 			recorder = null;
@@ -269,6 +265,4 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 		
 		codec.close();
 	}
-	
-	
 }
