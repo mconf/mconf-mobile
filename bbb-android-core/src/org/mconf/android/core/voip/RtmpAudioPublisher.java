@@ -21,6 +21,8 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 	
 	private static final Logger log = LoggerFactory.getLogger(RtmpAudioPublisher.class);
 	
+	private final int SHORT_SIZE_IN_BYTES = 2;
+	
 	private List<Audio> messageBuffer;
 	
 	private Codec codec;
@@ -38,6 +40,8 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 	
 	private long frameDuration; // ms
 	
+	private int frameSizeInShorts;
+	
 	private boolean running;
 	
 	private boolean muted = true;
@@ -53,16 +57,15 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 		codec = new Speex();
 		codec.init();
 		
-		sampSize = 2;
-		sampRate = codec.samp_rate();
+		sampRate = codec.samp_rate(); // samples per second
+		sampSize = 2; //2 bytes per sample => ENCODING PCM 16BIT
 		
-		frameSize = codec.frame_size();
-		frameRate = sampRate / frameSize;
+		frameSize = codec.frame_size(); //number of SAMPLES which a FRAME has
 		
-		/*
-		 * Base delay used in the audio reading loop
-		 */
+		frameRate = sampRate / frameSize;		
 		frameDuration = (long) 1000/frameRate;
+		
+		frameSizeInShorts = frameSize*(sampSize/SHORT_SIZE_IN_BYTES);
 		
 		int minBufferSize =	AudioRecord.getMinBufferSize(sampRate,
 							AudioFormat.CHANNEL_CONFIGURATION_MONO,
@@ -74,14 +77,14 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 		
 		messageBuffer = new ArrayList<Audio>();
 		
-		recordBuffer = new short[frameSize*(sampSize/2)];
+		recordBuffer = new short[frameSizeInShorts];
 		encodedBuffer = new byte[12 + frameSize*sampSize];
 	}
 	
 	@Override
 	public void run() {
 		
-		//android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
+		android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
 
 		int readShorts = 0;
 		int encodedSize = 0;
@@ -112,7 +115,9 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 				
 			startTime = System.currentTimeMillis();
 			
-			readShorts = recorder.read(recordBuffer, 0, frameSize);
+			
+			//reading 160 samples (1 frame)
+			readShorts = recorder.read(recordBuffer, 0, frameSizeInShorts);
 			
 			if(readShorts != AudioRecord.ERROR_BAD_VALUE &&
 			   readShorts != AudioRecord.ERROR_INVALID_OPERATION &&
@@ -120,23 +125,15 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 			{
 					encodedSize = codec.encode(recordBuffer, 0, encodedBuffer, readShorts);
 					
-					int offset = 1; // Aquele mesmo offset que tem no RtmpAudioPlayer.
+					int offset = 1;
 					
 					final byte[] dataToSend = new byte[encodedSize+offset];
 					System.arraycopy(encodedBuffer, 12, dataToSend, offset, encodedSize);
 					
 					Audio audioPacket = new Audio(dataToSend);
 					
-					audioPacket.getHeader().setTime(currentTimestamp);
-					
-					interval = currentTimestamp - lastTimestamp;
-					audioPacket.getHeader().setDeltaTime(interval);
-					
-					lastTimestamp = currentTimestamp;
-					//currentTimestamp += frameSize;
-					currentTimestamp += 1;
-					
-					
+					audioPacket = setAudioPacketTimestamp(audioPacket,1);
+										
 					messageBuffer.add(audioPacket);
 					
 					delayToUse = frameDuration-(System.currentTimeMillis()-startTime);					
@@ -177,6 +174,19 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 		running = false;
 	}
 	
+	private synchronized Audio setAudioPacketTimestamp(Audio audioPacket, int audioDuration)
+	{
+		audioPacket.getHeader().setTime(currentTimestamp);
+		
+		interval = currentTimestamp - lastTimestamp;
+		audioPacket.getHeader().setDeltaTime(interval);
+		
+		lastTimestamp = currentTimestamp;
+		currentTimestamp += audioDuration;
+		
+		return audioPacket;
+	}
+	
 	
 	@Override
 	public Metadata getMetadata() {
@@ -210,7 +220,14 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 
 	@Override
 	public void close() {
-		stopAudioCapture();
+		
+		if(recorder != null) {
+			recorder.stop();
+			recorder.release();
+			recorder = null;
+		}
+		
+		codec.close();
 	}
 
 	@Override
@@ -225,18 +242,13 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 		{
 			if(messageBuffer.isEmpty())
 			{
-				Audio foo = Audio.empty();
+				Audio emptyAudio = Audio.empty();
 				
-				foo.getHeader().setTime(currentTimestamp);
-				
-				interval = currentTimestamp - lastTimestamp;
-				foo.getHeader().setDeltaTime(interval);
-				
-				lastTimestamp = currentTimestamp;
-				currentTimestamp += frameSize;
-				
-				return foo;
+				emptyAudio = setAudioPacketTimestamp(emptyAudio,46); //46????
+																	 //45 não funfa..só a partir do 46...
+				return emptyAudio;
 			}
+			
 			return messageBuffer.remove(0);
 		}
 		
@@ -253,16 +265,5 @@ public class RtmpAudioPublisher extends Thread implements RtmpReader {
 	public int getHeight() {
 		// TODO Auto-generated method stub
 		return 0;
-	}
-	
-	private void stopAudioCapture() {
-		
-		if(recorder != null) {
-			recorder.stop();
-			recorder.release();
-			recorder = null;
-		}
-		
-		codec.close();
 	}
 }
