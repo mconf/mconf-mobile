@@ -42,6 +42,7 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 	private String userId;
 	private String name;
 	private boolean isPreview;
+	private int streamToShow;
 	
 	VideoCaptureLayout videocaplayout;
 
@@ -69,6 +70,7 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 		if (extras != null) {
 			userId = extras.getString("userId");
 			name = extras.getString("name");
+			streamToShow = extras.getInt("streamToShow");
 		}
 		
 		if(getBigBlueButton().isMyself(userId)){
@@ -138,7 +140,7 @@ public class VideoFullScreen extends BigBlueButtonActivity {
 		if(isPreview){
 			videocaplayout.show(0);
 		} else {
-			videoWindow.start(userId, false);
+			videoWindow.start(userId, false, streamToShow);
 		}
 	}
 

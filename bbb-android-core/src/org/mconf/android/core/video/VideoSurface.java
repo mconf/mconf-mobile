@@ -53,7 +53,7 @@ public class VideoSurface extends GLSurfaceView {
 		return params;		
 	}
 	
-	public void start(String userId, boolean inDialog) {
+	public void start(String userId, boolean inDialog, int streamToShow) {
 		this.userId = userId;
 		this.inDialog = inDialog;
 		
@@ -61,7 +61,7 @@ public class VideoSurface extends GLSurfaceView {
 			stop();
 		
 		BigBlueButtonClient bbb = ((BigBlueButton) getContext().getApplicationContext()).getHandler();
-		videoReceiver = new BbbVideoReceiver(userId, bbb) {
+		videoReceiver = new BbbVideoReceiver(userId, bbb, streamToShow) {
 			@Override
 			protected void onVideo(Video video) {
 				byte[] data = video.getBody();

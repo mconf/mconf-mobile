@@ -38,8 +38,9 @@ public class VideoDialog extends Dialog {
 	private String userId;
 	private String name;
 	public boolean isPreview;
+	private int streamToShow;
 	
-	public VideoDialog(Context context, String userId, String myId, String name) {
+	public VideoDialog(Context context, String userId, String myId, String name, int streamToShow) {
 		super(context);
 		
 		this.userId = userId;
@@ -69,6 +70,8 @@ public class VideoDialog extends Dialog {
 		
 		setTitle(name);
 		setCancelable(true);
+		
+		this.streamToShow = streamToShow;
 	}
 	
 	private void sendBroadcastRecreateCaptureSurface() {
@@ -119,7 +122,7 @@ public class VideoDialog extends Dialog {
 			VideoCaptureLayout videocaplayout = (VideoCaptureLayout) findViewById(R.id.video_capture_layout);
 			videocaplayout.show(40);
 		} else {
-			videoWindow.start(userId, true);
+			videoWindow.start(userId, true, streamToShow);
 		}
 	}
 }

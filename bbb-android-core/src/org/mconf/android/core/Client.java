@@ -214,8 +214,13 @@ public class Client extends BigBlueButtonActivity implements
 	private boolean dialogShown = false;
 	private boolean kicked=false;
 	private boolean backToPrivateChat = false;
+	
+	private int streamToShow = 0;
+	private String currentStream = "";
+	
 
 	private VideoDialog mVideoDialog;
+
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -533,7 +538,7 @@ public class Client extends BigBlueButtonActivity implements
 			String videoName = mVideoDialog.getVideoName();						
 			mVideoDialog.dismiss();
 			mVideoDialog=null;
-			showVideo(false, videoId, videoName);
+			showVideo(false, videoId, videoName, streamToShow);
 		}
 	}
 
@@ -576,7 +581,16 @@ public class Client extends BigBlueButtonActivity implements
 						menu.add(0, POPUP_MENU_SET_PRESENTER, 0, R.string.assign_presenter);
 				}
 				if (contact.getStatus().doesHaveStream()) {
-					menu.add(0, POPUP_MENU_SHOW_VIDEO, 0, R.string.show_video);
+					for(int i = 0; i < contact.getStatus().getNumberOfStreams(); i++) {
+						
+						String menuTitle = getResources().getString(R.string.show_video);
+						
+						if(contact.getStatus().getNumberOfStreams() > 1) {
+							menuTitle += " " + Integer.toString(i+1);
+						}
+						
+						menu.add(0, POPUP_MENU_SHOW_VIDEO, i, menuTitle);
+					}
 				}
 			} else {
 				final Listener listener = (Listener) listenerAdapter.getItem(info.position);
@@ -642,10 +656,14 @@ public class Client extends BigBlueButtonActivity implements
 			{
 				Contact contact = (Contact) contactAdapter.getItem(info.position);
 				
+				streamToShow = item.getOrder();
+				
+				currentStream = contact.getStatus().getStreamName(streamToShow);
+				
 				if(getResources().getConfiguration().orientation==Configuration.ORIENTATION_PORTRAIT)
-					showVideo(true, contact.getUserId(), contact.getName());
+					showVideo(true, contact.getUserId(), contact.getName(), streamToShow);
 				else 
-					showVideo(false, contact.getUserId(), contact.getName());
+					showVideo(false, contact.getUserId(), contact.getName(), streamToShow);
 				
 				return true;
 			}
@@ -1244,9 +1262,11 @@ public class Client extends BigBlueButtonActivity implements
 	
 	@Override
 	public void onChangeHasStream(final IParticipant p) {
-		if (!p.getStatus().doesHaveStream())
+		
+		// there is no stream or the current stream was closed
+		if (!p.getStatus().doesHaveStream() || !p.getStatus().doesHaveStream(currentStream))
 			sendBroadcastCloseVideo(p);
-
+		
 		runOnUiThread(new Runnable() {
 
 			@Override
@@ -1350,17 +1370,18 @@ public class Client extends BigBlueButtonActivity implements
 		});
 	}
 
-	private void showVideo(boolean inDialog, String videoId, String videoName){
+	private void showVideo(boolean inDialog, String videoId, String videoName, int streamToShow){
 		if(inDialog){
 			if(videoId.equals(getBigBlueButton().getMyUserId())) {
 				destroyCaptureSurface(true);
 			}
-			mVideoDialog = new VideoDialog(this, videoId, getBigBlueButton().getMyUserId(), videoName);
+			mVideoDialog = new VideoDialog(this, videoId, getBigBlueButton().getMyUserId(), videoName, streamToShow);
 			mVideoDialog.show();
 		} else {
 			Intent intent = new Intent(getApplicationContext(), VideoFullScreen.class);
 			intent.putExtra("userId", videoId);
 			intent.putExtra("name", videoName);			
+			intent.putExtra("streamToShow", streamToShow);			
 			startActivity(intent);
 		}
 	}
