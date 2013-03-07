@@ -1,7 +1,11 @@
 package org.mconf.android.core.voip;
 
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelStateEvent;
 import org.mconf.bbb.BigBlueButtonClient;
 import org.mconf.bbb.phone.BbbVoiceConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import android.os.SystemClock;
 import android.util.Log;
@@ -9,11 +13,13 @@ import android.util.Log;
 import com.flazr.rtmp.message.Audio;
 
 public class VoiceOverRtmp implements VoiceInterface {
+	
+	private static final Logger log = LoggerFactory.getLogger(VoiceOverRtmp.class);
 
 	private BbbVoiceConnection connection;
 	private RtmpAudioPlayer audioPlayer = new RtmpAudioPlayer();
 	//private RtmpMicBufferReader micBufferReader = new RtmpMicBufferReader();
-	private RtmpAudioPublisher micBufferReader = new RtmpAudioPublisher();
+	private AudioPublish micBufferReader = new AudioPublish();
 	protected boolean onCall = false;
 	protected OnCallListener listener;
 	
@@ -31,6 +37,17 @@ public class VoiceOverRtmp implements VoiceInterface {
 			protected void onConnectedSuccessfully() {
 				onCall = true;
 				listener.onCallStarted();
+			}
+			
+			@Override
+			public void channelDisconnected(ChannelHandlerContext ctx,
+					ChannelStateEvent e) throws Exception {
+				super.channelDisconnected(ctx, e);
+					log.debug("\n\nvoice disconnected, stopping VoiceOverRtmp\n\n");
+					onCall = false;
+					audioPlayer.stop();
+					listener.onCallFinished();
+					
 			}
 		};
 		
@@ -60,11 +77,10 @@ public class VoiceOverRtmp implements VoiceInterface {
 
 	@Override
 	public void stop() {
-		onCall = false;
-		micBufferReader.stopRunning();
+		//onCall = false;
 		connection.stop();
-		audioPlayer.stop();
-		listener.onCallFinished();
+		//audioPlayer.stop();
+		//listener.onCallFinished();
 	}
 
 	@Override
