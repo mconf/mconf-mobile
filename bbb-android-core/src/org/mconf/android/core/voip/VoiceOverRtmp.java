@@ -24,9 +24,7 @@ public class VoiceOverRtmp implements VoiceInterface {
 	protected OnCallListener listener;
 	
 	public VoiceOverRtmp(BigBlueButtonClient bbb) {
-		
-		micBufferReader.start();	
-		
+				
 		connection = new BbbVoiceConnection(bbb, micBufferReader) {
 			@Override
 			protected void onAudio(Audio audio) {
@@ -70,17 +68,25 @@ public class VoiceOverRtmp implements VoiceInterface {
 		else 
 		{
 			audioPlayer.start();
+			sendFirstAudioPacket();
+			micBufferReader.start();
 			return E_OK;
 		}
-		
+	}
+	
+	private void sendFirstAudioPacket()
+	{
+		//for some reason - and we dont know why yet - after the reception of the first audio packet
+		//the connection needs to wait 101 ms to then normally starts the audio dispatching
+		//so..we are firing the first audio packet with a 101ms delay...
+		//this first audio packet is in the audio buffer of the micBufferReader
+		// ( you can check in the constructor of the AudioPublish class )
+		connection.publisher.fireNext(connection.publisher.channel, 101);
 	}
 
 	@Override
-	public void stop() {
-		//onCall = false;
-		connection.stop();
-		//audioPlayer.stop();
-		//listener.onCallFinished();
+	public void stop() {	
+		connection.stop();	
 	}
 
 	@Override

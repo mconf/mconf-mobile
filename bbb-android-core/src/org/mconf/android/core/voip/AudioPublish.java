@@ -54,16 +54,13 @@ public class AudioPublish extends Thread implements RtmpReader {
 		
 		running = false;
 		
-		codec = new Speex();
-		
-		
+		codec = new Speex();				
 		codec.init();
 		
 		sampRate = codec.samp_rate(); // samples per second
 		sampSize = 2; //2 bytes per sample => ENCODING PCM 16BIT
 		
-		frameSize = codec.frame_size(); //number of SAMPLES which a FRAME has
-		
+		frameSize = codec.frame_size(); //number of SAMPLES which a FRAME has	
 		frameRate = sampRate / frameSize;		
 		frameDuration =  1000/frameRate;
 		
@@ -83,10 +80,11 @@ public class AudioPublish extends Thread implements RtmpReader {
 		recordBuffer = new short[frameSizeInShorts];
 		encodedBuffer = new byte[12 + frameSize*sampSize];
 		
-		//setFirstAudioPacket();
+		audioBuffer = new ArrayList<Audio>();
+		setFirstAudioPacket();
+
 		currentTimestamp = 0;		
 		lastTimestamp = 0;
-		audioBuffer = new ArrayList<Audio>();
 	}
 	
 	@Override
@@ -171,23 +169,11 @@ public class AudioPublish extends Thread implements RtmpReader {
 		
 	}
 	
-//	private void setFirstAudioPacket()
-//	{
-//		//timestamps iniciais...talvez tenha que mudar os valores
-//		currentTimestamp = 200;		
-//		lastTimestamp = 200;
-//		
-//		Audio firstAudio = Audio.empty();			
-//		firstAudio.getHeader().setTime(currentTimestamp);
-//		
-//		int interval = currentTimestamp - lastTimestamp;
-//		firstAudio.getHeader().setDeltaTime(interval);
-//		
-//		currentTimestamp += frameDuration;				
-//		
-//		audioBuffer = new ArrayList<Audio>();
-//		audioBuffer.add(firstAudio);		
-//	}
+	private void setFirstAudioPacket()
+	{
+		Audio firstAudio = Audio.empty();
+		audioBuffer.add(firstAudio);	
+	}
 	
 	public void mute()
 	{
@@ -276,7 +262,7 @@ public class AudioPublish extends Thread implements RtmpReader {
 			}
 		}
 			
-		return running;
+		return audioBuffer != null;
 	}
 
 	@Override
@@ -287,13 +273,9 @@ public class AudioPublish extends Thread implements RtmpReader {
 			if(audioBuffer.isEmpty())
 			{
 				Audio emptyAudio = Audio.empty();
-				
-				//emptyAudio = setAudioPacketTimestamp(emptyAudio,frameSize); 
-				//log.debug("#######mandando audio VAZIO########\n\n\n");
 				return emptyAudio;
 			}
 			
-			//log.debug("#######mandando audio########\n\n\n");
 			return audioBuffer.remove(0);
 		}
 		
