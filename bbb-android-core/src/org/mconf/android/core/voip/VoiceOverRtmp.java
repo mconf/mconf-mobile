@@ -18,7 +18,6 @@ public class VoiceOverRtmp implements VoiceInterface {
 
 	private BbbVoiceConnection connection;
 	private RtmpAudioPlayer audioPlayer = new RtmpAudioPlayer();
-	//private RtmpMicBufferReader micBufferReader = new RtmpMicBufferReader();
 	private AudioPublish micBufferReader = new AudioPublish();
 	protected boolean onCall = false;
 	protected OnCallListener listener;
@@ -60,28 +59,52 @@ public class VoiceOverRtmp implements VoiceInterface {
 			SystemClock.sleep(500);
 			cont--;
 		}
+		
 		if (cont == 0) {
 			stop();
 			return E_TIMEOUT;
 		} 
-		
 		else 
 		{
 			audioPlayer.start();
-			sendFirstAudioPacket();
-			micBufferReader.start();
-			return E_OK;
+			
+			if(sendFirstAudioPacket()) {
+				micBufferReader.start();
+				return E_OK;
+			}
+			else {
+				stop();
+				return E_TIMEOUT;
+			}
 		}
 	}
 	
-	private void sendFirstAudioPacket()
+	private boolean sendFirstAudioPacket()
 	{
 		//for some reason - and we dont know why yet - after the reception of the first audio packet
 		//the connection needs to wait 101 ms to then normally starts the audio dispatching
 		//so..we are firing the first audio packet with a 101ms delay...
 		//this first audio packet is in the audio buffer of the micBufferReader
 		// ( you can check in the constructor of the AudioPublish class )
-		connection.publisher.fireNext(connection.publisher.channel, 101);
+		
+		// The voice connection waits for a 'createStream' server command to initialize the publisher
+		// It means that by the time fireNext is called 'connection.publisher' may be null
+		// So we have to wait until the publisher is initialized
+		
+		int attemptsLeft = 10;
+		while(connection.publisher == null && attemptsLeft > 0) {
+			SystemClock.sleep(500);
+			attemptsLeft--;
+		}
+		
+		if(attemptsLeft == 0) {
+			/* Failed to initialize the publisher */
+			return false;
+		}
+		else {
+			connection.publisher.fireNext(connection.publisher.channel, 101);
+			return true;
+		}
 	}
 
 	@Override
